@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Haryana Residence Form - 4 Pages</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body { font-family: 'Arial', sans-serif; background: #f4f4f4; margin: 0; }
+        
+        /* Data Input Styling */
+        #input-form { background: #fff; padding: 20px; width: 850px; margin: 20px auto; border: 2px solid #007bff; border-radius: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        #input-form h2 { grid-column: 1/-1; margin: 0; color: #007bff; font-size: 18px; }
+        .input-box { display: flex; flex-direction: column; }
+        .input-box label { font-size: 11px; font-weight: bold; margin-bottom: 3px; }
+        input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+
+        /* Page Layout */
+        .a4-page { width: 210mm; min-height: 297mm; padding: 15mm 20mm; margin: 20px auto; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; page-break-after: always; }
+        .header { display: flex; justify-content: space-between; font-weight: bold; }
+        .photo-box { border: 1px solid #000; width: 100px; height: 125px; position: absolute; right: 20mm; top: 45px; text-align: center; font-size: 12px; padding-top: 35px; }
+        .subject { text-align: center; font-weight: bold; font-size: 16px; margin: 25px 0; text-decoration: underline; }
+        .content { line-height: 2.3; text-align: justify; font-size: 15px; }
+        .fill-text { border-bottom: 1px dotted #000; font-weight: bold; color: #1a73e8; padding: 0 4px; }
+
+        /* Grid for Mobile/Aadhar */
+        .box-row { display: inline-flex; border: 1px solid #000; margin-left: 5px; vertical-align: middle; }
+        .box-cell { border-right: 1px solid #000; width: 22px; height: 25px; text-align: center; line-height: 25px; font-weight: bold; }
+        .box-cell:last-child { border-right: none; }
+
+        .footer { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .doc-border { border: 1px solid #000; padding: 8px; margin-top: 15px; font-size: 12px; line-height: 1.5; }
+
+        @media print {
+            #input-form, .print-btn { display: none; }
+            body { background: none; }
+            .a4-page { margin: 0; box-shadow: none; }
+            .fill-text { color: #000; }
+        }
+
+        .print-btn { position: fixed; bottom: 20px; right: 20px; padding: 12px 25px; background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="input-form">
+    <h2>यहाँ जानकारी भरें (Form Data Entry)</h2>
+    <div class="input-box"><label>तहसील</label><input type="text" oninput="sync('t_teh', this.value)"></div>
+    <div class="input-box"><label>जिला</label><input type="text" oninput="sync('t_dist', this.value)"></div>
+    <div class="input-box"><label>प्रार्थी का नाम</label><input type="text" oninput="sync('t_name', this.value)"></div>
+    <div class="input-box"><label>पिता/पति का नाम</label><input type="text" oninput="sync('t_fath', this.value)"></div>
+    <div class="input-box"><label>गाँव/शहर</label><input type="text" oninput="sync('t_vill', this.value)"></div>
+    <div class="input-box"><label>वार्ड नं.</label><input type="text" oninput="sync('t_ward', this.value)"></div>
+    <div class="input-box"><label>उम्र (वर्ष)</label><input type="text" oninput="sync('t_age', this.value)"></div>
+    <div class="input-box"><label>मोबाईल नंबर (10 अंक)</label><input type="text" maxlength="10" oninput="syncGrid('mob', this.value)"></div>
+    <div class="input-box"><label>आधार नंबर (12 अंक)</label><input type="text" maxlength="12" oninput="syncGrid('adh', this.value)"></div>
+    <div class="input-box"><label>जाति</label><input type="text" oninput="sync('t_caste', this.value)"></div>
+    <div class="input-box"><label>बच्चे का नाम (यदि हो)</label><input type="text" oninput="sync('t_child', this.value)"></div>
+</div>
+
+<button class="print-btn" onclick="window.print()">PRINT FORM</button>
+
+<div class="a4-page">
+    <div class="header"><span>सेवा में,</span><span>पृष्ठ 1 / 4 [cite: 2]</span></div>
+    <p><strong>श्रीमान् तहसीलदार महोदय / नायब तहसीलदार महोदय,</strong> [cite: 3]<br>
+    तहसील <span class="fill-text t_teh">................</span> जिला <span class="fill-text t_dist">................</span> [cite: 3, 4]</p>
+
+    <div class="photo-box">फोटो गोंद से<br>चिपकाएं [cite: 7]</div>
+    <div class="subject">विषय: हरियाणा निवास / आवासीय प्रमाण-पत्र बनवाने हेतू। [cite: 5]</div>
+
+    <p>मोबाईल नं. <span id="mob-row" class="box-row"></span> [cite: 6]</p>
+    <p>आधार नं. <span id="adh-row" class="box-row"></span> [cite: 8]</p>
+
+    <div class="content">
+        <strong>श्रीमान् जी,</strong><br>
+        निवेदन यह है कि:<br>
+        1. मैं <span class="fill-text t_name">................</span> सुपुत्र/सुपुत्री/धर्मपत्नी श्री <span class="fill-text t_fath">................</span> गाँव/शहर <span class="fill-text t_vill">................</span> वार्ड नं. <span class="fill-text t_ward">....</span> उम्र <span class="fill-text t_age">....</span> वर्ष तहसील <span class="fill-text t_teh">................</span> जिला <span class="fill-text t_dist">................</span> (हरियाणा) का/की जन्म / 15 वर्षों से ज्यादा से स्थायी निवासी हूँ। [cite: 1, 10, 11, 12, 13, 14, 15, 33]<br>
+        2. मैं भारत का/की नागरिक हूँ। [cite: 17, 18]<br>
+        3. मैंने भारत में किसी भी अन्य जगह से निवास प्रमाण-पत्र नहीं बनवाया है। [cite: 19, 20, 35]<br>
+        4. मुझे स्वयं या सुपुत्र/सुपुत्री <span class="fill-text t_child">................</span> के लिए इस प्रमाण-पत्र की आवश्यकता है। [cite: 21, 22, 23, 36]<br>
+        5. मेरा सुपुत्र/मेरी सुपुत्री अविवाहित है तथा मेरे साथ जन्म से रहता/रहती है। [cite: 24, 25, 37]<br>
+        6. अतः हरियाणा निवास/आवासीय प्रमाण-पत्र प्रदान करने की कृपा करें। [cite: 26, 27]
+    </div>
+
+    <div class="footer">
+        <div>दिनांक: ..../..../20...</div>
+        <div style="text-align:center"><strong>हस्ताक्षर प्रार्थी</strong> [cite: 38]<br><br>नाम: <span class="fill-text t_name"></span> [cite: 28]</div>
+    </div>
+
+    <div class="doc-border">
+        <strong>संलग्न दस्तावेज:</strong> 1. राशन कार्ड [cite: 43] 2. जन्मतिथि प्रमाण [cite: 44] 3. वोटर/आधार कार्ड/पासपोर्ट। [cite: 45]
+    </div>
+</div>
+
+<div class="a4-page">
+    <div class="header"><span></span><span>पृष्ठ 2 / 4 [cite: 49]</span></div>
+    <div class="subject">स्वयं घोषणा (Self Declaration) [cite: 50]</div>
+    <div class="content">
+        मैं <span class="fill-text t_name"></span> सुपुत्र श्री <span class="fill-text t_fath"></span> उम्र <span class="fill-text t_age"></span> वर्ष, जाति <span class="fill-text t_caste"></span> निवासी <span class="fill-text t_vill"></span> वार्ड नं. <span class="fill-text t_ward"></span> तहसील <span class="fill-text t_teh"></span> जिला <span class="fill-text t_dist"></span> शपथपूर्वक घोषणा करता हूँ कि मेरे द्वारा दी गई जानकारी सही है। [cite: 51, 52, 53, 54, 55, 57, 58, 59]
+    </div>
+    <div class="footer"><div></div><div style="text-align:center"><strong>हस्ताक्षर घोषणाकर्ता</strong> [cite: 77, 82]</div></div>
+</div>
+
+<div class="a4-page">
+    <div class="header"><span></span><span>पृष्ठ 3 / 4 [cite: 86]</span></div>
+    <div class="doc-border" style="padding:20px; font-size:14px;">
+        <center><strong>पटवारी हल्का / सरपंच / पार्षद रिपोर्ट</strong> [cite: 98, 110, 129]</center><br>
+        प्रमाणित किया जाता है कि प्रार्थी <span class="fill-text t_name"></span> सुपुत्र श्री <span class="fill-text t_fath"></span> निवासी <span class="fill-text t_vill"></span> तहसील <span class="fill-text t_teh"></span> को मैं व्यक्तिगत रूप से जानता हूँ। ये यहाँ के स्थायी निवासी हैं। [cite: 84, 85, 87, 88, 96, 97, 103]
+    </div>
+</div>
+
+<div class="a4-page">
+    <div class="header"><span></span><span>पृष्ठ 4 / 4 [cite: 130]</span></div>
+    <div class="content">
+        प्रार्थी <span class="fill-text t_name"></span> के आवेदन की जाँच की गई। सरकार की हिदायतानुसार प्रमाण-पत्र जारी किया जाना उचित है। [cite: 131, 132, 133]
+        <br><br><br><br>
+        <strong>तहसीलदार / नायब तहसीलदार</strong> [cite: 143]<br>(मोहर सहित) [cite: 144]
+    </div>
+</div>
+
+<script>
+    // Create grids for mobile and aadhar
+    function setupGrid(id, len) {
+        const row = document.getElementById(id);
+        for(let i=0; i<len; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'box-cell';
+            row.appendChild(cell);
+        }
+    }
+    setupGrid('mob-row', 10);
+    setupGrid('adh-row', 12);
+
+    // Function to sync text across all pages
+    function sync(cls, val) {
+        const els = document.getElementsByClassName(cls);
+        for(let el of els) { el.innerText = val || "................"; }
+    }
+
+    // Function to sync grid numbers
+    function syncGrid(type, val) {
+        const cells = document.querySelectorAll(`#${type}-row .box-cell`);
+        const chars = val.split('');
+        cells.forEach((cell, i) => { cell.innerText = chars[i] || ''; });
+    }
+</script>
+
+</body>
+</html>
