@@ -55,6 +55,14 @@
                 <button class="btn btn-zoom" onclick="changeZoom(0.2)">+</button>
             </div>
 
+            <div class="field-selector" style="background: #e8f5e9; padding: 10px; border-radius: 4px; border: 1px solid #c8e6c9;">
+                <label><strong>Global Font Size:</strong></label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="globalFontSize" value="20" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 80px;">
+                    <button class="btn" onclick="applyGlobalFontSize()" style="margin: 0; padding: 5px 10px;">Apply to All</button>
+                </div>
+            </div>
+
             <div class="field-selector">
                 <label><strong>Select Page:</strong></label>
                 <select id="pageSelect" onchange="switchPage()">
@@ -428,6 +436,34 @@
             currentPage = parseInt(pageNum); 
             document.getElementById('templateImage').src = `/FILE/${pageNum}.jpg`;
             loadPageData(pageNum);
+        }
+        
+        function applyGlobalFontSize() {
+            const size = parseInt(document.getElementById('globalFontSize').value) || 20;
+            if (!confirm(`Are you sure you want to set font size to ${size} for ALL fields on ALL pages?`)) return;
+            
+            // 1. Update allCoords data model
+            Object.keys(allCoords).forEach(pageKey => {
+                Object.keys(allCoords[pageKey]).forEach(field => {
+                    if (allCoords[pageKey][field]) {
+                        allCoords[pageKey][field].fontSize = size;
+                    }
+                });
+            });
+            
+            // 2. Update visible inputs on current page
+            document.querySelectorAll('input[data-prop="fontSize"]').forEach(input => {
+                input.value = size;
+            });
+            
+            // 3. Update current display if selected
+            const currentField = document.getElementById('fieldSelect').value;
+            updateCurrentDisplay(currentField);
+            
+            // 4. Redraw canvas
+            drawAllCoordinates();
+            
+            alert(`✅ Font size set to ${size} for all fields! Click "Save All" to make it permanent.`);
         }
         
         async function saveAllCoordinates() {
