@@ -1,10 +1,11 @@
 <x-filament-panels::page>
     <style>
         .coordinate-picker { display: grid; grid-template-columns: 1fr 400px; gap: 30px; margin-bottom: 30px; }
-        .image-container { position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: #f9f9f9; }
-        .image-container img { width: 100%; height: auto; display: block; cursor: crosshair; }
+        .image-wrapper { width: 100%; height: 600px; overflow: auto; border: 2px solid #ddd; border-radius: 8px; background: #f0f0f0; position: relative; }
+        .image-container { position: relative; transform-origin: top left; transition: transform 0.2s ease; width: fit-content; }
+        .image-container img { display: block; cursor: crosshair; }
         .overlay-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        .controls { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; }
+        .controls { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; }
         .field-selector { margin-bottom: 20px; }
         .field-selector select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
         .coord-display { background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
@@ -19,21 +20,34 @@
         .btn:hover { background: #45a049; }
         .btn-test { background: #2196F3; }
         .btn-test:hover { background: #0b7dda; }
+        .btn-zoom { background: #607d8b; padding: 5px 15px; font-size: 18px; font-weight: bold; }
+        .btn-zoom:hover { background: #455a64; }
+        .zoom-controls { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .success { color: #4CAF50; margin-top: 10px; font-weight: bold; }
         .instructions { background: #fff3cd; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #ffc107; }
     </style>
 
     <div class="instructions">
-        <strong>📍 How to use:</strong> Select a page and field, then click on the image. Coordinates update automatically for the selected page. Click "Save All" to save changes for ALL pages.
+        <strong>📍 How to use:</strong> Select a page and field, then click on the image. Coordinates update automatically. <br>
+        <strong>🔍 Zoom:</strong> Use the buttons to zoom in/out for precise placement. Scroll to pan around.
     </div>
 
     <div class="coordinate-picker">
-        <div class="image-container">
-            <img id="templateImage" src="/FILE/1.jpg" alt="Template">
-            <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
+        <div class="image-wrapper">
+            <div id="imageContainer" class="image-container">
+                <img id="templateImage" src="/FILE/1.jpg" alt="Template">
+                <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
+            </div>
         </div>
         
         <div class="controls">
+            <div class="zoom-controls">
+                <strong>Zoom:</strong>
+                <button class="btn btn-zoom" onclick="changeZoom(-0.2)">-</button>
+                <span id="zoomLevel">100%</span>
+                <button class="btn btn-zoom" onclick="changeZoom(0.2)">+</button>
+            </div>
+
             <div class="field-selector">
                 <label><strong>Select Page:</strong></label>
                 <select id="pageSelect" onchange="switchPage()">
