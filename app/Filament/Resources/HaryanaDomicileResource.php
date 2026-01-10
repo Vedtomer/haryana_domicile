@@ -35,10 +35,9 @@ class HaryanaDomicileResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('father_name')
+                        \App\Forms\Components\RelationNameInput::make('father_name')
                             ->label('Father/Husband Name')
-                            ->required()
-                            ->maxLength(255),
+                            ->required(),
                         Forms\Components\TextInput::make('village')
                             ->label('Address')
                             ->required()
