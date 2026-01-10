@@ -8,6 +8,7 @@ use App\Models\HaryanaDomicile;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class PrintHaryanaDomicile extends Page
 {
@@ -74,6 +75,7 @@ class PrintHaryanaDomicile extends Page
                     'spacing' => $coord->spacing
                 ];
             }
+            Log::info("PDF Gen Page $page: coords loaded", ['count' => count($coords), 'tehsil_top' => $coords['tehsil_top'] ?? 'MISSING']);
             // Fill data based on page
             if ($page == 1) {
                 // Tehsil and District at top
