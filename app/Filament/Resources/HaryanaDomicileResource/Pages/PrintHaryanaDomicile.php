@@ -51,8 +51,8 @@ class PrintHaryanaDomicile extends Page
         
         // Font settings
         $fontPath = public_path('fonts/Typist.ttf');
-        $defaultFontSize = 20;
-        $boxFontSize = 18;
+        $defaultFontSize = 30;
+        $boxFontSize = 30;
         
         // Process each page (1.jpg through 4.jpg)
         for ($page = 1; $page <= 4; $page++) {
@@ -177,6 +177,7 @@ class PrintHaryanaDomicile extends Page
                 
                 // Address (Village)
                 $c = $coords['address'] ?? ['x' => 350, 'y' => 350, 'fontSize' => $defaultFontSize];
+                Log::info("Page 2 Address", ['coords' => $c, 'value' => $record->village]);
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward
@@ -220,6 +221,7 @@ class PrintHaryanaDomicile extends Page
                 
                 // Address (Village)
                 $c = $coords['address'] ?? ['x' => 400, 'y' => 300, 'fontSize' => $defaultFontSize];
+                Log::info("Page 3 Address", ['coords' => $c, 'value' => $record->village]);
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward
