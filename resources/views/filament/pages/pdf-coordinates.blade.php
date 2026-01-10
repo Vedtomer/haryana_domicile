@@ -241,8 +241,12 @@
         const container = document.getElementById('imageContainer');
         
         img.onload = function() {
-            canvas.width = img.width;
-            canvas.height = img.height;
+            // Set canvas resolution to match raw image resolution
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            // Ensure canvas CSS width matches image CSS width (responsive)
+            canvas.style.width = '100%';
+            canvas.style.height = 'auto';
             drawAllCoordinates();
         };
         
@@ -258,34 +262,15 @@
 
         function updateZoomDisplay() {
             document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
-            container.style.transform = `scale(${currentZoom})`;
             
-            // Adjust margin to handle scale growth if needed, or rely on wrapper
-            // Since transform doesn't affect flow, we might need to adjust wrapper size or use width instead.
-            // Let's use width for better flow in scroll container.
-            container.style.transform = 'none'; // Reset transform
-            container.style.width = (100 * currentZoom) + '%'; // Scale width relative to wrapper? No.
-            
-            // Better: Set explicit pixel width on IMG and Canvas if possible, or percent.
-            // Since container fits content, setting width on IMG is key.
-            // But we want to maintain the original aspect ratio and resolution.
-            // Let's us CSS transform simply.
-            container.style.transform = `scale(${currentZoom})`;
-            
-            // Fix for scrollable area: Transform doesn't trigger scroll bars on parent usually.
-            // We need to set width/height on the container to match the scaled size.
-            const scaledWidth = img.naturalWidth * (img.width / img.naturalWidth) * currentZoom; 
-            // Wait, img.width is affected by CSS width 100%.
-            
-            // Let's just set the width of the image directly in % or px.
-            container.style.transform = 'none';
+            // Apply width to image - canvas will follow via CSS width: 100%
             img.style.width = (100 * currentZoom) + '%';
-            canvas.style.width = (100 * currentZoom) + '%';
+            // We don't need to set canvas.style.width if it's 100% of container, but container is fitting content
+            // So we explicitly match the canvas style to image style?
+            // Actually, if canvas is absolute top:0 left:0 of container, and image is static...
+            // setting img width expands container. canvas width: 100% should match container.
             
-            // Force redraw to ensure canvas matching (though CSS handles visual size)
-            // canvas internal resolution should stay at natural size for best quality.
-            // Canvas width/height logic in drawAllCoordinates uses img.width (display size).
-            // We should ensure that corresponds.
+            // Force redraw not strictly needed if resolution is fixed, but good for safety
             setTimeout(drawAllCoordinates, 50);
         }
 
@@ -293,6 +278,7 @@
             currentPage = pageNum;
             document.getElementById('pageTitle').textContent = 'Page ' + pageNum;
             const pageKey = 'page' + pageNum;
+            // ... (rest is same, skipping to keep succinct if possible, but replace needs context)
             const coords = allCoords[pageKey] || {};
 
             // 1. Update Dropdown Options
@@ -316,12 +302,10 @@
             });
 
             // 3. Populate Inputs
-            // Clear all inputs first
             document.querySelectorAll('input[data-field]').forEach(input => {
-                input.value = ''; // Default empty
+                input.value = ''; 
             });
 
-            // Fill inputs with data
             Object.keys(coords).forEach(fieldName => {
                 const fieldData = coords[fieldName];
                 if (fieldData) {
@@ -334,9 +318,7 @@
                 }
             });
 
-            // Update display
             updateCurrentDisplay(fieldSelect.value);
-            // Redraw canvas
             setTimeout(drawAllCoordinates, 100); 
         }
 
@@ -381,8 +363,8 @@
         function drawAllCoordinates() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const scaleX = img.width / img.naturalWidth;
-            const scaleY = img.height / img.naturalHeight;
+            // Since we are using natural resolution canvas, we map 1:1 to image coordinates
+            // CSS handles visual scaling of both image and canvas together
             
             // Only draw visible fields for current page
             const visibleFields = pageConfig[currentPage] || [];
@@ -400,18 +382,18 @@
                 const fontSize = parseInt(fontInput ? fontInput.value : 20) || 20;
                 
                 if (x > 0 && y > 0) {
-                    ctx.font = `${fontSize * scaleY}px Arial`;
+                    ctx.font = `${fontSize}px Arial`;
                     ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
-                    ctx.fillText(sampleData[field], x * scaleX, y * scaleY);
+                    ctx.fillText(sampleData[field], x, y);
                     
                     // Draw crosshair
                     ctx.strokeStyle = 'red';
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 2;
                     ctx.beginPath();
-                    ctx.moveTo(x * scaleX - 10, y * scaleY);
-                    ctx.lineTo(x * scaleX + 10, y * scaleY);
-                    ctx.moveTo(x * scaleX, y * scaleY - 10);
-                    ctx.lineTo(x * scaleX, y * scaleY + 10);
+                    ctx.moveTo(x - 20, y);
+                    ctx.lineTo(x + 20, y);
+                    ctx.moveTo(x, y - 20);
+                    ctx.lineTo(x, y + 20);
                     ctx.stroke();
                 }
             });
@@ -424,10 +406,16 @@
                 const prop = this.getAttribute('data-prop');
                 const pageKey = 'page' + currentPage;
                 
+                // Debug logging
+                console.log(`Input Changed: Field=${field}, Prop=${prop}, PageKey=${pageKey}, Value=${this.value}`);
+                
                 if (!allCoords[pageKey]) allCoords[pageKey] = {};
                 if (!allCoords[pageKey][field]) allCoords[pageKey][field] = {};
                 
                 allCoords[pageKey][field][prop] = parseInt(this.value) || 0;
+                
+                // Debug: check if it updated
+                console.log('Updated allCoords:', allCoords[pageKey][field]);
                 
                 drawAllCoordinates();
             });
@@ -435,11 +423,86 @@
         
         function switchPage() {
             const pageNum = document.getElementById('pageSelect').value;
+            // Force currentPage to integer if needed, or keeping as string from value? 
+            // pageConfig uses integer keys 1, 2. allCoords keys are 'page1'.
+            currentPage = parseInt(pageNum); 
             document.getElementById('templateImage').src = `/FILE/${pageNum}.jpg`;
             loadPageData(pageNum);
         }
         
         async function saveAllCoordinates() {
+            // Force sync from DOM to ensure latest values are grabbed
+            // We only need to sync the CURRENT page's inputs because other pages are already in allCoords
+            // (since inputs are shared/reused, we only see current page values)
+            
+            const pageKey = 'page' + currentPage;
+            if (!allCoords[pageKey]) allCoords[pageKey] = {};
+            
+            document.querySelectorAll('input[data-field]').forEach(input => {
+                // Only capture inputs that are relevant (though hidden ones kept their values? No, inputs are reused/shared logic... wait)
+                // The Inputs have IDs like tehsil_top_x. They are NOT reused per page? 
+                // NO! The HTML loop creates inputs for EVERY field (page 1, page 2, etc).
+                // They are just hidden/shown via CSS.
+                // So we can iterate ALL inputs and update ALL coords.
+                
+                const field = input.getAttribute('data-field');
+                const prop = input.getAttribute('data-prop');
+                
+                // We need to know which page this field belongs to.
+                // We can find it by searching pageConfig.
+                // Or we can rely on existing allCoords structure?
+                // Better: Reverse lookup page from field.
+                
+                let fieldPage = null;
+                for (const [pNum, fields] of Object.entries(pageConfig)) {
+                   if (fields.find(f => f.key === field)) {
+                       fieldPage = pNum;
+                       break;
+                   }
+                }
+                
+                if (fieldPage) {
+                    const pKey = 'page' + fieldPage;
+                     if (!allCoords[pKey]) allCoords[pKey] = {};
+                     if (!allCoords[pKey][field]) allCoords[pKey][field] = {};
+                     
+                     // Only update if value is present (to avoid overwriting with empty if not loaded?)
+                     // Actually, inputs are populated on load. If we haven't switched to that page, inputs might be empty?
+                     // Verify: loadPageData *clears* inputs.
+                     // The inputs for OTHER pages are hidden.
+                     // IMPORTANT: Inputs for ALL fields exist in the DOM.
+                     // BUT `loadPageData` clears `document.querySelectorAll('input[data-field]')` at start!
+                     // This means it wipes inputs for hidden fields too!
+                     // So we can ONLY safely read inputs for the CURRENT page (visible ones).
+                     // For other pages, we must trust `allCoords` history.
+                }
+            });
+
+            // OK, so the strategy is:
+            // 1. Inputs for CURRENT page are the source of truth.
+            // 2. Inputs for OTHER pages are cleared/irrelevant in DOM.
+            // 3. Update allCoords from DOM for CURRENT PAGE only.
+            
+            const visibleFields = pageConfig[currentPage] || [];
+            visibleFields.forEach(f => {
+                const field = f.key;
+                const pKey = 'page' + currentPage;
+                
+                const xInput = document.getElementById(field + '_x');
+                const yInput = document.getElementById(field + '_y');
+                const fontInput = document.getElementById(field + '_fontSize');
+                const spacingInput = document.getElementById(field + '_spacing');
+                
+                if (!allCoords[pKey][field]) allCoords[pKey][field] = {};
+                
+                if (xInput) allCoords[pKey][field].x = parseInt(xInput.value) || 0;
+                if (yInput) allCoords[pKey][field].y = parseInt(yInput.value) || 0;
+                if (fontInput) allCoords[pKey][field].fontSize = parseInt(fontInput.value) || 20;
+                if (spacingInput) allCoords[pKey][field].spacing = parseInt(spacingInput.value) || null;
+            });
+            
+            console.log('Saving allCoords (Synced from DOM):', allCoords);
+
             try {
                 const csrfToken = '{{ csrf_token() }}';
                 const response = await fetch('/api/save-coordinates', {

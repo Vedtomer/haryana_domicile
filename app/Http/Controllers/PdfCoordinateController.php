@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\PdfCoordinate;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Log;
+
 class PdfCoordinateController extends Controller
 {
     public function index()
     {
         // Load all coordinates from database
         $dbCoords = PdfCoordinate::all();
+        // Log::info('Loading PDF Coordinates from DB', ['count' => $dbCoords->count(), 'sample' => $dbCoords->first()]);
+        
         $coords = [];
         
         // Group by page
@@ -34,13 +38,12 @@ class PdfCoordinateController extends Controller
                 $coords["page$i"] = [];
             }
         }
-        
-        return view('pdf-coordinates', ['allCoords' => $coords]);
     }
 
     public function save(Request $request)
     {
         $data = $request->all();
+        Log::info('Saving PDF Coordinates Payload', ['data_keys' => array_keys($data)]);
         
         // If data has page structure
         if (isset($data['page1']) || isset($data['page2']) || isset($data['page3']) || isset($data['page4'])) {
@@ -50,18 +53,22 @@ class PdfCoordinateController extends Controller
                 $pageNum = (int) str_replace('page', '', $pageKey);
                 
                 foreach ($fields as $fieldName => $coords) {
-                    PdfCoordinate::updateOrCreate(
-                        [
-                            'page' => $pageNum,
-                            'field_name' => $fieldName
-                        ],
-                        [
-                            'x' => $coords['x'] ?? 0,
-                            'y' => $coords['y'] ?? 0,
-                            'font_size' => $coords['fontSize'] ?? 20,
-                            'spacing' => $coords['spacing'] ?? null
-                        ]
-                    );
+                    try {
+                        PdfCoordinate::updateOrCreate(
+                            [
+                                'page' => $pageNum,
+                                'field_name' => $fieldName
+                            ],
+                            [
+                                'x' => $coords['x'] ?? 0,
+                                'y' => $coords['y'] ?? 0,
+                                'font_size' => $coords['fontSize'] ?? 20,
+                                'spacing' => $coords['spacing'] ?? null
+                            ]
+                        );
+                    } catch (\Exception $e) {
+                         Log::error("Failed to save coordinate: $pageKey . $fieldName", ['error' => $e->getMessage()]);
+                    }
                 }
             }
         }
