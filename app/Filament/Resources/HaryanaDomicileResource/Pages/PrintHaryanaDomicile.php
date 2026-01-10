@@ -50,7 +50,8 @@ class PrintHaryanaDomicile extends Page
         
         // Font settings
         $fontPath = public_path('fonts/Typist.ttf');
-        $fontSize = 16;
+        $defaultFontSize = 20;
+        $boxFontSize = 18;
         
         // Process each page (1.jpg through 4.jpg)
         for ($page = 1; $page <= 4; $page++) {
@@ -76,163 +77,163 @@ class PrintHaryanaDomicile extends Page
             // Fill data based on page
             if ($page == 1) {
                 // Tehsil and District at top
-                $c = $coords['tehsil_top'] ?? ['x' => 320, 'y' => 145, 'fontSize' => 20];
+                $c = $coords['tehsil_top'] ?? ['x' => 320, 'y' => 145, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
                 
-                $c = $coords['district_top'] ?? ['x' => 550, 'y' => 145, 'fontSize' => 20];
+                $c = $coords['district_top'] ?? ['x' => 550, 'y' => 145, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
                 
                 // Mobile number boxes
-                $c = $coords['mobile_start'] ?? ['x' => 190, 'y' => 218, 'fontSize' => 18, 'spacing' => 32];
+                $c = $coords['mobile_start'] ?? ['x' => 190, 'y' => 218, 'fontSize' => $boxFontSize, 'spacing' => 32];
                 $spacing = $c['spacing'] ?? 32;
                 $this->fillNumberBoxesOnImage($image, $c['x'], $c['y'], $record->mobile, 10, $fontPath, $c['fontSize'], $black, $spacing);
                 
                 // Aadhar number boxes
-                $c = $coords['aadhar_start'] ?? ['x' => 190, 'y' => 258, 'fontSize' => 18, 'spacing' => 32];
+                $c = $coords['aadhar_start'] ?? ['x' => 190, 'y' => 258, 'fontSize' => $boxFontSize, 'spacing' => 32];
                 $spacing = $c['spacing'] ?? 32;
                 $this->fillNumberBoxesOnImage($image, $c['x'], $c['y'], $record->aadhar, 12, $fontPath, $c['fontSize'], $black, $spacing);
                 
                 // Name
-                $c = $coords['name'] ?? ['x' => 80, 'y' => 365, 'fontSize' => 20];
+                $c = $coords['name'] ?? ['x' => 80, 'y' => 365, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
                 
                 // Father name
-                $c = $coords['father_name'] ?? ['x' => 600, 'y' => 365, 'fontSize' => 20];
+                $c = $coords['father_name'] ?? ['x' => 600, 'y' => 365, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
                 // Village
-                $c = $coords['village'] ?? ['x' => 120, 'y' => 400, 'fontSize' => 20];
+                $c = $coords['village'] ?? ['x' => 120, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward no
-                $c = $coords['ward_no'] ?? ['x' => 520, 'y' => 400, 'fontSize' => 20];
+                $c = $coords['ward_no'] ?? ['x' => 520, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no ?? '');
                 
                 // Age
-                $c = $coords['age'] ?? ['x' => 680, 'y' => 400, 'fontSize' => 20];
+                $c = $coords['age'] ?? ['x' => 680, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
                 
                 // Tehsil
-                $c = $coords['tehsil'] ?? ['x' => 280, 'y' => 435, 'fontSize' => 20];
+                $c = $coords['tehsil'] ?? ['x' => 280, 'y' => 435, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
                 
                 // District
-                $c = $coords['district'] ?? ['x' => 550, 'y' => 435, 'fontSize' => 20];
+                $c = $coords['district'] ?? ['x' => 550, 'y' => 435, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
                 
                 // Child name
-                $c = $coords['child_name'] ?? ['x' => 420, 'y' => 545, 'fontSize' => 20];
+                $c = $coords['child_name'] ?? ['x' => 420, 'y' => 545, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->child_name ?? '');
                 
                 // Document box fields
                 // Line 1 - Applicant Name (मैं .........)
-                $c = $coords['doc_applicant_name'] ?? ['x' => 230, 'y' => 1050, 'fontSize' => 16];
+                $c = $coords['doc_applicant_name'] ?? ['x' => 230, 'y' => 1050, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
                 
                 // Line 1 - Father Name (सुपुत्र/सुपुत्री/धर्मपत्नी श्री .........)
-                $c = $coords['doc_father_name'] ?? ['x' => 550, 'y' => 1050, 'fontSize' => 16];
+                $c = $coords['doc_father_name'] ?? ['x' => 550, 'y' => 1050, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
                 // Line 2 - Village (गांव/मोहल्ला .........)
-                $c = $coords['doc_village'] ?? ['x' => 230, 'y' => 1080, 'fontSize' => 16];
+                $c = $coords['doc_village'] ?? ['x' => 230, 'y' => 1080, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Line 2 - Ward Number (वार्ड नं. .........)
-                $c = $coords['doc_ward'] ?? ['x' => 750, 'y' => 1080, 'fontSize' => 16];
+                $c = $coords['doc_ward'] ?? ['x' => 750, 'y' => 1080, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no);
                 
                 // Line 3 - Tehsil (तहसील .........)
-                $c = $coords['doc_tehsil'] ?? ['x' => 230, 'y' => 1110, 'fontSize' => 16];
+                $c = $coords['doc_tehsil'] ?? ['x' => 230, 'y' => 1110, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
                 
                 // Line 3 - District (जिला .........)
-                $c = $coords['doc_district'] ?? ['x' => 550, 'y' => 1110, 'fontSize' => 16];
+                $c = $coords['doc_district'] ?? ['x' => 550, 'y' => 1110, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
             }
             
             // Fill data for Page 2
             if ($page == 2) {
                 // Name (First Name)
-                $c = $coords['name'] ?? ['x' => 300, 'y' => 250, 'fontSize' => 20];
+                $c = $coords['name'] ?? ['x' => 300, 'y' => 250, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
                 
                 // Relation Name (Father Name)
-                $c = $coords['father_name'] ?? ['x' => 800, 'y' => 250, 'fontSize' => 20];
+                $c = $coords['father_name'] ?? ['x' => 800, 'y' => 250, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
                 // Age
-                $c = $coords['age'] ?? ['x' => 380, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['age'] ?? ['x' => 380, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
                 
                 // Caste
-                $c = $coords['caste'] ?? ['x' => 600, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['caste'] ?? ['x' => 600, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->caste);
                 
                 // Religion
-                $c = $coords['religion'] ?? ['x' => 900, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['religion'] ?? ['x' => 900, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->religion ?? '');
                 
                 // Village
-                $c = $coords['village'] ?? ['x' => 350, 'y' => 350, 'fontSize' => 20];
+                $c = $coords['village'] ?? ['x' => 350, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward
-                $c = $coords['ward_no'] ?? ['x' => 680, 'y' => 350, 'fontSize' => 20];
+                $c = $coords['ward_no'] ?? ['x' => 680, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no ?? '');
                 
                 // Tehsil
-                $c = $coords['tehsil'] ?? ['x' => 950, 'y' => 350, 'fontSize' => 20];
+                $c = $coords['tehsil'] ?? ['x' => 950, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
                 
                 // District
-                $c = $coords['district'] ?? ['x' => 350, 'y' => 400, 'fontSize' => 20];
+                $c = $coords['district'] ?? ['x' => 350, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
                 
                 // Ration Card No
-                $c = $coords['ration_card_no'] ?? ['x' => 900, 'y' => 450, 'fontSize' => 20];
+                $c = $coords['ration_card_no'] ?? ['x' => 900, 'y' => 450, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ration_card_no ?? '');
                 
                 // Aadhar (Page 2)
-                $c = $coords['aadhar_2'] ?? ['x' => 500, 'y' => 500, 'fontSize' => 20];
+                $c = $coords['aadhar_2'] ?? ['x' => 500, 'y' => 500, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->aadhar);
                 
                 // Age (Page 2 - Second mention)
-                $c = $coords['age_2'] ?? ['x' => 400, 'y' => 550, 'fontSize' => 20];
+                $c = $coords['age_2'] ?? ['x' => 400, 'y' => 550, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
             }
             
             // Fill data for Page 3
             if ($page == 3) {
                 // Name
-                $c = $coords['name'] ?? ['x' => 450, 'y' => 250, 'fontSize' => 20];
+                $c = $coords['name'] ?? ['x' => 450, 'y' => 250, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
                 
                 // Relation Name (Father Name)
-                $c = $coords['father_name'] ?? ['x' => 750, 'y' => 250, 'fontSize' => 20];
+                $c = $coords['father_name'] ?? ['x' => 750, 'y' => 250, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
                 // Age
-                $c = $coords['age'] ?? ['x' => 150, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['age'] ?? ['x' => 150, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
                 
                 // Village
-                $c = $coords['village'] ?? ['x' => 400, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['village'] ?? ['x' => 400, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward
-                $c = $coords['ward_no'] ?? ['x' => 850, 'y' => 300, 'fontSize' => 20];
+                $c = $coords['ward_no'] ?? ['x' => 850, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no ?? '');
                 
                 // Tehsil
-                $c = $coords['tehsil'] ?? ['x' => 200, 'y' => 350, 'fontSize' => 20];
+                $c = $coords['tehsil'] ?? ['x' => 200, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
                 
                 // District
-                $c = $coords['district'] ?? ['x' => 450, 'y' => 350, 'fontSize' => 20];
+                $c = $coords['district'] ?? ['x' => 450, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
                 
                 // Child Name
-                $c = $coords['child_name'] ?? ['x' => 500, 'y' => 400, 'fontSize' => 20];
+                $c = $coords['child_name'] ?? ['x' => 500, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->child_name ?? '');
             }
             
