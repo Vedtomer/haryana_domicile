@@ -103,8 +103,8 @@ class PrintHaryanaDomicile extends Page
                 $c = $coords['father_name'] ?? ['x' => 600, 'y' => 365, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
-                // Village
-                $c = $coords['village'] ?? ['x' => 120, 'y' => 400, 'fontSize' => $defaultFontSize];
+                // Address (Village column)
+                $c = $coords['address'] ?? ['x' => 120, 'y' => 400, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward no
@@ -136,8 +136,8 @@ class PrintHaryanaDomicile extends Page
                 $c = $coords['doc_father_name'] ?? ['x' => 550, 'y' => 1050, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
                 
-                // Line 2 - Village (गांव/मोहल्ला .........)
-                $c = $coords['doc_village'] ?? ['x' => 230, 'y' => 1080, 'fontSize' => $boxFontSize];
+                // Line 2 - Address (गांव/मोहल्ला .........)
+                $c = $coords['doc_address'] ?? ['x' => 230, 'y' => 1080, 'fontSize' => $boxFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Line 2 - Ward Number (वार्ड नं. .........)
@@ -175,8 +175,8 @@ class PrintHaryanaDomicile extends Page
                 $c = $coords['religion'] ?? ['x' => 900, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->religion ?? '');
                 
-                // Village
-                $c = $coords['village'] ?? ['x' => 350, 'y' => 350, 'fontSize' => $defaultFontSize];
+                // Address (Village)
+                $c = $coords['address'] ?? ['x' => 350, 'y' => 350, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward
@@ -218,8 +218,8 @@ class PrintHaryanaDomicile extends Page
                 $c = $coords['age'] ?? ['x' => 150, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
                 
-                // Village
-                $c = $coords['village'] ?? ['x' => 400, 'y' => 300, 'fontSize' => $defaultFontSize];
+                // Address (Village)
+                $c = $coords['address'] ?? ['x' => 400, 'y' => 300, 'fontSize' => $defaultFontSize];
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
                 
                 // Ward

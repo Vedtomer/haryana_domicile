@@ -40,6 +40,7 @@ class HaryanaDomicileResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('village')
+                            ->label('Address')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('ward_no')
@@ -64,9 +65,19 @@ class HaryanaDomicileResource extends Resource
                         Forms\Components\TextInput::make('caste')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('religion')
+                        Forms\Components\Select::make('religion')
                             ->label('Religion (Dharam)')
-                            ->maxLength(255),
+                            ->options([
+                                'Hindu' => 'Hindu',
+                                'Muslim' => 'Muslim',
+                                'Sikh' => 'Sikh',
+                                'Christian' => 'Christian',
+                                'Jain' => 'Jain',
+                                'Buddhist' => 'Buddhist',
+                                'Zoroastrian' => 'Zoroastrian',
+                                'Other' => 'Other',
+                            ])
+                            ->searchable(),
                         Forms\Components\TextInput::make('child_name')
                             ->label('Child Name (Optional)')
                             ->maxLength(255),
@@ -86,6 +97,7 @@ class HaryanaDomicileResource extends Resource
                 Tables\Columns\TextColumn::make('mobile')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('village')
+                    ->label('Address')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('district')
                     ->searchable(),
