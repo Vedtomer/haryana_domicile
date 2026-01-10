@@ -51,6 +51,12 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->userMenuItems([
+                'pdf-coordinates' => \Filament\Navigation\MenuItem::make()
+                    ->label('PDF Coordinates')
+                    ->url(fn (): string => \App\Filament\Pages\PdfCoordinates::getUrl())
+                    ->icon('heroicon-o-cog-6-tooth'),
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ]);

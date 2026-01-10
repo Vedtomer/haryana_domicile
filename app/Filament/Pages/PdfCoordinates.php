@@ -12,6 +12,8 @@ class PdfCoordinates extends Page
     
     protected static ?string $title = 'PDF Coordinate Settings';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string $view = 'filament.pages.pdf-coordinates';
     
     public $coords = [];
