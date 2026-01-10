@@ -1,30 +1,37 @@
 <x-filament-panels::page>
     <style>
-        .coordinate-picker { display: grid; grid-template-columns: 1fr 400px; gap: 30px; margin-bottom: 30px; }
-        .image-wrapper { width: 100%; height: 600px; overflow: auto; border: 2px solid #ddd; border-radius: 8px; background: #f0f0f0; position: relative; }
+        /* Maximize workspace */
+        .fi-sidebar { display: none !important; }
+        .fi-main { margin-left: 0 !important; max-width: 100% !important; padding: 10px !important; }
+        .fi-topbar { display: none !important; } /* Optional: Hide topbar for full focus? maybe keep it for navigation back */
+        
+        .coordinate-picker { display: grid; grid-template-columns: 1fr 350px; gap: 20px; margin-bottom: 20px; height: 90vh; }
+        .image-wrapper { width: 100%; height: 100%; overflow: auto; border: 2px solid #ddd; border-radius: 8px; background: #f0f0f0; position: relative; }
         .image-container { position: relative; transform-origin: top left; transition: transform 0.2s ease; width: fit-content; }
         .image-container img { display: block; cursor: crosshair; }
         .overlay-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        .controls { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; }
-        .field-selector { margin-bottom: 20px; }
-        .field-selector select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        .coord-display { background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
-        .coord-display div { margin: 5px 0; font-family: monospace; }
-        .sample-data { background: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; }
-        .field-group { display: grid; grid-template-columns: 200px 100px 100px 100px; gap: 10px; margin-bottom: 10px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 4px; font-size: 13px; }
+        .controls { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 0; height: 100%; overflow-y: auto; }
+        
+        .field-selector { margin-bottom: 15px; }
+        .field-selector select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .coord-display { background: #f0f0f0; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px; }
+        .coord-display div { margin: 3px 0; font-family: monospace; }
+        .sample-data { background: #e3f2fd; padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 11px; }
+        .field-group { display: grid; grid-template-columns: 1fr 60px 60px 60px; gap: 5px; margin-bottom: 5px; align-items: center; padding: 5px; background: #f9f9f9; border-radius: 4px; font-size: 12px; }
         .field-group.hidden { display: none; }
-        .field-group.with-spacing { grid-template-columns: 200px 100px 100px 100px 100px; }
-        .field-group label { font-weight: bold; color: #555; }
-        .field-group input { padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
-        .btn { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 5px; }
+        .field-group.with-spacing { grid-template-columns: 1fr 60px 60px 60px 60px; }
+        .field-group label { font-weight: bold; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .field-group input { padding: 4px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px; width: 100%; }
+        
+        .btn { background: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 3px; width: 100%; }
         .btn:hover { background: #45a049; }
         .btn-test { background: #2196F3; }
         .btn-test:hover { background: #0b7dda; }
-        .btn-zoom { background: #607d8b; padding: 5px 15px; font-size: 18px; font-weight: bold; }
+        .btn-zoom { background: #607d8b; padding: 5px 15px; font-size: 18px; font-weight: bold; width: auto; }
         .btn-zoom:hover { background: #455a64; }
-        .zoom-controls { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .success { color: #4CAF50; margin-top: 10px; font-weight: bold; }
-        .instructions { background: #fff3cd; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #ffc107; }
+        .zoom-controls { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; justify-content: center; background: #eee; padding: 5px; border-radius: 4px; }
+        .success { color: #4CAF50; margin-top: 5px; font-weight: bold; text-align: center; }
+        .instructions { background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #ffc107; font-size: 13px; }
     </style>
 
     <div class="instructions">
