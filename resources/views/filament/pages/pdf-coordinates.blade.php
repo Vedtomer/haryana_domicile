@@ -148,6 +148,7 @@
         // Use Blade to inject initial data
         let allCoords = @json($allCoords);
         let currentPage = 1;
+        let currentZoom = 1;
 
         // Configuration: which fields belong to which page
         const pageConfig = {
@@ -230,6 +231,7 @@
         const canvas = document.getElementById('overlayCanvas');
         const ctx = canvas.getContext('2d');
         const fieldSelect = document.getElementById('fieldSelect');
+        const container = document.getElementById('imageContainer');
         
         img.onload = function() {
             canvas.width = img.width;
@@ -239,6 +241,46 @@
         
         // Initial load
         switchPage();
+
+        function changeZoom(delta) {
+            currentZoom += delta;
+            currentZoom = Math.min(Math.max(currentZoom, 0.2), 3);
+            currentZoom = Math.round(currentZoom * 10) / 10;
+            updateZoomDisplay();
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+            container.style.transform = `scale(${currentZoom})`;
+            
+            // Adjust margin to handle scale growth if needed, or rely on wrapper
+            // Since transform doesn't affect flow, we might need to adjust wrapper size or use width instead.
+            // Let's use width for better flow in scroll container.
+            container.style.transform = 'none'; // Reset transform
+            container.style.width = (100 * currentZoom) + '%'; // Scale width relative to wrapper? No.
+            
+            // Better: Set explicit pixel width on IMG and Canvas if possible, or percent.
+            // Since container fits content, setting width on IMG is key.
+            // But we want to maintain the original aspect ratio and resolution.
+            // Let's us CSS transform simply.
+            container.style.transform = `scale(${currentZoom})`;
+            
+            // Fix for scrollable area: Transform doesn't trigger scroll bars on parent usually.
+            // We need to set width/height on the container to match the scaled size.
+            const scaledWidth = img.naturalWidth * (img.width / img.naturalWidth) * currentZoom; 
+            // Wait, img.width is affected by CSS width 100%.
+            
+            // Let's just set the width of the image directly in % or px.
+            container.style.transform = 'none';
+            img.style.width = (100 * currentZoom) + '%';
+            canvas.style.width = (100 * currentZoom) + '%';
+            
+            // Force redraw to ensure canvas matching (though CSS handles visual size)
+            // canvas internal resolution should stay at natural size for best quality.
+            // Canvas width/height logic in drawAllCoordinates uses img.width (display size).
+            // We should ensure that corresponds.
+            setTimeout(drawAllCoordinates, 50);
+        }
 
         function loadPageData(pageNum) {
             currentPage = pageNum;
