@@ -62,10 +62,17 @@ class PrintHaryanaDomicile extends Page
             $image = imagecreatefromjpeg($imagePath);
             $black = imagecolorallocate($image, 0, 0, 0);
             
-            // Load coordinates from config file
-            $configPath = config_path('pdf_coordinates.json');
-            $coords = json_decode(file_get_contents($configPath), true)['page1'] ?? [];
-            
+            // Load coordinates from database
+            $dbCoords = \App\Models\PdfCoordinate::where('page', $page)->get();
+            $coords = [];
+            foreach ($dbCoords as $coord) {
+                $coords[$coord->field_name] = [
+                    'x' => $coord->x,
+                    'y' => $coord->y,
+                    'fontSize' => $coord->font_size,
+                    'spacing' => $coord->spacing
+                ];
+            }
             // Fill data based on page
             if ($page == 1) {
                 // Tehsil and District at top

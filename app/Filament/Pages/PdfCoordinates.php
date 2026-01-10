@@ -19,18 +19,25 @@ class PdfCoordinates extends Page
     
     public function mount(): void
     {
-        $configPath = config_path('pdf_coordinates.json');
+        // Load all coordinates from database
+        $dbCoords = \App\Models\PdfCoordinate::all();
         
-        if (file_exists($configPath)) {
-            $config = json_decode(file_get_contents($configPath), true);
-            
-            // Load all pages
-            for ($i = 1; $i <= 4; $i++) {
-                $this->allPages["page{$i}"] = $config["page{$i}"] ?? [];
-            }
-            
-            // Default to page 1 for display
-            $this->coords = $this->allPages['page1'] ?? [];
+        // Organize by pages
+        for ($i = 1; $i <= 4; $i++) {
+            $this->allPages["page{$i}"] = [];
         }
+        
+        foreach ($dbCoords as $coord) {
+            $pageKey = "page{$coord->page}";
+            $this->allPages[$pageKey][$coord->field_name] = [
+                'x' => $coord->x,
+                'y' => $coord->y,
+                'fontSize' => $coord->font_size,
+                'spacing' => $coord->spacing
+            ];
+        }
+        
+        // Default to page 1 for display
+        $this->coords = $this->allPages['page1'] ?? [];
     }
 }

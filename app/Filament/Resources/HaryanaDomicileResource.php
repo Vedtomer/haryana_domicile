@@ -96,7 +96,8 @@ class HaryanaDomicileResource extends Resource
                     ->label('Print')
                     ->icon('heroicon-o-printer')
                     ->color('success')
-                    ->url(fn (HaryanaDomicile $record): string => HaryanaDomicileResource::getUrl('print', ['record' => $record])),
+                    ->url(fn (HaryanaDomicile $record): string => HaryanaDomicileResource::getUrl('print', ['record' => $record]))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
