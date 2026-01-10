@@ -54,6 +54,11 @@ class PdfCoordinateController extends Controller
                 
                 foreach ($fields as $fieldName => $coords) {
                     try {
+                        $fontSize = $coords['fontSize'] ?? 20;
+                        if ($fieldName === 'district_top') {
+                            Log::info("Saving district_top: Incoming fontSize=" . ($coords['fontSize'] ?? 'MISSING') . ", Using=$fontSize");
+                        }
+
                         PdfCoordinate::updateOrCreate(
                             [
                                 'page' => $pageNum,
@@ -62,7 +67,7 @@ class PdfCoordinateController extends Controller
                             [
                                 'x' => $coords['x'] ?? 0,
                                 'y' => $coords['y'] ?? 0,
-                                'font_size' => $coords['fontSize'] ?? 20,
+                                'font_size' => $fontSize,
                                 'spacing' => $coords['spacing'] ?? null
                             ]
                         );
