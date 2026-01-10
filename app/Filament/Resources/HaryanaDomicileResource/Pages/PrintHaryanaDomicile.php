@@ -256,7 +256,7 @@ class PrintHaryanaDomicile extends Page
         $pdfPath = public_path('FILE_filled.pdf');
         $pdf->Output('F', $pdfPath);
         
-        return url('/FILE_filled.pdf');
+        return url('/FILE_filled.pdf') . '?t=' . time();
     }
     
     private function fillNumberBoxesOnImage($image, $startX, $y, $number, $count, $fontPath, $fontSize, $color, $spacing = 32)
