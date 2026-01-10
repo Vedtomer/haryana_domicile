@@ -4,13 +4,14 @@
         .image-container { position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: #f9f9f9; }
         .image-container img { width: 100%; height: auto; display: block; cursor: crosshair; }
         .overlay-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        .controls { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        .controls { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; }
         .field-selector { margin-bottom: 20px; }
         .field-selector select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
         .coord-display { background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
         .coord-display div { margin: 5px 0; font-family: monospace; }
         .sample-data { background: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; }
         .field-group { display: grid; grid-template-columns: 200px 100px 100px 100px; gap: 10px; margin-bottom: 10px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 4px; font-size: 13px; }
+        .field-group.hidden { display: none; }
         .field-group.with-spacing { grid-template-columns: 200px 100px 100px 100px 100px; }
         .field-group label { font-weight: bold; color: #555; }
         .field-group input { padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
@@ -23,7 +24,7 @@
     </style>
 
     <div class="instructions">
-        <strong>📍 How to use:</strong> Select a page and field, then click on the image where you want that text to appear. Sample data will show in real-time!
+        <strong>📍 How to use:</strong> Select a page and field, then click on the image. Coordinates update automatically for the selected page. Click "Save All" to save changes for ALL pages.
     </div>
 
     <div class="coordinate-picker">
@@ -44,26 +45,9 @@
             </div>
             
             <div class="field-selector">
-                <label><strong>Select Field:</strong></label>
+                <label><strong>Select Field to Edit:</strong></label>
                 <select id="fieldSelect">
-                    <option value="tehsil_top">Tehsil (Top)</option>
-                    <option value="district_top">District (Top)</option>
-                    <option value="mobile_start">Mobile Number Start</option>
-                    <option value="aadhar_start">Aadhar Number Start</option>
-                    <option value="name">Name</option>
-                    <option value="father_name">Father Name</option>
-                    <option value="village">Village</option>
-                    <option value="ward_no">Ward Number</option>
-                    <option value="age">Age</option>
-                    <option value="tehsil">Tehsil</option>
-                    <option value="district">District</option>
-                    <option value="child_name">Child Name</option>
-                    <option value="doc_applicant_name">Doc: Applicant Name (मैं)</option>
-                    <option value="doc_father_name">Doc: Father Name (श्री)</option>
-                    <option value="doc_village">Doc: Village (गांव)</option>
-                    <option value="doc_ward">Doc: Ward No (वार्ड नं)</option>
-                    <option value="doc_tehsil">Doc: Tehsil (तहसील)</option>
-                    <option value="doc_district">Doc: District (जिला)</option>
+                    <!-- Populated by JS -->
                 </select>
             </div>
             
@@ -76,42 +60,42 @@
             
             <div class="sample-data">
                 <strong>Sample Data:</strong><br>
-                Tehsil: Panipat<br>
-                District: Panipat<br>
+                Tehsil: Panipat, District: Panipat<br>
                 Name: Rajesh Kumar<br>
                 Father: Suresh Kumar<br>
-                Village: Siwah<br>
-                Ward: 9, Age: 34<br>
+                Village: Siwah, Ward: 9<br>
+                Age: 34, Caste: General<br>
+                Religion: Hindu<br>
                 Mobile: 9802244899<br>
                 Aadhar: 232312345675
             </div>
             
-            <button class="btn" onclick="saveAllCoordinates()">💾 Save All</button>
+            <button class="btn" onclick="saveAllCoordinates()">💾 Save All Pages</button>
             <button class="btn btn-test" onclick="window.open('/admin/haryana-domiciles/2/print', '_blank')">🔍 Test PDF</button>
             <div id="message"></div>
         </div>
     </div>
 
-    <h3 style="margin-top: 30px;">All Coordinates</h3>
+    <h3 style="margin-top: 30px;">All Coordinates (<span id="pageTitle">Page 1</span>)</h3>
     <form id="coordForm">
         @csrf
         
         {{-- Mobile Start with Spacing --}}
-        <div class="field-group with-spacing">
+        <div class="field-group with-spacing" data-field-group="mobile_start">
             <label>Mobile Start</label>
-            <input type="number" name="mobile_start_x" id="mobile_start_x" value="{{ $coords['mobile_start']['x'] ?? 0 }}" placeholder="X">
-            <input type="number" name="mobile_start_y" id="mobile_start_y" value="{{ $coords['mobile_start']['y'] ?? 0 }}" placeholder="Y">
-            <input type="number" name="mobile_start_fontSize" id="mobile_start_fontSize" value="{{ $coords['mobile_start']['fontSize'] ?? 18 }}" placeholder="Size">
-            <input type="number" name="mobile_start_spacing" id="mobile_start_spacing" value="{{ $coords['mobile_start']['spacing'] ?? 32 }}" placeholder="Spacing">
+            <input type="number" data-field="mobile_start" data-prop="x" id="mobile_start_x" placeholder="X">
+            <input type="number" data-field="mobile_start" data-prop="y" id="mobile_start_y" placeholder="Y">
+            <input type="number" data-field="mobile_start" data-prop="fontSize" id="mobile_start_fontSize" placeholder="Size">
+            <input type="number" data-field="mobile_start" data-prop="spacing" id="mobile_start_spacing" placeholder="Spacing">
         </div>
         
         {{-- Aadhar Start with Spacing --}}
-        <div class="field-group with-spacing">
+        <div class="field-group with-spacing" data-field-group="aadhar_start">
             <label>Aadhar Start</label>
-            <input type="number" name="aadhar_start_x" id="aadhar_start_x" value="{{ $coords['aadhar_start']['x'] ?? 0 }}" placeholder="X">
-            <input type="number" name="aadhar_start_y" id="aadhar_start_y" value="{{ $coords['aadhar_start']['y'] ?? 0 }}" placeholder="Y">
-            <input type="number" name="aadhar_start_fontSize" id="aadhar_start_fontSize" value="{{ $coords['aadhar_start']['fontSize'] ?? 18 }}" placeholder="Size">
-            <input type="number" name="aadhar_start_spacing" id="aadhar_start_spacing" value="{{ $coords['aadhar_start']['spacing'] ?? 32 }}" placeholder="Spacing">
+            <input type="number" data-field="aadhar_start" data-prop="x" id="aadhar_start_x" placeholder="X">
+            <input type="number" data-field="aadhar_start" data-prop="y" id="aadhar_start_y" placeholder="Y">
+            <input type="number" data-field="aadhar_start" data-prop="fontSize" id="aadhar_start_fontSize" placeholder="Size">
+            <input type="number" data-field="aadhar_start" data-prop="spacing" id="aadhar_start_spacing" placeholder="Spacing">
         </div>
         
         @foreach([
@@ -122,6 +106,8 @@
             'village' => 'Village',
             'ward_no' => 'Ward No',
             'age' => 'Age',
+            'caste' => 'Caste',
+            'religion' => 'Religion',
             'tehsil' => 'Tehsil',
             'district' => 'District',
             'child_name' => 'Child Name',
@@ -130,18 +116,76 @@
             'doc_village' => 'Doc: Village (गांव)',
             'doc_ward' => 'Doc: Ward No (वार्ड नं)',
             'doc_tehsil' => 'Doc: Tehsil (तहसील)',
-            'doc_district' => 'Doc: District (जिला)'
+            'doc_district' => 'Doc: District (जिला)',
+            'ration_card_no' => 'Ration Card No',
+            'aadhar_2' => 'Aadhar No (Page 2)',
+            'age_2' => 'Age (Page 2 Second)'
         ] as $key => $label)
-        <div class="field-group">
+        <div class="field-group" data-field-group="{{ $key }}">
             <label>{{ $label }}</label>
-            <input type="number" name="{{ $key }}_x" id="{{ $key }}_x" value="{{ $coords[$key]['x'] ?? 0 }}" placeholder="X">
-            <input type="number" name="{{ $key }}_y" id="{{ $key }}_y" value="{{ $coords[$key]['y'] ?? 0 }}" placeholder="Y">
-            <input type="number" name="{{ $key }}_fontSize" id="{{ $key }}_fontSize" value="{{ $coords[$key]['fontSize'] ?? 20 }}" placeholder="Size">
+            <input type="number" data-field="{{ $key }}" data-prop="x" id="{{ $key }}_x" placeholder="X">
+            <input type="number" data-field="{{ $key }}" data-prop="y" id="{{ $key }}_y" placeholder="Y">
+            <input type="number" data-field="{{ $key }}" data-prop="fontSize" id="{{ $key }}_fontSize" placeholder="Size">
         </div>
         @endforeach
     </form>
     
     <script>
+        // Use Blade to inject initial data
+        let allCoords = @json($allCoords);
+        let currentPage = 1;
+
+        // Configuration: which fields belong to which page
+        const pageConfig = {
+            1: [
+                { key: 'tehsil_top', label: 'Tehsil (Top)' },
+                { key: 'district_top', label: 'District (Top)' },
+                { key: 'mobile_start', label: 'Mobile Number Start' },
+                { key: 'aadhar_start', label: 'Aadhar Number Start' },
+                { key: 'name', label: 'Name' },
+                { key: 'father_name', label: 'Father Name' },
+                { key: 'village', label: 'Village' },
+                { key: 'ward_no', label: 'Ward No' },
+                { key: 'age', label: 'Age' },
+                { key: 'tehsil', label: 'Tehsil' },
+                { key: 'district', label: 'District' },
+                { key: 'child_name', label: 'Child Name' },
+                { key: 'doc_applicant_name', label: 'Doc: Applicant Name' },
+                { key: 'doc_father_name', label: 'Doc: Father Name' },
+                { key: 'doc_village', label: 'Doc: Village' },
+                { key: 'doc_ward', label: 'Doc: Ward No' },
+                { key: 'doc_tehsil', label: 'Doc: Tehsil' },
+                { key: 'doc_district', label: 'Doc: District' }
+            ],
+            2: [
+                { key: 'name', label: '1. Name (First Name)' },
+                { key: 'father_name', label: '2. Relation Name (Father)' },
+                { key: 'age', label: '3. Age' },
+                { key: 'caste', label: '4. Caste' },
+                { key: 'religion', label: '5. Religion (Dharam)' },
+                { key: 'village', label: '6. Village' },
+                { key: 'ward_no', label: '7. Ward' },
+                { key: 'tehsil', label: '8. Tehsil' },
+                { key: 'district', label: '9. District' },
+                { key: 'ration_card_no', label: '10. Ration Card Number' },
+                { key: 'aadhar_2', label: '11. Aadhar Number' },
+                { key: 'age_2', label: '12. Age (Second Mention)' }
+            ],
+            3: [
+                { key: 'name', label: '1. Name' },
+                { key: 'father_name', label: '2. Relation Name' },
+                { key: 'age', label: '3. Age' },
+                { key: 'village', label: '4. Village' },
+                { key: 'ward_no', label: '5. Ward' },
+                { key: 'tehsil', label: '6. Tehsil' },
+                { key: 'district', label: '7. District' },
+                { key: 'child_name', label: '8. Child Name' }
+            ],
+            4: [
+                 // Add fields for Page 4 if needed
+            ]
+        };
+
         const sampleData = {
             tehsil_top: 'Panipat',
             district_top: 'Panipat',
@@ -152,6 +196,8 @@
             village: 'Siwah',
             ward_no: '9',
             age: '34',
+            caste: 'General',
+            religion: 'Hindu',
             tehsil: 'Panipat',
             district: 'Panipat',
             child_name: 'Amit Kumar',
@@ -160,7 +206,10 @@
             doc_village: 'Siwah',
             doc_ward: '9',
             doc_tehsil: 'Panipat',
-            doc_district: 'Panipat'
+            doc_district: 'Panipat',
+            ration_card_no: '066010398807',
+            aadhar_2: '2323 1234 5675',
+            age_2: '34'
         };
         
         const img = document.getElementById('templateImage');
@@ -174,6 +223,60 @@
             drawAllCoordinates();
         };
         
+        // Initial load
+        switchPage();
+
+        function loadPageData(pageNum) {
+            currentPage = pageNum;
+            document.getElementById('pageTitle').textContent = 'Page ' + pageNum;
+            const pageKey = 'page' + pageNum;
+            const coords = allCoords[pageKey] || {};
+
+            // 1. Update Dropdown Options
+            const fields = pageConfig[pageNum] || [];
+            fieldSelect.innerHTML = '';
+            fields.forEach(f => {
+                const option = document.createElement('option');
+                option.value = f.key;
+                option.textContent = f.label;
+                fieldSelect.appendChild(option);
+            });
+
+            // 2. Show/Hide Input Groups
+            document.querySelectorAll('.field-group').forEach(group => {
+                group.classList.add('hidden');
+            });
+            
+            fields.forEach(f => {
+                const group = document.querySelector(`.field-group[data-field-group="${f.key}"]`);
+                if (group) group.classList.remove('hidden');
+            });
+
+            // 3. Populate Inputs
+            // Clear all inputs first
+            document.querySelectorAll('input[data-field]').forEach(input => {
+                input.value = ''; // Default empty
+            });
+
+            // Fill inputs with data
+            Object.keys(coords).forEach(fieldName => {
+                const fieldData = coords[fieldName];
+                if (fieldData) {
+                    if (document.getElementById(fieldName + '_x')) document.getElementById(fieldName + '_x').value = fieldData.x;
+                    if (document.getElementById(fieldName + '_y')) document.getElementById(fieldName + '_y').value = fieldData.y;
+                    if (document.getElementById(fieldName + '_fontSize')) document.getElementById(fieldName + '_fontSize').value = fieldData.fontSize;
+                    if (fieldData.spacing && document.getElementById(fieldName + '_spacing')) {
+                        document.getElementById(fieldName + '_spacing').value = fieldData.spacing;
+                    }
+                }
+            });
+
+            // Update display
+            updateCurrentDisplay(fieldSelect.value);
+            // Redraw canvas
+            setTimeout(drawAllCoordinates, 100); 
+        }
+
         img.addEventListener('click', function(e) {
             const rect = img.getBoundingClientRect();
             const scaleX = img.naturalWidth / img.width;
@@ -182,8 +285,17 @@
             const y = Math.round((e.clientY - rect.top) * scaleY);
             
             const field = fieldSelect.value;
-            document.getElementById(field + '_x').value = x;
-            document.getElementById(field + '_y').value = y;
+            // Update inputs
+            const xInput = document.getElementById(field + '_x');
+            const yInput = document.getElementById(field + '_y');
+            
+            if (xInput && yInput) {
+                xInput.value = x;
+                yInput.value = y;
+                
+                // Trigger input event to update state
+                xInput.dispatchEvent(new Event('input'));
+            }
             
             updateCurrentDisplay(field);
             drawAllCoordinates();
@@ -194,9 +306,13 @@
         });
         
         function updateCurrentDisplay(field) {
-            document.getElementById('currentX').textContent = document.getElementById(field + '_x').value;
-            document.getElementById('currentY').textContent = document.getElementById(field + '_y').value;
-            document.getElementById('currentFont').textContent = document.getElementById(field + '_fontSize').value;
+            const xInput = document.getElementById(field + '_x');
+            const yInput = document.getElementById(field + '_y');
+            const fontInput = document.getElementById(field + '_fontSize');
+
+            document.getElementById('currentX').textContent = xInput ? xInput.value : '-';
+            document.getElementById('currentY').textContent = yInput ? yInput.value : '-';
+            document.getElementById('currentFont').textContent = fontInput ? fontInput.value : '-';
         }
         
         function drawAllCoordinates() {
@@ -205,10 +321,20 @@
             const scaleX = img.width / img.naturalWidth;
             const scaleY = img.height / img.naturalHeight;
             
-            Object.keys(sampleData).forEach(field => {
-                const x = parseInt(document.getElementById(field + '_x').value) || 0;
-                const y = parseInt(document.getElementById(field + '_y').value) || 0;
-                const fontSize = parseInt(document.getElementById(field + '_fontSize').value) || 20;
+            // Only draw visible fields for current page
+            const visibleFields = pageConfig[currentPage] || [];
+            
+            visibleFields.forEach(f => {
+                const field = f.key;
+                const xInput = document.getElementById(field + '_x');
+                const yInput = document.getElementById(field + '_y');
+                const fontInput = document.getElementById(field + '_fontSize');
+                
+                if (!xInput || !yInput) return;
+
+                const x = parseInt(xInput.value) || 0;
+                const y = parseInt(yInput.value) || 0;
+                const fontSize = parseInt(fontInput ? fontInput.value : 20) || 20;
                 
                 if (x > 0 && y > 0) {
                     ctx.font = `${fontSize * scaleY}px Arial`;
@@ -228,47 +354,29 @@
             });
         }
         
-        // Redraw when inputs change
+        // Listen to input changes to update local state and redraw
         document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', drawAllCoordinates);
+            input.addEventListener('input', function() {
+                const field = this.getAttribute('data-field');
+                const prop = this.getAttribute('data-prop');
+                const pageKey = 'page' + currentPage;
+                
+                if (!allCoords[pageKey]) allCoords[pageKey] = {};
+                if (!allCoords[pageKey][field]) allCoords[pageKey][field] = {};
+                
+                allCoords[pageKey][field][prop] = parseInt(this.value) || 0;
+                
+                drawAllCoordinates();
+            });
         });
         
         function switchPage() {
             const pageNum = document.getElementById('pageSelect').value;
-            // Change the template image
             document.getElementById('templateImage').src = `/FILE/${pageNum}.jpg`;
-            // Redraw coordinates for new page
-            setTimeout(() => drawAllCoordinates(), 100);
+            loadPageData(pageNum);
         }
         
         async function saveAllCoordinates() {
-            const formData = new FormData(document.getElementById('coordForm'));
-            const data = Object.fromEntries(formData);
-            
-            // Organize data by pages
-            const pageData = {
-                page1: {},
-                page2: {},
-                page3: {},
-                page4: {}
-            };
-            
-            // Group coordinates by field
-            const fields = {};
-            for (const [key, value] of Object.entries(data)) {
-                const parts = key.split('_');
-                const property = parts.pop(); // x, y, fontSize, or spacing
-                const fieldName = parts.join('_');
-                
-                if (!fields[fieldName]) {
-                    fields[fieldName] = {};
-                }
-                fields[fieldName][property] = parseInt(value);
-            }
-            
-            // For now, save all fields to page1 (you can extend this to support multiple pages)
-            pageData.page1 = fields;
-            
             try {
                 const csrfToken = '{{ csrf_token() }}';
                 const response = await fetch('/api/save-coordinates', {
@@ -277,11 +385,11 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken
                     },
-                    body: JSON.stringify(pageData)
+                    body: JSON.stringify(allCoords)
                 });
                 
                 if (response.ok) {
-                    document.getElementById('message').innerHTML = '<p class="success">✓ Saved!</p>';
+                    document.getElementById('message').innerHTML = '<p class="success">✓ Saved all pages!</p>';
                     setTimeout(() => document.getElementById('message').innerHTML = '', 2000);
                 } else {
                     document.getElementById('message').innerHTML = '<p style="color:red">✗ Error</p>';
@@ -290,8 +398,5 @@
                 document.getElementById('message').innerHTML = '<p style="color:red">✗ ' + error.message + '</p>';
             }
         }
-        
-        // Initialize
-        updateCurrentDisplay(fieldSelect.value);
     </script>
 </x-filament-panels::page>

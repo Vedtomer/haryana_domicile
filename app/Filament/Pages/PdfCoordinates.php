@@ -17,7 +17,7 @@ class PdfCoordinates extends Page
     protected static string $view = 'filament.pages.pdf-coordinates';
     
     public $coords = [];
-    public $allPages = [];
+    public $allCoords = [];
     
     public function mount(): void
     {
@@ -26,12 +26,12 @@ class PdfCoordinates extends Page
         
         // Organize by pages
         for ($i = 1; $i <= 4; $i++) {
-            $this->allPages["page{$i}"] = [];
+            $this->allCoords["page{$i}"] = [];
         }
         
         foreach ($dbCoords as $coord) {
             $pageKey = "page{$coord->page}";
-            $this->allPages[$pageKey][$coord->field_name] = [
+            $this->allCoords[$pageKey][$coord->field_name] = [
                 'x' => $coord->x,
                 'y' => $coord->y,
                 'fontSize' => $coord->font_size,
@@ -40,6 +40,6 @@ class PdfCoordinates extends Page
         }
         
         // Default to page 1 for display
-        $this->coords = $this->allPages['page1'] ?? [];
+        $this->coords = $this->allCoords['page1'] ?? [];
     }
 }

@@ -9,12 +9,18 @@ class PdfCoordinateController extends Controller
 {
     public function index()
     {
-        // Load coordinates from database
-        $dbCoords = PdfCoordinate::where('page', 1)->get();
+        // Load all coordinates from database
+        $dbCoords = PdfCoordinate::all();
         $coords = [];
         
+        // Group by page
         foreach ($dbCoords as $coord) {
-            $coords[$coord->field_name] = [
+            $pageKey = 'page' . $coord->page;
+            if (!isset($coords[$pageKey])) {
+                $coords[$pageKey] = [];
+            }
+            
+            $coords[$pageKey][$coord->field_name] = [
                 'x' => $coord->x,
                 'y' => $coord->y,
                 'fontSize' => $coord->font_size,
@@ -22,7 +28,14 @@ class PdfCoordinateController extends Controller
             ];
         }
         
-        return view('pdf-coordinates', ['coords' => $coords]);
+        // Ensure all pages exist
+        for ($i = 1; $i <= 4; $i++) {
+            if (!isset($coords["page$i"])) {
+                $coords["page$i"] = [];
+            }
+        }
+        
+        return view('pdf-coordinates', ['allCoords' => $coords]);
     }
 
     public function save(Request $request)

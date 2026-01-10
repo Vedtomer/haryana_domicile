@@ -20,6 +20,8 @@ class HaryanaDomicile extends Model
         'mobile',
         'aadhar',
         'caste',
+        'religion',
+        'ration_card_no',
         'child_name',
     ];
     //

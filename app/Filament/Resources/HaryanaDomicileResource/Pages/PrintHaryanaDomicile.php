@@ -150,6 +150,92 @@ class PrintHaryanaDomicile extends Page
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
             }
             
+            // Fill data for Page 2
+            if ($page == 2) {
+                // Name (First Name)
+                $c = $coords['name'] ?? ['x' => 300, 'y' => 250, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
+                
+                // Relation Name (Father Name)
+                $c = $coords['father_name'] ?? ['x' => 800, 'y' => 250, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
+                
+                // Age
+                $c = $coords['age'] ?? ['x' => 380, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
+                
+                // Caste
+                $c = $coords['caste'] ?? ['x' => 600, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->caste);
+                
+                // Religion
+                $c = $coords['religion'] ?? ['x' => 900, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->religion ?? '');
+                
+                // Village
+                $c = $coords['village'] ?? ['x' => 350, 'y' => 350, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
+                
+                // Ward
+                $c = $coords['ward_no'] ?? ['x' => 680, 'y' => 350, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no ?? '');
+                
+                // Tehsil
+                $c = $coords['tehsil'] ?? ['x' => 950, 'y' => 350, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
+                
+                // District
+                $c = $coords['district'] ?? ['x' => 350, 'y' => 400, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
+                
+                // Ration Card No
+                $c = $coords['ration_card_no'] ?? ['x' => 900, 'y' => 450, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ration_card_no ?? '');
+                
+                // Aadhar (Page 2)
+                $c = $coords['aadhar_2'] ?? ['x' => 500, 'y' => 500, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->aadhar);
+                
+                // Age (Page 2 - Second mention)
+                $c = $coords['age_2'] ?? ['x' => 400, 'y' => 550, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
+            }
+            
+            // Fill data for Page 3
+            if ($page == 3) {
+                // Name
+                $c = $coords['name'] ?? ['x' => 450, 'y' => 250, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
+                
+                // Relation Name (Father Name)
+                $c = $coords['father_name'] ?? ['x' => 750, 'y' => 250, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->father_name);
+                
+                // Age
+                $c = $coords['age'] ?? ['x' => 150, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->age);
+                
+                // Village
+                $c = $coords['village'] ?? ['x' => 400, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->village);
+                
+                // Ward
+                $c = $coords['ward_no'] ?? ['x' => 850, 'y' => 300, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->ward_no ?? '');
+                
+                // Tehsil
+                $c = $coords['tehsil'] ?? ['x' => 200, 'y' => 350, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->tehsil);
+                
+                // District
+                $c = $coords['district'] ?? ['x' => 450, 'y' => 350, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
+                
+                // Child Name
+                $c = $coords['child_name'] ?? ['x' => 500, 'y' => 400, 'fontSize' => 20];
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->child_name ?? '');
+            }
+            
             // Save filled image
             $outputPath = public_path("FILE_filled_{$page}.jpg");
             imagejpeg($image, $outputPath, 95);

@@ -58,8 +58,14 @@ class HaryanaDomicileResource extends Resource
                             ->numeric()
                             ->maxLength(12)
                             ->minLength(12),
+                        Forms\Components\TextInput::make('ration_card_no')
+                            ->label('Ration Card No.')
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('caste')
                             ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('religion')
+                            ->label('Religion (Dharam)')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('child_name')
                             ->label('Child Name (Optional)')
