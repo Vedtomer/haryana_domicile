@@ -1,169 +1,282 @@
 <x-filament-panels::page>
     <style>
-        /* Maximize workspace */
-        .fi-sidebar { display: none !important; }
-        .fi-main { margin-left: 0 !important; max-width: 100% !important; padding: 10px !important; }
-        .fi-topbar { display: none !important; } /* Optional: Hide topbar for full focus? maybe keep it for navigation back */
+        /* Modern & Clean Design */
+        .fi-sidebar, .fi-topbar { display: none !important; }
+        .fi-main { margin: 0 !important; max-width: 100% !important; padding: 0 20px 20px 20px !important; background: #f9fafb; }
         
-        .coordinate-picker { display: grid; grid-template-columns: 1fr 350px; gap: 20px; margin-bottom: 20px; height: 90vh; }
-        .image-wrapper { width: 100%; height: 100%; overflow: auto; border: 2px solid #ddd; border-radius: 8px; background: #f0f0f0; position: relative; }
-        .image-container { position: relative; transform-origin: top left; transition: transform 0.2s ease; width: fit-content; }
-        .image-container img { display: block; cursor: crosshair; }
-        .overlay-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        .controls { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 0; height: 100%; overflow-y: auto; }
+        .main-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 40px);
+            align-items: flex-start;
+        }
+
+        /* Left: Form Area */
+        .form-section {
+            flex: 0 0 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
         
-        .field-selector { margin-bottom: 15px; }
-        .field-selector select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        .coord-display { background: #f0f0f0; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px; }
-        .coord-display div { margin: 3px 0; font-family: monospace; }
-        .sample-data { background: #e3f2fd; padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 11px; }
-        .field-group { display: grid; grid-template-columns: 1fr 60px 60px 60px; gap: 5px; margin-bottom: 5px; align-items: center; padding: 5px; background: #f9f9f9; border-radius: 4px; font-size: 12px; }
-        .field-group.hidden { display: none; }
-        .field-group.with-spacing { grid-template-columns: 1fr 60px 60px 60px 60px; }
-        .field-group label { font-weight: bold; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .field-group input { padding: 4px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px; width: 100%; }
+        .form-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
         
-        .btn { background: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 3px; width: 100%; }
-        .btn:hover { background: #45a049; }
-        .btn-test { background: #2196F3; }
-        .btn-test:hover { background: #0b7dda; }
-        .btn-zoom { background: #607d8b; padding: 5px 15px; font-size: 18px; font-weight: bold; width: auto; }
-        .btn-zoom:hover { background: #455a64; }
-        .zoom-controls { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; justify-content: center; background: #eee; padding: 5px; border-radius: 4px; }
-        .success { color: #4CAF50; margin-top: 5px; font-weight: bold; text-align: center; }
-        .instructions { background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #ffc107; font-size: 13px; }
+        .form-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Right: Image Preview */
+        .preview-section {
+            flex: 1;
+            background: #e5e7eb;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            height: 100%;
+            overflow: auto; /* Enable scrolling */
+            position: relative;
+            padding: 20px;
+        }
+        
+        .image-container {
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        .image-container img { 
+            display: block; 
+            width: 100%; 
+            height: auto; 
+            cursor: crosshair; 
+        }
+        
+        .overlay-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Form Elements */
+        .field-group {
+            display: grid;
+            grid-template-columns: 1fr 70px 70px; /* Label | X | Y */
+            gap: 8px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s;
+        }
+        .field-group:hover, .field-group.active { background: #eff6ff; }
+        .field-group:last-child { border-bottom: none; }
+        
+        .field-group label { 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: #374151; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        
+        .input-wrap { position: relative; }
+        .input-wrap input {
+            width: 100%;
+            padding: 6px 6px 6px 20px; /* Space for label */
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: right;
+            transition: border-color 0.15s;
+        }
+        .input-wrap input:focus { border-color: #3b82f6; outline: none; ring: 2px solid #bfdbfe; }
+        .input-label {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: #9ca3af;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            font-weight: 700;
+            margin: 20px 0 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .controls-bar {
+            background: white;
+            padding: 10px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn {
+            background: #0f172a; 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            border: none; 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #1e293b; transform: translateY(-1px); }
+        .btn-green { background: #10b981; }
+        .btn-green:hover { background: #059669; }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 10px 12px;
+            padding-right: 30px; /* Space for arrow */
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.875rem;
+            background-color: white;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            margin-bottom: 12px;
+            color: #1f2937;
+            height: auto;
+        }
+        select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        
+        .floating-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
     </style>
 
-    <div class="instructions">
-        <strong>📍 How to use:</strong> Select a page and field, then click on the image. Coordinates update automatically. <br>
-        <strong>🔍 Zoom:</strong> Use the buttons to zoom in/out for precise placement. Scroll to pan around.
-    </div>
+    <div class="main-layout">
+        <!-- Sidebar Controls -->
+        <div class="form-section">
+            <div class="form-header">
+                <select id="pageSelect" onchange="switchPage()">
+                    <option value="1">Page 1: Personal Info</option>
+                    <option value="2">Page 2: Declaration</option>
+                    <option value="3">Page 3: Patwari Report</option>
+                    <option value="4">Page 4: Tehsildar Report</option>
+                </select>
+                
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="fieldSelect" style="margin-bottom:0">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
 
-    <div class="coordinate-picker">
-        <div class="image-wrapper">
+            <div class="form-content">
+                <form id="coordForm">
+                @csrf
+                
+                <h4 class="section-title">Special Fields</h4>
+                <div class="field-group" data-field-group="mobile_start">
+                    <label>Mobile</label>
+                    <div class="input-wrap"><span class="input-label">X</span><input type="number" data-field="mobile_start" data-prop="x" id="mobile_start_x"></div>
+                    <div class="input-wrap"><span class="input-label">Y</span><input type="number" data-field="mobile_start" data-prop="y" id="mobile_start_y"></div>
+                </div>
+                <div class="field-group" data-field-group="aadhar_start">
+                    <label>Aadhar</label>
+                    <div class="input-wrap"><span class="input-label">X</span><input type="number" data-field="aadhar_start" data-prop="x" id="aadhar_start_x"></div>
+                    <div class="input-wrap"><span class="input-label">Y</span><input type="number" data-field="aadhar_start" data-prop="y" id="aadhar_start_y"></div>
+                </div>
+
+                <h4 class="section-title">Standard Fields</h4>
+                @foreach([
+                    'tehsil_top' => 'Tehsil (Top)',
+                    'district_top' => 'District (Top)',
+                    'name' => 'Name',
+                    'father_name' => 'Father Name',
+                    'address' => 'Address',
+                    'ward_no' => 'Ward No',
+                    'age' => 'Age',
+                    'caste' => 'Caste',
+                    'religion' => 'Religion',
+                    'tehsil' => 'Tehsil',
+                    'district' => 'District',
+                    'child_name' => 'Child Name',
+                    'doc_applicant_name' => 'Doc: Applicant',
+                    'doc_father_name' => 'Doc: Father',
+                    'doc_address' => 'Doc: Address',
+                    'doc_ward' => 'Doc: Ward',
+                    'doc_tehsil' => 'Doc: Tehsil',
+                    'doc_district' => 'Doc: District',
+                    'ration_card_no' => 'Ration Card',
+                    'aadhar_2' => 'Aadhar (Pg2)',
+                    'age_2' => 'Age (Pg2)'
+                ] as $key => $label)
+                <div class="field-group" data-field-group="{{ $key }}">
+                    <label>{{ $label }}</label>
+                    <div class="input-wrap"><span class="input-label">X</span><input type="number" data-field="{{ $key }}" data-prop="x" id="{{ $key }}_x"></div>
+                    <div class="input-wrap"><span class="input-label">Y</span><input type="number" data-field="{{ $key }}" data-prop="y" id="{{ $key }}_y"></div>
+                </div>
+                @endforeach
+                </form>
+            </div>
+
+            <div class="controls-bar">
+                <button class="btn btn-green" onclick="saveAllCoordinates()">💾 Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Preview Area -->
+        <div class="preview-section">
+            <div id="statusMessage" class="floating-status">Updated</div>
             <div id="imageContainer" class="image-container">
                 <img id="templateImage" src="/FILE/1.jpg?t={{ time() }}" alt="Template">
                 <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
             </div>
         </div>
-        
-        <div class="controls">
-            <div class="zoom-controls">
-                <strong>Zoom:</strong>
-                <button class="btn btn-zoom" onclick="changeZoom(-0.2)">-</button>
-                <span id="zoomLevel">100%</span>
-                <button class="btn btn-zoom" onclick="changeZoom(0.2)">+</button>
-            </div>
-
-            <div class="field-selector" style="background: #e8f5e9; padding: 10px; border-radius: 4px; border: 1px solid #c8e6c9;">
-                <label><strong>Global Font Size:</strong></label>
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" id="globalFontSize" value="20" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 80px;">
-                    <button class="btn" onclick="applyGlobalFontSize()" style="margin: 0; padding: 5px 10px;">Apply to All</button>
-                </div>
-            </div>
-
-            <div class="field-selector">
-                <label><strong>Select Page:</strong></label>
-                <select id="pageSelect" onchange="switchPage()">
-                    <option value="1">Page 1</option>
-                    <option value="2">Page 2</option>
-                    <option value="3">Page 3</option>
-                    <option value="4">Page 4</option>
-                </select>
-            </div>
-            
-            <div class="field-selector">
-                <label><strong>Select Field to Edit:</strong></label>
-                <select id="fieldSelect">
-                    <!-- Populated by JS -->
-                </select>
-            </div>
-            
-            <div class="coord-display">
-                <div><strong>Current Coordinates:</strong></div>
-                <div>X: <span id="currentX">-</span></div>
-                <div>Y: <span id="currentY">-</span></div>
-                <div>Font Size: <span id="currentFont">-</span></div>
-            </div>
-            
-            <div class="sample-data">
-                <strong>Sample Data:</strong><br>
-                Tehsil: Panipat, District: Panipat<br>
-                Name: Rajesh Kumar<br>
-                Father: Suresh Kumar<br>
-                Village: Siwah, Ward: 9<br>
-                Age: 34, Caste: General<br>
-                Religion: Hindu<br>
-                Mobile: 9802244899<br>
-                Aadhar: 232312345675
-            </div>
-            
-            <button class="btn" onclick="saveAllCoordinates()">💾 Save All Pages</button>
-            <button class="btn btn-test" onclick="window.open('/admin/haryana-domiciles/2/print', '_blank')">🔍 Test PDF</button>
-            <div id="message"></div>
-        </div>
     </div>
-
-    <h3 style="margin-top: 30px;">All Coordinates (<span id="pageTitle">Page 1</span>)</h3>
-    <form id="coordForm">
-        @csrf
-        
-        {{-- Mobile Start with Spacing --}}
-        <div class="field-group with-spacing" data-field-group="mobile_start">
-            <label>Mobile Start</label>
-            <input type="number" data-field="mobile_start" data-prop="x" id="mobile_start_x" placeholder="X">
-            <input type="number" data-field="mobile_start" data-prop="y" id="mobile_start_y" placeholder="Y">
-            <input type="number" data-field="mobile_start" data-prop="fontSize" id="mobile_start_fontSize" placeholder="Size">
-            <input type="number" data-field="mobile_start" data-prop="spacing" id="mobile_start_spacing" placeholder="Spacing">
-        </div>
-        
-        {{-- Aadhar Start with Spacing --}}
-        <div class="field-group with-spacing" data-field-group="aadhar_start">
-            <label>Aadhar Start</label>
-            <input type="number" data-field="aadhar_start" data-prop="x" id="aadhar_start_x" placeholder="X">
-            <input type="number" data-field="aadhar_start" data-prop="y" id="aadhar_start_y" placeholder="Y">
-            <input type="number" data-field="aadhar_start" data-prop="fontSize" id="aadhar_start_fontSize" placeholder="Size">
-            <input type="number" data-field="aadhar_start" data-prop="spacing" id="aadhar_start_spacing" placeholder="Spacing">
-        </div>
-        
-        @foreach([
-            'tehsil_top' => 'Tehsil (Top)',
-            'district_top' => 'District (Top)',
-            'name' => 'Name',
-            'father_name' => 'Father Name',
-            'address' => 'Address',
-            'ward_no' => 'Ward No',
-            'age' => 'Age',
-            'caste' => 'Caste',
-            'religion' => 'Religion',
-            'tehsil' => 'Tehsil',
-            'district' => 'District',
-            'child_name' => 'Child Name',
-            'doc_applicant_name' => 'Doc: Applicant Name (मैं)',
-            'doc_father_name' => 'Doc: Father Name (श्री)',
-            'doc_address' => 'Doc: Address (गांव)',
-            'doc_ward' => 'Doc: Ward No (वार्ड नं)',
-            'doc_tehsil' => 'Doc: Tehsil (तहसील)',
-            'doc_district' => 'Doc: District (जिला)',
-            'ration_card_no' => 'Ration Card No',
-            'aadhar_2' => 'Aadhar No (Page 2)',
-            'age_2' => 'Age (Page 2 Second)'
-        ] as $key => $label)
-        <div class="field-group" data-field-group="{{ $key }}">
-            <label>{{ $label }}</label>
-            <input type="number" data-field="{{ $key }}" data-prop="x" id="{{ $key }}_x" placeholder="X">
-            <input type="number" data-field="{{ $key }}" data-prop="y" id="{{ $key }}_y" placeholder="Y">
-            <input type="number" data-field="{{ $key }}" data-prop="fontSize" id="{{ $key }}_fontSize" placeholder="Size">
-        </div>
-        @endforeach
-    </form>
     
     <script>
         // Use Blade to inject initial data
         let allCoords = @json($allCoords);
         let currentPage = 1;
-        let currentZoom = 1;
 
         // Configuration: which fields belong to which page
         const pageConfig = {
@@ -261,30 +374,10 @@
         // Initial load
         switchPage();
 
-        function changeZoom(delta) {
-            currentZoom += delta;
-            currentZoom = Math.min(Math.max(currentZoom, 0.2), 3);
-            currentZoom = Math.round(currentZoom * 10) / 10;
-            updateZoomDisplay();
-        }
 
-        function updateZoomDisplay() {
-            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
-            
-            // Apply width to image - canvas will follow via CSS width: 100%
-            img.style.width = (100 * currentZoom) + '%';
-            // We don't need to set canvas.style.width if it's 100% of container, but container is fitting content
-            // So we explicitly match the canvas style to image style?
-            // Actually, if canvas is absolute top:0 left:0 of container, and image is static...
-            // setting img width expands container. canvas width: 100% should match container.
-            
-            // Force redraw not strictly needed if resolution is fixed, but good for safety
-            setTimeout(drawAllCoordinates, 50);
-        }
 
         function loadPageData(pageNum) {
             currentPage = pageNum;
-            document.getElementById('pageTitle').textContent = 'Page ' + pageNum;
             const pageKey = 'page' + pageNum;
             // ... (rest is same, skipping to keep succinct if possible, but replace needs context)
             const coords = allCoords[pageKey] || {};
@@ -319,10 +412,7 @@
                 if (fieldData) {
                     if (document.getElementById(fieldName + '_x')) document.getElementById(fieldName + '_x').value = fieldData.x;
                     if (document.getElementById(fieldName + '_y')) document.getElementById(fieldName + '_y').value = fieldData.y;
-                    if (document.getElementById(fieldName + '_fontSize')) document.getElementById(fieldName + '_fontSize').value = fieldData.fontSize;
-                    if (fieldData.spacing && document.getElementById(fieldName + '_spacing')) {
-                        document.getElementById(fieldName + '_spacing').value = fieldData.spacing;
-                    }
+
                 }
             });
 
@@ -338,34 +428,44 @@
             const y = Math.round((e.clientY - rect.top) * scaleY);
             
             const field = fieldSelect.value;
-            // Update inputs
             const xInput = document.getElementById(field + '_x');
             const yInput = document.getElementById(field + '_y');
             
             if (xInput && yInput) {
                 xInput.value = x;
                 yInput.value = y;
-                
-                // Trigger input event to update state
                 xInput.dispatchEvent(new Event('input'));
             }
             
-            updateCurrentDisplay(field);
+            // Highlight the row
+            document.querySelectorAll('.field-group').forEach(g => g.classList.remove('active'));
+            const row = document.querySelector(`.field-group[data-field-group="${field}"]`);
+            if (row) {
+                row.classList.add('active');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Show status
+            const status = document.getElementById('statusMessage');
+            status.style.opacity = 1;
+            status.innerText = `Updated ${field}`;
+            setTimeout(() => status.style.opacity = 0, 1000);
+
             drawAllCoordinates();
         });
         
         fieldSelect.addEventListener('change', function() {
-            updateCurrentDisplay(this.value);
+            // Highlight list item
+            document.querySelectorAll('.field-group').forEach(g => g.classList.remove('active'));
+             const row = document.querySelector(`.field-group[data-field-group="${this.value}"]`);
+            if (row) {
+                row.classList.add('active');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         });
         
         function updateCurrentDisplay(field) {
-            const xInput = document.getElementById(field + '_x');
-            const yInput = document.getElementById(field + '_y');
-            const fontInput = document.getElementById(field + '_fontSize');
-
-            document.getElementById('currentX').textContent = xInput ? xInput.value : '-';
-            document.getElementById('currentY').textContent = yInput ? yInput.value : '-';
-            document.getElementById('currentFont').textContent = fontInput ? fontInput.value : '-';
+            // Deprecated - inputs are now live
         }
         
         function drawAllCoordinates() {
@@ -381,13 +481,12 @@
                 const field = f.key;
                 const xInput = document.getElementById(field + '_x');
                 const yInput = document.getElementById(field + '_y');
-                const fontInput = document.getElementById(field + '_fontSize');
                 
                 if (!xInput || !yInput) return;
 
                 const x = parseInt(xInput.value) || 0;
                 const y = parseInt(yInput.value) || 0;
-                const fontSize = parseInt(fontInput ? fontInput.value : 20) || 20;
+                const fontSize = 40;
                 
                 if (x > 0 && y > 0) {
                     ctx.font = `${fontSize}px Arial`;
@@ -436,33 +535,7 @@
             loadPageData(pageNum);
         }
         
-        function applyGlobalFontSize() {
-            const size = parseInt(document.getElementById('globalFontSize').value) || 20;
-            if (!confirm(`Are you sure you want to set font size to ${size} for ALL fields on ALL pages?`)) return;
-            
-            // 1. Update allCoords data model
-            Object.keys(allCoords).forEach(pageKey => {
-                Object.keys(allCoords[pageKey]).forEach(field => {
-                    if (allCoords[pageKey][field]) {
-                        allCoords[pageKey][field].fontSize = size;
-                    }
-                });
-            });
-            
-            // 2. Update visible inputs on current page
-            document.querySelectorAll('input[data-prop="fontSize"]').forEach(input => {
-                input.value = size;
-            });
-            
-            // 3. Update current display if selected
-            const currentField = document.getElementById('fieldSelect').value;
-            updateCurrentDisplay(currentField);
-            
-            // 4. Redraw canvas
-            drawAllCoordinates();
-            
-            alert(`✅ Font size set to ${size} for all fields! Click "Save All" to make it permanent.`);
-        }
+
         
         async function saveAllCoordinates() {
             // Force sync from DOM to ensure latest values are grabbed
@@ -524,15 +597,12 @@
                 
                 const xInput = document.getElementById(field + '_x');
                 const yInput = document.getElementById(field + '_y');
-                const fontInput = document.getElementById(field + '_fontSize');
-                const spacingInput = document.getElementById(field + '_spacing');
                 
                 if (!allCoords[pKey][field]) allCoords[pKey][field] = {};
-                
+
                 if (xInput) allCoords[pKey][field].x = parseInt(xInput.value) || 0;
                 if (yInput) allCoords[pKey][field].y = parseInt(yInput.value) || 0;
-                if (fontInput) allCoords[pKey][field].fontSize = parseInt(fontInput.value) || 20;
-                if (spacingInput) allCoords[pKey][field].spacing = parseInt(spacingInput.value) || null;
+
             });
             
             console.log('Saving allCoords (Synced from DOM):', allCoords);
@@ -549,13 +619,12 @@
                 });
                 
                 if (response.ok) {
-                    document.getElementById('message').innerHTML = '<p class="success">✓ Saved all pages!</p>';
-                    setTimeout(() => document.getElementById('message').innerHTML = '', 2000);
+                    alert('✅ Saved successfully!');
                 } else {
-                    document.getElementById('message').innerHTML = '<p style="color:red">✗ Error</p>';
+                    alert('❌ Error saving');
                 }
             } catch (error) {
-                document.getElementById('message').innerHTML = '<p style="color:red">✗ ' + error.message + '</p>';
+                alert('❌ Error: ' + error.message);
             }
         }
     </script>

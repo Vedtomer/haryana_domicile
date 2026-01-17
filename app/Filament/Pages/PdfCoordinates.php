@@ -10,7 +10,7 @@ class PdfCoordinates extends Page
     
     protected static ?string $navigationLabel = 'PDF Coordinates';
     
-    protected static ?string $title = 'PDF Coordinate Settings';
+    protected static ?string $title = '';
 
     protected static bool $shouldRegisterNavigation = false;
 
