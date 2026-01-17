@@ -71,8 +71,8 @@ class PrintHaryanaDomicile extends Page
                 $coords[$coord->field_name] = [
                     'x' => $coord->x,
                     'y' => $coord->y,
-                    'fontSize' => $coord->font_size,
-                    'spacing' => $coord->spacing
+                    'fontSize' => 40,
+                    'spacing' => 90
                 ];
             }
             Log::info("PDF Gen Page $page: coords loaded", ['count' => count($coords), 'tehsil_top' => $coords['tehsil_top'] ?? 'MISSING']);
