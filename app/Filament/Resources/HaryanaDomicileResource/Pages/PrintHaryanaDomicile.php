@@ -243,8 +243,12 @@ class PrintHaryanaDomicile extends Page
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->child_name ?? '');
             }
             
-            // Save filled image
-            $outputPath = public_path("FILE_filled_{$page}.jpg");
+            // Save filled image to temp directory
+            $tempDir = storage_path('app/tmp');
+            if (!file_exists($tempDir)) {
+                mkdir($tempDir, 0755, true);
+            }
+            $outputPath = $tempDir . "/FILE_filled_{$page}.jpg";
             imagejpeg($image, $outputPath, 95);
             imagedestroy($image);
             
@@ -259,10 +263,18 @@ class PrintHaryanaDomicile extends Page
             $pdf->Image($imagePath, 0, 0, 210, 297); // A4 size in mm
         }
         
-        $pdfPath = public_path('FILE_filled.pdf');
+        $pdfPath = $tempDir . '/FILE_filled.pdf';
         $pdf->Output('F', $pdfPath);
         
-        return url('/FILE_filled.pdf') . '?t=' . time();
+        // Copy to public for serving
+        $publicPath = public_path('tmp/FILE_filled.pdf');
+        $publicDir = public_path('tmp');
+        if (!file_exists($publicDir)) {
+            mkdir($publicDir, 0755, true);
+        }
+        copy($pdfPath, $publicPath);
+        
+        return url('/tmp/FILE_filled.pdf') . '?t=' . time();
     }
     
     private function fillNumberBoxesOnImage($image, $startX, $y, $number, $count, $fontPath, $fontSize, $color, $spacing = 32)
