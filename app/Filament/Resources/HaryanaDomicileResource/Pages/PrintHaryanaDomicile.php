@@ -51,8 +51,8 @@ class PrintHaryanaDomicile extends Page
         
         // Font settings
         $fontPath = public_path('fonts/Typist.ttf');
-        $defaultFontSize = 30;
-        $boxFontSize = 30;
+        $defaultFontSize = 50;
+        $boxFontSize = 50;
         
         // Process each page (1.jpg through 4.jpg)
         for ($page = 1; $page <= 4; $page++) {
@@ -86,13 +86,14 @@ class PrintHaryanaDomicile extends Page
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->district);
                 
                 // Mobile number boxes
-                $c = $coords['mobile_start'] ?? ['x' => 190, 'y' => 218, 'fontSize' => $boxFontSize, 'spacing' => 32];
-                $spacing = $c['spacing'] ?? 32;
+                $c = $coords['mobile_start'] ?? ['x' => 190, 'y' => 218, 'fontSize' => $boxFontSize, 'spacing' => 90];
+                Log::info('Mobile coords:', ['data' => $c]);
+                $spacing = $c['spacing'] ?? 90;
                 $this->fillNumberBoxesOnImage($image, $c['x'], $c['y'], $record->mobile, 10, $fontPath, $c['fontSize'], $black, $spacing);
                 
                 // Aadhar number boxes
-                $c = $coords['aadhar_start'] ?? ['x' => 190, 'y' => 258, 'fontSize' => $boxFontSize, 'spacing' => 32];
-                $spacing = $c['spacing'] ?? 32;
+                $c = $coords['aadhar_start'] ?? ['x' => 190, 'y' => 258, 'fontSize' => $boxFontSize, 'spacing' => 90];
+                $spacing = $c['spacing'] ?? 90;
                 $this->fillNumberBoxesOnImage($image, $c['x'], $c['y'], $record->aadhar, 12, $fontPath, $c['fontSize'], $black, $spacing);
                 
                 // Name

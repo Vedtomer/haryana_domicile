@@ -42,7 +42,7 @@
     <div class="coordinate-picker">
         <div class="image-wrapper">
             <div id="imageContainer" class="image-container">
-                <img id="templateImage" src="/FILE/1.jpg" alt="Template">
+                <img id="templateImage" src="/FILE/1.jpg?t={{ time() }}" alt="Template">
                 <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
             </div>
         </div>
@@ -432,9 +432,7 @@
         function switchPage() {
             const pageNum = document.getElementById('pageSelect').value;
             // Force currentPage to integer if needed, or keeping as string from value? 
-            // pageConfig uses integer keys 1, 2. allCoords keys are 'page1'.
-            currentPage = parseInt(pageNum); 
-            document.getElementById('templateImage').src = `/FILE/${pageNum}.jpg`;
+            document.getElementById('templateImage').src = `/FILE/${pageNum}.jpg?t=` + new Date().getTime();
             loadPageData(pageNum);
         }
         
