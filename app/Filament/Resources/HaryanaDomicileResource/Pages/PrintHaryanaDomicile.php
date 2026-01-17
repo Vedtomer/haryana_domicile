@@ -131,6 +131,7 @@ class PrintHaryanaDomicile extends Page
                 // Document box fields
                 // Line 1 - Applicant Name (मैं .........)
                 $c = $coords['doc_applicant_name'] ?? ['x' => 230, 'y' => 1050, 'fontSize' => $boxFontSize];
+                Log::info('Doc Applicant Name coords:', ['data' => $c]);
                 imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $black, $fontPath, $record->name);
                 
                 // Line 1 - Father Name (सुपुत्र/सुपुत्री/धर्मपत्नी श्री .........)
