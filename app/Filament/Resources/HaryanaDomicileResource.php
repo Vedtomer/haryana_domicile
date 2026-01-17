@@ -41,7 +41,7 @@ class HaryanaDomicileResource extends Resource
                         Forms\Components\TextInput::make('village')
                             ->label('Address')
                             ->required()
-                            ->maxLength(26),
+                            ->maxLength(22),
                         Forms\Components\TextInput::make('ward_no')
                             ->label('Ward No.')
                             ->maxLength(255),
