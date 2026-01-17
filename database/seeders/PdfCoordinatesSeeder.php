@@ -18,7 +18,7 @@ class PdfCoordinatesSeeder extends Seeder
         
         // Coordinates
         $coords = [
-            ['page' => 1, 'field_name' => 'district_top', 'x' => 1255, 'y' => 563, 'font_size' => 50, 'spacing' => null],
+            ['page' => 1, 'field_name' => 'district_top', 'x' => 1256, 'y' => 550, 'font_size' => 50, 'spacing' => null],
             ['page' => 1, 'field_name' => 'null', 'x' => 0, 'y' => 0, 'font_size' => 50, 'spacing' => null],
             ['page' => 1, 'field_name' => 'doc_tehsil', 'x' => 847, 'y' => 2905, 'font_size' => 40, 'spacing' => null],
             ['page' => 1, 'field_name' => 'doc_ward', 'x' => 1956, 'y' => 2729, 'font_size' => 40, 'spacing' => null],
@@ -31,7 +31,7 @@ class PdfCoordinatesSeeder extends Seeder
             ['page' => 1, 'field_name' => 'ward_no', 'x' => 1659, 'y' => 1376, 'font_size' => 50, 'spacing' => null],
             ['page' => 1, 'field_name' => 'doc_district', 'x' => 1650, 'y' => 2912, 'font_size' => 40, 'spacing' => null],
             ['page' => 1, 'field_name' => 'tehsil', 'x' => 557, 'y' => 1503, 'font_size' => 50, 'spacing' => null],
-            ['page' => 1, 'field_name' => 'tehsil_top', 'x' => 537, 'y' => 566, 'font_size' => 50, 'spacing' => null],
+            ['page' => 1, 'field_name' => 'tehsil_top', 'x' => 565, 'y' => 547, 'font_size' => 50, 'spacing' => null],
             ['page' => 1, 'field_name' => 'mobile_start', 'x' => 655, 'y' => 818, 'font_size' => 50, 'spacing' => 90],
             ['page' => 1, 'field_name' => 'name', 'x' => 425, 'y' => 1307, 'font_size' => 50, 'spacing' => null],
             ['page' => 1, 'field_name' => 'age', 'x' => 1933, 'y' => 1369, 'font_size' => 50, 'spacing' => null],
