@@ -50,14 +50,14 @@ class PdfCoordinatesSeeder extends Seeder
             ['page' => 2, 'field_name' => 'aadhar_2', 'x' => 1014, 'y' => 1530, 'font_size' => 50, 'spacing' => null],
             ['page' => 2, 'field_name' => 'age_2', 'x' => 507, 'y' => 1635, 'font_size' => 50, 'spacing' => null],
             ['page' => 2, 'field_name' => 'district', 'x' => 362, 'y' => 1024, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'name', 'x' => 524, 'y' => 250, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'father_name', 'x' => 1020, 'y' => 250, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'age', 'x' => 170, 'y' => 300, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'address', 'x' => 489, 'y' => 300, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'ward_no', 'x' => 1131, 'y' => 300, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'tehsil', 'x' => 213, 'y' => 350, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'district', 'x' => 571, 'y' => 350, 'font_size' => 50, 'spacing' => null],
-            ['page' => 3, 'field_name' => 'child_name', 'x' => 593, 'y' => 400, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'name', 'x' => 874, 'y' => 515, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'father_name', 'x' => 1733, 'y' => 517, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'age', 'x' => 235, 'y' => 599, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'address', 'x' => 802, 'y' => 637, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'ward_no', 'x' => 1965, 'y' => 597, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'tehsil', 'x' => 317, 'y' => 737, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'district', 'x' => 976, 'y' => 732, 'font_size' => 50, 'spacing' => null],
+            ['page' => 3, 'field_name' => 'child_name', 'x' => 986, 'y' => 839, 'font_size' => 50, 'spacing' => null],
         ];
         
         foreach ($coords as $coord) {
