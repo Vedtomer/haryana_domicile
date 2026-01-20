@@ -116,7 +116,30 @@ class BirthRecordResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('child_name')
+                    ->label('Child Name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('father_name')
+                    ->label('Father Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('mother_name')
+                    ->label('Mother Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('dob')
+                    ->label('Date of Birth')
+                    ->date('d-m-Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('district')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('registration_no')
+                    ->label('Reg. No')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('date_of_registration')
+                    ->label('Reg. Date')
+                    ->date('d-m-Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
