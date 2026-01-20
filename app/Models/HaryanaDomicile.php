@@ -10,6 +10,7 @@ class HaryanaDomicile extends Model
     use HasFactory;
 
     protected $fillable = [
+        'pincode',
         'tehsil',
         'district',
         'name',

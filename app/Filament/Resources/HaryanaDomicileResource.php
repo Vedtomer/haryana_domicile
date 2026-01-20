@@ -26,6 +26,28 @@ class HaryanaDomicileResource extends Resource
                 Forms\Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
+                        Forms\Components\TextInput::make('pincode')
+                            ->numeric()
+                            ->maxLength(6)
+                            ->minLength(6)
+                            ->live(debounce: 200)
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                if (strlen((string) $state) !== 6) {
+                                    return;
+                                }
+
+                                \Illuminate\Support\Facades\Log::info("Fetching pincode data for: " . $state);
+                                $location = \App\Services\PincodeService::getLocationFromPincode($state);
+
+                                if ($location) {
+                                    $set('district', $location['district']);
+                                    $set('tehsil', $location['tehsil']);
+                                    \Illuminate\Support\Facades\Log::info("Set district: " . $location['district'] . ", Tehsil: " . $location['tehsil']);
+                                } else {
+                                    \Illuminate\Support\Facades\Log::warning("Could not fetch location for pincode: " . $state);
+                                    // Optional: Clear fields or show notification
+                                }
+                            }),
                         Forms\Components\TextInput::make('tehsil')
                             ->required()
                             ->maxLength(255),
@@ -50,12 +72,14 @@ class HaryanaDomicileResource extends Resource
                             ->numeric(),
                         Forms\Components\TextInput::make('mobile')
                             ->required()
-                            ->numeric()
+                            ->tel()
+                            ->regex('/^[6-9]\d{9}$/')
                             ->maxLength(10)
                             ->minLength(10),
                         Forms\Components\TextInput::make('aadhar')
                             ->required()
-                            ->numeric()
+                            ->tel()
+                            ->regex('/^[2-9]{1}[0-9]{11}$/')
                             ->maxLength(12)
                             ->minLength(12),
                         Forms\Components\TextInput::make('ration_card_no')
