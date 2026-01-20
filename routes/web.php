@@ -16,3 +16,6 @@ Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'p
 // PDF Coordinate Settings Routes
 Route::get('/pdf-coordinates', [PdfCoordinateController::class, 'index'])->name('pdf.coordinates');
 Route::post('/api/save-coordinates', [PdfCoordinateController::class, 'save'])->name('api.save-coordinates');
+
+// Birth Record Print Route
+Route::get('/admin/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
