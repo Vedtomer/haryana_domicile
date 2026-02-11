@@ -9,7 +9,7 @@ class PdfToImageService
 {
     /**
      * Convert a password-protected PDF to front and back images
-     * This version uses a workaround without Imagick
+     * Uses Imagick extension for PDF to image conversion
      *
      * @param string $pdfPath Full path to the PDF file
      * @param string $password PDF password
@@ -22,39 +22,8 @@ class PdfToImageService
             throw new Exception('PDF file not found: ' . $pdfPath);
         }
 
-        // Create output directory
-        $outputDir = storage_path('app/public/pdf-conversions/images');
-        if (!file_exists($outputDir . '/front')) {
-            mkdir($outputDir . '/front', 0755, true);
-        }
-        if (!file_exists($outputDir . '/back')) {
-            mkdir($outputDir . '/back', 0755, true);
-        }
-
-        $timestamp = time() . '_' . uniqid();
-
-        // For now, since Imagick is not available, we'll use a placeholder approach
-        // This will copy the sample images as a demonstration
-        // In production, you would need Imagick or an external service
-
-        $sampleFront = base_path('AD/front.png');
-        $sampleBack = base_path('AD/back.png');
-
-        if (file_exists($sampleFront) && file_exists($sampleBack)) {
-            // Copy sample images as demonstration
-            $frontPath = $outputDir . '/front/' . $timestamp . '_front.png';
-            $backPath = $outputDir . '/back/' . $timestamp . '_back.png';
-
-            copy($sampleFront, $frontPath);
-            copy($sampleBack, $backPath);
-
-            return [
-                'front' => str_replace(storage_path('app/public/'), '', $frontPath),
-                'back' => str_replace(storage_path('app/public/'), '', $backPath),
-            ];
-        }
-
-        throw new Exception('PDF conversion requires Imagick extension or external conversion service. Please install Imagick to enable automatic conversion.');
+        // Use Imagick for conversion
+        return $this->convertWithImagick($pdfPath, $password);
     }
 
     /**
@@ -79,6 +48,11 @@ class PdfToImageService
 
             // Set resolution for better quality
             $imagick->setResolution(300, 300);
+
+            // Set password if provided
+            if (!empty($password)) {
+                $imagick->setPasswordAuthentication($password);
+            }
 
             // Read the PDF
             $imagick->readImage($pdfPath);
