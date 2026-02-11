@@ -10,6 +10,11 @@ class ListBirthRecords extends ListRecords
 {
     protected static string $resource = BirthRecordResource::class;
 
+    protected function getTableQuery(): ?\Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getTableQuery()->latest();
+    }
+
     protected function getHeaderActions(): array
     {
         return [
