@@ -10,6 +10,11 @@ class ListHaryanaDomiciles extends ListRecords
 {
     protected static string $resource = HaryanaDomicileResource::class;
 
+    protected function getTableQuery(): ?\Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getTableQuery()->latest();
+    }
+
     protected function getHeaderActions(): array
     {
         return [
