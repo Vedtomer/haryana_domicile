@@ -16,5 +16,6 @@ return [
         'haryana_domicile' => 10,
         'pdf_converter' => 10,
         'pan_find' => 10,
+        'pan_details' => 10,
     ],
 ];
