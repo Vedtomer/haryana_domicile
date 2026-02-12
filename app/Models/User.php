@@ -14,6 +14,10 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    // Role constants
+    const ROLE_ADMIN = 'admin';
+    const ROLE_RETAILER = 'retailer';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'coins',
     ];
 
@@ -112,5 +117,29 @@ class User extends Authenticatable
                 'created_by' => $createdBy ?? auth()->id(),
             ]);
         });
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Check if user is retailer
+     */
+    public function isRetailer(): bool
+    {
+        return $this->role === self::ROLE_RETAILER;
+    }
+
+    /**
+     * Get all coin purchase requests for this user
+     */
+    public function coinPurchaseRequests()
+    {
+        return $this->hasMany(CoinPurchaseRequest::class);
     }
 }
