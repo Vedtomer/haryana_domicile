@@ -19,7 +19,7 @@ class PdfConverterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
 
-    protected static ?string $navigationLabel = 'PDF to Image';
+    protected static ?string $navigationLabel = 'Aadhar Card Converters';
 
     protected static ?string $modelLabel = 'PDF Converter';
 
@@ -27,7 +27,7 @@ class PdfConverterResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\Section::make('Convert PDF to Images')
+            Forms\Components\Section::make('Aadhar Card Converters')
             ->description('Upload a password-protected Aadhaar PDF and convert it to front and back images')
             ->schema([
                 Forms\Components\FileUpload::make('pdf_path')
