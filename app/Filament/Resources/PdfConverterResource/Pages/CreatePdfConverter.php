@@ -66,6 +66,9 @@ class CreatePdfConverter extends CreateRecord
         // Remove password from data (we don't want to store it)
         unset($data['password']);
 
+        // Set user_id
+        $data['user_id'] = auth()->id();
+
         return $data;
     }
 
