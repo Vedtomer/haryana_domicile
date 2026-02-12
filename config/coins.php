@@ -15,5 +15,6 @@ return [
         'birth_record' => 10,
         'haryana_domicile' => 10,
         'pdf_converter' => 10,
+        'pan_find' => 10,
     ],
 ];
