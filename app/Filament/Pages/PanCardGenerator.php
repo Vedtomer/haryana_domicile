@@ -55,7 +55,10 @@ class PanCardGenerator extends Page implements HasForms
                 Forms\Components\TextInput::make('pan_number')
                 ->label('PAN Number')
                 ->required()
-                ->regex('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/')
+                ->length(10) // Ensures strictly 10 characters
+                ->regex('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/') // 5 letters, 4 numbers, 1 letter
+                ->validationAttribute('PAN Number')
+                ->helperText('Format: 5 Letters, 4 Numbers, 1 Letter (e.g. ABCDE1234F)')
                 ->placeholder('e.g. ABCDE1234F'),
                 Forms\Components\FileUpload::make('photo')
                 ->label('Photo')
@@ -70,9 +73,8 @@ class PanCardGenerator extends Page implements HasForms
                 ->required()
                 ->preserveFilenames(),
             ])
-            ]),
         ])
-        ->statePath('data');
+            ->statePath('data');
     }
 
     public function generatePdf()
