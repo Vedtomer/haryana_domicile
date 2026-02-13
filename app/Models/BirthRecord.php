@@ -26,6 +26,9 @@ class BirthRecord extends Model
         'school_father_name',
         'school_mother_name',
         'other_children',
+        'father_aadhar',
+        'mother_aadhar',
+        'child_document',
     ];
 
     protected $casts = [

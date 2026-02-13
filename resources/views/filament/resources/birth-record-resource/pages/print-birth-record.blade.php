@@ -273,6 +273,43 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <div class="page-break" style="page-break-before: always; margin-top: 50px;">
+            <div class="header">
+                संलग्न दस्तावेज
+            </div>
+            <div class="header-underline"></div>
+
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; page-break-inside: avoid;">
+                <div style="flex: 1; text-align: center; min-width: 45%;">
+                    <div style="margin-bottom: 10px; font-weight: bold;">पिता का आधार कार्ड</div>
+                    @if($record->father_aadhar)
+                        <img src="{{ asset('storage/' . $record->father_aadhar) }}" style="max-width: 100%; max-height: 400px; border: 1px solid #ccc;">
+                    @else
+                        <div>उपलब्ध नहीं</div>
+                    @endif
+                </div>
+
+                <div style="flex: 1; text-align: center; min-width: 45%;">
+                    <div style="margin-bottom: 10px; font-weight: bold;">माता का आधार कार्ड</div>
+                    @if($record->mother_aadhar)
+                        <img src="{{ asset('storage/' . $record->mother_aadhar) }}" style="max-width: 100%; max-height: 400px; border: 1px solid #ccc;">
+                    @else
+                        <div>उपलब्ध नहीं</div>
+                    @endif
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; page-break-before: auto;">
+                <div style="margin-bottom: 10px; font-weight: bold;">बच्चे का दस्तावेज (आधार/जन्म प्रमाण पत्र/डिस्चार्ज स्लिप)</div>
+                @if($record->child_document)
+                    <img src="{{ asset('storage/' . $record->child_document) }}" style="max-width: 90%; max-height: 400px; border: 1px solid #ccc;">
+                @else
+                    <div>उपलब्ध नहीं</div>
+                @endif
+            </div>
+        </div>
     </div>
 </body>
 </html>

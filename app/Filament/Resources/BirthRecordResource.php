@@ -108,7 +108,48 @@ class BirthRecordResource extends Resource
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
+
             ]),
+
+            Forms\Components\Section::make('Documents Upload')
+            ->schema([
+                Forms\Components\FileUpload::make('father_aadhar')
+                ->label('Father Aadhar Card')
+                ->required()
+                ->image()
+                ->optimize('webp')
+                ->resize(50)
+                ->imageCreateEmptyFiles(false)
+                ->imageResizeMode('contain')
+                ->imageCropAspectRatio('16:9')
+                ->imageResizeTargetWidth('800')
+                ->imageResizeTargetHeight('600')
+                ->directory('birth-records/documents'),
+                Forms\Components\FileUpload::make('mother_aadhar')
+                ->label('Mother Aadhar Card')
+                ->required()
+                ->image()
+                ->optimize('webp')
+                ->resize(50)
+                ->imageCreateEmptyFiles(false)
+                ->imageResizeMode('contain')
+                ->imageCropAspectRatio('16:9')
+                ->imageResizeTargetWidth('800')
+                ->imageResizeTargetHeight('600')
+                ->directory('birth-records/documents'),
+                Forms\Components\FileUpload::make('child_document')
+                ->label('Child Document (Aadhar/Birth Cert/Discharge Slip)')
+                ->required()
+                ->image()
+                ->optimize('webp')
+                ->resize(50)
+                ->imageCreateEmptyFiles(false)
+                ->imageResizeMode('contain')
+                ->imageCropAspectRatio('16:9')
+                ->imageResizeTargetWidth('800')
+                ->imageResizeTargetHeight('600')
+                ->directory('birth-records/documents'),
+            ])->columns(3),
 
 
         ]);
