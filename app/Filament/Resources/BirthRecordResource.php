@@ -38,6 +38,24 @@ class BirthRecordResource extends Resource
                 Forms\Components\TextInput::make('mother_name')
                 ->label('Applicant Mother Name')
                 ->required(),
+                Forms\Components\TextInput::make('father_aadhar')
+                ->label('Father Aadhar Number')
+                ->numeric()
+                ->minLength(12)
+                ->maxLength(12)
+                ->extraInputAttributes([
+                    'maxlength' => 12,
+                    'oninput' => "if (this.value.length > 12) this.value = this.value.slice(0, 12);"
+                ]),
+                Forms\Components\TextInput::make('mother_aadhar')
+                ->label('Mother Aadhar Number')
+                ->numeric()
+                ->minLength(12)
+                ->maxLength(12)
+                ->extraInputAttributes([
+                    'maxlength' => 12,
+                    'oninput' => "if (this.value.length > 12) this.value = this.value.slice(0, 12);"
+                ]),
                 Forms\Components\Textarea::make('permanent_address')
                 ->label('Permanent Address (Niwaasi)')
                 ->required()
@@ -110,38 +128,6 @@ class BirthRecordResource extends Resource
                 ->columnSpanFull(),
 
             ]),
-
-            Forms\Components\Section::make('Documents Upload')
-            ->schema([
-                Forms\Components\FileUpload::make('father_aadhar')
-                ->label('Father Aadhar Card')
-                ->required()
-                ->image()
-                ->imageResizeMode('contain')
-                ->imageCropAspectRatio('16:9')
-                ->imageResizeTargetWidth('800')
-                ->imageResizeTargetHeight('600')
-                ->directory('birth-records/documents'),
-                Forms\Components\FileUpload::make('mother_aadhar')
-                ->label('Mother Aadhar Card')
-                ->required()
-                ->image()
-                ->imageResizeMode('contain')
-                ->imageCropAspectRatio('16:9')
-                ->imageResizeTargetWidth('800')
-                ->imageResizeTargetHeight('600')
-                ->directory('birth-records/documents'),
-                Forms\Components\FileUpload::make('child_document')
-                ->label('Child Document (Aadhar/Birth Cert/Discharge Slip)')
-                ->required()
-                ->image()
-                ->imageResizeMode('contain')
-                ->imageCropAspectRatio('16:9')
-                ->imageResizeTargetWidth('800')
-                ->imageResizeTargetHeight('600')
-                ->directory('birth-records/documents'),
-            ])->columns(3),
-
 
         ]);
     }
