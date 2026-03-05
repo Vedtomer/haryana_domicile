@@ -3,21 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HaryanaDomicileResource\Pages;
-use App\Filament\Resources\HaryanaDomicileResource\RelationManagers;
 use App\Models\HaryanaDomicile;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HaryanaDomicileResource extends Resource
 {
     protected static ?string $model = HaryanaDomicile::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {
@@ -29,25 +28,7 @@ class HaryanaDomicileResource extends Resource
                         Forms\Components\TextInput::make('pincode')
                             ->numeric()
                             ->maxLength(6)
-                            ->minLength(6)
-                            ->live(debounce: 200)
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                if (strlen((string) $state) !== 6) {
-                                    return;
-                                }
-
-                                \Illuminate\Support\Facades\Log::info("Fetching pincode data for: " . $state);
-                                $location = \App\Services\PincodeService::getLocationFromPincode($state);
-
-                                if ($location) {
-                                    $set('district', $location['district']);
-                                    $set('tehsil', $location['tehsil']);
-                                    \Illuminate\Support\Facades\Log::info("Set district: " . $location['district'] . ", Tehsil: " . $location['tehsil']);
-                                } else {
-                                    \Illuminate\Support\Facades\Log::warning("Could not fetch location for pincode: " . $state);
-                                    // Optional: Clear fields or show notification
-                                }
-                            }),
+                            ->live(debounce: 200),
                         Forms\Components\TextInput::make('tehsil')
                             ->required()
                             ->maxLength(255),
@@ -63,25 +44,19 @@ class HaryanaDomicileResource extends Resource
                         Forms\Components\TextInput::make('village')
                             ->label('Address')
                             ->required()
-                            ->maxLength(22),
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('ward_no')
                             ->label('Ward No.')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('age')
-                            ->required()
                             ->numeric(),
                         Forms\Components\TextInput::make('mobile')
                             ->required()
                             ->tel()
-                            ->regex('/^[6-9]\d{9}$/')
-                            ->maxLength(10)
-                            ->minLength(10),
+                            ->maxLength(10),
                         Forms\Components\TextInput::make('aadhar')
                             ->required()
-                            ->tel()
-                            ->regex('/^[2-9]{1}[0-9]{11}$/')
-                            ->maxLength(12)
-                            ->minLength(12),
+                            ->maxLength(12),
                         Forms\Components\TextInput::make('ration_card_no')
                             ->label('Ration Card No.')
                             ->maxLength(255),
@@ -112,26 +87,14 @@ class HaryanaDomicileResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('father_name')
-                    ->label('Father Name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('mobile')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('village')
-                    ->label('Address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('district')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('father_name')->label('Father Name')->searchable(),
+                Tables\Columns\TextColumn::make('mobile')->searchable(),
+                Tables\Columns\TextColumn::make('village')->label('Address')->searchable(),
+                Tables\Columns\TextColumn::make('district')->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\Action::make('print')
                     ->label('Print')
@@ -146,13 +109,6 @@ class HaryanaDomicileResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

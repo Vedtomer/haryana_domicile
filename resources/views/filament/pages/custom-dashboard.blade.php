@@ -61,9 +61,10 @@
         }
         
         .dashboard-container {
-            padding: 24px;
+            padding: 20px;
             border-radius: 16px;
-            min-height: 85vh;
+            min-height: 90vh;
+            width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
             position: relative;
@@ -86,6 +87,41 @@
             text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
             letter-spacing: 0.1em;
         }
+
+        /* Full Screen Overrides */
+        :host, :root {
+            --sidebar-width: 0px !important;
+            --collapsed-sidebar-width: 0px !important;
+        }
+        
+        /* Hide Filament Layout Elements */
+        .fi-sidebar, 
+        .fi-topbar,
+        .fi-sidebar-active,
+        aside {
+            display: none !important;
+            width: 0 !important;
+        }
+
+        /* Make Main Content Full Width & No Padding */
+        .fi-main, 
+        .fi-content,
+        main,
+        .fi-main-ctn {
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        .fi-page-header {
+            display: none !important;
+        }
+
+        section {
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
     </style>
 
     <div class="dashboard-container">
@@ -102,27 +138,23 @@
                 ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/admin/birth-records', 'count' => $counts['birth_records'] ?? 0],
                 ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/admin/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
                 ['name' => 'PDF TO WORD', 'icon' => 'fa-file-word', 'bg' => 'bg-[#2b5797] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.ilovepdf.com/pdf_to_word', 'external' => true],
-                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'count' => $counts['pan_card'] ?? 0],
+                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://onlineservices.proteantech.in/paam/endUserRegisterContact.html', 'external' => true],
 
                 // Grid items from user's image reference
-                ['name' => 'AEPS', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-gray-800', 'url' => '#'],
-                ['name' => 'MONEY<br>TRANSFER', 'icon' => 'fa-money-bill-transfer', 'bg' => 'bg-[#f97316] text-white', 'icon_color' => 'text-white', 'url' => '#'],
-                ['name' => 'CASH<br>DEPOSIT', 'icon' => 'fa-money-bill-wave', 'bg' => 'bg-[#ef4444] text-white', 'icon_color' => 'text-yellow-300', 'url' => '#'],
-                ['name' => 'MOBILE<br>RECHARGE', 'icon' => 'fa-mobile-screen', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-red-500', 'url' => '#'],
-                ['name' => 'MSME<br>REGISTRATION', 'icon' => 'fa-building', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-blue-800', 'url' => '#'],
+                ['name' => 'MOBILE<br>RECHARGE', 'icon' => 'fa-mobile-screen', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-red-500', 'url' => 'https://paytm.com/', 'external' => true],
+                ['name' => 'MSME<br>REGISTRATION', 'icon' => 'fa-building', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-blue-800', 'url' => 'https://udyamregistration.gov.in/Government-India/Ministry-MSME-registration.htm', 'external' => true],
                 
-                ['name' => 'ACCOUNT<br>OPENING', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#fcfdf6] text-black border border-lime-200', 'icon_color' => 'text-orange-500', 'url' => '#'],
-                ['name' => 'MINI ATM', 'icon' => 'fa-credit-card', 'bg' => 'bg-[#334155] text-white', 'icon_color' => 'text-white', 'url' => '#'],
-                ['name' => 'VOTER ID<br>CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#1e3a8a] text-white', 'icon_color' => 'text-white', 'url' => '#'],
-                ['name' => 'DRIVING<br>LICENCE', 'icon' => 'fa-id-card', 'bg' => 'bg-[#e11d48] text-white', 'icon_color' => 'text-white', 'url' => '#'],
+                ['name' => 'ACCOUNT<br>OPENING', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#fcfdf6] text-black border border-lime-200', 'icon_color' => 'text-orange-500', 'url' => 'https://www.hdfcbank.com/personal/save/accounts/savings-accounts', 'external' => true],
+                ['name' => 'VOTER ID<br>CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#1e3a8a] text-white', 'icon_color' => 'text-white', 'url' => 'https://voters.eci.gov.in/', 'external' => true],
+                ['name' => 'DRIVING<br>LICENCE', 'icon' => 'fa-id-card', 'bg' => 'bg-[#e11d48] text-white', 'icon_color' => 'text-white', 'url' => 'https://parivahan.gov.in/', 'external' => true],
 
-                ['name' => 'ELECTRICITY<br>BILL', 'icon' => 'fa-lightbulb', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-black', 'url' => '#'],
-                ['name' => 'HEALTH<br>INSURANCE', 'icon' => 'fa-heart-pulse', 'bg' => 'bg-[#7e22ce] text-white', 'icon_color' => 'text-white', 'url' => '#'],
-                ['name' => 'CAR<br>INSURANCE', 'icon' => 'fa-car', 'bg' => 'bg-[#422006] text-white', 'icon_color' => 'text-red-500', 'url' => '#'],
-                ['name' => 'BIKE<br>INSURANCE', 'icon' => 'fa-motorcycle', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-green-400', 'url' => '#'],
-                ['name' => 'TAX RETURN<br>FILING', 'icon' => 'fa-file-invoice-dollar', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#'],
+                ['name' => 'ELECTRICITY<br>BILL', 'icon' => 'fa-lightbulb', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-black', 'url' => 'https://epayment.uhbvn.org.in/', 'external' => true],
+                ['name' => 'HEALTH<br>INSURANCE', 'icon' => 'fa-heart-pulse', 'bg' => 'bg-[#7e22ce] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.hdfcergo.com/promotions/health-insurance/os-insurance-1.html?&utm_source=google_search_2&utm_medium=cpc&utm_campaign=Health_Search_Core-ROI-Neev_Broad&utm_adgroup=Health-Insurance&utm_campaign=23219663237&utm_content=185260599302&adid=782094737998&utm_term=health%20insurance&utm_network=g&utm_matchtype=b&utm_device=c&utm_location=1007766&utm_sitelink={sitelink}&utm_placement=&ci=googlesearch&gad_source=1&gad_campaignid=23219663237&gbraid=0AAAAADy0Cuh-9YcLU-0od1P9LyrrkqsdJ&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKFwVNPwZukH__4C0rhj0UIYToK_LdRwgce8g1GXHuYi5YXg4qY8_8aAtKaEALw_wcB', 'external' => true],
+                ['name' => 'CAR<br>INSURANCE', 'icon' => 'fa-car', 'bg' => 'bg-[#422006] text-white', 'icon_color' => 'text-red-500', 'url' => 'https://ci.policybazaar.com/v1?pb_source=google&pb_medium=cpc&pb_term=Car%20insurance&pb_campaign=High_Position_Desktop_ROI00Car_Insurance_networkg&gad_source=1&gad_campaignid=6764353897&gbraid=0AAAAAD7HssIXgo461fbYdUxwQPfCy9HrC&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKGPrp1IZb1u-LbrmQ3FCS6V8Mkr1Dzb0Q6OEPksrVD4kHCVBBqXqEaAnkpEALw_wcB', 'external' => true],
+                ['name' => 'BIKE<br>INSURANCE', 'icon' => 'fa-motorcycle', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-green-400', 'url' => 'https://ci.policybazaar.com/v1?pb_source=google&pb_medium=cpc&pb_term=Car%20insurance&pb_campaign=High_Position_Desktop_ROI00Car_Insurance_networkg&gad_source=1&gad_campaignid=6764353897&gbraid=0AAAAAD7HssIXgo461fbYdUxwQPfCy9HrC&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKGPrp1IZb1u-LbrmQ3FCS6V8Mkr1Dzb0Q6OEPksrVD4kHCVBBqXqEaAnkpEALw_wcB', 'external' => true],
+                ['name' => 'TAX RETURN<br>FILING', 'icon' => 'fa-file-invoice-dollar', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
 
-                ['name' => 'GST<br>SERVICES', 'icon' => 'fa-file-signature', 'bg' => 'bg-[#3b82f6] text-white border border-blue-400', 'icon_color' => 'text-red-500', 'url' => '#'],
+                ['name' => 'GST<br>SERVICES', 'icon' => 'fa-file-signature', 'bg' => 'bg-[#3b82f6] text-white border border-blue-400', 'icon_color' => 'text-red-500', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
                 ['name' => 'CSP & KIOSK<br>BANKING', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white', 'icon_color' => 'text-white', 'url' => '#'],
                 ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => '#'],
                 ['name' => 'BUS<br>BOOKING', 'icon' => 'fa-bus', 'bg' => 'bg-[#f97316] text-white', 'icon_color' => 'text-white', 'url' => '#'],

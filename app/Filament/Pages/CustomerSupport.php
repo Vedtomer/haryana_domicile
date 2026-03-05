@@ -19,6 +19,8 @@ class CustomerSupport extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Customer Support';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $title = 'Customer Support';
 
     protected static string $view = 'filament.pages.customer-support';

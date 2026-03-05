@@ -21,6 +21,8 @@ class PdfConverterResource extends Resource
 
     protected static ?string $navigationLabel = 'Aadhar Card Converters';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $modelLabel = 'PDF Converter';
 
     public static function form(Form $form): Form
