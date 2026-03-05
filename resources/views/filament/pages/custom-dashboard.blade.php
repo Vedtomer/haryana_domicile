@@ -159,6 +159,7 @@
                 ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => '#'],
                 ['name' => 'BUS<br>BOOKING', 'icon' => 'fa-bus', 'bg' => 'bg-[#f97316] text-white', 'icon_color' => 'text-white', 'url' => '#'],
                 ['name' => 'HOTEL<br>BOOKING', 'icon' => 'fa-bed', 'bg' => 'bg-[#4d7c0f] text-white', 'icon_color' => 'text-blue-200', 'url' => '#'],
+                ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
             ];
             @endphp
 

@@ -16,7 +16,7 @@ class AadharCardAddressForm extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Aadhar Address Form';
     protected static ?string $title = 'Aadhar Card Address Update Form';
-new
+
     protected static bool $shouldRegisterNavigation = false;
 
     protected static string $view = 'filament.pages.aadhar-card-address-form';
