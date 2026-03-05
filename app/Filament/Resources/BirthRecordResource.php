@@ -38,24 +38,6 @@ class BirthRecordResource extends Resource
                 Forms\Components\TextInput::make('mother_name')
                 ->label('Applicant Mother Name')
                 ->required(),
-                Forms\Components\TextInput::make('father_aadhar')
-                ->label('Father Aadhar Number')
-                ->numeric()
-                ->minLength(12)
-                ->maxLength(12)
-                ->extraInputAttributes([
-                    'maxlength' => 12,
-                    'oninput' => "if (this.value.length > 12) this.value = this.value.slice(0, 12);"
-                ]),
-                Forms\Components\TextInput::make('mother_aadhar')
-                ->label('Mother Aadhar Number')
-                ->numeric()
-                ->minLength(12)
-                ->maxLength(12)
-                ->extraInputAttributes([
-                    'maxlength' => 12,
-                    'oninput' => "if (this.value.length > 12) this.value = this.value.slice(0, 12);"
-                ]),
                 Forms\Components\Textarea::make('permanent_address')
                 ->label('Permanent Address (Niwaasi)')
                 ->required()
