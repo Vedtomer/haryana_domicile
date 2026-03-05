@@ -155,10 +155,7 @@
                 ['name' => 'TAX RETURN<br>FILING', 'icon' => 'fa-file-invoice-dollar', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
 
                 ['name' => 'GST<br>SERVICES', 'icon' => 'fa-file-signature', 'bg' => 'bg-[#3b82f6] text-white border border-blue-400', 'icon_color' => 'text-red-500', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
-                ['name' => 'CSP & KIOSK<br>BANKING', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white', 'icon_color' => 'text-white', 'url' => '#'],
                 ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => '#'],
-                ['name' => 'BUS<br>BOOKING', 'icon' => 'fa-bus', 'bg' => 'bg-[#f97316] text-white', 'icon_color' => 'text-white', 'url' => '#'],
-                ['name' => 'HOTEL<br>BOOKING', 'icon' => 'fa-bed', 'bg' => 'bg-[#4d7c0f] text-white', 'icon_color' => 'text-blue-200', 'url' => '#'],
                 ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
             ];
             @endphp
