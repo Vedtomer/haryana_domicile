@@ -68,13 +68,27 @@ class AadharCardAddressForm extends Page implements HasForms
                 ->numeric()
                 ->minLength(12)
                 ->maxLength(12)
+                ->extraInputAttributes([
+                    'maxlength' => 12,
+                    'oninput' => "if (this.value.length > 12) this.value = this.value.slice(0, 12);"
+                ])
                 ->placeholder('12 digit Aadhaar number')
                 ->required(),
                 Forms\Components\TextInput::make('full_name')
                 ->label('Full Name')
                 ->required(),
+                Forms\Components\Select::make('care_of_type')
+                ->label('Care of Type (C/o, S/o)')
+                ->options([
+                    'C/O' => 'C/O',
+                    'S/O' => 'S/O',
+                    'W/O' => 'W/O',
+                    'D/O' => 'D/O',
+                ])
+                ->default('C/O')
+                ->required(),
                 Forms\Components\TextInput::make('care_of')
-                ->label('C/o')
+                ->label('Relative Name')
                 ->required(),
                 Forms\Components\TextInput::make('house_no')
                 ->label('House No./ Bldg./ Apt.'),
@@ -238,7 +252,8 @@ class AadharCardAddressForm extends Page implements HasForms
         $printBoxedText($data['full_name'] ?? '', 16, 56.5, 5.25);
 
         // 6. C/o
-        $printBoxedText($data['care_of'] ?? '', 27, 66.5, 5.25);
+        $careOfText = isset($data['care_of_type']) ? $data['care_of_type'] . ' ' . ($data['care_of'] ?? '') : ($data['care_of'] ?? '');
+        $printBoxedText($careOfText, 27, 66.5, 5.25);
 
         // 7. House No.
         $printBoxedText($data['house_no'] ?? '', 44, 76.5, 5.25);
