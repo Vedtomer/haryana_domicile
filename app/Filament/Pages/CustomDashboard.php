@@ -13,6 +13,8 @@ use App\Models\CoinTransaction;
 class CustomDashboard extends BaseDashboard
 {
     protected static string $view = 'filament.pages.custom-dashboard';
+    protected static ?string $slug = 'dashboard';
+    protected static string $routePath = 'dashboard';
 
     public function useService($serviceName, $url, $external = false)
     {
