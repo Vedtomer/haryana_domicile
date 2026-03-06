@@ -17,13 +17,16 @@ class AdminUserSeeder extends Seeder
 
 
 
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
         ['email' => 'admin@admin.com'],
         [
             'name' => 'Admin',
             'password' => Hash::make('admin'),
+            'coins' => 1000
         ]
         );
+        
+        $user->assignRole('super_admin');
 
         $this->command->info('Admin user created successfully!');
         $this->command->info('Email: admin@admin.com');
