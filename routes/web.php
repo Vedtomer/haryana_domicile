@@ -7,7 +7,7 @@ use App\Http\Controllers\HaryanaDomicileController;
 use App\Http\Controllers\PdfCoordinateController;
 
 Route::get('/', function () {
-    return redirect('/admin');
+    return view('landing');
 });
 
 // Haryana Domicile Print Route
