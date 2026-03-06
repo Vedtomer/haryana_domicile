@@ -187,6 +187,7 @@
                 ['name' => 'Aadhar Card To<br>Famliy Id', 'icon' => 'fa-wheat-awn', 'bg' => 'bg-[#166534] text-white border border-green-700', 'icon_color' => 'text-yellow-400', 'url' => 'https://fasal.haryana.gov.in/home/login', 'external' => true],
                 ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
                 ['name' => 'Link Aadhaar<br>to Pan', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-orange-400', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/bl-link-aadhaar', 'external' => true],
+                ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
             ];
             @endphp
 
@@ -200,7 +201,11 @@
                 class="service-card {{ $service['bg'] }} relative"
             >
                 <div class="icon-box">
-                    <i class="fa-solid {{ $service['icon'] }} {{ $service['icon_color'] }}"></i>
+                    @if(isset($service['image']))
+                        <img src="{{ $service['image'] }}" class="w-10 h-10 object-contain rounded-lg shadow-sm">
+                    @else
+                        <i class="fa-solid {{ $service['icon'] }} {{ $service['icon_color'] }}"></i>
+                    @endif
                 </div>
                 <div class="service-title">
                     {!! $service['name'] !!}
