@@ -159,6 +159,7 @@
             @php
             $services = [
                 // Our Existing Actual Links
+                ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
                 ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/admin/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0],
                 ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/admin/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
                 ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/admin/birth-records', 'count' => $counts['birth_records'] ?? 0],
@@ -187,7 +188,6 @@
                 ['name' => 'Aadhar Card To<br>Famliy Id', 'icon' => 'fa-wheat-awn', 'bg' => 'bg-[#166534] text-white border border-green-700', 'icon_color' => 'text-yellow-400', 'url' => 'https://fasal.haryana.gov.in/home/login', 'external' => true],
                 ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
                 ['name' => 'Link Aadhaar<br>to Pan', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-orange-400', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/bl-link-aadhaar', 'external' => true],
-                ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
                 ['name' => 'RESIZE<br>PDF', 'icon' => 'fa-file-pdf', 'bg' => 'bg-red-600 text-white border border-red-700', 'icon_color' => 'text-white', 'url' => 'https://pdf.pi7.org/resize-pdf', 'external' => true],
                 ['name' => 'Pention<br>Check', 'icon' => 'fa-hand-holding-heart', 'bg' => 'bg-[#6b21a8] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf', 'external' => true],
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
