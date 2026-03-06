@@ -69,6 +69,31 @@
             box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-image: url('/Digital_India_logo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 0;
+            filter: grayscale(1) brightness(2);
+        }
+
+        .dashboard-container > * {
+            position: relative;
+            z-index: 1;
         }
 
         .dashboard-container::before {
@@ -159,6 +184,9 @@
                 ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => 'https://www.irctc.co.in/nget/train-search', 'external' => true],
                 ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
                 ['name' => 'UHBVN BILL<br>PRINT', 'icon' => 'fa-print', 'bg' => 'bg-[#fbbf24] text-black border border-yellow-400', 'icon_color' => 'text-red-600', 'url' => '#', 'onclick' => 'showBillModal = true'],
+                ['name' => 'Aadhar Card To<br>Famliy Id', 'icon' => 'fa-wheat-awn', 'bg' => 'bg-[#166534] text-white border border-green-700', 'icon_color' => 'text-yellow-400', 'url' => 'https://fasal.haryana.gov.in/home/login', 'external' => true],
+                ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
+                ['name' => 'Link Aadhaar<br>to Pan', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-orange-400', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/bl-link-aadhaar', 'external' => true],
             ];
             @endphp
 
