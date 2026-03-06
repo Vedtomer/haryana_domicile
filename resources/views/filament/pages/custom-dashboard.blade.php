@@ -124,7 +124,8 @@
         }
     </style>
 
-    <div class="dashboard-container">
+    <div x-data="{ showBillModal: false, billUid: '6894882000' }" class="relative">
+        <div class="dashboard-container">
         <h2 class="section-title text-xl font-black mb-8 uppercase pl-2 border-l-4 border-blue-500">
             <i class="fa-solid fa-layer-group mr-2 text-blue-400"></i>All Services
         </h2>
@@ -155,13 +156,21 @@
                 ['name' => 'TAX RETURN<br>FILING', 'icon' => 'fa-file-invoice-dollar', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
 
                 ['name' => 'GST<br>SERVICES', 'icon' => 'fa-file-signature', 'bg' => 'bg-[#3b82f6] text-white border border-blue-400', 'icon_color' => 'text-red-500', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
-                ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => '#'],
+                ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => 'https://www.irctc.co.in/nget/train-search', 'external' => true],
                 ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
+                ['name' => 'UHBVN BILL<br>PRINT', 'icon' => 'fa-print', 'bg' => 'bg-[#fbbf24] text-black border border-yellow-400', 'icon_color' => 'text-red-600', 'url' => '#', 'onclick' => 'showBillModal = true'],
             ];
             @endphp
 
             @foreach($services as $service)
-            <a href="{{ $service['url'] }}" @if(isset($service['external']) && $service['external']) target="_blank" @endif class="service-card {{ $service['bg'] }} relative">
+            <a 
+                @if(isset($service['onclick'])) 
+                    @click.prevent="{{ $service['onclick'] }}" 
+                @endif
+                href="{{ $service['url'] }}" 
+                @if(isset($service['external']) && $service['external']) target="_blank" @endif 
+                class="service-card {{ $service['bg'] }} relative"
+            >
                 <div class="icon-box">
                     <i class="fa-solid {{ $service['icon'] }} {{ $service['icon_color'] }}"></i>
                 </div>
@@ -177,4 +186,55 @@
             @endforeach
         </div>
     </div>
+
+    <!-- Bill Print Modal -->
+    <template x-if="showBillModal">
+        <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <!-- Backdrop -->
+            <div @click="showBillModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+            
+            <!-- Modal Content -->
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
+                <div class="bg-yellow-500 p-6 text-white text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-print text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-black uppercase tracking-wider">UHBVN Bill Print</h3>
+                    <p class="text-sm opacity-90">Enter UID to print electricity bill</p>
+                </div>
+                
+                <div class="p-8">
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Consumer UID</label>
+                        <input 
+                            type="text" 
+                            x-model="billUid" 
+                            class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-yellow-500 focus:outline-none text-lg font-bold tracking-widest text-[#1d4ed8] text-center"
+                            placeholder="Enter UID Number"
+                        >
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button 
+                            @click="showBillModal = false" 
+                            class="flex-1 px-6 py-3 border-2 border-gray-100 text-gray-400 font-bold rounded-xl hover:bg-gray-50 transition-all uppercase text-xs"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            @click="window.open('https://uhbvn.org.in/Rapdrp/BD?UID=' + billUid, '_blank'); showBillModal = false" 
+                            class="flex-[2] px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-black rounded-xl shadow-lg shadow-yellow-500/30 transition-all transform hover:-translate-y-1 uppercase text-xs tracking-widest"
+                        >
+                            Print Bill Now
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Haryana Electricity Board Portal</p>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
 </x-filament-panels::page>
