@@ -14,7 +14,6 @@ Route::get('/', function () {
 Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
 
 // PDF Coordinate Settings Routes
-Route::get('/pdf-coordinates', [PdfCoordinateController::class, 'index'])->name('pdf.coordinates');
 Route::post('/api/save-coordinates', [PdfCoordinateController::class, 'save'])->name('api.save-coordinates');
 
 // Birth Record Print Route
