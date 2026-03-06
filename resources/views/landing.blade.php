@@ -275,8 +275,8 @@
             Saga Services
         </a>
         <div class="nav-links">
-            <a href="/admin/login" class="btn btn-outline">Login</a>
-            <a href="/admin/register" class="btn btn-primary">Create Account</a>
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="/register" class="btn btn-primary">Create Account</a>
         </div>
     </header>
 

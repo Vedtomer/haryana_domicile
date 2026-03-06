@@ -18,4 +18,4 @@ Route::get('/pdf-coordinates', [PdfCoordinateController::class, 'index'])->name(
 Route::post('/api/save-coordinates', [PdfCoordinateController::class, 'save'])->name('api.save-coordinates');
 
 // Birth Record Print Route
-Route::get('/admin/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
+Route::get('/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
