@@ -68,5 +68,6 @@ class AdminPanelProvider extends PanelProvider
     {
         // Bind Filament's LogoutResponse contract to our custom response class
         $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LogoutResponse::class, \App\Http\Responses\LogoutResponse::class);
+        $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LoginResponse::class, \App\Http\Responses\LoginResponse::class);
     }
 }
