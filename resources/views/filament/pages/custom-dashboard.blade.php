@@ -150,16 +150,57 @@
     </style>
 
     <div x-data="{ showBillModal: false, billUid: '6894882000' }" class="relative">
-        <div class="dashboard-container">
-        <h2 class="section-title text-xl font-black mb-8 uppercase pl-2 border-l-4 border-blue-500">
-            <i class="fa-solid fa-layer-group mr-2 text-blue-400"></i>All Services
-        </h2>
+        <div class="dashboard-container relative">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                <h2 class="section-title text-xl font-black uppercase pl-2 border-l-4 border-blue-500">
+                    <i class="fa-solid fa-layer-group mr-2 text-blue-400"></i>All Services
+                </h2>
+
+                <!-- Right Side Actions: Coins & Logout -->
+                <div class="flex items-center gap-4 self-start md:self-auto">
+                    <!-- Wallet Balance Badge -->
+                    <div class="transition hover:scale-105">
+                        <div class="flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-amber-600 px-5 py-2.5 rounded-2xl shadow-lg border-2 border-amber-200/50 backdrop-blur-sm">
+                            <div class="bg-white/20 p-2 rounded-xl">
+                                <i class="fa-solid fa-coins text-white text-xl animate-pulse"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-amber-900/80 uppercase tracking-widest leading-none">Wallet Balance</span>
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-2xl font-black text-white leading-none">
+                                        {{ number_format(auth()->user()->coins ?? 0) }}
+                                    </span>
+                                    <span class="text-[10px] font-bold text-white uppercase opacity-80">Coins</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logout Button -->
+                    <form id="logout-form" action="{{ route('filament.admin.auth.logout') }}" method="POST" class="h-full">
+                        @csrf
+                        <button type="submit" class="group flex items-center gap-3 bg-red-50 hover:bg-red-500 px-5 py-2.5 rounded-2xl border-2 border-red-200 hover:border-red-600 shadow-sm transition-all duration-300 h-full">
+                            <div class="bg-red-100 group-hover:bg-white/20 p-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-right-from-bracket text-red-600 group-hover:text-white text-xl"></i>
+                            </div>
+                            <span class="text-sm font-black text-red-600 group-hover:text-white uppercase tracking-tight">LOGOUT</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
         
         <div class="service-grid">
             @php
             $services = [
                 // Our Existing Actual Links
                 ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
+            ];
+
+            if(auth()->user() && auth()->user()->role === \App\Models\User::ROLE_ADMIN) {
+                $services[] = ['name' => 'USER<br>MANAGEMENT', 'icon' => 'fa-users-gear', 'bg' => 'bg-blue-600 text-white border border-blue-700 shadow-md', 'icon_color' => 'text-white', 'url' => '/admin/user-managements'];
+            }
+
+            $other_services = [
                 ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/admin/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0],
                 ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/admin/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
                 ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/admin/birth-records', 'count' => $counts['birth_records'] ?? 0],
@@ -193,16 +234,26 @@
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
                 ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
             ];
+            $services = array_merge($services, $other_services);
             @endphp
 
             @foreach($services as $service)
+            @php
+                $needsCoins = !in_array($service['name'], ['CUSTOMER<br>SUPPORT', 'USER<br>MANAGEMENT', 'LOGOUT<br>SYSTEM']);
+                $hasOnclick = isset($service['onclick']);
+            @endphp
             <a 
-                @if(isset($service['onclick'])) 
+                @if($hasOnclick) 
                     @click.prevent="{{ $service['onclick'] }}" 
+                    href="{{ $service['url'] }}"
+                @elseif($needsCoins)
+                    wire:click.prevent="useService('{{ $service['name'] }}', '{{ $service['url'] }}', {{ isset($service['external']) && $service['external'] ? 'true' : 'false' }})"
+                    href="#"
+                @else
+                    href="{{ $service['url'] }}"
+                    @if(isset($service['external']) && $service['external']) target="_blank" @endif
                 @endif
-                href="{{ $service['url'] }}" 
-                @if(isset($service['external']) && $service['external']) target="_blank" @endif 
-                class="service-card {{ $service['bg'] }} relative"
+                class="service-card {{ $service['bg'] }} relative cursor-pointer"
             >
                 <div class="icon-box">
                     @if(isset($service['image']))
@@ -223,6 +274,14 @@
             @endforeach
         </div>
     </div>
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('open-external-url', (event) => {
+                window.open(event.url, '_blank');
+            });
+        });
+    </script>
 
     <!-- Bill Print Modal -->
     <template x-if="showBillModal">
@@ -259,7 +318,7 @@
                             Cancel
                         </button>
                         <button 
-                            @click="window.open('https://uhbvn.org.in/Rapdrp/BD?UID=' + billUid, '_blank'); showBillModal = false" 
+                            @click="$wire.useService('UHBVN Bill Print', 'https://uhbvn.org.in/Rapdrp/BD?UID=' + billUid, true); showBillModal = false" 
                             class="flex-[2] px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-black rounded-xl shadow-lg shadow-yellow-500/30 transition-all transform hover:-translate-y-1 uppercase text-xs tracking-widest"
                         >
                             Print Bill Now

@@ -8,13 +8,19 @@ use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\DeductServiceCoins;
 
 class CreatePdfConverter extends CreateRecord
 {
+    use DeductServiceCoins;
+
     protected static string $resource = PdfConverterResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // Deduct coins first
+        $this->checkAndDeductCoins('PDF Converter');
+
         // Get the password from the form
         $password = $data['password'] ?? '';
 

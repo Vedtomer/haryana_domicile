@@ -1,3 +1,5 @@
+ok<?php
+$content = <<<'PHP'
 <?php
 
 namespace App\Filament\Pages;
@@ -53,3 +55,7 @@ class CustomDashboard extends BaseDashboard
         ];
     }
 }
+PHP;
+
+file_put_contents('app/Filament/Pages/CustomDashboard.php', $content);
+PHP;

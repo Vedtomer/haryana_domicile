@@ -170,6 +170,19 @@ class AadharCardAddressForm extends Page implements HasForms
 
     public function generatePdf()
     {
+        $user = auth()->user();
+
+        if (!$user->hasEnoughCoins(20)) {
+            \Filament\Notifications\Notification::make()
+                ->title('Insufficient Coins')
+                ->body('You need at least 20 coins to generate this PDF.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $user->deductCoins(20, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Generated Aadhar Update PDF');
+
         $data = $this->form->getState();
 
         // Pass data to an action or handled here
