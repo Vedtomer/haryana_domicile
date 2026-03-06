@@ -196,7 +196,7 @@
                 ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
             ];
 
-            if(auth()->user() && auth()->user()->role === \App\Models\User::ROLE_ADMIN) {
+            if(auth()->user() && auth()->user()->isAdmin()) {
                 $services[] = ['name' => 'USER<br>MANAGEMENT', 'icon' => 'fa-users-gear', 'bg' => 'bg-blue-600 text-white border border-blue-700 shadow-md', 'icon_color' => 'text-white', 'url' => '/admin/user-managements'];
             }
 
