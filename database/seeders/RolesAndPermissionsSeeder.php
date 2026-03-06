@@ -25,7 +25,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['email' => 'super@admin.com'],
             [
                 'name' => 'Super Admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('admin'),
                 'coins' => 1000
             ]
         );
@@ -36,7 +36,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('admin'),
                 'coins' => 500
             ]
         );
