@@ -41,5 +41,10 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $adminUser->assignRole('admin');
+
+        $this->command->info('Super Admin & Admin users created successfully!');
+        $this->command->info('Super Admin Email: super@admin.com');
+        $this->command->info('Admin Email: admin@admin.com');
+        $this->command->info('Password: password');
     }
 }
