@@ -197,14 +197,14 @@
             ];
 
             if(auth()->user() && auth()->user()->isAdmin()) {
-                $services[] = ['name' => 'USER<br>MANAGEMENT', 'icon' => 'fa-users-gear', 'bg' => 'bg-blue-600 text-white border border-blue-700 shadow-md', 'icon_color' => 'text-white', 'url' => '/admin/user-managements'];
+                $services[] = ['name' => 'USER<br>MANAGEMENT', 'icon' => 'fa-users-gear', 'bg' => 'bg-blue-600 text-white border border-blue-700 shadow-md', 'icon_color' => 'text-white', 'url' => '/user-managements'];
             }
 
             $other_services = [
-                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/admin/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0],
-                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/admin/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
-                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/admin/birth-records', 'count' => $counts['birth_records'] ?? 0],
-                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/admin/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
+                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0],
+                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
+                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0],
+                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
                 ['name' => 'PDF TO WORD', 'icon' => 'fa-file-word', 'bg' => 'bg-[#2b5797] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.ilovepdf.com/pdf_to_word', 'external' => true],
                 ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://onlineservices.proteantech.in/paam/endUserRegisterContact.html', 'external' => true],
 
