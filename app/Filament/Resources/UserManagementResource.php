@@ -24,6 +24,11 @@ class UserManagementResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->hasRole(['super_admin', 'admin']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -44,13 +49,11 @@ class UserManagementResource extends Resource
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(fn ($state) => filled($state))
                             ->label(fn (string $context): string => $context === 'create' ? 'Password' : 'New Password (Optional)'),
-                        Forms\Components\Select::make('role')
-                            ->options([
-                                User::ROLE_ADMIN => 'Admin',
-                                User::ROLE_RETAILER => 'Retailer',
-                            ])
-                            ->required()
-                            ->default(User::ROLE_RETAILER),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->required(),
                         Forms\Components\TextInput::make('coins')
                             ->numeric()
                             ->default(0)
@@ -69,14 +72,15 @@ class UserManagementResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('roles.name')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        User::ROLE_ADMIN => 'success',
-                        User::ROLE_RETAILER => 'info',
+                        'super_admin' => 'danger',
+                        'admin' => 'success',
+                        'user' => 'info',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    ->formatStateUsing(fn (string $state): string => str_replace('_', ' ', ucfirst($state))),
                 Tables\Columns\TextColumn::make('coins')
                     ->label('Wallet')
                     ->sortable()
@@ -89,11 +93,8 @@ class UserManagementResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('role')
-                    ->options([
-                        User::ROLE_ADMIN => 'Admin',
-                        User::ROLE_RETAILER => 'Retailer',
-                    ]),
+                Tables\Filters\SelectFilter::make('roles')
+                    ->relationship('roles', 'name'),
             ])
             ->actions([
                 Action::make('add_coins')

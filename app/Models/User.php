@@ -7,16 +7,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
-    // Role constants
-    const ROLE_ADMIN = 'admin';
-    const ROLE_RETAILER = 'retailer';
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +24,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'coins',
     ];
 
@@ -124,15 +120,15 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->hasRole(['super_admin', 'admin']);
     }
 
     /**
-     * Check if user is retailer
+     * Check if user is retailer (legacy role, now mapped to user)
      */
     public function isRetailer(): bool
     {
-        return $this->role === self::ROLE_RETAILER;
+        return $this->hasRole('user');
     }
 
     /**
