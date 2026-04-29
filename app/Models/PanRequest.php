@@ -18,9 +18,16 @@ class PanRequest extends Model
         'mobile',
         'pan_number',
         'status',
+        'utr_number',
         'admin_notes',
         'completed_by',
         'completed_at',
+        'photo',
+        'signature',
+        'aadhar_card_doc',
+        'additional_document',
+        'slip_document',
+        'final_pdf',
     ];
 
     protected $casts = [
