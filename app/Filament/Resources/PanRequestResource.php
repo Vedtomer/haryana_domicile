@@ -9,10 +9,22 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PanRequestResource extends Resource
 {
     protected static ?string $model = PanRequest::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->isAdmin()) {
+            return $query;
+        }
+        
+        return $query->where('user_id', auth()->id());
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
 
@@ -24,6 +36,9 @@ class PanRequestResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
+                    ->required(),
                 Forms\Components\Section::make('Applicant Details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -149,7 +164,7 @@ class PanRequestResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Accept Application')
                     ->modalDescription('Are you sure you want to accept this application? You can upload the PDF and slip later.')
-                    ->hidden(fn (PanRequest $record) => $record->status !== 'pending'),
+                    ->hidden(fn (PanRequest $record) => $record->status !== 'pending' || !auth()->user()->isAdmin()),
                 Tables\Actions\Action::make('reject')
                     ->label('Reject')
                     ->color('danger')
@@ -165,7 +180,7 @@ class PanRequestResource extends Resource
                             'admin_notes' => $data['admin_notes'],
                         ]);
                     })
-                    ->hidden(fn (PanRequest $record) => $record->status !== 'pending'),
+                    ->hidden(fn (PanRequest $record) => $record->status !== 'pending' || !auth()->user()->isAdmin()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

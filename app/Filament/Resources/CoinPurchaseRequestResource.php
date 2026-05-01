@@ -13,10 +13,22 @@ use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class CoinPurchaseRequestResource extends Resource
 {
     protected static ?string $model = CoinPurchaseRequest::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->isAdmin()) {
+            return $query;
+        }
+        
+        return $query->where('user_id', auth()->id());
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 

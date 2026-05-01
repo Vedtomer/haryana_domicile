@@ -10,6 +10,7 @@ class HaryanaDomicile extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'pincode',
         'tehsil',
         'district',
@@ -25,5 +26,9 @@ class HaryanaDomicile extends Model
         'ration_card_no',
         'child_name',
     ];
-    //
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

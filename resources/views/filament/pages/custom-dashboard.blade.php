@@ -149,7 +149,7 @@
         }
     </style>
 
-    <div x-data="{ showBillModal: false, showPanModal: false, billUid: '6894882000' }" class="relative">
+    <div x-data="{ showBillModal: false, showPanModal: false, showPhoneToAadharModal: false, billUid: '6894882000' }" class="relative">
         <div class="dashboard-container relative">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                 <h2 class="section-title text-xl font-black uppercase pl-2 border-l-4 border-blue-500">
@@ -233,6 +233,7 @@
                 ['name' => 'Pention<br>Check', 'icon' => 'fa-hand-holding-heart', 'bg' => 'bg-[#6b21a8] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf', 'external' => true],
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
                 ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
+                ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPhoneToAadharModal = true', 'count' => $counts['service_requests'] ?? 0],
             ];
             $services = array_merge($services, $other_services);
             @endphp
@@ -273,7 +274,7 @@
             </a>
             @endforeach
         </div>
-    </div>
+    
 
     <script>
         document.addEventListener('livewire:init', () => {
@@ -732,5 +733,58 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- Phone to Aadhar Modal -->
+    <div x-show="showPhoneToAadharModal" style="display: none;" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak @close-phone-aadhar-modal.window="showPhoneToAadharModal = false">
+        <!-- Backdrop -->
+        <div @click="showPhoneToAadharModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="bg-rose-600 p-6 text-white text-center">
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-mobile-retro text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-wider">Phone to Aadhar</h3>
+                <p class="text-sm opacity-90">Enter mobile number to get Aadhar details</p>
+            </div>
+            
+            <div class="p-8">
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Mobile Number</label>
+                    <input 
+                        type="text" 
+                        wire:model="phone_to_aadhar_mobile" 
+                        maxlength="10"
+                        class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-rose-500 focus:outline-none text-lg font-bold tracking-widest text-[#be123c] text-center"
+                        placeholder="Enter 10-Digit Mobile"
+                    >
+                    @error('phone_to_aadhar_mobile') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                </div>
+                
+                <div class="flex gap-3">
+                    <button 
+                        type="button"
+                        @click="showPhoneToAadharModal = false" 
+                        class="flex-1 px-6 py-3 border-2 border-gray-100 text-gray-400 font-bold rounded-xl hover:bg-gray-50 transition-all uppercase text-xs"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="button"
+                        wire:click="submitPhoneToAadhar" 
+                        class="flex-[2] px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl shadow-lg shadow-rose-500/30 transition-all transform hover:-translate-y-1 uppercase text-xs tracking-widest"
+                    >
+                        Submit Request
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-rose-800">Standard Charges: 20 Coins</p>
+            </div>
+        </div>
+    </div>
     </div>
 </x-filament-panels::page>

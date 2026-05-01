@@ -9,10 +9,22 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class HaryanaDomicileResource extends Resource
 {
     protected static ?string $model = HaryanaDomicile::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->isAdmin()) {
+            return $query;
+        }
+        
+        return $query->where('user_id', auth()->id());
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -22,6 +34,9 @@ class HaryanaDomicileResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
+                    ->required(),
                 Forms\Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([

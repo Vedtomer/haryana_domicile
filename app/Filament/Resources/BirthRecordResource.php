@@ -17,6 +17,17 @@ class BirthRecordResource extends Resource
 {
     protected static ?string $model = BirthRecord::class;
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->isAdmin()) {
+            return $query;
+        }
+        
+        return $query->where('user_id', auth()->id());
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationLabel = 'Birth Name Form';
@@ -27,7 +38,10 @@ class BirthRecordResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\Section::make('Search Details')
+                Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
+                    ->required(),
+                Forms\Components\Section::make('Search Details')
             ->schema([
                 Forms\Components\TextInput::make('district')->required(),
             ])->columns(1),

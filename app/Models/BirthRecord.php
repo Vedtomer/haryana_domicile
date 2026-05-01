@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BirthRecord extends Model
 {
     protected $fillable = [
+        'user_id',
         'district',
         'dob',
         'registration_no',
@@ -30,6 +31,11 @@ class BirthRecord extends Model
         'mother_aadhar',
         'child_document',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $casts = [
         'other_children' => 'array',

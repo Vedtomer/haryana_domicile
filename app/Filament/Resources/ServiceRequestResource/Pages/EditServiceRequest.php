@@ -4,9 +4,16 @@ namespace App\Filament\Resources\ServiceRequestResource\Pages;
 
 use App\Filament\Resources\ServiceRequestResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
 
-class CreateServiceRequest extends CreateRecord
+class EditServiceRequest extends EditRecord
 {
     protected static string $resource = ServiceRequestResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make(),
+        ];
+    }
 }

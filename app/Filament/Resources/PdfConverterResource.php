@@ -17,6 +17,17 @@ class PdfConverterResource extends Resource
 {
     protected static ?string $model = PdfConverter::class;
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->isAdmin()) {
+            return $query;
+        }
+        
+        return $query->where('user_id', auth()->id());
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
 
     protected static ?string $navigationLabel = 'Aadhar Card Converters';
@@ -29,7 +40,10 @@ class PdfConverterResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\Section::make('Aadhar Card Converters')
+                Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
+                    ->required(),
+                Forms\Components\Section::make('Aadhar Card Converters')
             ->description('Upload a password-protected Aadhaar PDF and convert it to front and back images')
             ->schema([
                 Forms\Components\FileUpload::make('pdf_path')

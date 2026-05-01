@@ -38,6 +38,10 @@ class CustomDashboard extends BaseDashboard
     public $rejectingPanId = null;
     public $reject_remark = '';
 
+    // Phone to Aadhar Service Properties
+    public $phone_to_aadhar_mobile = '';
+    public $showPhoneToAadharModal = false;
+
     public function openRejectModal($id)
     {
         if(auth()->user() && auth()->user()->isAdmin()) {
@@ -185,6 +189,48 @@ class CustomDashboard extends BaseDashboard
             ->send();
     }
 
+    public function submitPhoneToAadhar()
+    {
+        $this->validate([
+            'phone_to_aadhar_mobile' => 'required|string|size:10',
+        ], [
+            'phone_to_aadhar_mobile.required' => 'Please enter a mobile number.',
+            'phone_to_aadhar_mobile.size' => 'Mobile number must be exactly 10 digits.',
+        ]);
+
+        if (!auth()->user()->hasEnoughCoins(20)) {
+            Notification::make()
+                ->title('Insufficient Coins')
+                ->body('You need at least 20 coins for this service.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // Deduct 20 coins
+        auth()->user()->deductCoins(
+            20, 
+            \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 
+            "Phone to Aadhar Request - Mobile: " . $this->phone_to_aadhar_mobile
+        );
+
+        \App\Models\ServiceRequest::create([
+            'user_id' => auth()->id(),
+            'service_name' => 'Phone to Aadhar',
+            'input_data' => ['mobile' => $this->phone_to_aadhar_mobile],
+            'status' => 'pending',
+        ]);
+
+        $this->phone_to_aadhar_mobile = '';
+        $this->dispatch('close-phone-aadhar-modal');
+
+        Notification::make()
+            ->title('Request Submitted!')
+            ->body('Your Phone to Aadhar request has been received.')
+            ->success()
+            ->send();
+    }
+
     public function approvePanRequest($id)
     {
         if(auth()->user() && auth()->user()->isAdmin()) {
@@ -237,17 +283,22 @@ class CustomDashboard extends BaseDashboard
 
     protected function getViewData(): array
     {
+        $user = auth()->user();
+        $isAdmin = $user && $user->isAdmin();
+        $userId = $user ? $user->id : null;
+
         return [
             'counts' => [
                 'aadhar_update' => 0,
-                'haryana_domicile' => HaryanaDomicile::count(),
-                'birth_records' => BirthRecord::count(),
-                'pdf_converter' => PdfConverter::count(),
-                'pan_card' => PanRequest::count(),
+                'haryana_domicile' => $isAdmin ? HaryanaDomicile::count() : HaryanaDomicile::where('user_id', $userId)->count(),
+                'birth_records' => $isAdmin ? BirthRecord::count() : BirthRecord::where('user_id', $userId)->count(),
+                'pdf_converter' => $isAdmin ? PdfConverter::count() : PdfConverter::where('user_id', $userId)->count(),
+                'pan_card' => $isAdmin ? PanRequest::count() : PanRequest::where('user_id', $userId)->count(),
+                'service_requests' => $isAdmin ? \App\Models\ServiceRequest::count() : \App\Models\ServiceRequest::where('user_id', $userId)->count(),
             ],
-            'my_pan_requests' => auth()->user() && auth()->user()->isAdmin() 
+            'my_pan_requests' => $isAdmin 
                 ? PanRequest::orderBy('created_at', 'desc')->get() 
-                : PanRequest::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get(),
+                : PanRequest::where('user_id', $userId)->orderBy('created_at', 'desc')->get(),
         ];
     }
 }

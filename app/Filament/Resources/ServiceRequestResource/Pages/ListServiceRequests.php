@@ -4,9 +4,16 @@ namespace App\Filament\Resources\ServiceRequestResource\Pages;
 
 use App\Filament\Resources\ServiceRequestResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\ListRecords;
 
-class CreateServiceRequest extends CreateRecord
+class ListServiceRequests extends ListRecords
 {
     protected static string $resource = ServiceRequestResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+        ];
+    }
 }
