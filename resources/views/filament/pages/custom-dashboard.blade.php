@@ -199,6 +199,16 @@
                         </div>
                     </div>
 
+                    <!-- Logout Button -->
+                    <form id="logout-form" action="{{ route('filament.admin.auth.logout') }}" method="POST" class="h-full">
+                        @csrf
+                        <button type="submit" class="group flex items-center gap-3 bg-red-50 hover:bg-red-500 px-5 py-2.5 rounded-2xl border-2 border-red-200 hover:border-red-600 shadow-sm transition-all duration-300 h-full">
+                            <div class="bg-red-100 group-hover:bg-white/20 p-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-right-from-bracket text-red-600 group-hover:text-white text-xl"></i>
+                            </div>
+                            <span class="text-sm font-black text-red-600 group-hover:text-white uppercase tracking-tight">LOGOUT</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         
