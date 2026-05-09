@@ -147,9 +147,32 @@
             padding: 0 !important;
             max-width: 100% !important;
         }
+
+        /* Full Width Tweaks */
+        .fi-main-ctn {
+            max-width: 100% !important;
+            padding: 0 !important;
+        }
+        .fi-content {
+            padding: 0 !important;
+        }
+
+        @media (min-width: 1280px) {
+            .service-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        @media (min-width: 1536px) {
+            .service-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
     </style>
 
-    <div x-data="{ showBillModal: false, showPanModal: false, showPhoneToAadharModal: false, billUid: '6894882000' }" class="relative">
+    <div x-data="{ showPanModal: false, showPhoneToAadharModal: false }" 
+         @open-pan-modal.window="showPanModal = true"
+         @open-phone-aadhar-modal.window="showPhoneToAadharModal = true"
+         class="relative">
         <div class="dashboard-container relative">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                 <h2 class="section-title text-xl font-black uppercase pl-2 border-l-4 border-blue-500">
@@ -176,16 +199,6 @@
                         </div>
                     </div>
 
-                    <!-- Logout Button -->
-                    <form id="logout-form" action="{{ route('filament.admin.auth.logout') }}" method="POST" class="h-full">
-                        @csrf
-                        <button type="submit" class="group flex items-center gap-3 bg-red-50 hover:bg-red-500 px-5 py-2.5 rounded-2xl border-2 border-red-200 hover:border-red-600 shadow-sm transition-all duration-300 h-full">
-                            <div class="bg-red-100 group-hover:bg-white/20 p-2 rounded-xl transition-colors">
-                                <i class="fa-solid fa-right-from-bracket text-red-600 group-hover:text-white text-xl"></i>
-                            </div>
-                            <span class="text-sm font-black text-red-600 group-hover:text-white uppercase tracking-tight">LOGOUT</span>
-                        </button>
-                    </form>
                 </div>
             </div>
         
@@ -205,27 +218,10 @@
                 ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
                 ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0],
                 ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
-                ['name' => 'PDF TO WORD', 'icon' => 'fa-file-word', 'bg' => 'bg-[#2b5797] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.ilovepdf.com/pdf_to_word', 'external' => true],
                 ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPanModal = true'],
 
-                // Grid items from user's image reference
-                ['name' => 'MOBILE<br>RECHARGE', 'icon' => 'fa-mobile-screen', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-red-500', 'url' => 'https://paytm.com/', 'external' => true],
-                ['name' => 'MSME<br>REGISTRATION', 'icon' => 'fa-building', 'bg' => 'bg-[#f8fafc] text-black border border-gray-200', 'icon_color' => 'text-blue-800', 'url' => 'https://udyamregistration.gov.in/Government-India/Ministry-MSME-registration.htm', 'external' => true],
-                
-                ['name' => 'ACCOUNT<br>OPENING', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#fcfdf6] text-black border border-lime-200', 'icon_color' => 'text-orange-500', 'url' => 'https://www.hdfcbank.com/personal/save/accounts/savings-accounts', 'external' => true],
-                ['name' => 'VOTER ID<br>CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#1e3a8a] text-white', 'icon_color' => 'text-white', 'url' => 'https://voters.eci.gov.in/', 'external' => true],
-                ['name' => 'DRIVING<br>LICENCE', 'icon' => 'fa-id-card', 'bg' => 'bg-[#e11d48] text-white', 'icon_color' => 'text-white', 'url' => 'https://parivahan.gov.in/', 'external' => true],
-
-                ['name' => 'ELECTRICITY<br>BILL', 'icon' => 'fa-lightbulb', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-black', 'url' => 'https://epayment.uhbvn.org.in/', 'external' => true],
-                ['name' => 'HEALTH<br>INSURANCE', 'icon' => 'fa-heart-pulse', 'bg' => 'bg-[#7e22ce] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.hdfcergo.com/promotions/health-insurance/os-insurance-1.html?&utm_source=google_search_2&utm_medium=cpc&utm_campaign=Health_Search_Core-ROI-Neev_Broad&utm_adgroup=Health-Insurance&utm_campaign=23219663237&utm_content=185260599302&adid=782094737998&utm_term=health%20insurance&utm_network=g&utm_matchtype=b&utm_device=c&utm_location=1007766&utm_sitelink={sitelink}&utm_placement=&ci=googlesearch&gad_source=1&gad_campaignid=23219663237&gbraid=0AAAAADy0Cuh-9YcLU-0od1P9LyrrkqsdJ&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKFwVNPwZukH__4C0rhj0UIYToK_LdRwgce8g1GXHuYi5YXg4qY8_8aAtKaEALw_wcB', 'external' => true],
-                ['name' => 'CAR<br>INSURANCE', 'icon' => 'fa-car', 'bg' => 'bg-[#422006] text-white', 'icon_color' => 'text-red-500', 'url' => 'https://ci.policybazaar.com/v1?pb_source=google&pb_medium=cpc&pb_term=Car%20insurance&pb_campaign=High_Position_Desktop_ROI00Car_Insurance_networkg&gad_source=1&gad_campaignid=6764353897&gbraid=0AAAAAD7HssIXgo461fbYdUxwQPfCy9HrC&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKGPrp1IZb1u-LbrmQ3FCS6V8Mkr1Dzb0Q6OEPksrVD4kHCVBBqXqEaAnkpEALw_wcB', 'external' => true],
-                ['name' => 'BIKE<br>INSURANCE', 'icon' => 'fa-motorcycle', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-green-400', 'url' => 'https://ci.policybazaar.com/v1?pb_source=google&pb_medium=cpc&pb_term=Car%20insurance&pb_campaign=High_Position_Desktop_ROI00Car_Insurance_networkg&gad_source=1&gad_campaignid=6764353897&gbraid=0AAAAAD7HssIXgo461fbYdUxwQPfCy9HrC&gclid=Cj0KCQiA8KTNBhD_ARIsAOvp6DKGPrp1IZb1u-LbrmQ3FCS6V8Mkr1Dzb0Q6OEPksrVD4kHCVBBqXqEaAnkpEALw_wcB', 'external' => true],
-                ['name' => 'TAX RETURN<br>FILING', 'icon' => 'fa-file-invoice-dollar', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
-
-                ['name' => 'GST<br>SERVICES', 'icon' => 'fa-file-signature', 'bg' => 'bg-[#3b82f6] text-white border border-blue-400', 'icon_color' => 'text-red-500', 'url' => 'https://www.incometax.gov.in/iec/foportal/', 'external' => true],
                 ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => 'https://www.irctc.co.in/nget/train-search', 'external' => true],
                 ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
-                ['name' => 'UHBVN BILL<br>PRINT', 'icon' => 'fa-print', 'bg' => 'bg-[#fbbf24] text-black border border-yellow-400', 'icon_color' => 'text-red-600', 'url' => '#', 'onclick' => 'showBillModal = true'],
                 ['name' => 'Aadhar Card To<br>Famliy Id', 'icon' => 'fa-wheat-awn', 'bg' => 'bg-[#166534] text-white border border-green-700', 'icon_color' => 'text-yellow-400', 'url' => 'https://fasal.haryana.gov.in/home/login', 'external' => true],
                 ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
                 ['name' => 'Link Aadhaar<br>to Pan', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-orange-400', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/bl-link-aadhaar', 'external' => true],
@@ -284,55 +280,6 @@
         });
     </script>
 
-    <!-- Bill Print Modal -->
-    <template x-if="showBillModal">
-        <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            <!-- Backdrop -->
-            <div @click="showBillModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-            
-            <!-- Modal Content -->
-            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
-                <div class="bg-yellow-500 p-6 text-white text-center">
-                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-print text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-black uppercase tracking-wider">UHBVN Bill Print</h3>
-                    <p class="text-sm opacity-90">Enter UID to print electricity bill</p>
-                </div>
-                
-                <div class="p-8">
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Consumer UID</label>
-                        <input 
-                            type="text" 
-                            x-model="billUid" 
-                            class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-yellow-500 focus:outline-none text-lg font-bold tracking-widest text-[#1d4ed8] text-center"
-                            placeholder="Enter UID Number"
-                        >
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button 
-                            @click="showBillModal = false" 
-                            class="flex-1 px-6 py-3 border-2 border-gray-100 text-gray-400 font-bold rounded-xl hover:bg-gray-50 transition-all uppercase text-xs"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            @click="$wire.useService('UHBVN Bill Print', 'https://uhbvn.org.in/Rapdrp/BD?UID=' + billUid, true); showBillModal = false" 
-                            class="flex-[2] px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-black rounded-xl shadow-lg shadow-yellow-500/30 transition-all transform hover:-translate-y-1 uppercase text-xs tracking-widest"
-                        >
-                            Print Bill Now
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Haryana Electricity Board Portal</p>
-                </div>
-            </div>
-        </div>
-    </template>
 
     <!-- PAN Card Modal -->
     <div x-show="showPanModal" style="display: none;" class="relative z-[9999]" x-cloak>
@@ -556,7 +503,6 @@
                         </div>
                         
                     </div>
-                </div>
             </div>
         </div>
     </div>
