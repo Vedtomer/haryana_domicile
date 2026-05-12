@@ -55,7 +55,8 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make()
+                    ->simpleResourcePermissionView(true),
             ])
             ->userMenuItems([
                 'pdf-coordinates' => \Filament\Navigation\MenuItem::make()
