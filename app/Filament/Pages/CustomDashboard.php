@@ -13,6 +13,11 @@ use App\Models\CoinTransaction;
 class CustomDashboard extends Page
 {
     use \Livewire\WithFileUploads;
+    
+    public function getTitle(): \Illuminate\Contracts\Support\Htmlable|string
+    {
+        return '';
+    }
 
     public static function shouldRegisterNavigation(): bool
     {

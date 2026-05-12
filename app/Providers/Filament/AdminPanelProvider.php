@@ -30,6 +30,8 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration(\App\Filament\Pages\Auth\Register::class)
             ->passwordReset()
+            ->brandLogo(asset('Digital_India_logo.png'))
+            ->brandLogoHeight('2.5rem')
             ->colors([
                 'primary' => Color::Amber,
             ])
