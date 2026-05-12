@@ -58,6 +58,10 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make()
                     ->simpleResourcePermissionView(true),
             ])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn (): string => view('filament.hooks.topbar-actions'),
+            )
             ->userMenuItems([
                 'pdf-coordinates' => \Filament\Navigation\MenuItem::make()
                     ->label('PDF Coordinates')
