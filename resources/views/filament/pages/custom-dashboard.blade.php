@@ -182,9 +182,7 @@
          class="relative">
         <div class="dashboard-container relative">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
-                <h2 class="section-title text-xl font-black uppercase pl-2 border-l-4 border-blue-500">
-                    <i class="fa-solid fa-layer-group mr-2 text-blue-400"></i>All Services
-                </h2>
+                <!-- Section Title Removed -->
 
                 <!-- Right Side Actions Removed (Moved to Topbar) -->
             </div>
