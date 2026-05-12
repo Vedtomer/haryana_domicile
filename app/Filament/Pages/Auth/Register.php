@@ -9,11 +9,7 @@ class Register extends BaseRegister
 {
     protected function handleRegistration(array $data): Model
     {
-        $user = parent::handleRegistration($data);
-
-        // Auto-assign the default user role
-        $user->assignRole('user');
-
-        return $user;
+        $data['type'] = 'user';
+        return parent::handleRegistration($data);
     }
 }

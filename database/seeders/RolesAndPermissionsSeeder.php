@@ -20,14 +20,14 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create Roles
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $publicRole = Role::firstOrCreate(['name' => 'public']);
 
         // Give all permissions to super_admin
         $allPermissions = Permission::all();
         $superAdmin->syncPermissions($allPermissions);
 
         // Give basic permissions to user
-        $userRole->syncPermissions(['page_CustomDashboard']);
+        $publicRole->syncPermissions(['page_CustomDashboard']);
 
         // Create Admin User
         $adminUser = User::updateOrCreate(
@@ -51,7 +51,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'type' => 'user'
             ]
         );
-        $regularUser->assignRole($userRole);
+        $regularUser->assignRole($publicRole);
 
         $this->command->info('Roles and Permissions synced!');
         $this->command->info('Admin Account: admin@admin.com / admin@123');

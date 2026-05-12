@@ -21,7 +21,7 @@ class User extends Authenticatable implements FilamentUser
     {
         static::created(function (User $user) {
             if ($user->type === 'user') {
-                $user->assignRole('Public');
+                $user->assignRole('public');
             }
         });
     }
@@ -145,7 +145,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function isRetailer(): bool
     {
-        return $this->hasRole('user');
+        return $this->hasRole('public');
     }
 
     /**
