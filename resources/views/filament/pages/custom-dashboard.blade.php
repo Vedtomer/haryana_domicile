@@ -60,36 +60,7 @@
             letter-spacing: 0.05em;
             color: #475569;
         }
-        
-        .dashboard-container {
-            padding: 24px;
-            border-radius: 20px;
-            min-height: 90vh;
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
 
-        .dashboard-container > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .dashboard-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-        }
 
         .section-title {
             color: #1e293b;
@@ -119,15 +90,8 @@
     <div x-data="{ showPanModal: false, showPhoneToAadharModal: false }" 
          @open-pan-modal.window="showPanModal = true"
          @open-phone-aadhar-modal.window="showPhoneToAadharModal = true"
-         class="relative">
-        <div class="dashboard-container relative">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
-                <!-- Section Title Removed -->
-
-                <!-- Right Side Actions Removed (Moved to Topbar) -->
-            </div>
-        
-        <div class="service-grid">
+         class="relative min-h-[calc(100vh-8rem)] flex items-center justify-center">
+        <div class="service-grid w-full max-w-7xl mx-auto">
             @php
             $services = [
                 ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
@@ -447,8 +411,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Admin View/Upload Modal -->
     <div x-data="{ open: false }" 
          x-show="open" 
          @open-view-pan-modal.window="open = true" 
@@ -672,6 +634,5 @@
                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-rose-800">Standard Charges: 20 Coins</p>
             </div>
         </div>
-    </div>
     </div>
 </x-filament-panels::page>
