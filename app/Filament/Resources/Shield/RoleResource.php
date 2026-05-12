@@ -49,12 +49,6 @@ class RoleResource extends VendorRoleResource
                         Forms\Components\Grid::make(3)
                             ->schema(static::getTogglesForOptions(PermissionSchema::getSidebarOptions())),
                     ]),
-                Forms\Components\Section::make('Search & Tool Access')
-                    ->description('Enable or disable access to search tools and utilities')
-                    ->schema([
-                        Forms\Components\Grid::make(3)
-                            ->schema(static::getTogglesForOptions(PermissionSchema::getTopbarOptions())),
-                    ]),
                 Forms\Components\Section::make('Dashboard Access')
                     ->schema([
                         Forms\Components\Grid::make(3)
