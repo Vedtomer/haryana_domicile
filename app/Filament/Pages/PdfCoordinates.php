@@ -12,7 +12,10 @@ class PdfCoordinates extends Page
     
     protected static ?string $title = '';
 
-    protected static bool $shouldRegisterNavigation = false;
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
 
     protected static string $view = 'filament.pages.pdf-coordinates';
     

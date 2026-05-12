@@ -32,6 +32,11 @@ class PanRequestResource extends Resource
 
     protected static ?string $modelLabel = 'PAN Card Application';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
+
     public static function form(Form $form): Form
     {
         return $form

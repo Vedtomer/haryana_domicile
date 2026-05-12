@@ -16,13 +16,13 @@ class CustomDashboard extends BaseDashboard
 
     public static function canAccess(): bool
     {
-        return auth()->user()->can('page_CustomDashboard');
+        return auth()->check() && (auth()->user()->type === 'user' || auth()->user()->can('page_CustomDashboard'));
     }
 
     public function mount()
     {
-        if (auth()->user()->type === 'admin') {
-            return redirect(\App\Filament\Resources\UserManagementResource::getUrl());
+        if (auth()->check() && auth()->user()->type === 'admin') {
+            return redirect(url('/user-managements'));
         }
     }
 

@@ -36,6 +36,11 @@ class CoinPurchaseRequestResource extends Resource
 
     protected static ?string $navigationLabel = 'Coin Requests';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
+
     public static function form(Form $form): Form
     {
         return $form

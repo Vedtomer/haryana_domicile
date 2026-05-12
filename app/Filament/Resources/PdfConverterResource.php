@@ -32,7 +32,10 @@ class PdfConverterResource extends Resource
 
     protected static ?string $navigationLabel = 'Aadhar Card Converters';
 
-    protected static bool $shouldRegisterNavigation = false;
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
 
     protected static ?string $modelLabel = 'PDF Converter';
 

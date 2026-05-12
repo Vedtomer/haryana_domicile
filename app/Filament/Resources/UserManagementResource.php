@@ -24,6 +24,8 @@ class UserManagementResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
+    protected static ?int $navigationSort = -100;
+
     public static function canViewAny(): bool
     {
         return auth()->user()->can('view_any_user::management');

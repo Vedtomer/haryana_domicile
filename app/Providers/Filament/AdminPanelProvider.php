@@ -63,9 +63,6 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn (): string => \App\Filament\Pages\PdfCoordinates::getUrl())
                     ->icon('heroicon-o-cog-6-tooth'),
             ])
-            ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
-            ])
             ->authMiddleware([
                 Authenticate::class,
             ]);
@@ -73,7 +70,8 @@ class AdminPanelProvider extends PanelProvider
 
     public function boot(): void
     {
-        // Bind Filament's LogoutResponse contract to our custom response class
+        // Bind Filament's response contracts to our custom response classes
         $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LogoutResponse::class, \App\Http\Responses\LogoutResponse::class);
+        $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LoginResponse::class, \App\Http\Responses\LoginResponse::class);
     }
 }

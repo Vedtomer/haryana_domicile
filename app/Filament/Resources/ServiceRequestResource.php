@@ -21,7 +21,10 @@ class ServiceRequestResource extends Resource
     protected static ?string $navigationLabel = 'General Services';
 
     protected static ?string $modelLabel = 'Service Request';
-    protected static bool $shouldRegisterNavigation = false;
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
 
     public static function getEloquentQuery(): Builder
     {
