@@ -98,10 +98,22 @@ class FamilyDataSearch extends Page implements HasForms
                 $saveData = $isBinary ? base64_decode($result) : $result;
                 Storage::disk('public')->put($fileName, $saveData);
 
+                // Extract Family ID if possible (assuming it's in the text)
+                $familyId = $aadharNumber;
+                if (!$isBinary) {
+                    // Try to find "NewFamilyID" or "Family ID"
+                    if (preg_match('/(?:NewFamilyID|Family ID)\s*[:=-]?\s*([A-Z0-9]+)/i', $result, $matches)) {
+                        $familyId = trim($matches[1]);
+                    }
+                }
+
                 ServiceRequest::create([
                     'user_id' => auth()->id(),
                     'service_name' => 'Aadhar to Family Data',
-                    'input_data' => ['aadhar_number' => $aadharNumber],
+                    'input_data' => [
+                        'aadhar_number' => $aadharNumber,
+                        'family_id' => $familyId
+                    ],
                     'status' => 'completed',
                     'attachment' => $fileName,
                     'completed_at' => now(),
@@ -115,7 +127,7 @@ class FamilyDataSearch extends Page implements HasForms
 
                 return response()->streamDownload(function () use ($saveData) {
                     echo $saveData;
-                }, "FamilyData_{$aadharNumber}.{$extension}", [
+                }, "{$familyId}.{$extension}", [
                     'Content-Type' => $mime,
                 ]);
             } else {
@@ -136,6 +148,7 @@ class FamilyDataSearch extends Page implements HasForms
             $this->isLoading = false;
         }
     }
+
 
     public function viewRecord($id)
     {

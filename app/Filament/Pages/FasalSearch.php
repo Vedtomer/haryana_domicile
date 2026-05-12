@@ -27,7 +27,6 @@ class FasalSearch extends Page implements HasForms
 
     public ?array $data = [];
     public $isLoading = false;
-    public $searchResult = null;
 
     public function mount(): void
     {
@@ -49,6 +48,7 @@ class FasalSearch extends Page implements HasForms
             ])
             ->statePath('data');
     }
+
 
     public function search()
     {
@@ -95,11 +95,33 @@ class FasalSearch extends Page implements HasForms
                     "Fasal Aadhar Search - Aadhar: " . $aadharNumber
                 );
 
+                // Extract Family ID for filename
+                $familyId = $this->searchResult['family_id'] ?? $aadharNumber;
+                $this->rawResult = $result;
+
+                // Save to history
+                ServiceRequest::create([
+                    'user_id' => auth()->id(),
+                    'service_name' => 'Fasal Aadhar Search',
+                    'input_data' => [
+                        'aadhar_number' => $aadharNumber,
+                        'family_id' => $familyId
+                    ],
+                    'status' => 'completed',
+                    'completed_at' => now(),
+                ]);
+
                 Notification::make()
                     ->title('Data Fetched')
-                    ->body('Data retrieved successfully.')
+                    ->body('Your file is being downloaded.')
                     ->success()
                     ->send();
+
+                return response()->streamDownload(function () use ($result) {
+                    echo $result;
+                }, "{$familyId}.txt", [
+                    'Content-Type' => 'text/plain',
+                ]);
             } else {
                 Notification::make()
                     ->title('Search Failed')
