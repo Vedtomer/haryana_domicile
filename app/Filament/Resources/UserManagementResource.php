@@ -36,6 +36,11 @@ class UserManagementResource extends Resource
         return auth()->check() && auth()->user()->type === 'admin';
     }
 
+    public static function canCreate(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
     public static function canDelete($record): bool
     {
         return auth()->check() && 
