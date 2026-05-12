@@ -122,60 +122,61 @@ class CoinPurchaseRequestResource extends Resource
             ]),
         ])
             ->actions([
-            Action::make('approve')
-            ->label('Approve')
-            ->icon('heroicon-o-check-circle')
-            ->color('success')
-            ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
-            ->action(function (CoinPurchaseRequest $record) {
-            DB::transaction(function () use ($record) {
-                    $record->update([
-                            'status' => CoinPurchaseRequest::STATUS_APPROVED,
-                            'approved_by' => auth()->id(),
-                            'approved_at' => now(),
-                        ]);
+                Tables\Actions\ActionGroup::make([
+                    Action::make('approve')
+                        ->label('Approve')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
+                        ->action(function (CoinPurchaseRequest $record) {
+                            DB::transaction(function () use ($record) {
+                                $record->update([
+                                    'status' => CoinPurchaseRequest::STATUS_APPROVED,
+                                    'approved_by' => auth()->id(),
+                                    'approved_at' => now(),
+                                ]);
 
-                    $record->user->addCoins(
-                        $record->coins_requested,
-                        CoinTransaction::TYPE_PURCHASE,
-                        "Purchased Coins - UTR: {$record->utr_number}"
-                    );
-                }
-                );
+                                $record->user->addCoins(
+                                    $record->coins_requested,
+                                    CoinTransaction::TYPE_PURCHASE,
+                                    "Purchased Coins - UTR: {$record->utr_number}"
+                                );
+                            });
 
-                Notification::make()
-                    ->title('Success')
-                    ->body('Request approved and coins added to user wallet.')
-                    ->success()
-                    ->send();
-            })
-            ->requiresConfirmation(),
-            Action::make('reject')
-            ->label('Reject')
-            ->icon('heroicon-o-x-circle')
-            ->color('danger')
-            ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
-            ->form([
-                Forms\Components\Textarea::make('admin_notes')
-                ->label('Notes')
-                ->required(),
+                            Notification::make()
+                                ->title('Success')
+                                ->body('Request approved and coins added to user wallet.')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation(),
+                    Action::make('reject')
+                        ->label('Reject')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
+                        ->form([
+                            Forms\Components\Textarea::make('admin_notes')
+                                ->label('Notes')
+                                ->required(),
+                        ])
+                        ->action(function (CoinPurchaseRequest $record, array $data) {
+                            $record->update([
+                                'status' => CoinPurchaseRequest::STATUS_REJECTED,
+                                'admin_notes' => $data['admin_notes'],
+                            ]);
+
+                            Notification::make()
+                                ->title('Rejected')
+                                ->body('Request rejected.')
+                                ->danger()
+                                ->send();
+                        })
+                        ->requiresConfirmation(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
-            ->action(function (CoinPurchaseRequest $record, array $data) {
-            $record->update([
-                    'status' => CoinPurchaseRequest::STATUS_REJECTED,
-                    'admin_notes' => $data['admin_notes'],
-                ]);
-
-            Notification::make()
-                ->title('Rejected')
-                ->body('Request rejected.')
-                ->danger()
-                ->send();
-        })
-            ->requiresConfirmation(),
-            Tables\Actions\ViewAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
             ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
                 Tables\Actions\DeleteBulkAction::make(),
