@@ -16,6 +16,15 @@ class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
+    
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            if ($user->type === 'user') {
+                $user->assignRole('Public');
+            }
+        });
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {

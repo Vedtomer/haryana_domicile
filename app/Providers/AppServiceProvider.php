@@ -24,5 +24,14 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
         });
+
+        // Auto-create Public role if it doesn't exist
+        try {
+            if (class_exists(\Spatie\Permission\Models\Role::class)) {
+                \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Public', 'guard_name' => 'web']);
+            }
+        } catch (\Exception $e) {
+            // Silently fail if DB is not ready
+        }
     }
 }
