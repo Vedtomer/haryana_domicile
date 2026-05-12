@@ -26,7 +26,6 @@ class FamilyDataSearch extends Page implements HasForms
     protected static bool $shouldRegisterNavigation = false;
 
     public ?array $data = [];
-    public $familyData = null;
     public $isLoading = false;
 
     public function mount(): void
@@ -73,13 +72,16 @@ class FamilyDataSearch extends Page implements HasForms
                 // Determine extension and data type
                 $extension = 'txt';
                 $isBinary = false;
+                $mime = 'text/plain';
                 
                 if (str_starts_with($result, 'JVBERi')) {
                     $extension = 'pdf';
                     $isBinary = true;
+                    $mime = 'application/pdf';
                 } elseif (str_starts_with($result, 'iVBORw0') || str_starts_with($result, '/9j/')) {
                     $extension = 'png';
                     $isBinary = true;
+                    $mime = 'image/png';
                 }
 
                 // Deduct coins only on success
@@ -103,13 +105,17 @@ class FamilyDataSearch extends Page implements HasForms
                     'completed_at' => now(),
                 ]);
 
-                $this->familyData = $result;
-                $this->dispatch('record-loaded');
-                
                 Notification::make()
                     ->title('Data Fetched Successfully')
+                    ->body('Your file is being downloaded.')
                     ->success()
                     ->send();
+
+                return response()->streamDownload(function () use ($saveData) {
+                    echo $saveData;
+                }, "FamilyData_{$aadharNumber}.{$extension}", [
+                    'Content-Type' => $mime,
+                ]);
             } else {
                 Notification::make()
                     ->title('No Data Found')
@@ -134,21 +140,19 @@ class FamilyDataSearch extends Page implements HasForms
         $record = ServiceRequest::find($id);
         if ($record && $record->attachment) {
             $data = Storage::disk('public')->get($record->attachment);
-            
-            // If it's a binary file (PDF/Image), we need to encode it for the frontend
             $extension = pathinfo($record->attachment, PATHINFO_EXTENSION);
-            if (in_array($extension, ['pdf', 'png', 'jpg'])) {
-                $this->familyData = base64_encode($data);
-            } else {
-                $this->familyData = $data;
-            }
+            $mime = match($extension) {
+                'pdf' => 'application/pdf',
+                'png' => 'image/png',
+                'jpg' => 'image/jpeg',
+                default => 'text/plain',
+            };
             
-            $this->dispatch('record-loaded');
-            
-            Notification::make()
-                ->title('Record Loaded')
-                ->success()
-                ->send();
+            return response()->streamDownload(function () use ($data) {
+                echo $data;
+            }, basename($record->attachment), [
+                'Content-Type' => $mime,
+            ]);
         }
     }
 
