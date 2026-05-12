@@ -15,36 +15,46 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // Generate Shield Permissions
+        \Illuminate\Support\Facades\Artisan::call('shield:generate --all --panel=admin --no-interaction');
+
         // Create Roles
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-        $admin = Role::firstOrCreate(['name' => 'admin']);
         $userRole = Role::firstOrCreate(['name' => 'user']);
 
-        // Create a default super_admin for testing/setup
-        $superAdminUser = User::firstOrCreate(
-            ['email' => 'super@admin.com'],
-            [
-                'name' => 'Super Admin',
-                'password' => Hash::make('admin'),
-                'coins' => 1000
-            ]
-        );
-        $superAdminUser->assignRole('super_admin');
+        // Give all permissions to super_admin
+        $allPermissions = Permission::all();
+        $superAdmin->syncPermissions($allPermissions);
 
-        // Create a default admin for testing/setup
-        $adminUser = User::firstOrCreate(
+        // Give basic permissions to user
+        $userRole->syncPermissions(['page_CustomDashboard']);
+
+        // Create Admin User
+        $adminUser = User::updateOrCreate(
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('admin'),
-                'coins' => 500
+                'coins' => 10000,
+                'type' => 'admin'
             ]
         );
-        $adminUser->assignRole('admin');
+        $adminUser->assignRole($superAdmin);
 
-        $this->command->info('Super Admin & Admin users created successfully!');
-        $this->command->info('Super Admin Email: super@admin.com');
-        $this->command->info('Admin Email: admin@admin.com');
-        $this->command->info('Password: password');
+        // Create Regular User
+        $regularUser = User::updateOrCreate(
+            ['email' => 'user@user.com'],
+            [
+                'name' => 'Regular User',
+                'password' => Hash::make('user@123'),
+                'coins' => 100,
+                'type' => 'user'
+            ]
+        );
+        $regularUser->assignRole($userRole);
+
+        $this->command->info('Roles and Permissions synced!');
+        $this->command->info('Admin Account: admin@admin.com / admin@123');
+        $this->command->info('User Account: user@user.com / user@123');
     }
 }

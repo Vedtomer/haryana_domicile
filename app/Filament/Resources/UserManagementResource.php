@@ -26,7 +26,7 @@ class UserManagementResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->hasRole(['super_admin', 'admin']);
+        return auth()->user()->can('view_any_user::management');
     }
 
     public static function form(Form $form): Form

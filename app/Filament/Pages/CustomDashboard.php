@@ -14,6 +14,11 @@ class CustomDashboard extends BaseDashboard
 {
     use \Livewire\WithFileUploads;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->can('page_CustomDashboard');
+    }
+
     protected static string $view = 'filament.pages.custom-dashboard';
     protected static ?string $slug = 'dashboard';
     protected static string $routePath = 'dashboard';
@@ -44,7 +49,7 @@ class CustomDashboard extends BaseDashboard
 
     public function openRejectModal($id)
     {
-        if(auth()->user() && auth()->user()->isAdmin()) {
+        if(auth()->user() && auth()->user()->can('update_pan::request')) {
             $this->rejectingPanId = (int)$id;
             $this->reject_remark = '';
             $this->dispatch('open-reject-modal');
@@ -58,7 +63,7 @@ class CustomDashboard extends BaseDashboard
             'reject_remark.min' => 'Reason must be at least 5 characters.',
         ]);
 
-        if(auth()->user() && auth()->user()->isAdmin() && $this->rejectingPanId) {
+        if(auth()->user() && auth()->user()->can('update_pan::request') && $this->rejectingPanId) {
             PanRequest::where('id', $this->rejectingPanId)->update([
                 'status' => 'rejected',
                 'admin_notes' => $this->reject_remark,
@@ -72,7 +77,7 @@ class CustomDashboard extends BaseDashboard
 
     public function viewPanDetails($id)
     {
-        if(auth()->user() && auth()->user()->isAdmin()) {
+        if(auth()->user() && auth()->user()->can('update_pan::request')) {
             $this->viewingPanRequestId = $id;
             $this->dispatch('open-view-pan-modal');
         }
@@ -87,7 +92,7 @@ class CustomDashboard extends BaseDashboard
 
     public function saveAdminUploads()
     {
-        if(auth()->user() && auth()->user()->isAdmin() && $this->viewingPanRequestId) {
+        if(auth()->user() && auth()->user()->can('update_pan::request') && $this->viewingPanRequestId) {
             $this->validate([
                 'admin_slip_upload' => 'nullable|file|max:5120',
                 'admin_pan_pdf_upload' => 'nullable|file|mimes:pdf|max:5120',
@@ -233,7 +238,7 @@ class CustomDashboard extends BaseDashboard
 
     public function approvePanRequest($id)
     {
-        if(auth()->user() && auth()->user()->isAdmin()) {
+        if(auth()->user() && auth()->user()->can('update_pan::request')) {
             PanRequest::where('id', $id)->update(['status' => 'accepted']);
             Notification::make()->title('Application Approved')->success()->send();
         }
@@ -241,7 +246,7 @@ class CustomDashboard extends BaseDashboard
 
     public function rejectPanRequest($id)
     {
-        if(auth()->user() && auth()->user()->isAdmin()) {
+        if(auth()->user() && auth()->user()->can('update_pan::request')) {
             PanRequest::where('id', (int)$id)->update(['status' => 'rejected', 'admin_notes' => 'Rejected by admin']);
             Notification::make()->title('Application Rejected')->danger()->send();
         }
@@ -249,7 +254,7 @@ class CustomDashboard extends BaseDashboard
 
     public function deletePanRequest($id)
     {
-        if(auth()->user() && auth()->user()->isAdmin()) {
+        if(auth()->user() && auth()->user()->can('delete_pan::request')) {
             PanRequest::where('id', $id)->delete();
             Notification::make()->title('Application Deleted')->success()->send();
         }

@@ -119,7 +119,8 @@
             --collapsed-sidebar-width: 0px !important;
         }
         
-        /* Hide Filament Layout Elements */
+        @if(auth()->user()->type !== 'admin')
+        /* Hide Filament Layout Elements for regular users */
         .fi-sidebar, 
         .fi-topbar,
         .fi-sidebar-active,
@@ -147,6 +148,7 @@
             padding: 0 !important;
             max-width: 100% !important;
         }
+        @endif
 
         /* Full Width Tweaks */
         .fi-main-ctn {
@@ -222,45 +224,49 @@
         <div class="service-grid">
             @php
             $services = [
-                // Our Existing Actual Links
                 ['name' => 'CUSTOMER<br>SUPPORT', 'image' => '/whatsapp_premium.png', 'bg' => 'bg-white text-black border border-green-500 shadow-lg shadow-green-500/10 hover:shadow-green-500/20', 'url' => 'https://wa.me/380630323112', 'external' => true],
             ];
 
-            if(auth()->user() && auth()->user()->isAdmin()) {
+            if(auth()->user()->can('view_any_user::management')) {
                 $services[] = ['name' => 'USER<br>MANAGEMENT', 'icon' => 'fa-users-gear', 'bg' => 'bg-blue-600 text-white border border-blue-700 shadow-md', 'icon_color' => 'text-white', 'url' => '/user-managements'];
             }
 
             $other_services = [
-                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0],
-                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0],
-                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0],
-                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
-                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPanModal = true'],
+                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0, 'permission' => 'page_AadharCardAddressForm'],
+                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0, 'permission' => 'view_any_haryana::domicile'],
+                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0, 'permission' => 'view_any_birth::record'],
+                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0, 'permission' => 'view_any_pdf::converter'],
+                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPanModal = true', 'permission' => 'view_any_pan::request'],
 
-                ['name' => 'PPP FASAL<br>SEARCH', 'icon' => 'fa-search-plus', 'bg' => 'bg-[#9333ea] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FasalSearch::getUrl()],
-                ['name' => 'Aadhar No. to<br>Famliy Data', 'icon' => 'fa-users-viewfinder', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FamilyDataSearch::getUrl()],
+                ['name' => 'PPP FASAL<br>SEARCH', 'icon' => 'fa-search-plus', 'bg' => 'bg-[#9333ea] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FasalSearch::getUrl(), 'permission' => 'page_FasalSearch'],
+                ['name' => 'Aadhar No. to<br>Famliy Data', 'icon' => 'fa-users-viewfinder', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FamilyDataSearch::getUrl(), 'permission' => 'page_FamilyDataSearch'],
                 ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
                 ['name' => 'RESIZE<br>PDF', 'icon' => 'fa-file-pdf', 'bg' => 'bg-red-600 text-white border border-red-700', 'icon_color' => 'text-white', 'url' => 'https://pdf.pi7.org/resize-pdf', 'external' => true],
                 ['name' => 'Pention<br>Check', 'icon' => 'fa-hand-holding-heart', 'bg' => 'bg-[#6b21a8] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf', 'external' => true],
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
                 ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
-                ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToAadhar::getUrl(), 'count' => $counts['service_requests'] ?? 0],
-                ['name' => 'Phone to<br>Detail', 'icon' => 'fa-id-card-clip', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToDetail::getUrl()],
-                ['name' => 'Vehicle<br>Detail', 'icon' => 'fa-truck-fast', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\VehicleDetail::getUrl()],
-                ['name' => 'Aadhaar<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'aadhar'])],
-                ['name' => 'Family<br>Info', 'icon' => 'fa-users-between-lines', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'familyinfo'])],
-                ['name' => 'Linked<br>Mobile', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#7c3aed] text-white border border-violet-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vnum'])],
-                ['name' => 'Instagram<br>Intel', 'icon' => 'fa-brands fa-instagram', 'bg' => 'bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white border border-pink-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'insta'])],
-                ['name' => 'Pincode<br>Details', 'icon' => 'fa-map-location-dot', 'bg' => 'bg-[#15803d] text-white border border-green-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pincode'])],
-                ['name' => 'PAN<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0f766e] text-white border border-teal-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pan'])],
-                ['name' => 'Telegram<br>Number', 'icon' => 'fa-brands fa-telegram', 'bg' => 'bg-[#0284c7] text-white border border-sky-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'tgnum'])],
-                ['name' => 'Vehicle<br>Owner', 'icon' => 'fa-user-tag', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vowner'])],
-                ['name' => 'IFSC<br>Details', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'ifsc'])],
-                ['name' => 'GST<br>Data', 'icon' => 'fa-briefcase', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'gst'])],
+                ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToAadhar::getUrl(), 'count' => $counts['service_requests'] ?? 0, 'permission' => 'page_PhoneToAadhar'],
+                ['name' => 'Phone to<br>Detail', 'icon' => 'fa-id-card-clip', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToDetail::getUrl(), 'permission' => 'page_PhoneToDetail'],
+                ['name' => 'Vehicle<br>Detail', 'icon' => 'fa-truck-fast', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\VehicleDetail::getUrl(), 'permission' => 'page_VehicleDetail'],
+                ['name' => 'Aadhaar<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'aadhar']), 'permission' => 'page_ManualService'],
+                ['name' => 'Family<br>Info', 'icon' => 'fa-users-between-lines', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'familyinfo']), 'permission' => 'page_ManualService'],
+                ['name' => 'Linked<br>Mobile', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#7c3aed] text-white border border-violet-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vnum']), 'permission' => 'page_ManualService'],
+                ['name' => 'Instagram<br>Intel', 'icon' => 'fa-brands fa-instagram', 'bg' => 'bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white border border-pink-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'insta']), 'permission' => 'page_ManualService'],
+                ['name' => 'Pincode<br>Details', 'icon' => 'fa-map-location-dot', 'bg' => 'bg-[#15803d] text-white border border-green-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pincode']), 'permission' => 'page_ManualService'],
+                ['name' => 'PAN<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0f766e] text-white border border-teal-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pan']), 'permission' => 'page_ManualService'],
+                ['name' => 'Telegram<br>Number', 'icon' => 'fa-brands fa-telegram', 'bg' => 'bg-[#0284c7] text-white border border-sky-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'tgnum']), 'permission' => 'page_ManualService'],
+                ['name' => 'Vehicle<br>Owner', 'icon' => 'fa-user-tag', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vowner']), 'permission' => 'page_ManualService'],
+                ['name' => 'IFSC<br>Details', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'ifsc']), 'permission' => 'page_ManualService'],
+                ['name' => 'GST<br>Data', 'icon' => 'fa-briefcase', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'gst']), 'permission' => 'page_ManualService'],
 
-                ['name' => 'MY REQUESTS<br>& REPLIES', 'icon' => 'fa-bell', 'bg' => 'bg-[#ea580c] text-white border-2 border-orange-400 shadow-lg shadow-orange-500/40 animate-pulse-subtle', 'icon_color' => 'text-white', 'url' => '/service-requests', 'count' => $counts['service_requests'] ?? 0],
+                ['name' => 'MY REQUESTS<br>& REPLIES', 'icon' => 'fa-bell', 'bg' => 'bg-[#ea580c] text-white border-2 border-orange-400 shadow-lg shadow-orange-500/40 animate-pulse-subtle', 'icon_color' => 'text-white', 'url' => '/service-requests', 'count' => $counts['service_requests'] ?? 0, 'permission' => 'view_any_service::request'],
             ];
-            $services = array_merge($services, $other_services);
+            
+            foreach($other_services as $s) {
+                if(!isset($s['permission']) || auth()->user()->can($s['permission'])) {
+                    $services[] = $s;
+                }
+            }
             @endphp
 
             @foreach($services as $service)
