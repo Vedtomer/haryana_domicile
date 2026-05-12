@@ -20,7 +20,10 @@ class PhoneToDetail extends Page implements HasForms
     protected static ?string $title = 'Phone to Detail';
     protected static ?string $navigationLabel = 'Phone to Detail';
     protected static ?string $slug = 'phone-to-detail';
-    protected static bool $shouldRegisterNavigation = true;
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user() && auth()->user()->type === 'user';
+    }
 
     public ?array $data = [];
     public $isLoading = false;
