@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -22,13 +22,13 @@
         .service-card {
             display: flex;
             align-items: center;
-            padding: 8px 10px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
             text-decoration: none !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 56px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 64px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             background-clip: padding-box;
         }
         .service-card:hover {
@@ -38,57 +38,41 @@
         }
         
         .icon-box {
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
+            margin-right: 14px;
             flex-shrink: 0;
-            font-size: 18px;
-            backdrop-filter: blur(4px);
+            font-size: 20px;
+            transition: all 0.3s ease;
         }
 
         .service-title {
             font-size: 11px;
-            font-weight: 800;
-            line-height: 1.15;
+            font-weight: 700;
+            line-height: 1.25;
             text-transform: uppercase;
-            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            letter-spacing: 0.025em;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.05em;
+            color: #475569;
         }
         
         .dashboard-container {
-            padding: 20px;
-            border-radius: 16px;
+            padding: 24px;
+            border-radius: 20px;
             min-height: 90vh;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-        }
-
-        .dashboard-container::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background-image: url('/Digital_India_logo.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 0;
-            filter: grayscale(1) brightness(2);
         }
 
         .dashboard-container > * {
@@ -103,13 +87,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
             pointer-events: none;
         }
 
         .section-title {
-            color: #f8fafc;
-            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            color: #1e293b;
             letter-spacing: 0.1em;
         }
 
@@ -120,42 +103,14 @@
         }
         
         @if(auth()->user()->type !== 'admin')
-        .fi-sidebar, 
-        .fi-sidebar-active,
-        aside {
-            display: none !important;
-            width: 0 !important;
-        }
-
-        /* Make Main Content Full Width & No Padding */
-        .fi-main, 
-        .fi-content,
-        main,
-        .fi-main-ctn {
+        .fi-sidebar, aside { display: none !important; }
+        .fi-main-ctn, .fi-main, .fi-content, main {
             padding: 0 !important;
             margin: 0 !important;
             max-width: 100% !important;
-            width: 100% !important;
         }
-
-        .fi-page-header {
-            display: none !important;
-        }
-
-        section {
-            padding: 0 !important;
-            max-width: 100% !important;
-        }
+        .fi-page-header { display: none !important; }
         @endif
-
-        /* Full Width Tweaks */
-        .fi-main-ctn {
-            max-width: 100% !important;
-            padding: 0 !important;
-        }
-        .fi-content {
-            padding: 0 !important;
-        }
 
         @media (min-width: 1280px) {
             .service-grid {
@@ -198,34 +153,34 @@
             }
 
             $other_services = [
-                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-[#f0fdf4] text-black border border-green-200', 'icon_color' => 'text-green-700', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0, 'permission' => 'page_AadharCardAddressForm'],
-                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-[#1d4ed8] text-white', 'icon_color' => 'text-white', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0, 'permission' => 'view_any_haryana::domicile'],
-                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-[#db2777] text-white', 'icon_color' => 'text-white', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0, 'permission' => 'view_any_birth::record'],
-                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0, 'permission' => 'view_any_pdf::converter'],
-                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPanModal = true', 'permission' => 'view_any_pan::request'],
+                ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-emerald-50 border-emerald-100 hover:bg-emerald-100', 'icon_color' => 'text-emerald-600', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0, 'permission' => 'page_AadharCardAddressForm'],
+                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-blue-50 border-blue-100 hover:bg-blue-100', 'icon_color' => 'text-blue-600', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0, 'permission' => 'view_any_haryana::domicile'],
+                ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-rose-50 border-rose-100 hover:bg-rose-100', 'icon_color' => 'text-rose-600', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0, 'permission' => 'view_any_birth::record'],
+                ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-red-50 border-red-100 hover:bg-red-100', 'icon_color' => 'text-red-600', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0, 'permission' => 'view_any_pdf::converter'],
+                ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-teal-50 border-teal-100 hover:bg-teal-100', 'icon_color' => 'text-teal-600', 'url' => '#', 'onclick' => 'showPanModal = true', 'permission' => 'view_any_pan::request'],
 
-                ['name' => 'PPP FASAL<br>SEARCH', 'icon' => 'fa-search-plus', 'bg' => 'bg-[#9333ea] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FasalSearch::getUrl(), 'permission' => 'page_FasalSearch'],
-                ['name' => 'Aadhar No. to<br>Famliy Data', 'icon' => 'fa-users-viewfinder', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FamilyDataSearch::getUrl(), 'permission' => 'page_FamilyDataSearch'],
-                ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
-                ['name' => 'RESIZE<br>PDF', 'icon' => 'fa-file-pdf', 'bg' => 'bg-red-600 text-white border border-red-700', 'icon_color' => 'text-white', 'url' => 'https://pdf.pi7.org/resize-pdf', 'external' => true],
-                ['name' => 'Pention<br>Check', 'icon' => 'fa-hand-holding-heart', 'bg' => 'bg-[#6b21a8] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf', 'external' => true],
-                ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
-                ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
-                ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToAadhar::getUrl(), 'count' => $counts['service_requests'] ?? 0, 'permission' => 'page_PhoneToAadhar'],
-                ['name' => 'Phone to<br>Detail', 'icon' => 'fa-id-card-clip', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToDetail::getUrl(), 'permission' => 'page_PhoneToDetail'],
-                ['name' => 'Vehicle<br>Detail', 'icon' => 'fa-truck-fast', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\VehicleDetail::getUrl(), 'permission' => 'page_VehicleDetail'],
-                ['name' => 'Aadhaar<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'aadhar']), 'permission' => 'page_ManualService'],
-                ['name' => 'Family<br>Info', 'icon' => 'fa-users-between-lines', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'familyinfo']), 'permission' => 'page_ManualService'],
-                ['name' => 'Linked<br>Mobile', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#7c3aed] text-white border border-violet-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vnum']), 'permission' => 'page_ManualService'],
-                ['name' => 'Instagram<br>Intel', 'icon' => 'fa-brands fa-instagram', 'bg' => 'bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white border border-pink-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'insta']), 'permission' => 'page_ManualService'],
-                ['name' => 'Pincode<br>Details', 'icon' => 'fa-map-location-dot', 'bg' => 'bg-[#15803d] text-white border border-green-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pincode']), 'permission' => 'page_ManualService'],
-                ['name' => 'PAN<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0f766e] text-white border border-teal-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pan']), 'permission' => 'page_ManualService'],
-                ['name' => 'Telegram<br>Number', 'icon' => 'fa-brands fa-telegram', 'bg' => 'bg-[#0284c7] text-white border border-sky-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'tgnum']), 'permission' => 'page_ManualService'],
-                ['name' => 'Vehicle<br>Owner', 'icon' => 'fa-user-tag', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vowner']), 'permission' => 'page_ManualService'],
-                ['name' => 'IFSC<br>Details', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'ifsc']), 'permission' => 'page_ManualService'],
-                ['name' => 'GST<br>Data', 'icon' => 'fa-briefcase', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'gst']), 'permission' => 'page_ManualService'],
+                ['name' => 'PPP FASAL<br>SEARCH', 'icon' => 'fa-search-plus', 'bg' => 'bg-purple-50 border-purple-100 hover:bg-purple-100', 'icon_color' => 'text-purple-600', 'url' => \App\Filament\Pages\FasalSearch::getUrl(), 'permission' => 'page_FasalSearch'],
+                ['name' => 'Aadhar No. to<br>Famliy Data', 'icon' => 'fa-users-viewfinder', 'bg' => 'bg-sky-50 border-sky-100 hover:bg-sky-100', 'icon_color' => 'text-sky-600', 'url' => \App\Filament\Pages\FamilyDataSearch::getUrl(), 'permission' => 'page_FamilyDataSearch'],
+                ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-indigo-50 border-indigo-100 hover:bg-indigo-100', 'icon_color' => 'text-indigo-600', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
+                ['name' => 'RESIZE<br>PDF', 'icon' => 'fa-file-pdf', 'bg' => 'bg-slate-50 border-slate-200 hover:bg-slate-100', 'icon_color' => 'text-slate-600', 'url' => 'https://pdf.pi7.org/resize-pdf', 'external' => true],
+                ['name' => 'Pention<br>Check', 'icon' => 'fa-hand-holding-heart', 'bg' => 'bg-fuchsia-50 border-fuchsia-100 hover:bg-fuchsia-100', 'icon_color' => 'text-fuchsia-600', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf', 'external' => true],
+                ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-50 border-blue-200 hover:bg-blue-100', 'icon_color' => 'text-blue-700', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
+                ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-violet-50 border-violet-100 hover:bg-violet-100', 'icon_color' => 'text-violet-600', 'url' => 'https://www.remove.bg/', 'external' => true],
+                ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-pink-50 border-pink-100 hover:bg-pink-100', 'icon_color' => 'text-pink-600', 'url' => \App\Filament\Pages\PhoneToAadhar::getUrl(), 'count' => $counts['service_requests'] ?? 0, 'permission' => 'page_PhoneToAadhar'],
+                ['name' => 'Phone to<br>Detail', 'icon' => 'fa-id-card-clip', 'bg' => 'bg-cyan-50 border-cyan-100 hover:bg-cyan-100', 'icon_color' => 'text-cyan-600', 'url' => \App\Filament\Pages\PhoneToDetail::getUrl(), 'permission' => 'page_PhoneToDetail'],
+                ['name' => 'Vehicle<br>Detail', 'icon' => 'fa-truck-fast', 'bg' => 'bg-lime-50 border-lime-100 hover:bg-lime-100', 'icon_color' => 'text-lime-600', 'url' => \App\Filament\Pages\VehicleDetail::getUrl(), 'permission' => 'page_VehicleDetail'],
+                ['name' => 'Aadhaar<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-amber-50 border-amber-100 hover:bg-amber-100', 'icon_color' => 'text-amber-600', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'aadhar']), 'permission' => 'page_ManualService'],
+                ['name' => 'Family<br>Info', 'icon' => 'fa-users-between-lines', 'bg' => 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100', 'icon_color' => 'text-emerald-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'familyinfo']), 'permission' => 'page_ManualService'],
+                ['name' => 'Linked<br>Mobile', 'icon' => 'fa-link-slash', 'bg' => 'bg-sky-50 border-sky-200 hover:bg-sky-100', 'icon_color' => 'text-sky-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vnum']), 'permission' => 'page_ManualService'],
+                ['name' => 'Instagram<br>Intel', 'icon' => 'fa-brands fa-instagram', 'bg' => 'bg-pink-50 border-pink-200 hover:bg-pink-100', 'icon_color' => 'text-pink-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'insta']), 'permission' => 'page_ManualService'],
+                ['name' => 'Pincode<br>Details', 'icon' => 'fa-map-location-dot', 'bg' => 'bg-green-50 border-green-200 hover:bg-green-100', 'icon_color' => 'text-green-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pincode']), 'permission' => 'page_ManualService'],
+                ['name' => 'PAN<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-orange-50 border-orange-200 hover:bg-orange-100', 'icon_color' => 'text-orange-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pan']), 'permission' => 'page_ManualService'],
+                ['name' => 'Telegram<br>Number', 'icon' => 'fa-brands fa-telegram', 'bg' => 'bg-sky-50 border-sky-300 hover:bg-sky-200', 'icon_color' => 'text-sky-800', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'tgnum']), 'permission' => 'page_ManualService'],
+                ['name' => 'Vehicle<br>Owner', 'icon' => 'fa-user-tag', 'bg' => 'bg-teal-50 border-teal-200 hover:bg-teal-100', 'icon_color' => 'text-teal-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vowner']), 'permission' => 'page_ManualService'],
+                ['name' => 'IFSC<br>Details', 'icon' => 'fa-building-columns', 'bg' => 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100', 'icon_color' => 'text-indigo-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'ifsc']), 'permission' => 'page_ManualService'],
+                ['name' => 'GST<br>Data', 'icon' => 'fa-briefcase', 'bg' => 'bg-violet-50 border-violet-200 hover:bg-violet-100', 'icon_color' => 'text-violet-700', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'gst']), 'permission' => 'page_ManualService'],
 
-                ['name' => 'MY REQUESTS<br>& REPLIES', 'icon' => 'fa-bell', 'bg' => 'bg-[#ea580c] text-white border-2 border-orange-400 shadow-lg shadow-orange-500/40 animate-pulse-subtle', 'icon_color' => 'text-white', 'url' => '/service-requests', 'count' => $counts['service_requests'] ?? 0, 'permission' => 'view_any_service::request'],
+                ['name' => 'MY REQUESTS<br>& REPLIES', 'icon' => 'fa-bell', 'bg' => 'bg-orange-50 border-orange-200 hover:bg-orange-100 shadow-md shadow-orange-500/10', 'icon_color' => 'text-orange-600', 'url' => '/service-requests', 'count' => $counts['service_requests'] ?? 0, 'permission' => 'view_any_service::request'],
             ];
             
             foreach($other_services as $s) {

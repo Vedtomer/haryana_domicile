@@ -1,4 +1,5 @@
-<div class="flex items-center gap-4 px-4 py-2">
+@if(auth()->user()->type !== 'admin')
+<div class="flex items-center gap-4 py-2">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -28,3 +29,4 @@
         </div>
     </div>
 </div>
+@endif
