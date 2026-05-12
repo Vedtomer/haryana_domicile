@@ -294,7 +294,7 @@ class CustomDashboard extends BaseDashboard
                 'birth_records' => $isAdmin ? BirthRecord::count() : BirthRecord::where('user_id', $userId)->count(),
                 'pdf_converter' => $isAdmin ? PdfConverter::count() : PdfConverter::where('user_id', $userId)->count(),
                 'pan_card' => $isAdmin ? PanRequest::count() : PanRequest::where('user_id', $userId)->count(),
-                'service_requests' => $isAdmin ? \App\Models\ServiceRequest::count() : \App\Models\ServiceRequest::where('user_id', $userId)->count(),
+                'service_requests' => $isAdmin ? \App\Models\ServiceRequest::where('status', 'pending')->count() : \App\Models\ServiceRequest::where('user_id', $userId)->count(),
             ],
             'my_pan_requests' => $isAdmin 
                 ? PanRequest::orderBy('created_at', 'desc')->get() 

@@ -167,6 +167,13 @@
                 grid-template-columns: repeat(8, 1fr);
             }
         }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(0.98); }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 3s infinite ease-in-out;
+        }
     </style>
 
     <div x-data="{ showPanModal: false, showPhoneToAadharModal: false }" 
@@ -238,7 +245,20 @@
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
                 ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
                 ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToAadhar::getUrl(), 'count' => $counts['service_requests'] ?? 0],
-                ['name' => 'RECENT<br>SEARCHES', 'icon' => 'fa-history', 'bg' => 'bg-[#475569] text-white border border-slate-700', 'icon_color' => 'text-white', 'url' => '/service-requests'],
+                ['name' => 'Phone to<br>Detail', 'icon' => 'fa-id-card-clip', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\PhoneToDetail::getUrl()],
+                ['name' => 'Vehicle<br>Detail', 'icon' => 'fa-truck-fast', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\VehicleDetail::getUrl()],
+                ['name' => 'Aadhaar<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'aadhar'])],
+                ['name' => 'Family<br>Info', 'icon' => 'fa-users-between-lines', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'familyinfo'])],
+                ['name' => 'Linked<br>Mobile', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#7c3aed] text-white border border-violet-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vnum'])],
+                ['name' => 'Instagram<br>Intel', 'icon' => 'fa-brands fa-instagram', 'bg' => 'bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white border border-pink-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'insta'])],
+                ['name' => 'Pincode<br>Details', 'icon' => 'fa-map-location-dot', 'bg' => 'bg-[#15803d] text-white border border-green-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pincode'])],
+                ['name' => 'PAN<br>Info', 'icon' => 'fa-id-card', 'bg' => 'bg-[#0f766e] text-white border border-teal-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'pan'])],
+                ['name' => 'Telegram<br>Number', 'icon' => 'fa-brands fa-telegram', 'bg' => 'bg-[#0284c7] text-white border border-sky-600', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'tgnum'])],
+                ['name' => 'Vehicle<br>Owner', 'icon' => 'fa-user-tag', 'bg' => 'bg-[#059669] text-white border border-emerald-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'vowner'])],
+                ['name' => 'IFSC<br>Details', 'icon' => 'fa-building-columns', 'bg' => 'bg-[#1e40af] text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'ifsc'])],
+                ['name' => 'GST<br>Data', 'icon' => 'fa-briefcase', 'bg' => 'bg-[#4338ca] text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\ManualService::getUrl(['type' => 'gst'])],
+
+                ['name' => 'MY REQUESTS<br>& REPLIES', 'icon' => 'fa-bell', 'bg' => 'bg-[#ea580c] text-white border-2 border-orange-400 shadow-lg shadow-orange-500/40 animate-pulse-subtle', 'icon_color' => 'text-white', 'url' => '/service-requests', 'count' => $counts['service_requests'] ?? 0],
             ];
             $services = array_merge($services, $other_services);
             @endphp

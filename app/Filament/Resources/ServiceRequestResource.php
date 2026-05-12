@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Notifications\Notification;
 
 class ServiceRequestResource extends Resource
 {
@@ -20,6 +21,7 @@ class ServiceRequestResource extends Resource
     protected static ?string $navigationLabel = 'General Services';
 
     protected static ?string $modelLabel = 'Service Request';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function getEloquentQuery(): Builder
     {
@@ -39,11 +41,12 @@ class ServiceRequestResource extends Resource
                 Forms\Components\Section::make('Request Details')
                     ->schema([
                         Forms\Components\TextInput::make('service_name')
-                            ->disabled()
-                            ->label('Service Type'),
+                            ->required()
+                            ->label('Service Type')
+                            ->placeholder('e.g., Phone to Aadhar'),
                         Forms\Components\KeyValue::make('input_data')
                             ->label('Submitted Data')
-                            ->disabled(),
+                            ->required(),
                         Forms\Components\Select::make('status')
                             ->options([
                                 'pending' => 'Pending',
@@ -81,8 +84,8 @@ class ServiceRequestResource extends Resource
                     ->label('Service')
                     ->badge(),
                 Tables\Columns\TextColumn::make('identifier')
-                    ->label('ID/Mobile')
-                    ->getStateUsing(fn ($record) => $record->input_data['mobile'] ?? $record->input_data['aadhar_number'] ?? 'N/A')
+                    ->label('ID/Mobile/Vehicle')
+                    ->getStateUsing(fn ($record) => $record->input_data['mobile'] ?? $record->input_data['aadhar_number'] ?? $record->input_data['vehicle_number'] ?? 'N/A')
                     ->copyable()
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')

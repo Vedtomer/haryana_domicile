@@ -11,15 +11,15 @@ use Filament\Notifications\Notification;
 use App\Models\CoinTransaction;
 use App\Models\ServiceRequest;
 
-class PhoneToAadhar extends Page implements HasForms
+class VehicleDetail extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-phone';
-    protected static string $view = 'filament.pages.phone-to-aadhar';
-    protected static ?string $title = 'Phone to Aadhar';
-    protected static ?string $navigationLabel = 'Phone to Aadhar';
-    protected static ?string $slug = 'phone-to-aadhar';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static string $view = 'filament.pages.vehicle-detail';
+    protected static ?string $title = 'Vehicle Detail';
+    protected static ?string $navigationLabel = 'Vehicle Detail';
+    protected static ?string $slug = 'vehicle-detail';
     protected static bool $shouldRegisterNavigation = false;
 
     public ?array $data = [];
@@ -34,13 +34,13 @@ class PhoneToAadhar extends Page implements HasForms
     {
         return $form
             ->schema([
-                TextInput::make('mobile')
-                    ->label('Mobile Number')
+                TextInput::make('vehicle_number')
+                    ->label('Vehicle Number')
                     ->required()
-                    ->tel()
-                    ->length(10)
-                    ->maxLength(10)
-                    ->placeholder('Enter 10-digit mobile number'),
+                    ->minLength(6)
+                    ->maxLength(15)
+                    ->placeholder('e.g. HR26AA1234')
+                    ->extraInputAttributes(['style' => 'text-transform: uppercase']),
             ])
             ->statePath('data');
     }
@@ -48,9 +48,10 @@ class PhoneToAadhar extends Page implements HasForms
     public function submit()
     {
         $formData = $this->form->getState();
-        $mobile = $formData['mobile'];
+        $vehicleNumber = strtoupper($formData['vehicle_number']);
         $user = auth()->user();
 
+        // Price: 20 coins
         if (!$user->hasEnoughCoins(30)) {
             Notification::make()
                 ->title('Insufficient Coins')
@@ -63,25 +64,23 @@ class PhoneToAadhar extends Page implements HasForms
         $this->isLoading = true;
         
         try {
-            // Deduct coins
             $user->deductCoins(
                 30, 
                 CoinTransaction::TYPE_SERVICE_DEDUCTION, 
-                "Phone to Aadhar Request - Mobile: " . $mobile
+                "Vehicle Detail Request - No: " . $vehicleNumber
             );
 
-            // Create service request for admin
             ServiceRequest::create([
                 'user_id' => auth()->id(),
-                'service_name' => 'Phone to Aadhar',
-                'input_data' => ['mobile' => $mobile],
+                'service_name' => 'Vehicle Detail',
+                'input_data' => ['vehicle_number' => $vehicleNumber],
                 'status' => 'pending',
                 'completed_at' => null,
             ]);
 
             Notification::make()
                 ->title('Request Submitted')
-                ->body('Your request has been sent to the admin. You will be notified once it is completed.')
+                ->body('Your Vehicle Detail request has been sent to the admin.')
                 ->success()
                 ->send();
 
@@ -100,7 +99,7 @@ class PhoneToAadhar extends Page implements HasForms
     public function getHistoryProperty()
     {
         return ServiceRequest::where('user_id', auth()->id())
-            ->where('service_name', 'Phone to Aadhar')
+            ->where('service_name', 'Vehicle Detail')
             ->latest()
             ->get();
     }
