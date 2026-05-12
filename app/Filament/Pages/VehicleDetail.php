@@ -20,7 +20,7 @@ class VehicleDetail extends Page implements HasForms
     protected static ?string $title = 'Vehicle Detail';
     protected static ?string $navigationLabel = 'Vehicle Detail';
     protected static ?string $slug = 'vehicle-detail';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     public ?array $data = [];
     public $isLoading = false;

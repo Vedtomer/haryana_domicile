@@ -23,7 +23,7 @@ class FasalSearch extends Page implements HasForms
     protected static ?string $title = 'Fasal Aadhar to Family ID';
     protected static ?string $navigationLabel = 'Fasal Aadhar to Family ID';
     protected static ?string $slug = 'fasal-search';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     public ?array $data = [];
     public $isLoading = false;

@@ -20,7 +20,7 @@ class PhoneToAadhar extends Page implements HasForms
     protected static ?string $title = 'Phone to Aadhar';
     protected static ?string $navigationLabel = 'Phone to Aadhar';
     protected static ?string $slug = 'phone-to-aadhar';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     public ?array $data = [];
     public $isLoading = false;

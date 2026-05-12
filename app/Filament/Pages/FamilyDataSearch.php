@@ -23,7 +23,7 @@ class FamilyDataSearch extends Page implements HasForms
     protected static ?string $title = 'Aadhar to Family Data';
     protected static ?string $navigationLabel = 'Aadhar to Family Data';
     protected static ?string $slug = 'family-data-search';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     public ?array $data = [];
     public $isLoading = false;

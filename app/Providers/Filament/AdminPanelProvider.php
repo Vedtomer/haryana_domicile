@@ -18,11 +18,54 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationItem;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $navItems = [];
+        
+        $externalLinks = [
+            ['name' => 'CUSTOMER SUPPORT', 'icon' => 'heroicon-o-chat-bubble-oval-left-ellipsis', 'url' => 'https://wa.me/380630323112'],
+            ['name' => 'Pan To Aadhaar Link Status', 'icon' => 'heroicon-o-link', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status'],
+            ['name' => 'RESIZE PDF', 'icon' => 'heroicon-o-document-minus', 'url' => 'https://pdf.pi7.org/resize-pdf'],
+            ['name' => 'Pention Check', 'icon' => 'heroicon-o-hand-raised', 'url' => 'https://pension.socialjusticehry.gov.in/Ben_Inf'],
+            ['name' => 'LIC PAY', 'icon' => 'heroicon-o-shield-check', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay'],
+            ['name' => 'Photo Bg Remove', 'icon' => 'heroicon-o-photo', 'url' => 'https://www.remove.bg/'],
+        ];
+
+        $manualServices = [
+            ['name' => 'Aadhaar Info', 'icon' => 'heroicon-o-identification', 'type' => 'aadhar'],
+            ['name' => 'Family Info', 'icon' => 'heroicon-o-user-group', 'type' => 'familyinfo'],
+            ['name' => 'Linked Mobile', 'icon' => 'heroicon-o-device-phone-mobile', 'type' => 'vnum'],
+            ['name' => 'Instagram Intel', 'icon' => 'heroicon-o-camera', 'type' => 'insta'],
+            ['name' => 'Pincode Details', 'icon' => 'heroicon-o-map-pin', 'type' => 'pincode'],
+            ['name' => 'PAN Info', 'icon' => 'heroicon-o-credit-card', 'type' => 'pan'],
+            ['name' => 'Telegram Number', 'icon' => 'heroicon-o-paper-airplane', 'type' => 'tgnum'],
+            ['name' => 'Vehicle Owner', 'icon' => 'heroicon-o-truck', 'type' => 'vowner'],
+            ['name' => 'IFSC Details', 'icon' => 'heroicon-o-building-library', 'type' => 'ifsc'],
+            ['name' => 'GST Data', 'icon' => 'heroicon-o-briefcase', 'type' => 'gst'],
+        ];
+
+        foreach ($externalLinks as $link) {
+            $navItems[] = NavigationItem::make($link['name'])
+                ->icon($link['icon'])
+                ->url($link['url'])
+                ->openUrlInNewTab();
+        }
+
+        foreach ($manualServices as $service) {
+            $navItems[] = NavigationItem::make($service['name'])
+                ->icon($service['icon'])
+                ->url(fn () => \App\Filament\Pages\ManualService::getUrl(['type' => $service['type']]))
+                ->visible(fn () => auth()->user()?->can('page_ManualService') ?? false);
+        }
+
+        $navItems[] = NavigationItem::make('PAN CARD')
+            ->icon('heroicon-o-identification')
+            ->url('javascript:window.dispatchEvent(new CustomEvent("open-pan-modal"))');
+
         return $panel
             ->default()
             ->id('admin')
@@ -33,6 +76,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('')
             ->brandLogo(asset('Digital_India_logo.png'))
             ->brandLogoHeight('2rem')
+            ->sidebarWidth('14rem')
             ->darkMode(false)
             ->colors([
                 'primary' => Color::Amber,
@@ -62,10 +106,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make()
                     ->simpleResourcePermissionView(true),
             ])
-            ->renderHook(
-                \Filament\View\PanelsRenderHook::TOPBAR_START,
-                fn (): string => auth()->user()?->type !== 'admin' ? '<img src="'.asset('Digital_India_logo.png').'" class="h-8">' : '',
-            )
+            ->navigationItems($navItems)
             ->renderHook(
                 \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
                 fn (): string => view('filament.hooks.topbar-actions'),
