@@ -30,6 +30,11 @@ class CoinPurchaseRequestResource extends Resource
         return $query->where('user_id', auth()->id());
     }
 
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?string $navigationGroup = 'Settings';

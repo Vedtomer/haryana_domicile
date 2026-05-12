@@ -19,6 +19,11 @@ class RoleResource extends VendorRoleResource
 {
     protected static ?string $slug = 'shield/roles';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
     public static function getShieldFormComponents(): \Filament\Forms\Components\Component
     {
         $tabs = [];

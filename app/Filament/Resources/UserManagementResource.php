@@ -28,7 +28,17 @@ class UserManagementResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->can('view_any_user::management');
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
     }
 
     public static function form(Form $form): Form

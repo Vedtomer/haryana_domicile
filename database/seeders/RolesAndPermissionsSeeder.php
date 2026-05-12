@@ -34,7 +34,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('admin'),
+                'password' => Hash::make('admin@123'),
                 'coins' => 10000,
                 'type' => 'admin'
             ]
