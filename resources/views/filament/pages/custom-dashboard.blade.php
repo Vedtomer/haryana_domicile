@@ -230,9 +230,9 @@
                 ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-[#dc2626] text-white', 'icon_color' => 'text-white', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0],
                 ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-[#0f766e] text-white', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPanModal = true'],
 
-                ['name' => 'IRCTC<br>(TRAIN BOOKING)', 'icon' => 'fa-train', 'bg' => 'bg-white text-black border border-gray-200', 'icon_color' => 'text-purple-800', 'url' => 'https://www.irctc.co.in/nget/train-search', 'external' => true],
                 ['name' => 'Mera Parivar<br>Meri Id', 'icon' => 'fa-users', 'bg' => 'bg-[#6366f1] text-white', 'icon_color' => 'text-white', 'url' => 'https://ppp-office.haryana.gov.in/', 'external' => true],
                 ['name' => 'Aadhar Card To<br>Famliy Id', 'icon' => 'fa-wheat-awn', 'bg' => 'bg-[#166534] text-white border border-green-700', 'icon_color' => 'text-yellow-400', 'url' => 'https://fasal.haryana.gov.in/home/login', 'external' => true],
+                ['name' => 'PPP FASAL<br>SEARCH', 'icon' => 'fa-search-plus', 'bg' => 'bg-[#9333ea] text-white border border-purple-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FasalSearch::getUrl()],
                 ['name' => 'Aadhar No. to<br>Famliy Data', 'icon' => 'fa-users-viewfinder', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => \App\Filament\Pages\FamilyDataSearch::getUrl()],
                 ['name' => 'Pan To Aadhaar<br>Link Status', 'icon' => 'fa-link', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-white', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/link-aadhaar-status', 'external' => true],
                 ['name' => 'Link Aadhaar<br>to Pan', 'icon' => 'fa-link-slash', 'bg' => 'bg-[#0369a1] text-white border border-sky-700', 'icon_color' => 'text-orange-400', 'url' => 'https://eportal.incometax.gov.in/iec/foservices/#/pre-login/bl-link-aadhaar', 'external' => true],

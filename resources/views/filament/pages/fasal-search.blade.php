@@ -1,35 +1,38 @@
 <x-filament-panels::page>
     <style>
-        .data-container {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .captcha-container {
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
-        .animate-in {
-            animation: slideIn 0.5s ease-out forwards;
+        .captcha-refresh {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .captcha-refresh:hover {
+            transform: rotate(180deg);
+            color: #3b82f6;
         }
         .history-item:hover {
             background: rgba(59, 130, 246, 0.05);
             border-left: 4px solid #3b82f6;
         }
-        @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            .fi-main { padding: 0 !important; }
-            .fi-content { padding: 0 !important; }
-        }
     </style>
 
     <div class="space-y-6">
-        <!-- Top Section: Search & History -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 no-print">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <x-filament::section>
                 <x-slot name="heading">
                     <div class="flex items-center gap-2">
-                        <x-filament::icon icon="heroicon-o-magnifying-glass" class="w-5 h-5 text-primary-500" />
-                        <span>Search Family Data</span>
+                        <x-filament::icon icon="heroicon-o-document-magnifying-glass" class="w-5 h-5 text-primary-500" />
+                        <span>Fasal Aadhar Search</span>
                     </div>
                 </x-slot>
 
@@ -37,7 +40,7 @@
                     {{ $this->form }}
 
                     <x-filament::button type="submit" class="w-full" wire:loading.attr="disabled" wire:target="search">
-                        <span wire:loading.remove wire:target="search">Search Data (20 Coins)</span>
+                        <span wire:loading.remove wire:target="search">Search Data (10 Coins)</span>
                         <span wire:loading wire:target="search">
                             <i class="fa-solid fa-spinner fa-spin mr-2"></i>Searching...
                         </span>
@@ -53,12 +56,9 @@
                     </div>
                 </x-slot>
 
-                <div class="space-y-2 max-h-[160px] overflow-y-auto pr-2">
+                <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
                     @forelse($this->history as $record)
-                        <div 
-                            wire:click="viewRecord({{ $record->id }})"
-                            class="history-item p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-100 dark:border-gray-800 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-1"
-                        >
+                        <div class="history-item p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-100 dark:border-gray-800 rounded-2xl transition-all duration-300">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-lg font-black text-primary-500 tracking-tight">
                                     {{ $record->input_data['aadhar_number'] ?? 'N/A' }}
@@ -67,20 +67,18 @@
                                     {{ $record->created_at->diffForHumans() }}
                                 </span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Ready for Download</span>
+                            <div class="text-[10px] text-gray-500">
+                                Status: {{ ucfirst($record->status) }}
                             </div>
                         </div>
                     @empty
-                        <div class="text-center py-4 text-gray-400">
-                            <p class="text-xs">No history found</p>
+                        <div class="text-center py-8 text-gray-400">
+                            <x-filament::icon icon="heroicon-o-inbox" class="w-12 h-12 mx-auto mb-2 opacity-20" />
+                            <p class="text-sm">No search history found</p>
                         </div>
                     @endforelse
                 </div>
             </x-filament::section>
         </div>
-
     </div>
-
 </x-filament-panels::page>
