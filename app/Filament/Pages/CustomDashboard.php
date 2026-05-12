@@ -19,6 +19,13 @@ class CustomDashboard extends BaseDashboard
         return auth()->user()->can('page_CustomDashboard');
     }
 
+    public function mount()
+    {
+        if (auth()->user()->type === 'admin') {
+            return redirect(\App\Filament\Resources\UserManagementResource::getUrl());
+        }
+    }
+
     protected static string $view = 'filament.pages.custom-dashboard';
     protected static ?string $slug = 'dashboard';
     protected static string $routePath = 'dashboard';
