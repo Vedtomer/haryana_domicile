@@ -43,23 +43,45 @@ class RoleResource extends VendorRoleResource
     {
         return Forms\Components\Grid::make()
             ->schema([
-                Forms\Components\Section::make('Resources & Services')
+                Forms\Components\Section::make('Module & Service Access')
+                    ->description('Enable or disable full access to specific services')
                     ->schema([
-                        static::getTabFormComponentForResources(),
-                    ])
-                    ->compact(),
-                Forms\Components\Section::make('Search & Other Pages')
+                        Forms\Components\Grid::make(3)
+                            ->schema(static::getTogglesForOptions(PermissionSchema::getSidebarOptions())),
+                    ]),
+                Forms\Components\Section::make('Search & Tool Access')
+                    ->description('Enable or disable access to search tools and utilities')
                     ->schema([
-                        static::getTabFormComponentForPage(),
-                    ])
-                    ->compact(),
-                Forms\Components\Section::make('Dashboard Widgets')
+                        Forms\Components\Grid::make(3)
+                            ->schema(static::getTogglesForOptions(PermissionSchema::getTopbarOptions())),
+                    ]),
+                Forms\Components\Section::make('Dashboard Access')
                     ->schema([
-                        static::getTabFormComponentForWidget(),
-                    ])
-                    ->compact(),
+                        Forms\Components\Grid::make(3)
+                            ->schema(static::getTogglesForOptions(PermissionSchema::getDashboardOptions())),
+                    ]),
             ])
             ->columnSpan('full');
+    }
+
+    protected static function getTogglesForOptions(array $groupedOptions): array
+    {
+        $toggles = [];
+        foreach ($groupedOptions as $groupLabel => $options) {
+            foreach ($options as $module => $label) {
+                $toggles[] = Forms\Components\Toggle::make('module_' . $module)
+                    ->label($label)
+                    ->inline(false)
+                    ->afterStateHydrated(function ($component, $record) use ($module) {
+                        if (! $record) return;
+                        $perms = PermissionSchema::getModulePermissions($module);
+                        $hasAny = $record->permissions->pluck('name')->intersect($perms)->isNotEmpty();
+                        $component->state($hasAny);
+                    })
+                    ->dehydrated(false);
+            }
+        }
+        return $toggles;
     }
 
     public static function form(Form $form): Form

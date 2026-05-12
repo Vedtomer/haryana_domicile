@@ -16,14 +16,11 @@ class EditRole extends VendorEditRole
     {
         $permissions = [];
         foreach ($data as $key => $value) {
-            if (str_starts_with($key, 'sidebar_') || str_starts_with($key, 'topbar_') || str_starts_with($key, 'dashboard_')) {
-                if (is_array($value)) {
-                    foreach ($value as $module) {
-                        $modulePerms = PermissionSchema::getModulePermissions($module);
-                        foreach ($modulePerms as $perm) {
-                            $permissions[] = $perm;
-                        }
-                    }
+            if (str_starts_with($key, 'module_') && $value === true) {
+                $module = substr($key, 7);
+                $modulePerms = PermissionSchema::getModulePermissions($module);
+                foreach ($modulePerms as $perm) {
+                    $permissions[] = $perm;
                 }
             }
         }
