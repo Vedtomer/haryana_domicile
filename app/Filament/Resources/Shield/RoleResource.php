@@ -72,7 +72,7 @@ class RoleResource extends VendorRoleResource
                         $hasAny = $record->permissions->pluck('name')->intersect($perms)->isNotEmpty();
                         $component->state($hasAny);
                     })
-                    ->dehydrated(false);
+                    ->dehydrated(true);
             }
         }
         return $toggles;
