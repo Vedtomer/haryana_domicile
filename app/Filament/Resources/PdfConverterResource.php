@@ -34,7 +34,7 @@ class PdfConverterResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return true;
+        return auth()->user() && auth()->user()->type === 'user';
     }
 
     protected static ?string $modelLabel = 'PDF Converter';

@@ -53,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 ->icon($link['icon'])
                 ->url($link['url'])
                 ->openUrlInNewTab()
+                ->visible(fn () => auth()->user() && auth()->user()->type === 'user')
                 ->group('Others');
         }
 
@@ -60,13 +61,14 @@ class AdminPanelProvider extends PanelProvider
             $navItems[] = NavigationItem::make($service['name'])
                 ->icon($service['icon'])
                 ->url(fn () => \App\Filament\Pages\ManualService::getUrl(['type' => $service['type']]))
-                ->visible(fn () => auth()->user()?->can('page_ManualService') ?? false)
+                ->visible(fn () => auth()->user() && auth()->user()->type === 'user')
                 ->group('Others');
         }
 
         $navItems[] = NavigationItem::make('PAN CARD')
             ->icon('heroicon-o-identification')
             ->url('javascript:window.dispatchEvent(new CustomEvent("open-pan-modal"))')
+            ->visible(fn () => auth()->user() && auth()->user()->type === 'user')
             ->group('Others');
 
         return $panel
