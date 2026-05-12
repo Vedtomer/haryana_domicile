@@ -61,6 +61,10 @@ class AdminPanelProvider extends PanelProvider
                     ->simpleResourcePermissionView(true),
             ])
             ->renderHook(
+                \Filament\View\PanelsRenderHook::TOPBAR_START,
+                fn (): string => '<img src="'.asset('Digital_India_logo.png').'" class="h-10 ml-4">',
+            )
+            ->renderHook(
                 \Filament\View\PanelsRenderHook::GLOBAL_SEARCH_AFTER,
                 fn (): string => view('filament.hooks.topbar-actions'),
             )
