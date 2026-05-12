@@ -19,6 +19,10 @@ class CustomDashboard extends Page
         return '';
     }
 
+    protected static ?string $navigationLabel = 'Dashboard';
+    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static ?int $navigationSort = 1;
+
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->check() && auth()->user()->type === 'user';

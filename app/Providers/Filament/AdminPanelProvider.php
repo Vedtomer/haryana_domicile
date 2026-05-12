@@ -52,19 +52,22 @@ class AdminPanelProvider extends PanelProvider
             $navItems[] = NavigationItem::make($link['name'])
                 ->icon($link['icon'])
                 ->url($link['url'])
-                ->openUrlInNewTab();
+                ->openUrlInNewTab()
+                ->group('Others');
         }
 
         foreach ($manualServices as $service) {
             $navItems[] = NavigationItem::make($service['name'])
                 ->icon($service['icon'])
                 ->url(fn () => \App\Filament\Pages\ManualService::getUrl(['type' => $service['type']]))
-                ->visible(fn () => auth()->user()?->can('page_ManualService') ?? false);
+                ->visible(fn () => auth()->user()?->can('page_ManualService') ?? false)
+                ->group('Others');
         }
 
         $navItems[] = NavigationItem::make('PAN CARD')
             ->icon('heroicon-o-identification')
-            ->url('javascript:window.dispatchEvent(new CustomEvent("open-pan-modal"))');
+            ->url('javascript:window.dispatchEvent(new CustomEvent("open-pan-modal"))')
+            ->group('Others');
 
         return $panel
             ->default()
