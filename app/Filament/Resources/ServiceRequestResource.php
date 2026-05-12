@@ -80,14 +80,11 @@ class ServiceRequestResource extends Resource
                 Tables\Columns\TextColumn::make('service_name')
                     ->label('Service')
                     ->badge(),
-                Tables\Columns\TextColumn::make('input_data')
-                    ->label('Details')
-                    ->formatStateUsing(function ($state) {
-                        if (is_array($state)) {
-                            return collect($state)->map(fn($v, $k) => ucfirst($k) . ': ' . $v)->implode(', ');
-                        }
-                        return $state;
-                    }),
+                Tables\Columns\TextColumn::make('identifier')
+                    ->label('ID/Mobile')
+                    ->getStateUsing(fn ($record) => $record->input_data['mobile'] ?? $record->input_data['aadhar_number'] ?? 'N/A')
+                    ->copyable()
+                    ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'warning' => 'pending',
@@ -96,7 +93,7 @@ class ServiceRequestResource extends Resource
                     ]),
                 Tables\Columns\TextColumn::make('admin_response')
                     ->label('Reply')
-                    ->limit(50),
+                    ->limit(30),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -104,27 +101,31 @@ class ServiceRequestResource extends Resource
                         'pending' => 'Pending',
                         'completed' => 'Completed',
                         'rejected' => 'Rejected',
-                    ]),
+                    ])->default('pending'),
             ])
             ->actions([
-                Tables\Actions\Action::make('reply')
-                    ->label('Reply/Update')
-                    ->icon('heroicon-o-chat-bubble-bottom-center-text')
-                    ->color('success')
+                Tables\Actions\Action::make('work')
+                    ->label('Work / Reply')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary')
+                    ->modalHeading('Process Request')
+                    ->modalSubmitActionLabel('Complete & Send')
                     ->form([
+                        Forms\Components\Textarea::make('admin_response')
+                            ->label('Response / Result (Aadhar Number, etc.)')
+                            ->required()
+                            ->rows(3),
+                        Forms\Components\FileUpload::make('attachment')
+                            ->label('Upload Result File (Optional)')
+                            ->disk('public')
+                            ->directory('service-attachments'),
                         Forms\Components\Select::make('status')
                             ->options([
                                 'completed' => 'Completed',
                                 'rejected' => 'Rejected',
                             ])
+                            ->default('completed')
                             ->required(),
-                        Forms\Components\Textarea::make('admin_response')
-                            ->label('Response/Result')
-                            ->required(),
-                        Forms\Components\FileUpload::make('attachment')
-                            ->label('Attachment')
-                            ->disk('public')
-                            ->directory('service-attachments'),
                     ])
                     ->action(function (ServiceRequest $record, array $data) {
                         $record->update([
@@ -134,6 +135,12 @@ class ServiceRequestResource extends Resource
                             'completed_by' => auth()->id(),
                             'completed_at' => now(),
                         ]);
+
+                        Notification::make()
+                            ->title('Request Processed')
+                            ->body('The user has been notified of your reply.')
+                            ->success()
+                            ->send();
                     })
                     ->visible(fn() => auth()->user()->isAdmin()),
                 Tables\Actions\EditAction::make(),
