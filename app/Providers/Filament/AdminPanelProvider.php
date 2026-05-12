@@ -92,6 +92,15 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems($navItems)
             ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn (): string => '<style>
+                    body, .fi-body, .fi-main { background-color: #f8fafc !important; }
+                    .fi-topbar { background-color: #ffffff !important; border-bottom: 1px solid #f1f5f9 !important; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.01), 0 1px 2px -1px rgba(0, 0, 0, 0.01) !important; }
+                    .fi-sidebar { background-color: #ffffff !important; border-right: 1px solid #f1f5f9 !important; box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.01) !important; }
+                    .fi-sidebar-item-active { background-color: #f1f5f9 !important; }
+                </style>'
+            )
+            ->renderHook(
                 \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
                 fn (): string => view('filament.hooks.topbar-actions'),
             )

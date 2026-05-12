@@ -22,43 +22,62 @@
         .service-card {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
-            border-radius: 16px;
+            padding: 16px 20px;
+            border-radius: 20px;
             text-decoration: none !important;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 64px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 76px;
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.03), 0 2px 6px -2px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             background-clip: padding-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .service-card > * {
+            position: relative;
+            z-index: 1;
         }
         .service-card:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            filter: brightness(1.1);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(255, 255, 255, 0.8);
         }
         
         .icon-box {
-            width: 40px;
-            height: 40px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 14px;
+            margin-right: 16px;
             flex-shrink: 0;
-            font-size: 20px;
-            transition: all 0.3s ease;
+            font-size: 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover .icon-box {
+            transform: scale(1.1) rotate(3deg);
         }
 
         .service-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
-            line-height: 1.25;
+            line-height: 1.3;
             text-transform: uppercase;
             font-family: 'Outfit', sans-serif;
-            letter-spacing: 0.05em;
-            color: #475569;
+            letter-spacing: 0.03em;
+            color: #334155;
         }
 
 
