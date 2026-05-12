@@ -36,7 +36,7 @@ class RoleResource extends VendorRoleResource
 
     public static function canDelete($record): bool
     {
-        return auth()->check() && auth()->user()->type === 'admin' && $record->name !== 'Public';
+        return auth()->check() && auth()->user()->type === 'admin' && $record->name !== 'public';
     }
 
     public static function getShieldFormComponents(): \Filament\Forms\Components\Component
