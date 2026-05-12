@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('pdf_converters', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('original_filename');
             $table->string('pdf_path');
             $table->string('front_image_path')->nullable();
             $table->string('back_image_path')->nullable();
             $table->timestamps();
+
+            $table->index('user_id');
         });
     }
 

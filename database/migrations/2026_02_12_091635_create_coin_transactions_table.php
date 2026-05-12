@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('coin_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('amount'); // Positive for additions, negative for deductions
-            $table->integer('balance_after');
+            $table->bigInteger('amount'); // Positive for additions, negative for deductions
+            $table->bigInteger('balance_after');
             $table->enum('type', ['purchase', 'admin_credit', 'service_deduction', 'refund']);
             $table->string('service_type')->nullable(); // 'birth_record', 'haryana_domicile', 'pdf_converter'
             $table->unsignedBigInteger('service_id')->nullable();

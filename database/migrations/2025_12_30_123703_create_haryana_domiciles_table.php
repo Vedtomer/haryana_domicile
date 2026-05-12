@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('haryana_domiciles', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('pincode')->nullable();
             $table->string('tehsil');
             $table->string('district');
             $table->string('name');
@@ -23,8 +25,12 @@ return new class extends Migration
             $table->string('mobile', 10);
             $table->string('aadhar', 12);
             $table->string('caste');
+            $table->string('religion')->nullable();
+            $table->string('ration_card_no')->nullable();
             $table->string('child_name')->nullable();
             $table->timestamps();
+
+            $table->index('user_id');
         });
     }
 

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('birth_records', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('district');
             
             // Applicant Details
@@ -39,11 +40,16 @@ return new class extends Migration
             $table->date('school_dob')->nullable();
             $table->string('school_father_name')->nullable();
             $table->string('school_mother_name')->nullable();
+            $table->string('father_aadhar')->nullable();
+            $table->string('mother_aadhar')->nullable();
+            $table->string('child_document')->nullable();
             
             // Other Children
             $table->json('other_children')->nullable();
             
             $table->timestamps();
+
+            $table->index('user_id');
         });
     }
 
