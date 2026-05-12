@@ -92,8 +92,26 @@ class RoleResource extends VendorRoleResource
                                     ->required()
                                     ->maxLength(255),
 
-                                Forms\Components\Hidden::make('guard_name')
-                                    ->default('web'),
+                                Forms\Components\Toggle::make('select_all')
+                                    ->label('On All Services')
+                                    ->helperText('Enable all modules with one click')
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        $sidebar = PermissionSchema::getSidebarOptions();
+                                        $dashboard = PermissionSchema::getDashboardOptions();
+                                        
+                                        foreach ($sidebar as $group) {
+                                            foreach (array_keys($group) as $module) {
+                                                $set('module_' . $module, $state);
+                                            }
+                                        }
+
+                                        foreach ($dashboard as $group) {
+                                            foreach (array_keys($group) as $module) {
+                                                $set('module_' . $module, $state);
+                                            }
+                                        }
+                                    }),
                             ])
                             ->columns([
                                 'sm' => 2,
