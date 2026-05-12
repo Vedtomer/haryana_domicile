@@ -21,7 +21,7 @@ class CustomDashboard extends Page
 
     protected static ?string $navigationLabel = 'Dashboard';
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = -100;
 
     public static function shouldRegisterNavigation(): bool
     {
