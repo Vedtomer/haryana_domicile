@@ -118,63 +118,82 @@
                                         <i class="fa-solid fa-users text-primary-500"></i> Family Members ({{ count($parsedData['PppMemberDetails'] ?? []) }})
                                     </h3>
                                     
-                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         @foreach($parsedData['PppMemberDetails'] ?? [] as $member)
-                                            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                                                <div class="flex justify-between items-start mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="w-10 h-10 rounded-full {{ ($member['Gender'] ?? '') === 'F' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-600' }} flex items-center justify-center text-lg shadow-sm border {{ ($member['Gender'] ?? '') === 'F' ? 'border-pink-200' : 'border-blue-200' }}">
+                                            <div class="relative bg-white dark:bg-gray-900 rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 dark:border-gray-800 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                                                
+                                                <!-- Top Row: Avatar & Name -->
+                                                <div class="flex items-center gap-4 mb-5">
+                                                    <div class="relative shrink-0">
+                                                        <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-inner border-2 {{ ($member['Gender'] ?? '') === 'F' ? 'bg-pink-50 text-pink-500 border-pink-100' : 'bg-blue-50 text-blue-500 border-blue-100' }}">
                                                             <i class="fa-solid {{ ($member['Gender'] ?? '') === 'F' ? 'fa-person-dress' : 'fa-person' }}"></i>
                                                         </div>
-                                                        <div>
-                                                            <h4 class="text-base font-black text-gray-900 dark:text-white uppercase">
-                                                                {{ $member['FirstName'] ?? '' }} {{ $member['LastName'] ?? '' }}
-                                                            </h4>
-                                                            <p class="text-xs font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/50 px-2 py-0.5 rounded inline-block mt-1">
+                                                        <!-- Age Badge -->
+                                                        <div class="absolute -bottom-2 -right-2 bg-gray-900 dark:bg-gray-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-gray-900 shadow-sm">
+                                                            {{ $member['Age'] ?? '--' }}y
+                                                        </div>
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <h4 class="text-base font-black text-gray-800 dark:text-gray-100 leading-tight truncate">
+                                                            {{ $member['FirstName'] ?? '' }} {{ $member['LastName'] ?? '' }}
+                                                        </h4>
+                                                        <div class="inline-flex items-center gap-1.5 mt-1">
+                                                            <span class="w-1.5 h-1.5 rounded-full {{ ($member['IsHouseHoldOrMember'] ?? '') === 'HEAD' || ($member['IsHouseHoldOrMember'] ?? '') === 'SELF' ? 'bg-primary-500' : 'bg-gray-300' }}"></span>
+                                                            <p class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">
                                                                 {{ $member['IsHouseHoldOrMember'] ?? 'MEMBER' }}
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div class="text-right">
-                                                        <span class="text-xl font-black text-gray-800 dark:text-gray-200">{{ $member['Age'] ?? '--' }}</span>
-                                                        <span class="text-xs text-gray-500 uppercase font-bold block">Years</span>
+                                                </div>
+
+                                                <!-- Details Inner Box -->
+                                                <div class="space-y-3.5 bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100/80 dark:border-gray-700/50 flex-grow">
+                                                    <!-- Row 1 -->
+                                                    <div class="flex items-center text-sm">
+                                                        <div class="w-8 text-gray-400 shrink-0"><i class="fa-regular fa-address-card text-lg"></i></div>
+                                                        <div class="flex-1 font-bold text-gray-700 dark:text-gray-200 tracking-wide truncate">{{ $member['AadhaarNo'] ?? 'N/A' }}</div>
+                                                    </div>
+                                                    <!-- Row 2 -->
+                                                    <div class="flex items-center text-sm">
+                                                        <div class="w-8 text-gray-400 shrink-0"><i class="fa-solid fa-mobile-screen text-lg"></i></div>
+                                                        <div class="flex-1 font-bold text-gray-700 dark:text-gray-200 truncate">{{ $member['MobileNo'] ?? 'N/A' }}</div>
+                                                    </div>
+                                                    <!-- Row 3 -->
+                                                    <div class="flex items-center text-sm">
+                                                        <div class="w-8 text-gray-400 shrink-0"><i class="fa-solid fa-people-roof text-sm"></i></div>
+                                                        <div class="flex-1 font-semibold text-gray-600 dark:text-gray-300 text-xs truncate">
+                                                            F: {{ explode(' ', $member['FatherFirstName'] ?? '')[0] }} 
+                                                            <span class="text-gray-300 mx-1">|</span> 
+                                                            M: {{ explode(' ', $member['MotherFirstName'] ?? '')[0] }}
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row 4 -->
+                                                    <div class="flex items-center text-sm">
+                                                        <div class="w-8 text-gray-400 shrink-0"><i class="fa-solid fa-building-columns text-sm"></i></div>
+                                                        <div class="flex-1 font-semibold text-gray-600 dark:text-gray-300 text-[11px] truncate">
+                                                            @if(!empty($member['bankAccountNumber']))
+                                                                <span class="font-bold text-gray-700 dark:text-gray-200">{{ $member['bankAccountNumber'] }}</span>
+                                                                <span class="text-gray-300 mx-1">•</span> 
+                                                                {{ $member['ifscCode'] }}
+                                                            @else
+                                                                No Bank Details
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                
-                                                <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Aadhar Number</p>
-                                                        <p class="font-bold text-gray-700 dark:text-gray-300">{{ $member['AadhaarNo'] ?? 'N/A' }}</p>
+
+                                                <!-- Bottom Footer -->
+                                                <div class="mt-5 flex items-center justify-between px-2 pb-1">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Marital Status</span>
+                                                        <span class="text-sm font-black text-gray-700 dark:text-gray-200">{{ $member['MaritalStatus'] ?? 'N/A' }}</span>
                                                     </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Mobile Number</p>
-                                                        <p class="font-bold text-gray-700 dark:text-gray-300">{{ $member['MobileNo'] ?? 'N/A' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Father's Name</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $member['FatherFirstName'] ?? '' }} {{ $member['FatherLastName'] ?? '' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Mother's Name</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $member['MotherFirstName'] ?? '' }} {{ $member['MotherLastName'] ?? '' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Bank Account</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $member['bankAccountNumber'] ?: 'Not Available' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">IFSC Code</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $member['ifscCode'] ?: 'Not Available' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Marital Status</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $member['MaritalStatus'] ?? 'N/A' }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Total Income</p>
-                                                        <p class="font-semibold text-gray-700 dark:text-gray-300">₹{{ number_format((float)($member['TotalIncome'] ?? 0)) }}</p>
+                                                    <div class="flex flex-col text-right">
+                                                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Total Income</span>
+                                                        <span class="text-base font-black text-emerald-600 dark:text-emerald-400">₹{{ number_format((float)($member['TotalIncome'] ?? 0)) }}</span>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         @endforeach
                                     </div>
