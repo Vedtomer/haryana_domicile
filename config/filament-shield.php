@@ -73,10 +73,13 @@ return [
         ],
 
         'widgets' => [
-            'AccountWidget', 'FilamentInfoWidget',
+            'AccountWidget', 'FilamentInfoWidget', 'AdminStatsWidget',
         ],
 
-        'resources' => [],
+        'resources' => [
+            'UserManagementResource',
+            'RoleResource',
+        ],
     ],
 
     'discovery' => [

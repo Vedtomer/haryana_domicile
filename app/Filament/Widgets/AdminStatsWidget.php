@@ -11,6 +11,11 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AdminStatsWidget extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
     protected function getStats(): array
     {
         return [

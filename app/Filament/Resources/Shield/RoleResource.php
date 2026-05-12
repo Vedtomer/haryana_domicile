@@ -24,134 +24,24 @@ class RoleResource extends VendorRoleResource
         return auth()->check() && auth()->user()->type === 'admin';
     }
 
+    public static function canCreate(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->check() && auth()->user()->type === 'admin';
+    }
+
     public static function getShieldFormComponents(): \Filament\Forms\Components\Component
     {
-        $tabs = [];
-
-        // 1. Sidebar Options Tab
-        $sidebarComponents = [];
-        $sidebarOptions = PermissionSchema::getSidebarOptions();
-        
-        foreach ($sidebarOptions as $label => $options) {
-             $sidebarComponents[] = Forms\Components\Section::make($label)
-                  ->compact()
-                  ->schema([
-                      Forms\Components\CheckboxList::make('sidebar_' . Str::slug($label))
-                          ->label('')
-                          ->hiddenLabel()
-                          ->options($options)
-                          ->bulkToggleable()
-                          ->afterStateHydrated(function ($component, $record) {
-                              if (! $record) return;
-                              $optKeys = array_keys($component->getOptions()); // e.g. ['haryana_domicile']
-                              $selected = [];
-                              foreach ($optKeys as $module) {
-                                  // If the role has the 'view_any' permission for this module, mark it as enabled
-                                  $perms = PermissionSchema::getModulePermissions($module);
-                                  $hasAny = $record->permissions->pluck('name')->intersect($perms)->isNotEmpty();
-                                  if ($hasAny) {
-                                      $selected[] = $module;
-                                  }
-                              }
-                              $component->state($selected);
-                          })
-                          ->columns([
-                              'sm' => 2,
-                              'lg' => 4,
-                          ])
-                          ->columnSpanFull(),
-                  ])
-                  ->collapsible();
-        }
-
-        $tabs[] = Tabs\Tab::make('sidebar_options')
-            ->label('Modules Access')
-            ->badge(count($sidebarComponents))
-            ->schema($sidebarComponents);
-
-        // 2. Topbar Options Tab
-        $topbarComponents = [];
-        $topbarOptions = PermissionSchema::getTopbarOptions();
-        
-        foreach ($topbarOptions as $label => $options) {
-             $topbarComponents[] = Forms\Components\Section::make($label)
-                  ->compact()
-                  ->schema([
-                      Forms\Components\CheckboxList::make('topbar_' . Str::slug($label))
-                          ->label('')
-                          ->hiddenLabel()
-                          ->options($options)
-                          ->bulkToggleable()
-                          ->afterStateHydrated(function ($component, $record) {
-                              if (! $record) return;
-                              $optKeys = array_keys($component->getOptions());
-                              $selected = [];
-                              foreach ($optKeys as $module) {
-                                  $perms = PermissionSchema::getModulePermissions($module);
-                                  $hasAny = $record->permissions->pluck('name')->intersect($perms)->isNotEmpty();
-                                  if ($hasAny) {
-                                      $selected[] = $module;
-                                  }
-                              }
-                              $component->state($selected);
-                          })
-                          ->columns([
-                              'sm' => 2,
-                              'lg' => 4,
-                          ])
-                          ->columnSpanFull(),
-                  ])
-                  ->collapsible();
-        }
-
-        $tabs[] = Tabs\Tab::make('topbar_options')
-            ->label('Settings Access')
-            ->badge(count($topbarComponents))
-            ->schema($topbarComponents);
-
-        // 3. Dashboard Options Tab
-        $dashboardComponents = [];
-        $dashboardOptions = PermissionSchema::getDashboardOptions();
-        
-        foreach ($dashboardOptions as $label => $options) {
-             $dashboardComponents[] = Forms\Components\Section::make($label)
-                  ->compact()
-                  ->schema([
-                      Forms\Components\CheckboxList::make('dashboard_' . Str::slug($label))
-                          ->label('')
-                          ->hiddenLabel()
-                          ->options($options)
-                          ->bulkToggleable()
-                          ->afterStateHydrated(function ($component, $record) {
-                              if (! $record) return;
-                              $optKeys = array_keys($component->getOptions());
-                              $selected = [];
-                              foreach ($optKeys as $module) {
-                                  $perms = PermissionSchema::getModulePermissions($module);
-                                  $hasAny = $record->permissions->pluck('name')->intersect($perms)->isNotEmpty();
-                                  if ($hasAny) {
-                                      $selected[] = $module;
-                                  }
-                              }
-                              $component->state($selected);
-                          })
-                          ->columns([
-                              'sm' => 2,
-                              'lg' => 4,
-                          ])
-                          ->columnSpanFull(),
-                  ])
-                  ->collapsible();
-        }
-
-        $tabs[] = Tabs\Tab::make('dashboard_options')
-            ->label('Dashboard Options')
-            ->badge(count($dashboardComponents))
-            ->schema($dashboardComponents);
-
-        return Tabs::make('Permissions')
-            ->tabs($tabs)
-            ->columnSpan('full');
+        return parent::getShieldFormComponents();
     }
 
     public static function form(Form $form): Form
@@ -170,8 +60,6 @@ class RoleResource extends VendorRoleResource
 
                                 Forms\Components\Hidden::make('guard_name')
                                     ->default('web'),
-
-                                static::getSelectAllFormComponent(),
                             ])
                             ->columns([
                                 'sm' => 2,
