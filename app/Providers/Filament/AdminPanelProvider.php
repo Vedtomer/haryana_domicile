@@ -31,6 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->registration(\App\Filament\Pages\Auth\Register::class)
             ->passwordReset()
             ->brandName('')
+            ->brandLogo(asset('Digital_India_logo.png'))
+            ->brandLogoHeight('2rem')
             ->darkMode(false)
             ->colors([
                 'primary' => Color::Amber,
@@ -62,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 \Filament\View\PanelsRenderHook::TOPBAR_START,
-                fn (): string => '<img src="'.asset('Digital_India_logo.png').'" class="h-8 ml-4">',
+                fn (): string => auth()->user()?->type !== 'admin' ? '<img src="'.asset('Digital_India_logo.png').'" class="h-8">' : '',
             )
             ->renderHook(
                 \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,

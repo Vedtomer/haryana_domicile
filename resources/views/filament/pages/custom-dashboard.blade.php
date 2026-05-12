@@ -96,21 +96,6 @@
             letter-spacing: 0.1em;
         }
 
-        /* Full Screen Overrides */
-        :host, :root {
-            --sidebar-width: 0px !important;
-            --collapsed-sidebar-width: 0px !important;
-        }
-        
-        @if(auth()->user()->type !== 'admin')
-        .fi-sidebar, aside { display: none !important; }
-        .fi-main-ctn, .fi-main, .fi-content, main {
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: 100% !important;
-        }
-        .fi-page-header { display: none !important; }
-        @endif
 
         @media (min-width: 1280px) {
             .service-grid {
