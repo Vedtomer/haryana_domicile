@@ -41,7 +41,25 @@ class RoleResource extends VendorRoleResource
 
     public static function getShieldFormComponents(): \Filament\Forms\Components\Component
     {
-        return parent::getShieldFormComponents();
+        return Forms\Components\Grid::make()
+            ->schema([
+                Forms\Components\Section::make('Resources & Services')
+                    ->schema([
+                        static::getTabFormComponentForResources(),
+                    ])
+                    ->compact(),
+                Forms\Components\Section::make('Search & Other Pages')
+                    ->schema([
+                        static::getTabFormComponentForPage(),
+                    ])
+                    ->compact(),
+                Forms\Components\Section::make('Dashboard Widgets')
+                    ->schema([
+                        static::getTabFormComponentForWidget(),
+                    ])
+                    ->compact(),
+            ])
+            ->columnSpan('full');
     }
 
     public static function form(Form $form): Form
