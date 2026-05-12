@@ -238,6 +238,7 @@
                 ['name' => 'LIC<br>PAY', 'icon' => 'fa-shield-heart', 'bg' => 'bg-blue-800 text-white border border-blue-900', 'icon_color' => 'text-yellow-400', 'url' => 'https://ebiz.licindia.in/D2CPM/#DirectPay', 'external' => true],
                 ['name' => 'Photo Bg<br>Remove', 'icon' => 'fa-image-portrait', 'bg' => 'bg-indigo-600 text-white border border-indigo-700', 'icon_color' => 'text-white', 'url' => 'https://www.remove.bg/', 'external' => true],
                 ['name' => 'Phone to<br>Aadhar', 'icon' => 'fa-mobile-retro', 'bg' => 'bg-[#be123c] text-white border border-rose-700', 'icon_color' => 'text-white', 'url' => '#', 'onclick' => 'showPhoneToAadharModal = true', 'count' => $counts['service_requests'] ?? 0],
+                ['name' => 'RECENT<br>SEARCHES', 'icon' => 'fa-history', 'bg' => 'bg-[#475569] text-white border border-slate-700', 'icon_color' => 'text-white', 'url' => '/service-requests'],
             ];
             $services = array_merge($services, $other_services);
             @endphp

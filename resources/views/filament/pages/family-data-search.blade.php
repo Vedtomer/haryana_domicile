@@ -57,19 +57,19 @@
                     @forelse($this->history as $record)
                         <div 
                             wire:click="viewRecord({{ $record->id }})"
-                            class="history-item p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-100 dark:border-gray-800 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-1"
+                            class="history-item p-1.5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-100 dark:border-gray-800 rounded-lg cursor-pointer transition-all duration-300 hover:bg-primary-50 dark:hover:bg-primary-900/10"
                         >
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-lg font-black text-primary-500 tracking-tight">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-sm font-bold text-primary-600 tracking-tight">
                                     {{ $record->input_data['aadhar_number'] ?? 'N/A' }}
                                 </span>
                                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
                                     {{ $record->created_at->diffForHumans() }}
                                 </span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Ready for Download</span>
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                                <span class="text-[9px] font-medium text-gray-500 uppercase tracking-tighter">Ready</span>
                             </div>
                         </div>
                     @empty

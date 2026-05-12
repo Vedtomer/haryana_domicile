@@ -42,6 +42,8 @@ class FasalSearch extends Page implements HasForms
                     ->required()
                     ->numeric()
                     ->length(12)
+                    ->maxLength(12)
+                    ->minLength(12)
                     ->placeholder('Enter 12-digit Aadhar Number'),
             ])
             ->statePath('data');
