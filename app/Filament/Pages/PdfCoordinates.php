@@ -12,6 +12,11 @@ class PdfCoordinates extends Page
     
     protected static ?string $title = '';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->type === 'admin';
+    }
+
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->type === 'admin';

@@ -61,7 +61,8 @@ class AdminPanelProvider extends PanelProvider
                 'pdf-coordinates' => \Filament\Navigation\MenuItem::make()
                     ->label('PDF Coordinates')
                     ->url(fn (): string => \App\Filament\Pages\PdfCoordinates::getUrl())
-                    ->icon('heroicon-o-cog-6-tooth'),
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->visible(fn (): bool => auth()->user()->type === 'admin'),
             ])
             ->authMiddleware([
                 Authenticate::class,
