@@ -40,7 +40,7 @@ class FamilyDataSearch extends Page implements HasForms
                 TextInput::make('aadhar_number')
                     ->label('Aadhar Number')
                     ->required()
-                    ->numeric()
+                    ->mask('999999999999')
                     ->length(12)
                     ->maxLength(12)
                     ->minLength(12)
