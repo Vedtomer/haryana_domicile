@@ -38,7 +38,9 @@ class UserManagementResource extends Resource
 
     public static function canDelete($record): bool
     {
-        return auth()->check() && auth()->user()->type === 'admin';
+        return auth()->check() && 
+               auth()->user()->type === 'admin' && 
+               $record->id !== auth()->id();
     }
 
     public static function form(Form $form): Form
