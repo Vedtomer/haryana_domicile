@@ -34,7 +34,7 @@ class BirthRecordResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->type === 'admin';
+        return false;
     }
 
     public static function form(Form $form): Form

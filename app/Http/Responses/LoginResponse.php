@@ -11,7 +11,7 @@ class LoginResponse implements Responsable
     public function toResponse($request): RedirectResponse|Redirector
     {
         if (auth()->user()->type === 'admin') {
-            return redirect('/user-managements');
+            return redirect('/admin-dashboard');
         }
 
         return redirect('/dashboard');

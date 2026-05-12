@@ -6,24 +6,27 @@ use App\Models\BirthRecord;
 use App\Models\HaryanaDomicile;
 use App\Models\PanRequest;
 use App\Models\PdfConverter;
-use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use App\Models\CoinTransaction;
 
-class CustomDashboard extends BaseDashboard
+class CustomDashboard extends Page
 {
     use \Livewire\WithFileUploads;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->type === 'user';
+    }
+
     public static function canAccess(): bool
     {
-        return auth()->check() && (auth()->user()->type === 'user' || auth()->user()->can('page_CustomDashboard'));
+        return auth()->check() && auth()->user()->type === 'user';
     }
 
     public function mount()
     {
-        if (auth()->check() && auth()->user()->type === 'admin') {
-            return redirect(url('/user-managements'));
-        }
+        // No redirect here
     }
 
     protected static string $view = 'filament.pages.custom-dashboard';
