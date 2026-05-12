@@ -27,6 +27,7 @@ class FamilyDataSearch extends Page implements HasForms
 
     public ?array $data = [];
     public $isLoading = false;
+    public $familyData = null;
 
     public function mount(): void
     {
@@ -55,10 +56,10 @@ class FamilyDataSearch extends Page implements HasForms
         $aadharNumber = $formData['aadhar_number'];
         $user = auth()->user();
 
-        if (!$user->hasEnoughCoins(20)) {
+        if (!$user->hasEnoughCoins(30)) {
             Notification::make()
                 ->title('Insufficient Coins')
-                ->body('You need 20 coins for this service.')
+                ->body('You need 30 coins for this service.')
                 ->danger()
                 ->send();
             return;
@@ -88,7 +89,7 @@ class FamilyDataSearch extends Page implements HasForms
 
                 // Deduct coins only on success
                 $user->deductCoins(
-                    20, 
+                    30, 
                     CoinTransaction::TYPE_SERVICE_DEDUCTION, 
                     "Aadhar to Family Data - Aadhar: " . $aadharNumber
                 );
@@ -119,21 +120,25 @@ class FamilyDataSearch extends Page implements HasForms
                     'completed_at' => now(),
                 ]);
 
+                // Instead of download, show on page
+                if (!$isBinary) {
+                    $this->familyData = $result;
+                } else {
+                    $this->familyData = [
+                        'url' => Storage::url($fileName),
+                        'type' => $extension
+                    ];
+                }
+
                 Notification::make()
                     ->title('Data Fetched Successfully')
-                    ->body('Your file is being downloaded.')
                     ->success()
                     ->send();
 
-                return response()->streamDownload(function () use ($saveData) {
-                    echo $saveData;
-                }, "{$familyId}.{$extension}", [
-                    'Content-Type' => $mime,
-                ]);
             } else {
                 Notification::make()
                     ->title('No Data Found')
-                    ->body('The service returned an empty response. Please check the Aadhar number or try again later.')
+                    ->body('The service returned an empty response.')
                     ->warning()
                     ->send();
             }
@@ -141,7 +146,7 @@ class FamilyDataSearch extends Page implements HasForms
             Log::error('Aadhar Search Exception: ' . $e->getMessage());
             Notification::make()
                 ->title('Service Error')
-                ->body('An error occurred while connecting to the service: ' . $e->getMessage())
+                ->body('An error occurred: ' . $e->getMessage())
                 ->danger()
                 ->send();
         } finally {
