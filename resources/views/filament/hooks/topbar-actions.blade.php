@@ -2,38 +2,29 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Wallet Balance Badge -->
-    <div class="transition hover:scale-105 hidden md:block">
-        <div class="flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-amber-600 px-4 py-1.5 rounded-xl shadow-md border border-amber-200/30 backdrop-blur-sm">
-            <div class="bg-white/20 p-1.5 rounded-lg">
-                <i class="fa-solid fa-coins text-white text-base animate-pulse"></i>
-            </div>
-            <div class="flex flex-col">
-                <span class="text-[8px] font-bold text-amber-900/80 uppercase tracking-widest leading-none">Wallet Balance</span>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-black text-white leading-none">
-                        {{ number_format(auth()->user()->coins ?? 0) }}
-                    </span>
-                    <span class="text-[8px] font-bold text-white uppercase opacity-80">Coins</span>
-                </div>
-            </div>
+    <style>
+        .cyber-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            transition: all 0.3s ease;
+        }
+        .cyber-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+    </style>
+
+    <!-- Coin Balance Badge -->
+    <div class="cyber-badge flex items-center gap-2 px-4 py-1.5 rounded-full cursor-default select-none">
+        <div class="flex items-center justify-center w-6 h-6 bg-white/20 rounded-full">
+            <i class="fa-solid fa-coins text-white text-xs animate-pulse"></i>
+        </div>
+        <div class="flex flex-col leading-none">
+            <span class="text-[11px] font-black text-white tracking-tight">
+                {{ number_format(auth()->user()->coins ?? 0) }}
+            </span>
+            <span class="text-[7px] font-bold text-amber-100 uppercase tracking-widest">Coins</span>
         </div>
     </div>
-
-    <!-- Mobile Wallet Balance (Icon only or smaller) -->
-    <div class="md:hidden bg-amber-500 px-3 py-1 rounded-lg flex items-center gap-2 border border-amber-400">
-        <i class="fa-solid fa-coins text-white text-xs"></i>
-        <span class="text-white font-black text-sm">{{ number_format(auth()->user()->coins ?? 0) }}</span>
-    </div>
-
-    <!-- Logout Button -->
-    <form id="topbar-logout-form" action="{{ route('filament.admin.auth.logout') }}" method="POST" class="h-full">
-        @csrf
-        <button type="submit" class="group flex items-center gap-2 bg-red-50 hover:bg-red-500 px-4 py-1.5 rounded-xl border border-red-200 hover:border-red-600 shadow-sm transition-all duration-300">
-            <div class="bg-red-100 group-hover:bg-white/20 p-1.5 rounded-lg transition-colors">
-                <i class="fa-solid fa-right-from-bracket text-red-600 group-hover:text-white text-base"></i>
-            </div>
-            <span class="text-xs font-black text-red-600 group-hover:text-white uppercase tracking-tight hidden sm:inline">LOGOUT</span>
-        </button>
-    </form>
 </div>
