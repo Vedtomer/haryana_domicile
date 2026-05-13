@@ -5,102 +5,101 @@
     </button>
 
     @if($isOpen)
-    <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-800/50 backdrop-blur-[2px]" wire:click="closeModal"></div>
+    {{-- Overlay: covers everything including Filament sidebar/topbar --}}
+    <div style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px;">
+        {{-- Backdrop --}}
+        <div wire:click="closeModal" style="position:absolute; inset:0; background:rgba(15,23,42,0.65); backdrop-filter:blur(3px); z-index:0;"></div>
 
         {{-- Modal Card --}}
-        <div class="relative z-10 w-full max-w-sm bg-slate-50 rounded-2xl overflow-hidden" style="box-shadow: 0 20px 60px -10px rgba(15,23,42,0.25), 0 0 0 1px rgba(148,163,184,0.2);">
+        <div style="position:relative; z-index:1; width:100%; max-width:360px; background:#f8fafc; border-radius:16px; overflow:hidden; box-shadow:0 25px 50px -8px rgba(15,23,42,0.35), 0 0 0 1px rgba(148,163,184,0.18);">
 
             {{-- Header --}}
-            <div class="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#eff6ff; color:#3b82f6; border:1px solid #bfdbfe;">
-                        <i class="fa-solid fa-shield-halved text-sm"></i>
+            <div style="background:#ffffff; border-bottom:1px solid #e2e8f0; padding:14px 16px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:14px; flex-shrink:0;">
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div>
-                        <p class="text-sm font-extrabold text-slate-800 leading-tight">Add Coins to Wallet</p>
-                        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-tight"><i class="fa-solid fa-lock mr-0.5"></i> Secure Payment</p>
+                        <p style="font-size:14px; font-weight:800; color:#1e293b; line-height:1.2; margin:0;">Add Coins to Wallet</p>
+                        <p style="font-size:10px; font-weight:700; color:#059669; text-transform:uppercase; letter-spacing:0.05em; margin:0;"><i class="fa-solid fa-lock" style="margin-right:2px;"></i>Secure Payment</p>
                     </div>
                 </div>
-                <button type="button" wire:click="closeModal" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                <button type="button" wire:click="closeModal" style="width:28px; height:28px; border-radius:50%; background:transparent; border:none; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             {{-- Body --}}
-            <form wire:submit.prevent="submitRequest" class="px-5 py-4 space-y-4">
+            <form wire:submit.prevent="submitRequest" style="padding:14px 16px 16px;">
 
                 {{-- Package Select --}}
-                <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Select Package</label>
-                        <span class="text-[10px] font-bold text-blue-600" style="background:#eff6ff; border:1px solid #bfdbfe; padding:1px 6px; border-radius:6px;">1 Coin = ₹1</span>
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <label style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em;">Select Package</label>
+                        <span style="font-size:10px; font-weight:700; color:#2563eb; background:#eff6ff; border:1px solid #bfdbfe; padding:1px 7px; border-radius:6px;">1 Coin = ₹1</span>
                     </div>
                     <select wire:model.live="package_amount" required
-                        class="w-full px-3 py-2.5 text-sm font-bold text-slate-800 rounded-xl transition-all cursor-pointer"
-                        style="background:#f8fafc; border:1px solid #cbd5e1; outline:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+                        style="width:100%; padding:9px 12px; font-size:13px; font-weight:700; color:#1e293b; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; outline:none; box-shadow:0 1px 3px rgba(0,0,0,0.06); cursor:pointer; appearance:auto;">
                         <option value="">-- Choose Package --</option>
                         @foreach($packages as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
-                    @error('package_amount') <span class="text-red-500 text-xs mt-1 block font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</span> @enderror
+                    @error('package_amount') <span style="color:#ef4444; font-size:11px; margin-top:4px; display:block;"><i class="fa-solid fa-circle-exclamation" style="margin-right:3px;"></i>{{ $message }}</span> @enderror
                 </div>
 
                 @if($package_amount)
                 {{-- QR Code --}}
-                <div class="rounded-xl overflow-hidden text-center" style="background:#f0f9ff; border:1px solid #bae6fd; box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);">
-                    <div class="h-0.5 w-full" style="background: linear-gradient(90deg,#38bdf8,#818cf8);"></div>
-                    <div class="p-4">
-                        <p class="text-[10px] font-extrabold text-sky-700 uppercase tracking-widest mb-3"><i class="fa-solid fa-qrcode mr-1"></i>Scan & Pay ₹{{ number_format($package_amount) }}</p>
-                        <div class="inline-block bg-white p-2 rounded-xl" style="border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                            <img src="{{ asset('images/QR.jpeg') }}" class="w-28 h-28 rounded-lg" alt="Payment QR">
+                <div style="margin-bottom:12px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; overflow:hidden; text-align:center;">
+                    <div style="height:3px; background:linear-gradient(90deg,#38bdf8,#818cf8);"></div>
+                    <div style="padding:12px 12px 10px;">
+                        <p style="font-size:10px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.07em; margin:0 0 8px;"><i class="fa-solid fa-qrcode" style="margin-right:3px;"></i>Scan & Pay ₹{{ number_format($package_amount) }}</p>
+                        <div style="display:inline-block; background:#ffffff; padding:7px; border-radius:10px; border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                            <img src="{{ asset('images/QR.jpeg') }}" style="width:100px; height:100px; border-radius:6px; display:block;" alt="Payment QR">
                         </div>
-                        <p class="text-[10px] text-slate-400 font-bold mt-2.5 uppercase tracking-wider"><i class="fa-solid fa-lock mr-1 text-emerald-400"></i>100% Secure</p>
+                        <p style="font-size:10px; color:#94a3b8; font-weight:700; margin:8px 0 0; text-transform:uppercase; letter-spacing:0.05em;"><i class="fa-solid fa-lock" style="color:#34d399; margin-right:3px;"></i>100% Secure</p>
                     </div>
                 </div>
 
                 {{-- File Upload --}}
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Upload Receipt</label>
-                    <div class="relative group">
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:6px;">Upload Receipt</label>
+                    <div style="position:relative;">
                         <input type="file" wire:model="payment_screenshot" id="payment_screenshot" required accept="image/*"
-                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                        <div class="w-full py-4 rounded-xl text-center transition-all flex flex-col items-center justify-center gap-1.5"
-                            style="background:#f8fafc; border:2px dashed #cbd5e1;">
+                            style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:1;">
+                        <div style="width:100%; padding:14px; border-radius:10px; background:#f8fafc; border:2px dashed #cbd5e1; text-align:center;">
                             <div wire:loading.remove wire:target="payment_screenshot">
                                 @if($payment_screenshot)
-                                    <div class="w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-1" style="background:#d1fae5; color:#059669;">
+                                    <div style="width:32px; height:32px; border-radius:50%; background:#d1fae5; color:#059669; display:flex; align-items:center; justify-content:center; margin:0 auto 6px;">
                                         <i class="fa-solid fa-check"></i>
                                     </div>
-                                    <span class="text-xs font-bold text-emerald-700">Receipt Ready!</span>
+                                    <span style="font-size:12px; font-weight:700; color:#059669;">Receipt Ready!</span>
                                 @else
-                                    <div class="w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-1" style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0;">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <div style="width:32px; height:32px; border-radius:50%; background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; margin:0 auto 5px;">
+                                        <i class="fa-solid fa-cloud-arrow-up" style="font-size:13px;"></i>
                                     </div>
-                                    <span class="text-xs font-bold text-slate-600">Tap to upload screenshot</span>
-                                    <span class="text-[10px] text-slate-400 font-medium">PNG, JPG up to 5MB</span>
+                                    <span style="font-size:12px; font-weight:600; color:#475569; display:block;">Tap to upload screenshot</span>
+                                    <span style="font-size:10px; color:#94a3b8; font-weight:600;">PNG, JPG up to 5MB</span>
                                 @endif
                             </div>
-                            <div wire:loading wire:target="payment_screenshot" class="text-sky-600 font-bold text-xs flex items-center gap-2">
+                            <div wire:loading wire:target="payment_screenshot" style="color:#0284c7; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px;">
                                 <i class="fa-solid fa-circle-notch fa-spin"></i> Uploading...
                             </div>
                         </div>
                     </div>
-                    @error('payment_screenshot') <span class="text-red-500 text-xs mt-1 block font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</span> @enderror
+                    @error('payment_screenshot') <span style="color:#ef4444; font-size:11px; margin-top:4px; display:block;"><i class="fa-solid fa-circle-exclamation" style="margin-right:3px;"></i>{{ $message }}</span> @enderror
                 </div>
                 @endif
 
-                {{-- Actions --}}
-                <div class="space-y-2 pt-1">
+                {{-- Buttons --}}
+                <div style="display:flex; flex-direction:column; gap:6px;">
                     <button type="submit"
-                        class="w-full py-2.5 text-white font-bold rounded-xl text-sm transition-all flex justify-center items-center gap-2"
-                        style="background: linear-gradient(135deg,#2563eb,#4f46e5); border:1px solid #3730a3; box-shadow: 0 4px 14px rgba(37,99,235,0.3);">
-                        <span wire:loading.remove wire:target="submitRequest"><i class="fa-solid fa-paper-plane mr-1.5"></i>Confirm Payment</span>
-                        <span wire:loading wire:target="submitRequest"><i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i>Processing...</span>
+                        style="width:100%; padding:10px; color:white; font-weight:700; font-size:13px; border-radius:10px; border:1px solid #3730a3; background:linear-gradient(135deg,#2563eb,#4f46e5); box-shadow:0 4px 14px rgba(37,99,235,0.3); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        <span wire:loading.remove wire:target="submitRequest"><i class="fa-solid fa-paper-plane" style="margin-right:5px;"></i>Confirm Payment</span>
+                        <span wire:loading wire:target="submitRequest"><i class="fa-solid fa-circle-notch fa-spin" style="margin-right:5px;"></i>Processing...</span>
                     </button>
                     <button type="button" wire:click="closeModal"
-                        class="w-full py-2 text-slate-500 font-semibold rounded-xl text-xs uppercase tracking-wider hover:bg-slate-100 transition-colors">
+                        style="width:100%; padding:8px; color:#64748b; font-weight:600; font-size:11px; border-radius:10px; border:none; background:transparent; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em; transition:background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
                         Cancel
                     </button>
                 </div>
