@@ -9,68 +9,39 @@ class FamilyDataService
 {
     public function getFamilyData($aadharNumber)
     {
+        // 1. Aadhar ko Base64 encode karein (Jaise JS mein btoa hota hai)
         $encodedAadhar = base64_encode($aadharNumber);
-        $baseUrl = 'https://ppp-office.haryana.gov.in';
-        $searchUrl = $baseUrl . '/AddNewFamily/FamilySearch';
-        $responseUrl = $baseUrl . '/AddNewFamily/GetResponse';
-
-        // 1. Setup Base Request configuration
-        $request = Http::timeout(45)
-            ->connectTimeout(20)
+        
+        $response = Http::timeout(60)
+            ->connectTimeout(30)
             ->withoutVerifying()
             ->withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language' => 'en-US,en;q=0.9',
+                'Accept' => '*/*',
+                'Accept-Language' => 'en-GB,en-US;q=0.9,en;q=0.8',
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+                'X-Requested-With' => 'XMLHttpRequest',
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+                'Origin' => 'https://ppp-office.haryana.gov.in',
+                'Referer' => 'https://ppp-office.haryana.gov.in/AddNewFamily/FamilySearch',
+            ])
+            ->withCookies([
+                'ASP.NET_SessionId' => '2fulc3u0xwiva2hvwv2hnvvf',
+                '__RequestVerificationToken' => 'rV4wE2rL2JZPm6Vk9XpixYdYPj3utKzpPJ7q_PsjQ8K6b1eGZq62cUKHc4AOe2aDFA-GfWoi89cqTjVly3RsVdpDW-sWSd6RtUFEpMVL-Yw1',
+                'xyzAdminAuthorize' => '859C3313C176BCB4D422380B4E81FF9048C80B3D273797E333EE8927801EA6CDD6ED9594CF3E92EE82BD4079C76E63C1EA66AF22E394FC4F17FE35E2D6BEBC4D4A49DD8EEE42B9D4E1B12323FD4E54DE6F6A0DB2ED202429178C6CFD09C1E44D3E2F53BFE5865B06FE670D7309D9999E839479E83219C016E595F31EC8EF74A2ED1B5C33DC510F1226C2C992741C4E4529C6A2DCEE69D43A04F670E34CE3E9F6B4A0D8554E5C4D789D83F1E4BA6DF4AD79B338F7895827B77F43E13E09927BEBC307E1A8794103B5063D5E18B7C0E73764D73A6860A7599121CB6745093381562B2624ED2185C2B8F4B5EEEC2B4DD1660557FB7EE771AFBF93BE02976A5F16E1A6687B99086DB1A6933C5B02EA6F82A6542FE62A52B82A14331BAF39080455FC2611FB3CA035FD54D11A542EAEAB9EB30CCACC7D153C868D05B4AD6366B3C103A89F7B1642D497FC81EF632D103CAA112FAD84F420DD91F7B0D1F660E145528E3CEE6CCF04064E128279FA3B636FD075B26DDC3BEBA91781A5B9FA768C5955914A9A2E47E2B9D55E0828A6A4E4EDD4B3338B186266E491E44C23168DB50C9AB1816EE41767C7F13A3F1211B342F21DB57F2D0096F8F8F2DBF83E4AB97499A4FDDCCF3057EC8044A3B061C3CC9620B41E662A9F288E2A7A74B721071F061F676D0AF1C35DC01701BB79267FC39434648ECAD48ACA957FC4DC0B6B004EDFBCED618AAFE6BDACFDC8897A441312189E359600283C502C950FD68E91A26DB3D50D121069537853D7479D0655C381DC3E063E7876D87177E5E9F93BA247F5604C75C1B6458F464B8B17BFAA2D3468D4A32A698A584B708E6725B3C626FEC246BE403B51EAF610FEC0B0C48CD45315C2C41DCA9EFEB4DC6AE166AEEF1467C6268EB629DFD0F56F043251D9B6BBCBDC67A18F7E887A9A3387FF98790458E3BC9954F1E7F9122C9023FDF655A872EA2980DE83B782DD83834BDD56570A511244B02BD48B60DEB183FCEC8B759A2B3152A178480548079A8BF8395793F490EEFB33A89FF1D289B722A460182706A7FE0F6297E57C274F8449527BC2878758758A3A3D47E55B56F6FBF8E2B397C0F2730948A5F439A6A3C32A84C14E231E95CDA3D6389C9D15808A87BB2E1875B84D108CEC6D5CCEA3C78782E738662016BEE522FFAE4AB0B1305F96B53A2AFC92A3083F4CE84EE86C3C6E76A4C1F168F6180AA68EC888042D822883E0B2A94EE945EB958B303F801B52D644D0A43E5FAF590FE278C38C5EDA749744B069234EF7666110FA4780028D93137B1564D5DC707688A8838171E980BC7AA58366142EEA932B2D506ED630',
+            ], 'ppp-office.haryana.gov.in')
+            ->asForm()
+            ->post('https://ppp-office.haryana.gov.in/AddNewFamily/GetResponse', [
+                'Aadahr' => $encodedAadhar,
             ]);
 
-
-        try {
-            // 2. Initialize Session (GET landing page to get fresh cookies)
-            $initialResponse = $request->get($searchUrl);
-            
-            if (!$initialResponse->successful()) {
-                Log::error('FamilyData Session Init Failed', ['status' => $initialResponse->status()]);
-                return null;
-            }
-
-            $cookies = $initialResponse->cookies();
-            
-            // 3. Extract RequestVerificationToken from the HTML if possible
-            preg_match('/__RequestVerificationToken.*value="([^"]*)"/', $initialResponse->body(), $matches);
-            $token = $matches[1] ?? null;
-
-            // 4. Perform Search Request
-            $searchRequest = $request->withCookies($cookies->toArray(), 'ppp-office.haryana.gov.in')
-                ->withHeaders([
-                    'X-Requested-With' => 'XMLHttpRequest',
-                    'Referer' => $searchUrl,
-                    'Origin' => $baseUrl,
-                ]);
-
-            if ($token) {
-                $searchRequest->withHeaders(['__RequestVerificationToken' => $token]);
-            }
-
-            $response = $searchRequest->asForm()->post($responseUrl, [
-                'Aadahr' => $encodedAadhar, // Kept spelling as provided by user
-            ]);
-
-            if ($response->successful()) {
-                return $response->body();
-            }
-
-            Log::error('FamilyData Search Request Failed', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('FamilyData Service Exception', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+        if ($response->successful()) {
+            return $response->body();
         }
+
+        Log::error('FamilyData API failed', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
 
         return null;
     }
