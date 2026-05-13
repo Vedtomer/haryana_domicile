@@ -114,12 +114,13 @@ class CoinPurchaseRequestResource extends Resource
                 Infolists\Components\Section::make('Payment Receipt')
                     ->schema([
                         Infolists\Components\ImageEntry::make('payment_screenshot')
-                            ->label('')
+                            ->label('Click to view full image')
                             ->disk('public')
-                            ->width('100%')
+                            ->width(400)
                             ->height('auto')
                             ->extraImgAttributes([
-                                'style' => 'max-width: 100%; height: auto; border-radius: 8px;',
+                                'style' => 'border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer;',
+                                'onclick' => 'window.open(this.src, "_blank")',
                             ]),
                     ]),
             ]);
