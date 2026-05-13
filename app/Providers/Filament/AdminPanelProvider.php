@@ -110,6 +110,11 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn (): string => \App\Filament\Pages\PdfCoordinates::getUrl())
                     ->icon('heroicon-o-cog-6-tooth')
                     ->visible(fn (): bool => auth()->user()->type === 'admin'),
+                'my-coin-requests' => \Filament\Navigation\MenuItem::make()
+                    ->label('My Coin Requests')
+                    ->url(fn (): string => \App\Filament\Resources\CoinPurchaseRequestResource::getUrl())
+                    ->icon('heroicon-o-currency-dollar')
+                    ->visible(fn (): bool => auth()->user()->type === 'user'),
             ])
             ->authMiddleware([
                 Authenticate::class,

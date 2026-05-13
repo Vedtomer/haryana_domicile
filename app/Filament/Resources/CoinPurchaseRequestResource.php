@@ -32,7 +32,7 @@ class CoinPurchaseRequestResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->check() && auth()->user()->type === 'admin';
+        return auth()->check();
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
@@ -43,7 +43,7 @@ class CoinPurchaseRequestResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->type === 'admin';
+        return auth()->check() && auth()->user()->type === 'admin';
     }
 
     public static function form(Form $form): Form
