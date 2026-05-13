@@ -127,7 +127,7 @@ class CoinPurchaseRequestResource extends Resource
                         ->label('Approve')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
+                        ->visible(fn(CoinPurchaseRequest $record) => auth()->user()->type === 'admin' && $record->status === CoinPurchaseRequest::STATUS_PENDING)
                         ->action(function (CoinPurchaseRequest $record) {
                             DB::transaction(function () use ($record) {
                                 $record->update([
@@ -154,7 +154,7 @@ class CoinPurchaseRequestResource extends Resource
                         ->label('Reject')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
-                        ->visible(fn(CoinPurchaseRequest $record) => $record->status === CoinPurchaseRequest::STATUS_PENDING)
+                        ->visible(fn(CoinPurchaseRequest $record) => auth()->user()->type === 'admin' && $record->status === CoinPurchaseRequest::STATUS_PENDING)
                         ->form([
                             Forms\Components\Textarea::make('admin_notes')
                                 ->label('Notes')
@@ -173,8 +173,10 @@ class CoinPurchaseRequestResource extends Resource
                                 ->send();
                         })
                         ->requiresConfirmation(),
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->visible(fn() => auth()->user()->type === 'admin'),
+                    Tables\Actions\DeleteAction::make()
+                        ->visible(fn() => auth()->user()->type === 'admin'),
                 ]),
             ])
             ->bulkActions([
