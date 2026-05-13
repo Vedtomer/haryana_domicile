@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
 
 class CoinPurchaseRequestResource extends Resource
@@ -90,6 +92,39 @@ class CoinPurchaseRequestResource extends Resource
         ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Request Details')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('user.name')->label('User'),
+                        Infolists\Components\TextEntry::make('coins_requested')->label('Coins'),
+                        Infolists\Components\TextEntry::make('package_amount')->label('Amount (₹)')->money('INR'),
+                        Infolists\Components\TextEntry::make('status')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'pending' => 'warning',
+                                'approved' => 'success',
+                                'rejected' => 'danger',
+                                default => 'gray',
+                            }),
+                        Infolists\Components\TextEntry::make('admin_notes')->columnSpanFull()->visible(fn($record) => $record->admin_notes !== null),
+                    ])->columns(2),
+                Infolists\Components\Section::make('Payment Receipt')
+                    ->schema([
+                        Infolists\Components\ImageEntry::make('payment_screenshot')
+                            ->label('')
+                            ->disk('public')
+                            ->width('100%')
+                            ->height('auto')
+                            ->extraImgAttributes([
+                                'style' => 'max-width: 100%; height: auto; border-radius: 8px;',
+                            ]),
+                    ]),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -125,7 +160,8 @@ class CoinPurchaseRequestResource extends Resource
             ]),
         ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->visible(fn() => auth()->user()->type === 'admin'),
                 Tables\Actions\ActionGroup::make([
                     Action::make('approve')
                         ->label('Approve')
