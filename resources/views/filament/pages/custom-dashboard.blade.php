@@ -23,16 +23,23 @@
         .service-card {
             display: flex;
             align-items: center;
-            padding: 16px 20px;
-            border-radius: 20px;
+            padding: 12px 10px;
+            border-radius: 16px;
             text-decoration: none !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 76px;
+            min-height: 76px;
             box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.03), 0 2px 6px -2px rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.5);
             background-clip: padding-box;
             position: relative;
             overflow: hidden;
+        }
+        @media (min-width: 640px) {
+            .service-card {
+                padding: 16px 20px;
+                border-radius: 20px;
+                height: 76px;
+            }
         }
         .service-card::before {
             content: '';
@@ -53,18 +60,27 @@
         }
         
         .icon-box {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             background: rgba(255,255,255,0.6);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 16px;
+            margin-right: 10px;
             flex-shrink: 0;
-            font-size: 22px;
+            font-size: 18px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             transition: transform 0.3s ease;
+        }
+        @media (min-width: 640px) {
+            .icon-box {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+                margin-right: 16px;
+                font-size: 22px;
+            }
         }
         
         .service-card:hover .icon-box {
@@ -72,13 +88,22 @@
         }
 
         .service-title {
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 1.3;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.2;
             text-transform: uppercase;
             font-family: 'Outfit', sans-serif;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
             color: #334155;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+        @media (min-width: 640px) {
+            .service-title {
+                font-size: 12px;
+                line-height: 1.3;
+                letter-spacing: 0.03em;
+            }
         }
 
 
