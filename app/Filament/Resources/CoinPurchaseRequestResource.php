@@ -50,22 +50,19 @@ class CoinPurchaseRequestResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\Section::make('General Information')
+            Forms\Components\Section::make('Request Details')
             ->schema([
                 Forms\Components\Select::make('user_id')
                 ->relationship('user', 'name')
-                ->required()
+                ->label('User')
                 ->disabled(),
                 Forms\Components\TextInput::make('coins_requested')
+                ->label('Coins Requested')
                 ->numeric()
-                ->required()
                 ->disabled(),
                 Forms\Components\TextInput::make('package_amount')
+                ->label('Amount (₹)')
                 ->numeric()
-                ->required()
-                ->disabled(),
-                Forms\Components\TextInput::make('utr_number')
-                ->label('UTR Number')
                 ->disabled(),
                 Forms\Components\Select::make('status')
                 ->options([
@@ -73,17 +70,23 @@ class CoinPurchaseRequestResource extends Resource
                     CoinPurchaseRequest::STATUS_APPROVED => 'Approved',
                     CoinPurchaseRequest::STATUS_REJECTED => 'Rejected',
                 ])
-                ->required()
-                ->disabled(),
-                Forms\Components\FileUpload::make('payment_screenshot')
-                ->label('Payment Screenshot')
-                ->image()
                 ->disabled(),
                 Forms\Components\Textarea::make('admin_notes')
                 ->label('Admin Notes')
                 ->rows(3)
                 ->columnSpanFull(),
             ])->columns(['md' => 2]),
+
+            Forms\Components\Section::make('Payment Receipt')
+            ->schema([
+                Forms\Components\FileUpload::make('payment_screenshot')
+                ->label('Receipt Image')
+                ->image()
+                ->disk('public')
+                ->directory('coin-requests')
+                ->disabled()
+                ->columnSpanFull(),
+            ]),
         ]);
     }
 
@@ -122,6 +125,7 @@ class CoinPurchaseRequestResource extends Resource
             ]),
         ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\ActionGroup::make([
                     Action::make('approve')
                         ->label('Approve')
@@ -135,19 +139,13 @@ class CoinPurchaseRequestResource extends Resource
                                     'approved_by' => auth()->id(),
                                     'approved_at' => now(),
                                 ]);
-
                                 $record->user->addCoins(
                                     $record->coins_requested,
                                     CoinTransaction::TYPE_PURCHASE,
-                                    "Purchased Coins - UTR: {$record->utr_number}"
+                                    "Coin Purchase - {$record->coins_requested} Coins"
                                 );
                             });
-
-                            Notification::make()
-                                ->title('Success')
-                                ->body('Request approved and coins added to user wallet.')
-                                ->success()
-                                ->send();
+                            Notification::make()->title('Success')->body('Request approved and coins added.')->success()->send();
                         })
                         ->requiresConfirmation(),
                     Action::make('reject')
@@ -156,25 +154,13 @@ class CoinPurchaseRequestResource extends Resource
                         ->color('danger')
                         ->visible(fn(CoinPurchaseRequest $record) => auth()->user()->type === 'admin' && $record->status === CoinPurchaseRequest::STATUS_PENDING)
                         ->form([
-                            Forms\Components\Textarea::make('admin_notes')
-                                ->label('Notes')
-                                ->required(),
+                            Forms\Components\Textarea::make('admin_notes')->label('Notes')->required(),
                         ])
                         ->action(function (CoinPurchaseRequest $record, array $data) {
-                            $record->update([
-                                'status' => CoinPurchaseRequest::STATUS_REJECTED,
-                                'admin_notes' => $data['admin_notes'],
-                            ]);
-
-                            Notification::make()
-                                ->title('Rejected')
-                                ->body('Request rejected.')
-                                ->danger()
-                                ->send();
+                            $record->update(['status' => CoinPurchaseRequest::STATUS_REJECTED, 'admin_notes' => $data['admin_notes']]);
+                            Notification::make()->title('Rejected')->body('Request rejected.')->danger()->send();
                         })
                         ->requiresConfirmation(),
-                    Tables\Actions\ViewAction::make()
-                        ->visible(fn() => auth()->user()->type === 'admin'),
                     Tables\Actions\DeleteAction::make()
                         ->visible(fn() => auth()->user()->type === 'admin'),
                 ]),
