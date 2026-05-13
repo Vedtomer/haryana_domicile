@@ -64,29 +64,17 @@
                 {{-- File Upload --}}
                 <div style="margin-bottom:14px;">
                     <label style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:6px;">Upload Receipt</label>
-                    <div style="position:relative;">
-                        <input type="file" wire:model="payment_screenshot" id="payment_screenshot" required accept="image/*"
-                            style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:1;">
-                        <div style="width:100%; padding:14px; border-radius:10px; background:#f8fafc; border:2px dashed #cbd5e1; text-align:center;">
-                            <div wire:loading.remove wire:target="payment_screenshot">
-                                @if($payment_screenshot)
-                                    <div style="width:32px; height:32px; border-radius:50%; background:#d1fae5; color:#059669; display:flex; align-items:center; justify-content:center; margin:0 auto 6px;">
-                                        <i class="fa-solid fa-check"></i>
-                                    </div>
-                                    <span style="font-size:12px; font-weight:700; color:#059669;">Receipt Ready!</span>
-                                @else
-                                    <div style="width:32px; height:32px; border-radius:50%; background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; margin:0 auto 5px;">
-                                        <i class="fa-solid fa-cloud-arrow-up" style="font-size:13px;"></i>
-                                    </div>
-                                    <span style="font-size:12px; font-weight:600; color:#475569; display:block;">Tap to upload screenshot</span>
-                                    <span style="font-size:10px; color:#94a3b8; font-weight:600;">PNG, JPG up to 5MB</span>
-                                @endif
-                            </div>
-                            <div wire:loading wire:target="payment_screenshot" style="color:#0284c7; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px;">
-                                <i class="fa-solid fa-circle-notch fa-spin"></i> Uploading...
-                            </div>
-                        </div>
+                    <input type="file" wire:model="payment_screenshot" id="payment_screenshot" required accept="image/*"
+                        style="width:100%; padding:8px 10px; font-size:12px; font-weight:600; color:#475569; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+                    <div wire:loading wire:target="payment_screenshot" style="margin-top:6px; color:#0284c7; font-size:11px; font-weight:700; display:flex; align-items:center; gap:5px;">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Uploading...
                     </div>
+                    @if($payment_screenshot)
+                    <div style="margin-top:8px; border-radius:10px; overflow:hidden; border:1px solid #e2e8f0;">
+                        <img src="{{ $payment_screenshot->temporaryUrl() }}" alt="Receipt Preview"
+                            style="width:100%; max-height:120px; object-fit:cover; display:block;">
+                    </div>
+                    @endif
                     @error('payment_screenshot') <span style="color:#ef4444; font-size:11px; margin-top:4px; display:block;"><i class="fa-solid fa-circle-exclamation" style="margin-right:3px;"></i>{{ $message }}</span> @enderror
                 </div>
                 @endif
@@ -108,4 +96,23 @@
         </div>
     </div>
     @endif
+
+    <script>
+    function showReceiptPreview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = document.getElementById('receipt-preview-img');
+                var preview = document.getElementById('receipt-preview');
+                var placeholder = document.getElementById('receipt-placeholder');
+                if (img && preview && placeholder) {
+                    img.src = e.target.result;
+                    placeholder.style.display = 'none';
+                    preview.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    </script>
 </div>
