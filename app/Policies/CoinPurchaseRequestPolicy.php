@@ -9,13 +9,22 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class CoinPurchaseRequestPolicy
 {
     use HandlesAuthorization;
+    
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->type === 'admin') {
+            return true;
+        }
+
+        return null;
+    }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_coin::purchase::request');
+        return true;
     }
 
     /**
@@ -23,7 +32,7 @@ class CoinPurchaseRequestPolicy
      */
     public function view(User $user, CoinPurchaseRequest $coinPurchaseRequest): bool
     {
-        return $user->can('view_coin::purchase::request');
+        return $user->id === $coinPurchaseRequest->user_id;
     }
 
     /**
