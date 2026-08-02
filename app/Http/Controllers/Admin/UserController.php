@@ -18,7 +18,13 @@ class UserController extends Controller
             abort(403);
         }
 
-        $users = User::with('roles')->latest()->paginate(10);
+        $query = User::with('roles')->latest();
+        
+        if (auth()->user()->type === 'admin') {
+            $query->where('type', 'user');
+        }
+
+        $users = $query->paginate(10);
         return Inertia::render('Admin/Users/Index', ['users' => $users]);
     }
 
@@ -48,6 +54,10 @@ class UserController extends Controller
 
         $data['password'] = Hash::make($data['password']);
         
+        if (auth()->user()->type === 'admin' && $data['type'] !== 'user') {
+            abort(403, 'You can only create regular users.');
+        }
+        
         $user = User::create($data);
         
         if ($data['type'] === 'super_admin') {
@@ -66,6 +76,11 @@ class UserController extends Controller
         if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
+
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403, 'You can only edit regular users.');
+        }
+
         return Inertia::render('Admin/Users/Edit', [
             'user' => $user
         ]);
@@ -93,6 +108,10 @@ class UserController extends Controller
             unset($data['password']);
         }
 
+        if (auth()->user()->type === 'admin' && ($user->type !== 'user' || $data['type'] !== 'user')) {
+            abort(403, 'You can only modify regular users.');
+        }
+
         $user->update($data);
         
         if ($data['type'] === 'super_admin') {
@@ -116,6 +135,10 @@ class UserController extends Controller
             'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string|max:255'
         ]);
+
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403, 'You can only add coins to regular users.');
+        }
 
         $user->addCoins(
             (int)$data['amount'],
