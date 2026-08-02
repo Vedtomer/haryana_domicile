@@ -4,7 +4,9 @@ import FrontendLayout from '../../Layouts/FrontendLayout';
 
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
+        name: '',
         email: '',
+        phone: '',
         password: '',
         password_confirmation: '',
     });
@@ -71,24 +73,58 @@ export default function Register() {
                         
                         <form onSubmit={submit} className="space-y-6">
                             
-                            {/* Email/Phone Field */}
+                            <div className="relative group animate-slide-up" style={{ animationDelay: '150ms' }}>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
+                                    placeholder="Full Name (Optional)"
+                                />
+                                <label 
+                                    htmlFor="name" 
+                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
+                                >
+                                    Full Name (Optional)
+                                </label>
+                                {errors.name && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.name}</p>}
+                            </div>
+
                             <div className="relative group animate-slide-up" style={{ animationDelay: '200ms' }}>
                                 <input
                                     id="email"
-                                    type="text"
+                                    type="email"
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
                                     className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Email or Phone Number"
-                                    required
+                                    placeholder="Email Address (Optional)"
                                 />
                                 <label 
                                     htmlFor="email" 
                                     className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
                                 >
-                                    Email Address or Phone Number
+                                    Email Address (Optional)
                                 </label>
                                 {errors.email && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.email}</p>}
+                            </div>
+
+                            <div className="relative group animate-slide-up" style={{ animationDelay: '250ms' }}>
+                                <input
+                                    id="phone"
+                                    type="text"
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
+                                    placeholder="Phone Number (Optional)"
+                                />
+                                <label 
+                                    htmlFor="phone" 
+                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
+                                >
+                                    Phone Number (Optional)
+                                </label>
+                                {errors.phone && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.phone}</p>}
                             </div>
 
                             {/* Password Field */}

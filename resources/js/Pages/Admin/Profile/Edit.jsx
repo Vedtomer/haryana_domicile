@@ -1,22 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import FloatingInput from '../../../Components/FloatingInput';
 
 export default function Edit({ user }) {
     const { data, setData, put, processing, errors } = useForm({
-        name: user.name,
-        email: user.email,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
         password: '',
     });
+
+    const [showToast, setShowToast] = useState(false);
+
+    useEffect(() => {
+        if (showToast) {
+            const timer = setTimeout(() => setShowToast(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [showToast]);
 
     const submit = (e) => {
         e.preventDefault();
         put('/admin/profile', {
             preserveScroll: true,
             onSuccess: () => {
-                setData('password', ''); // Clear password field on success
-                alert('Profile updated successfully!');
+                setData('password', ''); 
+                setShowToast(true);
             }
         });
     };
@@ -25,7 +35,12 @@ export default function Edit({ user }) {
         <AdminLayout>
             <Head title="My Profile" />
             
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-3xl mx-auto relative">
+                {/* Toast Notification */}
+                <div className={`fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 z-50 flex items-center gap-2 ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                    Profile updated successfully!
+                </div>
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="px-6 py-8 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center gap-6">
                         <div className="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
@@ -46,21 +61,31 @@ export default function Edit({ user }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <FloatingInput 
                                 id="name"
-                                label="Full Name"
+                                label="Full Name (Optional)"
                                 value={data.name}
                                 onChange={e => setData('name', e.target.value)}
                                 error={errors.name}
-                                required={true}
+                                required={false}
                             />
                             
                             <FloatingInput 
                                 id="email"
                                 type="email"
-                                label="Email Address"
+                                label="Email Address (Optional)"
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
                                 error={errors.email}
-                                required={true}
+                                required={false}
+                            />
+
+                            <FloatingInput 
+                                id="phone"
+                                type="text"
+                                label="Phone Number (Optional)"
+                                value={data.phone}
+                                onChange={e => setData('phone', e.target.value)}
+                                error={errors.phone}
+                                required={false}
                             />
                         </div>
 

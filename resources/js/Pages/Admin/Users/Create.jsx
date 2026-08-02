@@ -2,12 +2,13 @@ import React from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
-export default function Create({ roles, user = null }) {
+export default function Create({ user = null }) {
     const isEdit = !!user;
     
     const { data, setData, post, put, processing, errors } = useForm({
         name: user?.name || '',
         email: user?.email || '',
+        phone: user?.phone || '',
         password: '',
         type: user?.type || 'user',
         coins: user?.coins || 0,
@@ -23,7 +24,6 @@ export default function Create({ roles, user = null }) {
         }
     };
 
-
     return (
         <AdminLayout>
             <Head title={isEdit ? "Edit User" : "Create User"} />
@@ -34,15 +34,21 @@ export default function Create({ roles, user = null }) {
 
             <form onSubmit={submit} className="bg-white rounded-xl shadow p-6 space-y-6 max-w-2xl">
                 <div>
-                    <label className="block text-sm font-medium mb-1">Name</label>
-                    <input type="text" value={data.name} onChange={e => setData('name', e.target.value)} required className="w-full border-gray-300 rounded" />
+                    <label className="block text-sm font-medium mb-1">Name (Optional)</label>
+                    <input type="text" value={data.name} onChange={e => setData('name', e.target.value)} className="w-full border-gray-300 rounded" />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
                 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Email</label>
-                    <input type="email" value={data.email} onChange={e => setData('email', e.target.value)} required className="w-full border-gray-300 rounded" />
+                    <label className="block text-sm font-medium mb-1">Email (Optional)</label>
+                    <input type="email" value={data.email} onChange={e => setData('email', e.target.value)} className="w-full border-gray-300 rounded" />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Phone Number (Optional)</label>
+                    <input type="text" value={data.phone} onChange={e => setData('phone', e.target.value)} className="w-full border-gray-300 rounded" />
+                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
 
                 <div>
