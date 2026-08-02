@@ -18,7 +18,9 @@ export default function AdminLayout({ children }) {
                     <Link href="/admin/haryana-domicile" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Haryana Domicile</Link>
                     <Link href="/admin/pan-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">PAN Requests</Link>
                     <Link href="/admin/coin-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Coin Purchases</Link>
-                    <Link href="/admin/users" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Manage Users</Link>
+                    {auth?.user?.type === 'super_admin' && (
+                        <Link href="/admin/users" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Manage Users</Link>
+                    )}
                 </nav>
                 <div className="p-4 border-t border-gray-800">
                     <div className="text-sm text-gray-400 mb-2">Logged in as {auth?.user?.name || 'Admin'}</div>

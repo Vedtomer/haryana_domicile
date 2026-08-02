@@ -35,6 +35,7 @@ export default function Index({ users }) {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type / Role</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coins</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -51,6 +52,11 @@ export default function Index({ users }) {
                                         'bg-gray-100 text-gray-800'
                                     }`}>
                                         {user.type?.replace('_', ' ').toUpperCase()}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                        {user.is_active ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">{user.coins}</td>

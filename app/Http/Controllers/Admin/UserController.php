@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
 
@@ -24,7 +24,7 @@ class UserController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
         return Inertia::render('Admin/Users/Create');
@@ -32,7 +32,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
 
@@ -41,7 +41,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
             'type' => 'required|in:user,admin,super_admin',
-            'coins' => 'required|numeric|min:0'
+            'coins' => 'required|numeric|min:0',
+            'is_active' => 'boolean'
         ]);
 
         $data['password'] = Hash::make($data['password']);
@@ -61,7 +62,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
         return Inertia::render('Admin/Users/Edit', [
@@ -71,7 +72,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
 
@@ -80,7 +81,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
             'type' => 'required|in:user,admin,super_admin',
-            'coins' => 'required|numeric|min:0'
+            'coins' => 'required|numeric|min:0',
+            'is_active' => 'boolean'
         ]);
 
         if (!empty($data['password'])) {
@@ -104,7 +106,7 @@ class UserController extends Controller
 
     public function addCoins(Request $request, User $user)
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->type !== 'super_admin') {
             abort(403);
         }
 

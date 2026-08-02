@@ -11,6 +11,7 @@ export default function Create({ roles, user = null }) {
         password: '',
         type: user?.type || 'user',
         coins: user?.coins || 0,
+        is_active: user !== null ? !!user.is_active : true,
     });
 
     const submit = (e) => {
@@ -65,6 +66,20 @@ export default function Create({ roles, user = null }) {
                     <input type="number" value={data.coins} onChange={e => setData('coins', e.target.value)} required className="w-full border-gray-300 rounded" />
                     {errors.coins && <p className="text-red-500 text-xs mt-1">{errors.coins}</p>}
                 </div>
+
+                <div className="flex items-center">
+                    <input 
+                        type="checkbox" 
+                        id="is_active" 
+                        checked={data.is_active} 
+                        onChange={e => setData('is_active', e.target.checked)} 
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded" 
+                    />
+                    <label htmlFor="is_active" className="ml-2 block text-sm font-medium text-gray-700">
+                        Active Account
+                    </label>
+                </div>
+                {errors.is_active && <p className="text-red-500 text-xs mt-1">{errors.is_active}</p>}
 
                 <div className="pt-4 text-right border-t">
                     <button type="submit" disabled={processing} className="px-6 py-2 bg-blue-600 text-white font-bold rounded">
