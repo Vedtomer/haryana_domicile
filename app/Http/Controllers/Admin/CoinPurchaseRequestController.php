@@ -23,7 +23,8 @@ class CoinPurchaseRequestController extends Controller
         
         return Inertia::render('Admin/CoinPurchaseRequests/Index', [
             'requests' => $requests,
-            'isAdmin' => auth()->user()->isAdmin() || auth()->user()->hasRole('super_admin')
+            'isAdmin' => auth()->user()->isAdmin() || auth()->user()->hasRole('super_admin'),
+            'canAction' => auth()->user()->type === 'admin',
         ]);
     }
 
