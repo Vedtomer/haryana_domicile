@@ -34,7 +34,7 @@ export default function Index({ users }) {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Roles</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type / Role</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coins</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -45,7 +45,13 @@ export default function Index({ users }) {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {user.roles.map(r => r.name).join(', ')}
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                        user.type === 'super_admin' ? 'bg-purple-100 text-purple-800' :
+                                        user.type === 'admin' ? 'bg-blue-100 text-blue-800' :
+                                        'bg-gray-100 text-gray-800'
+                                    }`}>
+                                        {user.type?.replace('_', ' ').toUpperCase()}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">{user.coins}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -56,6 +62,25 @@ export default function Index({ users }) {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="mt-4 flex gap-2 mb-6">
+                {users.links.map((link, i) => (
+                    link.url ? (
+                        <Link
+                            key={i}
+                            href={link.url}
+                            className={`px-4 py-2 border rounded ${link.active ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white hover:bg-gray-50 text-gray-600'}`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ) : (
+                        <span
+                            key={i}
+                            className="px-4 py-2 border rounded opacity-50 cursor-not-allowed bg-gray-50 text-gray-500"
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    )
+                ))}
             </div>
 
             {addingCoinsTo && (
