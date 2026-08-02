@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import FrontendLayout from '@/Layouts/FrontendLayout';
+import FrontendLayout from '../../Layouts/FrontendLayout';
 
 export default function Home() {
     return (
