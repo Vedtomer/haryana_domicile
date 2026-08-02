@@ -33,10 +33,6 @@ export default function Create({ user = null }) {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                     <div>
-                        <Link href="/admin/users" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors mb-2">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                            Back to Users
-                        </Link>
                         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
                             {isEdit ? "Edit User Account" : "Create New User"}
                         </h2>
@@ -85,42 +81,8 @@ export default function Create({ user = null }) {
                                     error={errors.password}
                                 />
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                                <div className="relative">
-                                    <select 
-                                        id="type"
-                                        value={data.type} 
-                                        onChange={e => setData('type', e.target.value)} 
-                                        className={`block px-4 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 appearance-none focus:outline-none focus:ring-0 peer transition-colors cursor-pointer ${errors.type ? 'border-red-500 focus:border-red-600' : 'border-slate-300 focus:border-blue-600'}`} 
-                                        required
-                                    >
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="super_admin">Super Admin</option>
-                                    </select>
-                                    <label 
-                                        htmlFor="type" 
-                                        className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 start-2 ${errors.type ? 'text-red-500' : 'text-blue-600'}`}
-                                    >
-                                        User Role / Type
-                                    </label>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                                    </div>
-                                    {errors.type && <p className="text-red-500 text-xs mt-1 absolute -bottom-5">{errors.type}</p>}
-                                </div>
-
-                                <FloatingInput 
-                                    id="coins"
-                                    type="number"
-                                    label="Coins Wallet Balance"
-                                    value={data.coins}
-                                    onChange={e => setData('coins', e.target.value)}
-                                    required
-                                    error={errors.coins}
-                                />
-                            </div>
+                            
+                            {/* Removed type and coins fields */}
                             
                             <div className="pt-4 flex items-center">
                                 <label className="relative flex cursor-pointer items-center rounded-full p-3" htmlFor="is_active">
@@ -147,7 +109,7 @@ export default function Create({ user = null }) {
 
                         <div className="bg-slate-50 px-8 py-5 flex items-center justify-end gap-3">
                             <Link href="/admin/users" className="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors">
-                                Cancel
+                                Back
                             </Link>
                             <button 
                                 type="submit" 

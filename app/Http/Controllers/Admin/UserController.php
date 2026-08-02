@@ -148,4 +148,16 @@ class UserController extends Controller
 
         return back()->with('success', 'Coins added.');
     }
+
+    public function toggleStatus(User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403);
+        }
+        $user->update(['is_active' => !$user->is_active]);
+        return back()->with('success', 'User status updated.');
+    }
 }
