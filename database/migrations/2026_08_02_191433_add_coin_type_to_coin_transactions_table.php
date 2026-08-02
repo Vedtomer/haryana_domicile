@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('coin_transactions', function (Blueprint $table) {
-            //
+            $table->enum('coin_type', ['trial', 'paid'])->nullable()->after('type');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('coin_transactions', function (Blueprint $table) {
-            //
+            $table->dropColumn('coin_type');
         });
     }
 };
