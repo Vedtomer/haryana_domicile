@@ -27,8 +27,7 @@ class UserController extends Controller
         if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
             abort(403);
         }
-        $roles = Role::all();
-        return Inertia::render('Admin/Users/Create', ['roles' => $roles]);
+        return Inertia::render('Admin/Users/Create');
     }
 
     public function store(Request $request)
@@ -41,14 +40,21 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'roles' => 'required|array',
+            'type' => 'required|in:user,admin,super_admin',
             'coins' => 'required|numeric|min:0'
         ]);
 
         $data['password'] = Hash::make($data['password']);
         
         $user = User::create($data);
-        $user->syncRoles($data['roles']);
+        
+        if ($data['type'] === 'super_admin') {
+            $user->syncRoles(['super_admin']);
+        } elseif ($data['type'] === 'admin') {
+            $user->syncRoles(['admin']);
+        } else {
+            $user->syncRoles(['public']);
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'User created.');
     }
@@ -58,10 +64,8 @@ class UserController extends Controller
         if (!auth()->user()->isAdmin() && !auth()->user()->hasRole('super_admin')) {
             abort(403);
         }
-        $roles = Role::all();
         return Inertia::render('Admin/Users/Edit', [
-            'user' => $user->load('roles'),
-            'roles' => $roles
+            'user' => $user
         ]);
     }
 
@@ -75,7 +79,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
-            'roles' => 'required|array',
+            'type' => 'required|in:user,admin,super_admin',
             'coins' => 'required|numeric|min:0'
         ]);
 
@@ -86,7 +90,14 @@ class UserController extends Controller
         }
 
         $user->update($data);
-        $user->syncRoles($data['roles']);
+        
+        if ($data['type'] === 'super_admin') {
+            $user->syncRoles(['super_admin']);
+        } elseif ($data['type'] === 'admin') {
+            $user->syncRoles(['admin']);
+        } else {
+            $user->syncRoles(['public']);
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'User updated.');
     }
