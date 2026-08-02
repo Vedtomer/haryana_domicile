@@ -27,9 +27,15 @@ export default function Home() {
                             <a href="#contact" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Contact</a>
                             <Link 
                                 href="/login" 
+                                className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                            >
+                                Login
+                            </Link>
+                            <Link 
+                                href="/register" 
                                 className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-full text-white bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                             >
-                                Admin Login
+                                Sign Up
                             </Link>
                         </div>
                     </div>
@@ -141,7 +147,8 @@ export default function Home() {
                     <div>
                         <h4 className="text-white font-bold mb-4">Quick Links</h4>
                         <ul className="space-y-2 text-sm">
-                            <li><Link href="/login" className="hover:text-white transition-colors">Admin Login</Link></li>
+                            <li><Link href="/login" className="hover:text-white transition-colors">Login</Link></li>
+                            <li><Link href="/register" className="hover:text-white transition-colors">Sign Up</Link></li>
                             <li><a href="#services" className="hover:text-white transition-colors">Our Services</a></li>
                             <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
                         </ul>
