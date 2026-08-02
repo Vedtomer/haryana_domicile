@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-B0AdA7Cf.css",
+    "file": "assets/app-CulI1g7K.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -8,10 +8,28 @@
       "app.css"
     ]
   },
-  "resources/js/app.js": {
-    "file": "assets/app-CKl8NZMC.js",
+  "resources/js/Pages/Frontend/Home.jsx": {
+    "file": "assets/Home-BUjByjYO.js",
+    "name": "Home",
+    "src": "resources/js/Pages/Frontend/Home.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-CulI1g7K.css"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-DCPXQI03.js",
     "name": "app",
-    "src": "resources/js/app.js",
-    "isEntry": true
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Frontend/Home.jsx"
+    ],
+    "css": [
+      "assets/app-CulI1g7K.css"
+    ]
   }
 }
