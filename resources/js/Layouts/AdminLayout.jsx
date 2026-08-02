@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 
 export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Sidebar */}
-            <div className="w-64 bg-gray-900 text-white flex flex-col">
+            <div className="w-64 bg-gray-900 text-white flex flex-col shadow-xl z-20">
                 <div className="p-6">
                     <h2 className="text-2xl font-bold text-blue-400">Admin Portal</h2>
                 </div>
@@ -15,34 +16,67 @@ export default function AdminLayout({ children }) {
                     <Link href="/dashboard" className="block px-4 py-2 rounded-lg bg-gray-800 text-white">Dashboard</Link>
                     {auth?.user?.type !== 'super_admin' && (
                         <>
-                            <Link href="/admin/marriage-forms" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Marriage Forms</Link>
-                            <Link href="/admin/birth-records" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Birth Records</Link>
-                            <Link href="/admin/haryana-domicile" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Haryana Domicile</Link>
-                            <Link href="/admin/pan-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">PAN Requests</Link>
-                            <Link href="/admin/coin-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Coin Purchases</Link>
+                            <Link href="/admin/marriage-forms" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Marriage Forms</Link>
+                            <Link href="/admin/birth-records" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Birth Records</Link>
+                            <Link href="/admin/haryana-domicile" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Haryana Domicile</Link>
+                            <Link href="/admin/pan-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">PAN Requests</Link>
+                            <Link href="/admin/coin-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Coin Purchases</Link>
                         </>
                     )}
                     {auth?.user?.type === 'super_admin' && (
-                        <Link href="/admin/users" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Manage Users</Link>
+                        <Link href="/admin/users" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Manage Users</Link>
                     )}
                 </nav>
-                <div className="p-4 border-t border-gray-800">
-                    <div className="text-sm text-gray-400 mb-2">Logged in as {auth?.user?.name || 'Admin'}</div>
-                    <Link href="/logout" method="post" as="button" className="w-full text-left text-sm text-red-400 hover:text-red-300">
-                        Sign Out
-                    </Link>
-                </div>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                <header className="bg-white shadow-sm h-16 flex items-center px-8">
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <header className="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 relative">
                     <h1 className="text-xl font-semibold text-gray-800">CSP Jaankari Admin</h1>
+                    
+                    <div className="relative">
+                        <button 
+                            onClick={() => setDropdownOpen(!dropdownOpen)} 
+                            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-colors"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
+                                {auth?.user?.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-medium">{auth?.user?.name}</span>
+                            <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-100 z-50">
+                                <Link 
+                                    href="/admin/profile" 
+                                    className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    My Profile
+                                </Link>
+                                <div className="border-t border-gray-100 my-1"></div>
+                                <Link 
+                                    href="/logout" 
+                                    method="post" 
+                                    as="button" 
+                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                                >
+                                    Sign Out
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                 </header>
-                <main className="flex-1 p-8 overflow-auto">
+                <main className="flex-1 p-8 overflow-y-auto bg-gray-50">
                     {children}
                 </main>
             </div>
+            
+            {/* Click outside listener overlay */}
+            {dropdownOpen && (
+                <div className="fixed inset-0 z-0" onClick={() => setDropdownOpen(false)}></div>
+            )}
         </div>
     );
 }
