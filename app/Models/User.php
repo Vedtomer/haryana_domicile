@@ -122,15 +122,15 @@ class User extends Authenticatable implements FilamentUser
 
             // Create transaction record
             CoinTransaction::create([
-                'user_id' => $this->id,
-                'amount' => $amount,
-                'balance_after' => $this->coins,
-                'type' => $type,
-                'coin_type' => $coinType,
+                'user_id'      => $this->id,
+                'amount'       => $amount,
+                'balance_after'=> $this->coins,
+                'type'         => $type,
+                'coin_type'    => $coinType,
                 'service_type' => null,
-                'service_id' => null,
-                'description' => $description,
-                'created_by' => $createdBy ?? auth()->id(),
+                'service_id'   => null,
+                'description'  => $description,
+                'created_by'   => $createdBy ?? auth()->id(),
             ]);
         });
     }
