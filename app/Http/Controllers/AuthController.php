@@ -38,13 +38,21 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.required' => 'Email or Phone is required.',
+            'email.unique' => 'This Email or Phone is already registered.'
         ]);
 
+        // Generate a name from email/phone
+        $generatedName = explode('@', $validated['email'])[0];
+        if (is_numeric($generatedName)) {
+            $generatedName = 'User ' . substr($generatedName, -4); // E.g., User 7890
+        }
+
         $user = \App\Models\User::create([
-            'name' => $validated['name'],
+            'name' => $generatedName,
             'email' => $validated['email'],
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
             'type' => 'user',
