@@ -48,8 +48,18 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-            'email' => $validated['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        $data = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|required_without:phone|string|email|max:255|unique:users',
+            'phone' => 'nullable|required_without:email|string|max:20|unique:users',
+            'password' => 'required|string|min:4|confirmed',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $data['name'] ?? null,
+            'email' => $data['email'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
             'type' => 'user',
         ]);
 
