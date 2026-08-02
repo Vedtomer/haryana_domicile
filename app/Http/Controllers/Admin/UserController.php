@@ -37,11 +37,12 @@ class UserController extends Controller
         }
 
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
-            'type' => 'required|in:user,admin,super_admin',
-            'coins' => 'required|numeric|min:0',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|required_without:phone|string|email|max:255|unique:users',
+            'phone' => 'nullable|required_without:email|string|max:20|unique:users',
+            'password' => 'required|string|min:4',
+            'type' => 'required|in:super_admin,admin,user',
+            'coins' => 'required|integer|min:0',
             'is_active' => 'boolean'
         ]);
 
@@ -77,11 +78,12 @@ class UserController extends Controller
         }
 
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'password' => 'nullable|string|min:6',
-            'type' => 'required|in:user,admin,super_admin',
-            'coins' => 'required|numeric|min:0',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|required_without:phone|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|required_without:email|string|max:20|unique:users,phone,' . $user->id,
+            'password' => 'nullable|string|min:4',
+            'type' => 'required|in:super_admin,admin,user',
+            'coins' => 'required|integer|min:0',
             'is_active' => 'boolean'
         ]);
 
