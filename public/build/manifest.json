@@ -1,6 +1,13 @@
 {
+  "_AdminLayout-Bg7aw0c9.js": {
+    "file": "assets/AdminLayout-Bg7aw0c9.js",
+    "name": "AdminLayout",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
   "resources/css/app.css": {
-    "file": "assets/app-CulI1g7K.css",
+    "file": "assets/app-BLErbUrS.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -8,8 +15,203 @@
       "app.css"
     ]
   },
+  "resources/js/Pages/Admin/BirthRecords/Create.jsx": {
+    "file": "assets/Create-Ffq37Xza.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Admin/BirthRecords/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/BirthRecords/Index.jsx": {
+    "file": "assets/Index-RpOqljlx.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/BirthRecords/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx": {
+    "file": "assets/Index-XDwVv-Xh.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/Dashboard.jsx": {
+    "file": "assets/Dashboard-DKhkvW25.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Admin/Dashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx": {
+    "file": "assets/Create-JThUZQ6D.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx": {
+    "file": "assets/Index-C0bM96HU.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/Login.jsx": {
+    "file": "assets/Login-DM90-pLH.js",
+    "name": "Login",
+    "src": "resources/js/Pages/Admin/Login.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/MarriageForms/Create.jsx": {
+    "file": "assets/Create-Bn5Xi2FV.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Admin/MarriageForms/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/MarriageForms/Index.jsx": {
+    "file": "assets/Index-B8kp2NzB.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/MarriageForms/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/PanRequests/Create.jsx": {
+    "file": "assets/Create-D61uxCgM.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Admin/PanRequests/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/PanRequests/Edit.jsx": {
+    "file": "assets/Edit-Du_zhjMK.js",
+    "name": "Edit",
+    "src": "resources/js/Pages/Admin/PanRequests/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/PanRequests/Index.jsx": {
+    "file": "assets/Index-BA1RTeP9.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/PanRequests/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/Users/Create.jsx": {
+    "file": "assets/Create-DJf4V6Sk.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Admin/Users/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/Users/Edit.jsx": {
+    "file": "assets/Edit-CjOJc3tR.js",
+    "name": "Edit",
+    "src": "resources/js/Pages/Admin/Users/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Admin/Users/Create.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
+  "resources/js/Pages/Admin/Users/Index.jsx": {
+    "file": "assets/Index-BY9NnYJj.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/Users/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AdminLayout-Bg7aw0c9.js"
+    ],
+    "css": [
+      "assets/app-BLErbUrS.css"
+    ]
+  },
   "resources/js/Pages/Frontend/Home.jsx": {
-    "file": "assets/Home-BUjByjYO.js",
+    "file": "assets/Home-g2uuXSJt.js",
     "name": "Home",
     "src": "resources/js/Pages/Frontend/Home.jsx",
     "isDynamicEntry": true,
@@ -17,19 +219,34 @@
       "resources/js/app.jsx"
     ],
     "css": [
-      "assets/app-CulI1g7K.css"
+      "assets/app-BLErbUrS.css"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-DCPXQI03.js",
+    "file": "assets/app-CQjY_1Ab.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "dynamicImports": [
+      "resources/js/Pages/Admin/BirthRecords/Create.jsx",
+      "resources/js/Pages/Admin/BirthRecords/Index.jsx",
+      "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx",
+      "resources/js/Pages/Admin/Dashboard.jsx",
+      "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx",
+      "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
+      "resources/js/Pages/Admin/Login.jsx",
+      "resources/js/Pages/Admin/MarriageForms/Create.jsx",
+      "resources/js/Pages/Admin/MarriageForms/Index.jsx",
+      "resources/js/Pages/Admin/PanRequests/Create.jsx",
+      "resources/js/Pages/Admin/PanRequests/Edit.jsx",
+      "resources/js/Pages/Admin/PanRequests/Index.jsx",
+      "resources/js/Pages/Admin/Users/Create.jsx",
+      "resources/js/Pages/Admin/Users/Edit.jsx",
+      "resources/js/Pages/Admin/Users/Index.jsx",
       "resources/js/Pages/Frontend/Home.jsx"
     ],
     "css": [
-      "assets/app-CulI1g7K.css"
+      "assets/app-BLErbUrS.css"
     ]
   }
 }

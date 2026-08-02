@@ -50,12 +50,20 @@ export default function Index({ forms }) {
             {/* Pagination */}
             <div className="mt-4 flex gap-2">
                 {forms.links.map((link, i) => (
-                    <Link
-                        key={i}
-                        href={link.url}
-                        className={`px-4 py-2 border rounded ${link.active ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white hover:bg-gray-50 text-gray-600'} ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        dangerouslySetInnerHTML={{ __html: link.label }}
-                    />
+                    link.url ? (
+                        <Link
+                            key={i}
+                            href={link.url}
+                            className={`px-4 py-2 border rounded ${link.active ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white hover:bg-gray-50 text-gray-600'}`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ) : (
+                        <span
+                            key={i}
+                            className="px-4 py-2 border rounded opacity-50 cursor-not-allowed bg-gray-50 text-gray-500"
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    )
                 ))}
             </div>
         </AdminLayout>
