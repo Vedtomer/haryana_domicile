@@ -13,11 +13,15 @@ export default function AdminLayout({ children }) {
                 </div>
                 <nav className="flex-1 px-4 space-y-2">
                     <Link href="/dashboard" className="block px-4 py-2 rounded-lg bg-gray-800 text-white">Dashboard</Link>
-                    <Link href="/admin/marriage-forms" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Marriage Forms</Link>
-                    <Link href="/admin/birth-records" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Birth Records</Link>
-                    <Link href="/admin/haryana-domicile" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Haryana Domicile</Link>
-                    <Link href="/admin/pan-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">PAN Requests</Link>
-                    <Link href="/admin/coin-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Coin Purchases</Link>
+                    {auth?.user?.type !== 'super_admin' && (
+                        <>
+                            <Link href="/admin/marriage-forms" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Marriage Forms</Link>
+                            <Link href="/admin/birth-records" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Birth Records</Link>
+                            <Link href="/admin/haryana-domicile" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Haryana Domicile</Link>
+                            <Link href="/admin/pan-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">PAN Requests</Link>
+                            <Link href="/admin/coin-requests" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Coin Purchases</Link>
+                        </>
+                    )}
                     {auth?.user?.type === 'super_admin' && (
                         <Link href="/admin/users" className="block px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white">Manage Users</Link>
                     )}
