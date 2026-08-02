@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
 
@@ -24,7 +24,7 @@ class UserController extends Controller
 
     public function create()
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
         return Inertia::render('Admin/Users/Create');
@@ -32,7 +32,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
 
@@ -63,7 +63,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
         return Inertia::render('Admin/Users/Edit', [
@@ -73,7 +73,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
 
@@ -108,7 +108,7 @@ class UserController extends Controller
 
     public function addCoins(Request $request, User $user)
     {
-        if (auth()->user()->type !== 'super_admin') {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
 
