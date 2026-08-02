@@ -35,15 +35,15 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             if (!Auth::user()->is_active) {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Your account has been deactivated.'])->onlyInput('email');
+                return back()->withErrors(['login' => 'Your account has been deactivated.'])->onlyInput('login');
             }
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'login' => 'The provided credentials do not match our records.',
+        ])->onlyInput('login');
     }
 
     public function register(Request $request)

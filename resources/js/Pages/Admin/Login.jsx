@@ -4,7 +4,7 @@ import FrontendLayout from '../../Layouts/FrontendLayout';
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
-        email: '',
+        login: '',
         password: '',
     });
 
@@ -71,21 +71,21 @@ export default function Login() {
                             {/* Email/Phone Field */}
                             <div className="relative group animate-slide-up" style={{ animationDelay: '200ms' }}>
                                 <input
-                                    id="email"
+                                    id="login"
                                     type="text"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    value={data.login}
+                                    onChange={(e) => setData('login', e.target.value)}
                                     className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
                                     placeholder="Email or Phone Number"
                                     required
                                 />
                                 <label 
-                                    htmlFor="email" 
+                                    htmlFor="login" 
                                     className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
                                 >
                                     Email Address or Phone Number
                                 </label>
-                                {errors.email && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.email}</p>}
+                                {errors.login && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.login}</p>}
                             </div>
 
                             {/* Password Field */}
