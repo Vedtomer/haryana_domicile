@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import Toast from '../Components/Toast';
 
 export default function FrontendLayout({ children }) {
     return (
         <div className="min-h-screen flex flex-col font-sans selection:bg-blue-500 selection:text-white">
+            <Toast />
             {/* Navbar */}
             <nav className="fixed w-full z-50 top-0 transition-all duration-300 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

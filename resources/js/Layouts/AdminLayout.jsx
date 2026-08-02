@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import Toast from '../Components/Toast';
 
 export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
@@ -7,6 +8,7 @@ export default function AdminLayout({ children }) {
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
+            <Toast />
             {/* Sidebar */}
             <div className="w-64 bg-gray-900 text-white flex flex-col shadow-xl z-20">
                 <div className="p-6">

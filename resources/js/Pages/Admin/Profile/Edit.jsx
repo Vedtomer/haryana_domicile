@@ -11,22 +11,12 @@ export default function Edit({ user }) {
         password: '',
     });
 
-    const [showToast, setShowToast] = useState(false);
-
-    useEffect(() => {
-        if (showToast) {
-            const timer = setTimeout(() => setShowToast(false), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [showToast]);
-
     const submit = (e) => {
         e.preventDefault();
         put('/admin/profile', {
             preserveScroll: true,
             onSuccess: () => {
                 setData('password', ''); 
-                setShowToast(true);
             }
         });
     };
@@ -36,11 +26,6 @@ export default function Edit({ user }) {
             <Head title="My Profile" />
             
             <div className="max-w-3xl mx-auto relative">
-                {/* Toast Notification */}
-                <div className={`fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 z-50 flex items-center gap-2 ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                    Profile updated successfully!
-                </div>
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="px-6 py-8 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center gap-6">
                         <div className="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg">

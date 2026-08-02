@@ -58,7 +58,7 @@ class UserController extends Controller
             $user->syncRoles(['public']);
         }
 
-        return redirect()->route('admin.users.index')->with('success', 'User created.');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
 
     public function edit(User $user)
@@ -103,7 +103,7 @@ class UserController extends Controller
             $user->syncRoles(['public']);
         }
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated.');
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
     }
 
     public function addCoins(Request $request, User $user)
