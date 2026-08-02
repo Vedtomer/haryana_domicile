@@ -13,6 +13,10 @@ class CoinTransaction extends Model
     const TYPE_SERVICE_DEDUCTION = 'service_deduction';
     const TYPE_REFUND = 'refund';
 
+    // Coin types
+    const COIN_TYPE_TRIAL = 'trial';
+    const COIN_TYPE_PAID = 'paid';
+
     // Service types
     const SERVICE_BIRTH_RECORD = 'birth_record';
     const SERVICE_HARYANA_DOMICILE = 'haryana_domicile';
@@ -23,6 +27,7 @@ class CoinTransaction extends Model
         'amount',
         'balance_after',
         'type',
+        'coin_type',
         'service_type',
         'service_id',
         'description',

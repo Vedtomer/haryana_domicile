@@ -146,7 +146,9 @@ class UserController extends Controller
         $user->addCoins(
             (int)$data['amount'],
             CoinTransaction::TYPE_ADMIN_CREDIT,
-            $description
+            $description,
+            null,
+            $data['coin_type']
         );
 
         return back()->with('success', 'Coins added.');

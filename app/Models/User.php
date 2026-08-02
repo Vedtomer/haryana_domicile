@@ -113,9 +113,9 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Add coins to user balance
      */
-    public function addCoins(int $amount, string $type, string $description, ?int $createdBy = null): void
+    public function addCoins(int $amount, string $type, string $description, ?int $createdBy = null, ?string $coinType = null): void
     {
-        DB::transaction(function () use ($amount, $type, $description, $createdBy) {
+        DB::transaction(function () use ($amount, $type, $description, $createdBy, $coinType) {
             // Lock the user row to prevent race conditions
             $this->lockForUpdate()->increment('coins', $amount);
             $this->refresh();
@@ -126,6 +126,7 @@ class User extends Authenticatable implements FilamentUser
                 'amount' => $amount,
                 'balance_after' => $this->coins,
                 'type' => $type,
+                'coin_type' => $coinType,
                 'service_type' => null,
                 'service_id' => null,
                 'description' => $description,
