@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class);
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
-        Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'update']);
+        Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
