@@ -133,17 +133,20 @@ class UserController extends Controller
 
         $data = $request->validate([
             'amount' => 'required|numeric|min:1',
-            'description' => 'nullable|string|max:255'
+            'coin_type' => 'required|in:trial,paid',
+            'description' => 'nullable|string|max:255',
         ]);
 
         if (auth()->user()->type === 'admin' && $user->type !== 'user') {
             abort(403, 'You can only add coins to regular users.');
         }
 
+        $description = $data['coin_type'] === 'trial' ? 'Trial Coins' : 'Paid Coins';
+
         $user->addCoins(
             (int)$data['amount'],
             CoinTransaction::TYPE_ADMIN_CREDIT,
-            $data['description'] ?? 'Added by Admin'
+            $description
         );
 
         return back()->with('success', 'Coins added.');
