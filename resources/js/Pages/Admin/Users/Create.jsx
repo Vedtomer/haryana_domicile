@@ -9,7 +9,7 @@ export default function Create({ roles, user = null }) {
         name: user?.name || '',
         email: user?.email || '',
         password: '',
-        roles: user?.roles?.map(r => r.id) || [],
+        type: user?.type || 'user',
         coins: user?.coins || 0,
     });
 
@@ -22,11 +22,6 @@ export default function Create({ roles, user = null }) {
         }
     };
 
-    const handleRoleChange = (e) => {
-        const options = [...e.target.selectedOptions];
-        const values = options.map(option => parseInt(option.value));
-        setData('roles', values);
-    };
 
     return (
         <AdminLayout>
@@ -56,13 +51,13 @@ export default function Create({ roles, user = null }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Roles (Hold Ctrl/Cmd to select multiple)</label>
-                    <select multiple value={data.roles} onChange={handleRoleChange} className="w-full border-gray-300 rounded h-32" required>
-                        {roles.map(r => (
-                            <option key={r.id} value={r.id}>{r.name}</option>
-                        ))}
+                    <label className="block text-sm font-medium mb-1">User Type / Role</label>
+                    <select value={data.type} onChange={e => setData('type', e.target.value)} className="w-full border-gray-300 rounded" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="super_admin">Super Admin</option>
                     </select>
-                    {errors.roles && <p className="text-red-500 text-xs mt-1">{errors.roles}</p>}
+                    {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
                 </div>
 
                 <div>
