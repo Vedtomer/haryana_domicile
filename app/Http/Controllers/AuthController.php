@@ -13,6 +13,11 @@ class AuthController extends Controller
         return Inertia::render('Admin/Login');
     }
 
+    public function showRegister()
+    {
+        return Inertia::render('Frontend/Register');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -28,6 +33,29 @@ class AuthController extends Controller
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'type' => 'user',
+        ]);
+
+        // Trigger booted method or sync manually just in case
+        $user->syncRoles(['public']);
+
+        Auth::login($user);
+
+        return redirect()->intended('/dashboard');
     }
 
     public function logout(Request $request)
