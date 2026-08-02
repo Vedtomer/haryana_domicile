@@ -1,36 +1,36 @@
 {
-  "_AdminLayout-BZytYEri.js": {
-    "file": "assets/AdminLayout-BZytYEri.js",
+  "_AdminLayout-DL9JT4SN.js": {
+    "file": "assets/AdminLayout-DL9JT4SN.js",
     "name": "AdminLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_Toast-BhtvJE4j.js"
+      "_Toast--sJVF5R-.js"
     ]
   },
-  "_FloatingInput-D-Fw6Qj1.js": {
-    "file": "assets/FloatingInput-D-Fw6Qj1.js",
+  "_FloatingInput-B2r7JeRK.js": {
+    "file": "assets/FloatingInput-B2r7JeRK.js",
     "name": "FloatingInput",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_FrontendLayout-CgfziYOX.js": {
-    "file": "assets/FrontendLayout-CgfziYOX.js",
+  "_FrontendLayout-Bs2TdZAu.js": {
+    "file": "assets/FrontendLayout-Bs2TdZAu.js",
     "name": "FrontendLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_Toast-BhtvJE4j.js"
+      "_Toast--sJVF5R-.js"
     ]
   },
-  "_Toast-BhtvJE4j.js": {
-    "file": "assets/Toast-BhtvJE4j.js",
+  "_Toast--sJVF5R-.js": {
+    "file": "assets/Toast--sJVF5R-.js",
     "name": "Toast",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-De4LLouX.css",
+    "file": "assets/app-CfhXYXwd.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -39,277 +39,277 @@
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Create.jsx": {
-    "file": "assets/Create-BqWGirPy.js",
+    "file": "assets/Create-CnoCGZEx.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/BirthRecords/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Index.jsx": {
-    "file": "assets/Index-Dvn2vmgG.js",
+    "file": "assets/Index-DoNlF4bN.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/BirthRecords/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx": {
-    "file": "assets/Create-CeEJl35o.js",
+    "file": "assets/Create-BBFBfqjP.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx": {
-    "file": "assets/Index-DL9zDt_-.js",
+    "file": "assets/Index-CFIHddQZ.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Dashboard.jsx": {
-    "file": "assets/Dashboard-CaYeRH1l.js",
+    "file": "assets/Dashboard-CRiILE3y.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Admin/Dashboard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx": {
-    "file": "assets/Create-DktArzyi.js",
+    "file": "assets/Create-C2TEvKrL.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx": {
-    "file": "assets/Index-CUKhdnlS.js",
+    "file": "assets/Index-xOSJEb1v.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Login.jsx": {
-    "file": "assets/Login-B90vrxuE.js",
+    "file": "assets/Login-0FmoVu3B.js",
     "name": "Login",
     "src": "resources/js/Pages/Admin/Login.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-CgfziYOX.js",
-      "_Toast-BhtvJE4j.js"
+      "_FrontendLayout-Bs2TdZAu.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Create.jsx": {
-    "file": "assets/Create-DrRlfxMF.js",
+    "file": "assets/Create-ChVXlJ6j.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/MarriageForms/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Index.jsx": {
-    "file": "assets/Index-DpUoeUwK.js",
+    "file": "assets/Index-V43AHYpb.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/MarriageForms/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Create.jsx": {
-    "file": "assets/Create-ByGbb1R1.js",
+    "file": "assets/Create-BpBGfZ2N.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/PanRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Edit.jsx": {
-    "file": "assets/Edit-D9sVAKu3.js",
+    "file": "assets/Edit-DE8tyuwh.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PanRequests/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Index.jsx": {
-    "file": "assets/Index-RHHZ-aFS.js",
+    "file": "assets/Index-BZQgD40v.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/PanRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Profile/Edit.jsx": {
-    "file": "assets/Edit-DhoWHbh3.js",
+    "file": "assets/Edit-pA4gcHNX.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Profile/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_FloatingInput-D-Fw6Qj1.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_FloatingInput-B2r7JeRK.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Create.jsx": {
-    "file": "assets/Create-B5oHMh3m.js",
+    "file": "assets/Create-BQRX1-BX.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/Users/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_FloatingInput-D-Fw6Qj1.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_FloatingInput-B2r7JeRK.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Edit.jsx": {
-    "file": "assets/Edit-B8aXfc2A.js",
+    "file": "assets/Edit-YxgdzN6h.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Users/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "resources/js/Pages/Admin/Users/Create.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js",
-      "_FloatingInput-D-Fw6Qj1.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js",
+      "_FloatingInput-B2r7JeRK.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Index.jsx": {
-    "file": "assets/Index-C9m1KIpi.js",
+    "file": "assets/Index-B1zl7sjc.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Users/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-BZytYEri.js",
-      "_Toast-BhtvJE4j.js"
+      "_AdminLayout-DL9JT4SN.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Frontend/Home.jsx": {
-    "file": "assets/Home-Bjojcd0L.js",
+    "file": "assets/Home-DIuQ7Lc6.js",
     "name": "Home",
     "src": "resources/js/Pages/Frontend/Home.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-CgfziYOX.js",
-      "_Toast-BhtvJE4j.js"
+      "_FrontendLayout-Bs2TdZAu.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/Pages/Frontend/Register.jsx": {
-    "file": "assets/Register-PFv0Ow-4.js",
+    "file": "assets/Register-ByVzKZJc.js",
     "name": "Register",
     "src": "resources/js/Pages/Frontend/Register.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-CgfziYOX.js",
-      "_Toast-BhtvJE4j.js"
+      "_FrontendLayout-Bs2TdZAu.js",
+      "_Toast--sJVF5R-.js"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-BICNunrF.js",
+    "file": "assets/app-DUeL5ncy.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -335,7 +335,7 @@
       "resources/js/Pages/Frontend/Register.jsx"
     ],
     "css": [
-      "assets/app-De4LLouX.css"
+      "assets/app-CfhXYXwd.css"
     ]
   }
 }
