@@ -40,14 +40,20 @@ class CoinPurchaseRequestController extends Controller
         $myRequests = CoinPurchaseRequest::where('user_id', auth()->id())
             ->latest()->take(5)->get();
 
-        // Predefined coin packages
+        // 1 coin = ₹1 base rate.
+        // Bonus % increases progressively for larger purchases.
         $packages = [
-            ['coins' => 10,  'amount' => 49,  'label' => 'Starter',    'popular' => false],
-            ['coins' => 25,  'amount' => 99,  'label' => 'Basic',      'popular' => false],
-            ['coins' => 60,  'amount' => 199, 'label' => 'Standard',   'popular' => true],
-            ['coins' => 130, 'amount' => 399, 'label' => 'Pro',        'popular' => false],
-            ['coins' => 300, 'amount' => 799, 'label' => 'Business',   'popular' => false],
+            ['amount' => 49,  'base_coins' => 49,  'bonus_coins' => 0,   'bonus_pct' => 0,  'label' => 'Starter',  'popular' => false],
+            ['amount' => 99,  'base_coins' => 99,  'bonus_coins' => 6,   'bonus_pct' => 6,  'label' => 'Basic',    'popular' => false],
+            ['amount' => 199, 'base_coins' => 199, 'bonus_coins' => 20,  'bonus_pct' => 10, 'label' => 'Standard', 'popular' => true ],
+            ['amount' => 399, 'base_coins' => 399, 'bonus_coins' => 60,  'bonus_pct' => 15, 'label' => 'Pro',      'popular' => false],
+            ['amount' => 799, 'base_coins' => 799, 'bonus_coins' => 160, 'bonus_pct' => 20, 'label' => 'Business', 'popular' => false],
         ];
+
+        // Compute total coins for each package
+        foreach ($packages as &$pkg) {
+            $pkg['coins_requested'] = $pkg['base_coins'] + $pkg['bonus_coins'];
+        }
 
         return Inertia::render('Admin/CoinPurchaseRequests/Create', [
             'packages'   => $packages,
