@@ -111,7 +111,24 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Add coins to user balance
+     * Add coins to user balance and record the transaction.
+     *
+     * @param int         $amount      Number of coins to add
+     * @param string      $type        Transaction type (see CoinTransaction::TYPE_* constants)
+     * @param string      $description Human-readable description stored on the transaction
+     * @param int|null    $createdBy   Admin user ID who performed the action (defaults to auth user)
+     * @param string|null $coinType    Coin category — MUST be set for admin-issued coins:
+     *                                   - CoinTransaction::COIN_TYPE_PAID  ('paid')
+     *                                       → User has paid real money. This amount contributes
+     *                                         to PLATFORM REVENUE. Used when approving a
+     *                                         CoinPurchaseRequest.
+     *                                   - CoinTransaction::COIN_TYPE_TRIAL ('trial')
+     *                                       → Complimentary / promotional coins. No monetary
+     *                                         value. Does NOT count toward revenue.
+     *                                   - null → System-generated (service deductions, refunds).
+     *
+     * NOTE: Only COIN_TYPE_PAID transactions represent real income.
+     *       When generating revenue reports, always filter by coin_type = 'paid'.
      */
     public function addCoins(int $amount, string $type, string $description, ?int $createdBy = null, ?string $coinType = null): void
     {

@@ -42,17 +42,23 @@ class CoinPurchaseRequestController extends Controller
         if ($data['action'] === 'approve' && $coinRequest->status === 'pending') {
             DB::transaction(function () use ($coinRequest) {
                 $coinRequest->update([
-                    'status' => 'approved',
+                    'status'      => 'approved',
                     'approved_by' => auth()->id(),
                     'approved_at' => now(),
                 ]);
+
+                // Approved purchases are always marked as 'paid' coin_type
+                // and contribute to platform revenue tracking.
                 $coinRequest->user->addCoins(
                     $coinRequest->coins_requested,
                     CoinTransaction::TYPE_PURCHASE,
-                    "Coin Purchase - {$coinRequest->coins_requested} Coins"
+                    "Coin Purchase - {$coinRequest->coins_requested} Coins (₹{$coinRequest->package_amount})",
+                    null,
+                    CoinTransaction::COIN_TYPE_PAID   // Revenue: marked as paid
                 );
             });
-            return back()->with('success', 'Request approved and coins added.');
+
+            return back()->with('success', "✅ Approved! {$coinRequest->coins_requested} paid coins added to user. ₹{$coinRequest->package_amount} added to platform revenue.");
         } 
         
         if ($data['action'] === 'reject') {
