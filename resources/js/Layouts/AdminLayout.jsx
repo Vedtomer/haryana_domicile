@@ -39,11 +39,10 @@ export default function AdminLayout({ children }) {
                             onClick={() => setDropdownOpen(!dropdownOpen)} 
                             className="flex items-center gap-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-colors"
                         >
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm">
                                 {auth?.user?.name?.charAt(0).toUpperCase()}
                             </div>
-                            <span className="font-medium">{auth?.user?.name}</span>
-                            <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
 
                         {/* Dropdown Menu */}
