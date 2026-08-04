@@ -22,134 +22,96 @@ export default function Login() {
 
     return (
         <FrontendLayout>
-            <div className="relative flex-grow flex items-center justify-center p-4 py-24 bg-slate-900 overflow-hidden font-sans selection:bg-blue-500 selection:text-white">
-                <Head title="Login - CSP Jaankari" />
-                
-                <style dangerouslySetInnerHTML={{ __html: `
-                    @keyframes blob {
-                        0% { transform: translate(0px, 0px) scale(1); }
-                        33% { transform: translate(30px, -50px) scale(1.1); }
-                        66% { transform: translate(-20px, 20px) scale(0.9); }
-                        100% { transform: translate(0px, 0px) scale(1); }
-                    }
-                    .animate-blob { animation: blob 7s infinite; }
-                    .animation-delay-2000 { animation-delay: 2s; }
-                    .animation-delay-4000 { animation-delay: 4s; }
-                    
-                    @keyframes slideUpFade {
-                        from { opacity: 0; transform: translateY(20px); }
-                        to { opacity: 1; transform: translateY(0); }
-                    }
-                    .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-                    
-                    @keyframes shimmer {
-                        100% { transform: translateX(100%); }
-                    }
-                `}} />
-
-                {/* Background Animations */}
-                <div className="absolute inset-0 z-0 overflow-hidden">
-                    <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob"></div>
-                    <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000"></div>
-                </div>
-                
-                <div className={`relative z-10 w-full max-w-lg transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-                    <div className="backdrop-blur-xl bg-white/10 p-8 sm:p-10 rounded-[2rem] shadow-2xl border border-white/20 relative overflow-hidden">
-                        {/* Glass glare effect */}
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                        
-                        <div className="text-center mb-10 animate-slide-up" style={{ animationDelay: '100ms' }}>
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-blue-500/30 transform hover:scale-110 hover:rotate-3 transition-all duration-300">
-                                <span className="text-2xl font-extrabold text-white">CJ</span>
+            <Head title="Login - CSP Jaankari" />
+            <div className="bg-slate-50 min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900 font-sans">
+                <main className="flex-grow flex flex-col justify-center px-4 sm:px-6 pb-8 max-w-md mx-auto w-full mt-10">
+                    {/* Hero Section */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome back</h1>
+                        <p className="text-base text-slate-600">Secure access to your certificates.</p>
+                    </div>
+                    {/* Login Form Card */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] mb-4">
+                        <form onSubmit={submit} className="space-y-4">
+                            {/* Input Group: Identifier */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-2" htmlFor="login">Email or Phone Number</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">person</span>
+                                    <input
+                                        id="login"
+                                        name="login"
+                                        type="text"
+                                        value={data.login}
+                                        onChange={(e) => setData('login', e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="Enter your registered ID"
+                                        required
+                                    />
+                                </div>
+                                {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
                             </div>
-                            <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Welcome Back</h2>
-                            <p className="text-slate-300">Sign in to your CSP Jaankari account.</p>
-                        </div>
-                        
-                        <form onSubmit={submit} className="space-y-6">
-                            {/* Email/Phone Field */}
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '200ms' }}>
-                                <input
-                                    id="login"
-                                    type="text"
-                                    value={data.login}
-                                    onChange={(e) => setData('login', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Email or Phone Number"
-                                    required
-                                />
-                                <label 
-                                    htmlFor="login" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Email Address or Phone Number
-                                </label>
-                                {errors.login && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.login}</p>}
+                            {/* Input Group: Password */}
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-sm font-medium text-slate-600" htmlFor="password">Password</label>
+                                    <a className="text-sm font-medium text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-600 rounded" href="#">Forgot Password?</a>
+                                </div>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">lock</span>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        className="w-full pl-10 pr-12 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="Enter your password"
+                                        required
+                                    />
+                                    <button
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                        type="button"
+                                        aria-label="Toggle password visibility"
+                                    >
+                                        <span className="material-symbols-outlined">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                                    </button>
+                                </div>
+                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                             </div>
-
-                            {/* Password Field */}
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '300ms' }}>
-                                <input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 pr-12 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Password"
-                                    required
-                                />
-                                <label 
-                                    htmlFor="password" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Password
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400 transition-colors focus:outline-none"
-                                >
-                                    {showPassword ? (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                    ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                                    )}
-                                </button>
-                                {errors.password && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.password}</p>}
-                            </div>
-
-                            <div className="pt-6 animate-slide-up" style={{ animationDelay: '400ms' }}>
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="relative w-full group overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all duration-300 disabled:opacity-50 hover:-translate-y-0.5"
-                                >
-                                    <span className="absolute inset-0 w-full h-full -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></span>
-                                    <span className="relative flex items-center justify-center">
-                                        {processing ? (
-                                            <>
-                                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                                Signing In...
-                                            </>
-                                        ) : (
-                                            'Sign In'
-                                        )}
-                                    </span>
-                                </button>
-                            </div>
+                            {/* Sign In Button */}
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
+                            >
+                                {processing ? 'Signing In...' : 'Sign In'}
+                                {!processing && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>}
+                            </button>
                         </form>
-                        
-                        <div className="mt-8 text-center animate-slide-up" style={{ animationDelay: '500ms' }}>
-                            <p className="text-sm text-slate-400">
-                                Don't have an account?{' '}
-                                <Link href="/register" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors hover:underline decoration-2 underline-offset-4">
-                                    Sign up here
-                                </Link>
+                        <div className="mt-6 text-center">
+                            <p className="text-sm text-slate-600">
+                                Don't have an account? <Link className="text-blue-600 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-blue-600 rounded" href="/register">Register here</Link>
                             </p>
                         </div>
                     </div>
-                </div>
+                    {/* Trust Badges */}
+                    <div className="flex flex-col gap-2 mt-4 w-full">
+                        <div className="bg-white rounded-lg p-3 flex items-center justify-center gap-3 border border-slate-200">
+                            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-green-700" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-900 text-center">100% Secure Service Gateway</span>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 flex items-center justify-center gap-3 border border-slate-200">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-blue-600" style={{ fontVariationSettings: "'FILL' 1" }}>group</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-900 text-center">Trusted by 10M+ citizens</span>
+                        </div>
+                    </div>
+                </main>
             </div>
         </FrontendLayout>
     );

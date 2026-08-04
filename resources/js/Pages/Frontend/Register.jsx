@@ -26,199 +26,150 @@ export default function Register() {
 
     return (
         <FrontendLayout>
-            <div className="relative flex-grow flex items-center justify-center p-4 py-24 bg-slate-900 overflow-hidden font-sans selection:bg-blue-500 selection:text-white">
-                <Head title="Sign Up - CSP Jaankari" />
-                
-                <style dangerouslySetInnerHTML={{ __html: `
-                    @keyframes blob {
-                        0% { transform: translate(0px, 0px) scale(1); }
-                        33% { transform: translate(30px, -50px) scale(1.1); }
-                        66% { transform: translate(-20px, 20px) scale(0.9); }
-                        100% { transform: translate(0px, 0px) scale(1); }
-                    }
-                    .animate-blob { animation: blob 7s infinite; }
-                    .animation-delay-2000 { animation-delay: 2s; }
-                    .animation-delay-4000 { animation-delay: 4s; }
-                    
-                    @keyframes slideUpFade {
-                        from { opacity: 0; transform: translateY(20px); }
-                        to { opacity: 1; transform: translateY(0); }
-                    }
-                    .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-                    
-                    @keyframes shimmer {
-                        100% { transform: translateX(100%); }
-                    }
-                `}} />
-
-                {/* Background Animations */}
-                <div className="absolute inset-0 z-0 overflow-hidden">
-                    <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob"></div>
-                    <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-8 left-20 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000"></div>
-                </div>
-                
-                <div className={`relative z-10 w-full max-w-lg transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-                    <div className="backdrop-blur-xl bg-white/10 p-8 sm:p-10 rounded-[2rem] shadow-2xl border border-white/20 relative overflow-hidden">
-                        {/* Glass glare effect */}
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                        
-                        <div className="text-center mb-10 animate-slide-up" style={{ animationDelay: '100ms' }}>
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-blue-500/30 transform hover:scale-110 hover:rotate-3 transition-all duration-300">
-                                <span className="text-2xl font-extrabold text-white">CJ</span>
-                            </div>
-                            <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Create Account</h2>
-                            <p className="text-slate-300">Register with your Email or Phone Number</p>
-                        </div>
-                        
-                        <form onSubmit={submit} className="space-y-6">
-                            
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '150ms' }}>
-                                <input
-                                    id="name"
-                                    type="text"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Full Name (Optional)"
-                                />
-                                <label 
-                                    htmlFor="name" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Full Name (Optional)
-                                </label>
-                                {errors.name && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.name}</p>}
+            <Head title="Sign Up - CSP Jaankari" />
+            <div className="bg-slate-50 min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900 font-sans">
+                <main className="flex-grow flex flex-col justify-center px-4 sm:px-6 pb-8 max-w-md mx-auto w-full mt-10">
+                    {/* Hero Section */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Create an account</h1>
+                        <p className="text-base text-slate-600">Join 10M+ citizens for quick certificate setup.</p>
+                    </div>
+                    {/* Register Form Card */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] mb-4">
+                        <form onSubmit={submit} className="space-y-4">
+                            {/* Name Field */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1" htmlFor="name">Full Name</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">badge</span>
+                                    <input
+                                        id="name"
+                                        type="text"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="John Doe"
+                                    />
+                                </div>
+                                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                             </div>
 
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '200ms' }}>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Email Address (Optional)"
-                                />
-                                <label 
-                                    htmlFor="email" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Email Address (Optional)
-                                </label>
-                                {errors.email && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.email}</p>}
+                            {/* Phone Field */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1" htmlFor="phone">Phone Number</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">phone_iphone</span>
+                                    <input
+                                        id="phone"
+                                        type="text"
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="10-digit mobile number"
+                                    />
+                                </div>
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                             </div>
 
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '250ms' }}>
-                                <input
-                                    id="phone"
-                                    type="text"
-                                    value={data.phone}
-                                    onChange={(e) => setData('phone', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Phone Number (Optional)"
-                                />
-                                <label 
-                                    htmlFor="phone" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Phone Number (Optional)
-                                </label>
-                                {errors.phone && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.phone}</p>}
+                            {/* Email Field */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1" htmlFor="email">Email Address</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">mail</span>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="example@email.com"
+                                    />
+                                </div>
+                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </div>
 
                             {/* Password Field */}
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '300ms' }}>
-                                <input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 pr-12 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Password"
-                                    required
-                                />
-                                <label 
-                                    htmlFor="password" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Password
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400 transition-colors focus:outline-none"
-                                >
-                                    {showPassword ? (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                    ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                                    )}
-                                </button>
-                                {errors.password && <p className="text-red-400 text-xs mt-2 pl-2 animate-pulse">{errors.password}</p>}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1" htmlFor="password">Password</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">lock</span>
+                                    <input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        className="w-full pl-10 pr-12 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="Create password"
+                                        required
+                                    />
+                                    <button
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                        type="button"
+                                        aria-label="Toggle password visibility"
+                                    >
+                                        <span className="material-symbols-outlined">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                                    </button>
+                                </div>
+                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                             </div>
 
                             {/* Password Confirmation Field */}
-                            <div className="relative group animate-slide-up" style={{ animationDelay: '400ms' }}>
-                                <input
-                                    id="password_confirmation"
-                                    type={showPasswordConfirmation ? "text" : "password"}
-                                    value={data.password_confirmation}
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                                    className="peer w-full bg-white/5 border border-white/10 rounded-xl px-4 pt-6 pb-2 pr-12 text-white placeholder-transparent focus:bg-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 outline-none"
-                                    placeholder="Confirm Password"
-                                    required
-                                />
-                                <label 
-                                    htmlFor="password_confirmation" 
-                                    className="absolute left-4 top-2 text-slate-400 text-xs transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-400 cursor-text pointer-events-none"
-                                >
-                                    Confirm Password
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400 transition-colors focus:outline-none"
-                                >
-                                    {showPasswordConfirmation ? (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                    ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                                    )}
-                                </button>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1" htmlFor="password_confirmation">Confirm Password</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">lock</span>
+                                    <input
+                                        id="password_confirmation"
+                                        type={showPasswordConfirmation ? "text" : "password"}
+                                        value={data.password_confirmation}
+                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                        className="w-full pl-10 pr-12 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-base"
+                                        placeholder="Confirm password"
+                                        required
+                                    />
+                                    <button
+                                        onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                        type="button"
+                                        aria-label="Toggle confirm password visibility"
+                                    >
+                                        <span className="material-symbols-outlined">{showPasswordConfirmation ? 'visibility_off' : 'visibility'}</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="pt-6 animate-slide-up" style={{ animationDelay: '500ms' }}>
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="relative w-full group overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all duration-300 disabled:opacity-50 hover:-translate-y-0.5"
-                                >
-                                    <span className="absolute inset-0 w-full h-full -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></span>
-                                    <span className="relative flex items-center justify-center">
-                                        {processing ? (
-                                            <>
-                                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                                Processing...
-                                            </>
-                                        ) : (
-                                            'Create Account'
-                                        )}
-                                    </span>
-                                </button>
-                            </div>
+                            {/* Sign Up Button */}
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
+                            >
+                                {processing ? 'Creating Account...' : 'Create Account'}
+                            </button>
                         </form>
-
-                        <div className="mt-8 text-center animate-slide-up" style={{ animationDelay: '600ms' }}>
-                            <p className="text-sm text-slate-400">
-                                Already have an account?{' '}
-                                <Link href="/login" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors hover:underline decoration-2 underline-offset-4">
-                                    Sign in
-                                </Link>
+                        <div className="mt-6 text-center">
+                            <p className="text-sm text-slate-600">
+                                Already have an account? <Link className="text-blue-600 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-blue-600 rounded" href="/login">Sign in</Link>
                             </p>
                         </div>
                     </div>
-                </div>
+                    {/* Trust Badges */}
+                    <div className="flex flex-col gap-2 mt-4 w-full">
+                        <div className="bg-white rounded-lg p-3 flex items-center justify-center gap-3 border border-slate-200">
+                            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-green-700" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-900 text-center">100% Secure Service Gateway</span>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 flex items-center justify-center gap-3 border border-slate-200">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-blue-600" style={{ fontVariationSettings: "'FILL' 1" }}>group</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-900 text-center">Trusted by 10M+ citizens</span>
+                        </div>
+                    </div>
+                </main>
             </div>
         </FrontendLayout>
     );
