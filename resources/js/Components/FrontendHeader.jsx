@@ -48,29 +48,26 @@ export default function FrontendHeader() {
                 <div className="flex w-full max-w-[1280px] justify-between items-center">
 
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
-                        <div style={{
-                            border: '2px solid rgba(147,197,253,0.7)',
-                            borderRadius: 8,
-                            padding: '4px 10px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            lineHeight: 1.1,
-                            transition: 'border-color 0.2s, box-shadow 0.2s',
-                        }}
+                    <Link href="/" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
+                        <img
+                            src="/csp-logo.webp"
+                            alt="CSP Jaankari Logo"
+                            style={{
+                                height: 44,
+                                width: 'auto',
+                                objectFit: 'contain',
+                                filter: 'drop-shadow(0 0 6px rgba(147,197,253,0.4))',
+                                transition: 'filter 0.2s, transform 0.2s',
+                            }}
                             onMouseEnter={e => {
-                                e.currentTarget.style.borderColor = '#60a5fa';
-                                e.currentTarget.style.boxShadow  = '0 0 12px rgba(96,165,250,0.45)';
+                                e.currentTarget.style.filter = 'drop-shadow(0 0 12px rgba(96,165,250,0.7))';
+                                e.currentTarget.style.transform = 'scale(1.05)';
                             }}
                             onMouseLeave={e => {
-                                e.currentTarget.style.borderColor = 'rgba(147,197,253,0.7)';
-                                e.currentTarget.style.boxShadow  = 'none';
+                                e.currentTarget.style.filter = 'drop-shadow(0 0 6px rgba(147,197,253,0.4))';
+                                e.currentTarget.style.transform = 'scale(1)';
                             }}
-                        >
-                            <span style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '0.05em' }}>CSP</span>
-                            <span style={{ fontSize: 9, fontWeight: 600, color: '#93c5fd', letterSpacing: '0.15em' }}>JAANKARI</span>
-                        </div>
+                        />
                     </Link>
 
                     {/* Nav Links */}

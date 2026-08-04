@@ -45,13 +45,16 @@ export default function FrontendFooter() {
                     {/* Brand */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <div style={{
-                                width: 26, height: 26, borderRadius: 7,
-                                background: 'linear-gradient(135deg,#60a5fa,#93c5fd)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontWeight: 700, fontSize: 11, color: '#0f172a',
-                            }}>CJ</div>
-                            <span style={{ fontSize: 15, fontWeight: 700, color: '#bfdbfe' }}>CSP Jaankari</span>
+                            <img
+                                src="/csp-logo.webp"
+                                alt="CSP Jaankari Logo"
+                                style={{
+                                    height: 32,
+                                    width: 'auto',
+                                    objectFit: 'contain',
+                                    filter: 'drop-shadow(0 0 4px rgba(147,197,253,0.4)) brightness(0.9)',
+                                }}
+                            />
                         </div>
                         <p style={{ fontSize: 12, color: '#93c5fd', lineHeight: 1.6 }}>
                             Delivering digital citizen services with speed, transparency, and trust.
