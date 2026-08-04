@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Head, Link } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
+import FooterParticles from '../../Components/FooterParticles';
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
@@ -23,33 +24,33 @@ export default function Login() {
     return (
         <FrontendLayout>
             <Head title="Login - CSP Jaankari" />
-            <div className="bg-surface-container-lowest py-10 md:py-16 flex items-center justify-center px-4 md:px-8 font-body-md text-on-background">
-                <main className="w-full max-w-[1200px] h-auto lg:min-h-[550px] flex flex-col lg:flex-row rounded-2xl overflow-hidden shadow-[0px_4px_20px_rgba(0,51,102,0.05)] border border-surface-variant bg-surface">
-                    {/* Left Side: Illustration */}
-                    <section className="hidden lg:flex w-full lg:w-1/2 relative bg-gradient-to-br from-surface to-primary-fixed/20 p-12 items-center justify-center overflow-hidden">
-                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,101,141,0.2) 0%, transparent 70%)' }}></div>
-                        <div className="relative z-10 w-full h-full max-w-[500px] flex flex-col items-center justify-center">
-                            <img alt="Digital India Fintech Illustration" className="object-contain w-full h-auto drop-shadow-2xl transform transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida/AP1WRLupiMlzu2jHhBj8MrTNRXQlMf5crT1xb2RLG5yLbMEBZnusgCvRRt_62SmnaDTenNIrxWZ4bfSx1A-hKLY5I4MrRtqHGE5IoxvcbwoKAzNdtpOJLeCcMAk0CGYiDK4yUq9Si12d5ZG5zFGu3EjMX0-ojUTzv8Ynhm6kOBJVSTsTEH0il-wutMd-puDyrGJ6BmW5LCoiJg05T778uUybKXXjOShZouhOqftgb0VXTj85-fjvx7FcbgsnCSM" />
-                        </div>
-                        {/* Trust Badge Overlay */}
-                        <div className="absolute bottom-8 left-8 glass-panel px-6 py-4 rounded-xl flex items-center gap-4 z-20">
-                            <div className="w-12 h-12 rounded-full bg-tertiary-fixed/20 flex items-center justify-center text-on-tertiary-container">
-                                <span className="material-symbols-outlined text-[24px]">verified_user</span>
-                            </div>
-                            <div>
-                                <p className="text-label-md font-label-md text-on-surface">Secure Platform</p>
-                                <p className="text-label-sm font-label-sm text-on-surface-variant">Bank-grade encryption</p>
-                            </div>
-                        </div>
-                    </section>
+            <div className="relative py-10 md:py-16 flex items-center justify-center px-4 md:px-8 font-body-md overflow-hidden" style={{ background: 'linear-gradient(180deg, #050a14 0%, #0d1227 100%)' }}>
+                {/* Particles Background Layer */}
+                <FooterParticles style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, opacity: 0.8 }} />
+                
+                <div className="relative z-10 w-full max-w-[1200px] flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
 
-                    {/* Right Side: Login Form */}
-                    <section className="w-full lg:w-1/2 flex flex-col justify-center p-8 md:p-12 lg:p-16 bg-surface-container-lowest relative">
-                        <div className="max-w-[400px] w-full mx-auto relative z-10">
-                            {/* Header */}
+                    {/* Left: Illustration with Floating Elements */}
+                    <div className="hidden lg:flex w-full lg:w-1/2 items-center justify-center relative">
+                        {/* Animated Floating Orbs */}
+                        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl animate-pulse pointer-events-none"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-500/20 rounded-full blur-2xl animate-pulse pointer-events-none" style={{ animationDelay: '1s' }}></div>
+                        <div className="absolute top-1/2 left-10 w-16 h-16 bg-cyan-400/30 rounded-full blur-xl animate-bounce pointer-events-none" style={{ animationDuration: '3s' }}></div>
+                        
+                        <img
+                            alt="Digital India Fintech Illustration"
+                            className="relative z-10 object-contain w-full max-w-[480px] h-auto transform transition-transform duration-700 hover:scale-105"
+                            src="/images/bb.webp"
+                        />
+                    </div>
+
+                    {/* Right: Login form — standalone card */}
+                    <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
+                        <main className="w-full max-w-[460px] rounded-2xl overflow-hidden shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-2 border-blue-600 bg-surface">
+                            {/* Right Side: Login Form */}
+                            <div className="w-full relative z-10 p-8">
                             <div className="mb-8">
-                                <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-2">Welcome back</h1>
-                                <p className="font-body-md text-body-md text-on-surface-variant">Secure access to your certificate assistance dashboard.</p>
+                                <h1 className="text-2xl font-bold text-primary mb-2">Welcome back</h1>
                             </div>
 
                             {/* Form */}
@@ -57,13 +58,12 @@ export default function Login() {
                                 <div className="flex flex-col gap-base">
                                     <label className="font-label-md text-label-md text-on-surface" htmlFor="login">Email or Mobile Number</label>
                                     <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
-                                        <span className="material-symbols-outlined absolute left-3 text-outline pointer-events-none">contact_phone</span>
                                         <input 
                                             id="login" 
                                             name="login"
                                             value={data.login}
                                             onChange={(e) => setData('login', e.target.value)}
-                                            className="w-full bg-transparent border-none py-3 pl-10 pr-4 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
+                                            className="w-full bg-transparent border-none py-3 px-4 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
                                             placeholder="Enter email or mobile" 
                                             type="text"
                                         />
@@ -76,14 +76,13 @@ export default function Login() {
                                         <a className="font-label-sm text-label-sm text-secondary hover:underline" href="#">Forgot Password?</a>
                                     </div>
                                     <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
-                                        <span className="material-symbols-outlined absolute left-3 text-outline pointer-events-none">lock</span>
                                         <input 
                                             id="password" 
                                             name="password"
                                             value={data.password}
                                             onChange={(e) => setData('password', e.target.value)}
                                             type={showPassword ? "text" : "password"}
-                                            className="w-full bg-transparent border-none py-3 pl-10 pr-10 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
+                                            className="w-full bg-transparent border-none py-3 pl-4 pr-10 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
                                             placeholder="••••••••" 
                                         />
                                         <button 
@@ -124,18 +123,11 @@ export default function Login() {
                                 </div>
                             </div>
                             
-                            {/* Disclaimer */}
-                            <div className="mt-8 pt-6 text-center">
-                                <p className="text-label-sm font-label-sm text-outline flex items-center justify-center gap-1">
-                                    <span className="material-symbols-outlined text-[16px]">info</span>
-                                    Private agency assistance portal. Not a government entity.
-                                </p>
-                            </div>
+
                         </div>
-                        {/* Subtle decorative background element for right side */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-fixed/30 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-                    </section>
-                </main>
+                        </main>
+                    </div>
+                </div>
             </div>
         </FrontendLayout>
     );

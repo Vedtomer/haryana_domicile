@@ -4,10 +4,10 @@ import FooterParticles from './FooterParticles';
 import WaveCanvas from './WaveCanvas';
 
 const navLinks = [
-    { label: 'HOME',       href: '/'           },
-    { label: 'ABOUT US',   href: '/#about'     },
-    { label: 'SERVICES',   href: '/#services'  },
-    { label: 'CONTACT US', href: '/#contact'   },
+    { label: 'HOME', href: '/' },
+    { label: 'ABOUT US', href: '/#about' },
+    { label: 'SERVICES', href: '/#services' },
+    { label: 'CONTACT US', href: '/#contact' },
 ];
 
 export default function FrontendHeader() {
@@ -53,7 +53,7 @@ export default function FrontendHeader() {
                             src="/csp-logo.webp"
                             alt="CSP Jaankari Logo"
                             style={{
-                                height: 70,
+                                height: 40,
                                 width: 'auto',
                                 objectFit: 'contain',
                                 transition: 'filter 0.2s, transform 0.2s',
@@ -84,14 +84,14 @@ export default function FrontendHeader() {
                                     position: 'relative',
                                 }}
                                 onMouseEnter={e => {
-                                    e.currentTarget.style.color      = '#fff';
+                                    e.currentTarget.style.color = '#fff';
                                     e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
-                                    e.currentTarget.style.transform  = 'translateY(-1px)';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
                                 }}
                                 onMouseLeave={e => {
-                                    e.currentTarget.style.color      = '#e0eeff';
+                                    e.currentTarget.style.color = '#e0eeff';
                                     e.currentTarget.style.background = 'transparent';
-                                    e.currentTarget.style.transform  = 'translateY(0)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
                                 {label}
@@ -109,14 +109,14 @@ export default function FrontendHeader() {
                                 textDecoration: 'none',
                             }}
                             onMouseEnter={e => {
-                                e.currentTarget.style.color      = '#fff';
+                                e.currentTarget.style.color = '#fff';
                                 e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
-                                e.currentTarget.style.transform  = 'translateY(-1px)';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
                             }}
                             onMouseLeave={e => {
-                                e.currentTarget.style.color      = '#e0eeff';
+                                e.currentTarget.style.color = '#e0eeff';
                                 e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.transform  = 'translateY(0)';
+                                e.currentTarget.style.transform = 'translateY(0)';
                             }}
                         >
                             LOGIN
@@ -137,16 +137,16 @@ export default function FrontendHeader() {
                                 whiteSpace: 'nowrap',
                             }}
                             onMouseEnter={e => {
-                                e.currentTarget.style.background  = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
-                                e.currentTarget.style.color       = '#fff';
-                                e.currentTarget.style.transform   = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow   = '0 6px 20px rgba(96,165,250,0.55)';
+                                e.currentTarget.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
+                                e.currentTarget.style.color = '#fff';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(96,165,250,0.55)';
                             }}
                             onMouseLeave={e => {
-                                e.currentTarget.style.background  = 'linear-gradient(135deg, #93c5fd, #60a5fa)';
-                                e.currentTarget.style.color       = '#0a1628';
-                                e.currentTarget.style.transform   = 'translateY(0)';
-                                e.currentTarget.style.boxShadow   = '0 2px 10px rgba(96,165,250,0.4)';
+                                e.currentTarget.style.background = 'linear-gradient(135deg, #93c5fd, #60a5fa)';
+                                e.currentTarget.style.color = '#0a1628';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 10px rgba(96,165,250,0.4)';
                             }}
                         >
                             REGISTER NOW ↗
