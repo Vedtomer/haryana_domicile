@@ -5,47 +5,47 @@ import FrontendLayout from '../../Layouts/FrontendLayout';
 export default function Home() {
     return (
         <FrontendLayout>
-            <div className="bg-slate-50">
+            <div className="bg-background min-h-screen">
                 <Head>
-                    <title>CSP Jaankari - Citizen Services Portal</title>
+                    <title>CertifyIndia - Digital Citizen Services</title>
                     <meta name="description" content="Your trusted portal for applying to citizen services, PAN cards, marriage forms, and domicile certificates." />
                 </Head>
 
                 {/* Hero Section */}
                 <div className="relative pt-12 pb-20 sm:pt-20 sm:pb-24 overflow-hidden">
                     <div className="absolute inset-0 z-0">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-100/50 rounded-full blur-3xl opacity-70"></div>
-                        <div className="absolute top-40 -left-20 w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-3xl opacity-60"></div>
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary-fixed/30 rounded-full blur-3xl opacity-70"></div>
+                        <div className="absolute top-40 -left-20 w-[500px] h-[500px] bg-secondary-fixed/30 rounded-full blur-3xl opacity-60"></div>
                     </div>
                     
-                    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-10">
-                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold mb-8">
-                            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-                            Trusted by 10,000+ Citizens
+                    <div className="relative z-10 max-w-[1280px] mx-auto px-6 text-center mt-10">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-tertiary-fixed-dim/20 border border-tertiary-fixed text-tertiary-container font-label-md text-label-md mb-8">
+                            <span className="flex h-2 w-2 rounded-full bg-tertiary mr-2 animate-pulse"></span>
+                            100% Secure Government Gateway
                         </div>
                         
-                        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-8 leading-tight">
-                            Citizen Services, <br className="hidden md:block" />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-8 leading-tight tracking-tight">
+                            Digital Governance, <br className="hidden md:block" />
+                            <span className="text-secondary">
                                 Simplified & Secured
                             </span>
                         </h1>
                         
-                        <p className="mt-4 max-w-2xl text-lg md:text-xl text-slate-600 mx-auto mb-10 leading-relaxed">
-                            Your one-stop digital portal for PAN Card applications, Marriage Certificates, Haryana Domicile, and Birth Records. Experience fast and hassle-free processing.
+                        <p className="mt-4 max-w-2xl font-body-lg text-body-lg text-on-surface-variant mx-auto mb-10 leading-relaxed">
+                            Your unified platform for PAN Cards, Marriage Registration, Haryana Domicile, and Birth Records. Get your essential documents with bank-grade security.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link 
                                 href="/login" 
-                                className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-300"
+                                className="inline-flex items-center justify-center px-8 py-4 font-label-md text-label-md rounded-xl text-on-primary bg-primary hover:bg-primary/90 shadow-lg hover:-translate-y-1 transition-all duration-300"
                             >
                                 Access Portal
-                                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                <span className="material-symbols-outlined ml-2" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>
                             </Link>
                             <a 
                                 href="#services" 
-                                className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-xl text-slate-700 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all duration-300"
+                                className="inline-flex items-center justify-center px-8 py-4 font-label-md text-label-md rounded-xl text-secondary bg-surface border-2 border-outline-variant hover:border-secondary transition-all duration-300"
                             >
                                 Explore Services
                             </a>
@@ -54,48 +54,48 @@ export default function Home() {
                 </div>
 
                 {/* Features/Services Section */}
-                <div id="services" className="py-20 bg-white relative z-10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="services" className="py-20 bg-surface-container-lowest relative z-10 border-t border-outline-variant">
+                    <div className="max-w-[1280px] mx-auto px-6">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Our Core Services</h2>
-                            <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto">We provide a comprehensive suite of e-governance services to make your life easier.</p>
+                            <h2 className="font-headline-lg text-headline-lg text-primary">Core Services</h2>
+                            <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">We provide a comprehensive suite of digital services to streamline documentation.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {/* Service Card 1 */}
-                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
-                                <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
+                            <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-primary transition-all duration-300 group cursor-pointer">
+                                <div className="w-14 h-14 bg-primary-fixed text-on-primary-fixed rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>id_card</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">PAN Card Services</h3>
-                                <p className="text-slate-600">Apply for a new PAN card or update existing details seamlessly with our trusted platform.</p>
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">PAN Services</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant">Apply for a new PAN card or update details seamlessly with verified security.</p>
                             </div>
                             
                             {/* Service Card 2 */}
-                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
-                                <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-secondary transition-all duration-300 group cursor-pointer">
+                                <div className="w-14 h-14 bg-secondary-fixed text-on-secondary-fixed rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Marriage Registration</h3>
-                                <p className="text-slate-600">Streamline your marriage registration process with our easy-to-use digital forms.</p>
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Marriage Reg</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant">Streamline your marriage registration process with our easy digital forms.</p>
                             </div>
 
                             {/* Service Card 3 */}
-                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
-                                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-tertiary transition-all duration-300 group cursor-pointer">
+                                <div className="w-14 h-14 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>location_city</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Haryana Domicile</h3>
-                                <p className="text-slate-600">Fast-track your Haryana resident certificates securely directly through our verified portal.</p>
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Haryana Domicile</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant">Fast-track resident certificates securely directly through our portal.</p>
                             </div>
 
                             {/* Service Card 4 */}
-                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
-                                <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-primary transition-all duration-300 group cursor-pointer">
+                                <div className="w-14 h-14 bg-error-container text-on-error-container rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>child_care</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Birth Certificates</h3>
-                                <p className="text-slate-600">Register new births and generate official certificates with automated record keeping.</p>
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Birth Records</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant">Register new births and generate official certificates with automated records.</p>
                             </div>
                         </div>
                     </div>

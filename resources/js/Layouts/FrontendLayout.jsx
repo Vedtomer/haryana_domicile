@@ -4,79 +4,59 @@ import Toast from '../Components/Toast';
 
 export default function FrontendLayout({ children }) {
     return (
-        <div className="min-h-screen flex flex-col font-sans selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen flex flex-col font-body-md text-on-background bg-background selection:bg-primary-container selection:text-on-primary-container">
             <Toast />
             {/* Navbar */}
-            <nav className="fixed w-full z-50 top-0 transition-all duration-300 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
-                        <div className="flex-shrink-0 flex items-center gap-3">
-                            <Link href="/">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg hover:scale-105 transition-transform cursor-pointer">
-                                    CJ
-                                </div>
-                            </Link>
-                            <Link href="/">
-                                <span className="font-extrabold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700 cursor-pointer">
-                                    CSP Jaankari
-                                </span>
-                            </Link>
-                        </div>
-                        <div className="hidden md:flex space-x-8 items-center">
-                            <Link href="/#services" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Services</Link>
-                            <Link href="/#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">About</Link>
-                            <Link href="/#contact" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Contact</Link>
-                            <Link 
-                                href="/register" 
-                                className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                            >
-                                Sign Up
-                            </Link>
-                            <Link 
-                                href="/login" 
-                                className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-full text-white bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-                            >
-                                Login
-                            </Link>
-                        </div>
+            <header className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 py-4 bg-surface/80 backdrop-blur-xl border-b border-outline-variant shadow-sm transition-all duration-200">
+                <div className="flex w-full max-w-[1280px] justify-between items-center">
+                    <div className="flex-shrink-0 flex items-center gap-3">
+                        <Link href="/">
+                            <img alt="Bharat Digital Trust Logo" className="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLvvVs3kuvCpdrCk_a3wVrd64gad_VXOVHOBnB-iJnlUQ919BeoQnRXr8MH8xs007kbuGKmY8pHEAoWHq6O03VFTFTwuyuNsW5WJIG6w8kjNTZFUO0J6ctZSNulK7z869vXvCWh2Iu0OtCa9UexViotQlER_xZDf14y9BpBLioCgO7Q4QauJwp7-Xh1tKdbokNT78No2ZSTmXvn8JuZ3nK6JiihRdmKl9aJ-E8PKLP5rPN5iEZ_7g22nVfI" />
+                        </Link>
+                        <Link href="/">
+                            <span className="text-body-lg font-headline-lg text-primary tracking-tight">
+                                CertifyIndia
+                            </span>
+                        </Link>
+                    </div>
+                    <div className="hidden md:flex space-x-6 items-center">
+                        <Link href="/#services" className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Services</Link>
+                        <Link href="/#about" className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">About</Link>
+                        <Link href="/#contact" className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Contact</Link>
+                        
+                        <Link 
+                            href="/register" 
+                            className="font-label-md text-label-md text-secondary border border-secondary px-4 py-2 rounded-lg hover:bg-secondary/10 transition-colors"
+                        >
+                            Sign Up
+                        </Link>
+                        <Link 
+                            href="/login" 
+                            className="font-label-md text-label-md text-on-primary bg-primary px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                            Login
+                        </Link>
                     </div>
                 </div>
-            </nav>
+            </header>
 
             {/* Main Content */}
-            <main className="flex-grow pt-20">
+            <main className="flex-grow pt-[72px]">
                 {children}
             </main>
 
             {/* Footer */}
-            <footer className="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 relative z-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                                CJ
-                            </div>
-                            <span className="font-bold text-xl text-white">CSP Jaankari</span>
-                        </div>
-                        <p className="text-sm text-slate-400">Delivering digital citizen services with speed, transparency, and trust.</p>
+            <footer className="w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest border-t border-outline-variant mt-auto">
+                <div className="w-full max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="font-headline-md text-on-surface text-sm">
+                        &copy; {new Date().getFullYear()} CertifyIndia Digital Trust. All rights reserved. Secure Government Gateway.
                     </div>
-                    <div>
-                        <h4 className="text-white font-bold mb-4">Quick Links</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/login" className="hover:text-white transition-colors">Login</Link></li>
-                            <li><Link href="/register" className="hover:text-white transition-colors">Sign Up</Link></li>
-                            <li><Link href="/#services" className="hover:text-white transition-colors">Our Services</Link></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                        </ul>
+                    <div className="flex gap-4 flex-wrap justify-center">
+                        <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Privacy Policy</a>
+                        <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Terms of Service</a>
+                        <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Compliance</a>
+                        <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Help Desk</a>
                     </div>
-                    <div>
-                        <h4 className="text-white font-bold mb-4">Contact</h4>
-                        <p className="text-sm text-slate-400 mb-2">support@cspjaankari.com</p>
-                        <p className="text-sm text-slate-400">Haryana, India</p>
-                    </div>
-                </div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
-                    &copy; {new Date().getFullYear()} CSP Jaankari. All rights reserved.
                 </div>
             </footer>
         </div>
