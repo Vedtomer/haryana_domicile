@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\OwnedByUser;
 use Illuminate\Database\Eloquent\Model;
 
 class BirthRecord extends Model
 {
+    use OwnedByUser;
+
     protected $fillable = [
         'user_id',
         'district',

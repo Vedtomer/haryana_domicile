@@ -1,17 +1,17 @@
 import React from 'react';
-import { TextField, Box, Typography, Divider } from '@mui/material';
+import { TextField, Box, Typography, Divider, MenuItem } from '@mui/material';
 
-export const InputField = ({ 
-    label, 
-    name, 
-    type = "text", 
-    multiline = false, 
-    rows = 1, 
-    value, 
-    onChange, 
-    error, 
+export const InputField = ({
+    label,
+    name,
+    type = "text",
+    multiline = false,
+    rows = 1,
+    value,
+    onChange,
+    error,
     required = true,
-    ...props 
+    ...props
 }) => (
     <TextField
         fullWidth
@@ -26,9 +26,40 @@ export const InputField = ({
         rows={rows}
         variant="outlined"
         required={required}
-        InputLabelProps={type === 'date' || value ? { shrink: true } : {}}
+        {...(type === 'date' ? { slotProps: { inputLabel: { shrink: true } } } : {})}
         {...props}
     />
+);
+
+export const SelectField = ({
+    label,
+    name,
+    value,
+    onChange,
+    error,
+    required = true,
+    options = [],
+    ...props
+}) => (
+    <TextField
+        select
+        fullWidth
+        label={label}
+        name={name}
+        value={value}
+        onChange={onChange}
+        error={!!error}
+        helperText={error}
+        variant="outlined"
+        required={required}
+        {...props}
+    >
+        {options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+                {opt.label}
+            </MenuItem>
+        ))}
+    </TextField>
 );
 
 export const SectionHeader = ({ title, ...props }) => (

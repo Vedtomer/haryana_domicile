@@ -12,14 +12,8 @@ class BirthRecordController extends Controller
 {
     public function index()
     {
-        $query = BirthRecord::query();
-        
-        if (!auth()->user()->hasRole('super_admin') && !auth()->user()->isAdmin()) {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $records = $query->latest()->paginate(10);
-        
+        $records = BirthRecord::query()->visibleTo(auth()->user())->latest()->paginate(10);
+
         return Inertia::render('Admin/BirthRecords/Index', [
             'records' => $records
         ]);
@@ -32,7 +26,39 @@ class BirthRecordController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $data = $this->validated($request);
+        $data['user_id'] = auth()->id();
+        BirthRecord::create($data);
+
+        return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record created successfully.');
+    }
+
+    public function edit(BirthRecord $birthRecord)
+    {
+        $this->authorizeOwner($birthRecord);
+
+        return Inertia::render('Admin/BirthRecords/Edit', ['record' => $birthRecord]);
+    }
+
+    public function update(Request $request, BirthRecord $birthRecord)
+    {
+        $this->authorizeOwner($birthRecord);
+        $birthRecord->update($this->validated($request));
+
+        return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record updated successfully.');
+    }
+
+    public function destroy(BirthRecord $birthRecord)
+    {
+        $this->authorizeOwner($birthRecord);
+        $birthRecord->delete();
+
+        return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record deleted successfully.');
+    }
+
+    private function validated(Request $request): array
+    {
+        return $request->validate([
             'district' => 'required|string',
             'father_name' => 'required|string',
             'mother_name' => 'required|string',
@@ -53,10 +79,5 @@ class BirthRecordController extends Controller
             'school_mother_name' => 'nullable|string',
             'other_children' => 'nullable|array',
         ]);
-
-        $data['user_id'] = auth()->id();
-        BirthRecord::create($data);
-
-        return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record created successfully.');
     }
 }

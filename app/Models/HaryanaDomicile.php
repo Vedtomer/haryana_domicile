@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\OwnedByUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class HaryanaDomicile extends Model
 {
-    use HasFactory;
+    use HasFactory, OwnedByUser;
 
     protected $fillable = [
         'user_id',

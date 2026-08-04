@@ -11,14 +11,8 @@ class HaryanaDomicileController extends Controller
 {
     public function index()
     {
-        $query = HaryanaDomicile::query();
-        
-        if (!auth()->user()->hasRole('super_admin') && !auth()->user()->isAdmin()) {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $records = $query->latest()->paginate(10);
-        
+        $records = HaryanaDomicile::query()->visibleTo(auth()->user())->latest()->paginate(10);
+
         return Inertia::render('Admin/HaryanaDomicile/Index', [
             'records' => $records
         ]);
@@ -31,7 +25,39 @@ class HaryanaDomicileController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $data = $this->validated($request);
+        $data['user_id'] = auth()->id();
+        HaryanaDomicile::create($data);
+
+        return redirect()->route('admin.haryana-domicile.index')->with('success', 'Haryana Domicile record created successfully.');
+    }
+
+    public function edit(HaryanaDomicile $haryanaDomicile)
+    {
+        $this->authorizeOwner($haryanaDomicile);
+
+        return Inertia::render('Admin/HaryanaDomicile/Edit', ['record' => $haryanaDomicile]);
+    }
+
+    public function update(Request $request, HaryanaDomicile $haryanaDomicile)
+    {
+        $this->authorizeOwner($haryanaDomicile);
+        $haryanaDomicile->update($this->validated($request));
+
+        return redirect()->route('admin.haryana-domicile.index')->with('success', 'Haryana Domicile record updated successfully.');
+    }
+
+    public function destroy(HaryanaDomicile $haryanaDomicile)
+    {
+        $this->authorizeOwner($haryanaDomicile);
+        $haryanaDomicile->delete();
+
+        return redirect()->route('admin.haryana-domicile.index')->with('success', 'Haryana Domicile record deleted successfully.');
+    }
+
+    private function validated(Request $request): array
+    {
+        return $request->validate([
             'pincode' => 'nullable|string|max:6',
             'tehsil' => 'required|string|max:255',
             'district' => 'required|string|max:255',
@@ -47,10 +73,5 @@ class HaryanaDomicileController extends Controller
             'religion' => 'nullable|string',
             'child_name' => 'nullable|string|max:255',
         ]);
-
-        $data['user_id'] = auth()->id();
-        HaryanaDomicile::create($data);
-
-        return redirect()->route('admin.haryana-domicile.index')->with('success', 'Haryana Domicile record created successfully.');
     }
 }

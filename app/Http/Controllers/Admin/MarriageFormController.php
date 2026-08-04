@@ -12,14 +12,8 @@ class MarriageFormController extends Controller
 {
     public function index()
     {
-        $query = MarriageForm::query();
-        
-        if (!auth()->user()->hasRole('super_admin') && !auth()->user()->isAdmin()) {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $forms = $query->latest()->paginate(10);
-        
+        $forms = MarriageForm::query()->visibleTo(auth()->user())->latest()->paginate(10);
+
         return Inertia::render('Admin/MarriageForms/Index', [
             'forms' => $forms
         ]);
@@ -32,16 +26,65 @@ class MarriageFormController extends Controller
 
     public function store(Request $request)
     {
+        $data = $this->validated($request);
+        $data['user_id'] = auth()->id();
+        MarriageForm::create($data);
+
+        return redirect()->route('admin.marriage-forms.index')->with('success', 'Marriage Form created successfully.');
+    }
+
+    public function edit(MarriageForm $marriageForm)
+    {
+        $this->authorizeOwner($marriageForm);
+
+        return Inertia::render('Admin/MarriageForms/Edit', ['form' => $marriageForm]);
+    }
+
+    public function update(Request $request, MarriageForm $marriageForm)
+    {
+        $this->authorizeOwner($marriageForm);
+        $marriageForm->update($this->validated($request));
+
+        return redirect()->route('admin.marriage-forms.index')->with('success', 'Marriage Form updated successfully.');
+    }
+
+    public function destroy(MarriageForm $marriageForm)
+    {
+        $this->authorizeOwner($marriageForm);
+        $marriageForm->delete();
+
+        return redirect()->route('admin.marriage-forms.index')->with('success', 'Marriage Form deleted successfully.');
+    }
+
+    public function print(MarriageForm $marriageForm)
+    {
+        $this->authorizeOwner($marriageForm);
+
+        $pdf = Pdf::loadView('pdf.marriage_form', ['record' => $marriageForm]);
+        $pdf->setPaper('A4', 'portrait');
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'Marriage_Form_' . $marriageForm->id . '.pdf');
+    }
+
+    private function validated(Request $request): array
+    {
         $data = $request->validate([
             'marriage_date' => 'required|date',
             'marriage_venue' => 'required|string',
+            'district' => 'required|string',
+            'religion' => 'nullable|string',
+            'nationality' => 'nullable|string',
             'groom_name' => 'required|string',
             'groom_father_name' => 'required|string',
-            'groom_age' => 'required|numeric',
+            'groom_mother_name' => 'required|string',
+            'groom_dob' => 'required|date',
             'groom_address' => 'required|string',
             'bride_name' => 'required|string',
             'bride_father_name' => 'required|string',
-            'bride_age' => 'required|numeric',
+            'bride_mother_name' => 'required|string',
+            'bride_dob' => 'required|date',
             'bride_address' => 'required|string',
             'groom_witness_name' => 'required|string',
             'groom_witness_father_name' => 'required|string',
@@ -54,24 +97,11 @@ class MarriageFormController extends Controller
             'pandit_address' => 'required|string',
         ]);
 
-        $data['user_id'] = auth()->id();
-        MarriageForm::create($data);
+        // Age is "in complete years, as on the date of marriage" — always derive it
+        // server-side from DOB rather than trusting a client-computed value.
+        $data['groom_age'] = (int) \Carbon\Carbon::parse($data['groom_dob'])->diffInYears($data['marriage_date']);
+        $data['bride_age'] = (int) \Carbon\Carbon::parse($data['bride_dob'])->diffInYears($data['marriage_date']);
 
-        return redirect()->route('admin.marriage-forms.index')->with('success', 'Marriage Form created successfully.');
-    }
-
-    public function print(MarriageForm $marriageForm)
-    {
-        // Check permissions
-        if (!auth()->user()->hasRole('super_admin') && !auth()->user()->isAdmin() && $marriageForm->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $pdf = Pdf::loadView('pdf.marriage_form', ['record' => $marriageForm]);
-        $pdf->setPaper('A4', 'portrait');
-        
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->output();
-        }, 'Marriage_Form_' . $marriageForm->id . '.pdf');
+        return $data;
     }
 }
