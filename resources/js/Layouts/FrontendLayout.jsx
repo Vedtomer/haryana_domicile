@@ -27,16 +27,16 @@ export default function FrontendLayout({ children }) {
                             <Link href="/#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">About</Link>
                             <Link href="/#contact" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Contact</Link>
                             <Link 
-                                href="/login" 
+                                href="/register" 
                                 className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
                             >
-                                Login
+                                Sign Up
                             </Link>
                             <Link 
-                                href="/register" 
+                                href="/login" 
                                 className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-full text-white bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                             >
-                                Sign Up
+                                Login
                             </Link>
                         </div>
                     </div>
