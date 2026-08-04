@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
         
         Route::resource('birth-records', \App\Http\Controllers\Admin\BirthRecordController::class);
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class);
+        Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
         Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);

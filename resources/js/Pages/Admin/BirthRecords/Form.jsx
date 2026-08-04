@@ -114,16 +114,16 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
             {data.other_children.map((child, index) => (
                 <Grid container spacing={2} key={index} alignItems="center" sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <InputField label="Name" value={child.name} onChange={(e) => handleChildChange(index, 'name', e.target.value)} />
+                        <InputField label="Name" value={child.name} onChange={(e) => handleChildChange(index, 'name', e.target.value)} error={errors[`other_children.${index}.name`]} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <InputField label="DOB" type="date" value={child.dob} onChange={(e) => handleChildChange(index, 'dob', e.target.value)} />
+                        <InputField label="DOB" type="date" value={child.dob} onChange={(e) => handleChildChange(index, 'dob', e.target.value)} error={errors[`other_children.${index}.dob`]} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <InputField label="Birth Place" required={false} value={child.birth_place} onChange={(e) => handleChildChange(index, 'birth_place', e.target.value)} />
+                        <InputField label="Birth Place" required={false} value={child.birth_place} onChange={(e) => handleChildChange(index, 'birth_place', e.target.value)} error={errors[`other_children.${index}.birth_place`]} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 5, md: 2 }}>
-                        <SelectField label="Recorded?" value={child.is_recorded} onChange={(e) => handleChildChange(index, 'is_recorded', e.target.value)} options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
+                        <SelectField label="Recorded?" value={child.is_recorded} onChange={(e) => handleChildChange(index, 'is_recorded', e.target.value)} options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} error={errors[`other_children.${index}.is_recorded`]} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 1, md: 1 }}>
                         <IconButton color="error" onClick={() => removeOtherChild(index)}><DeleteIcon /></IconButton>

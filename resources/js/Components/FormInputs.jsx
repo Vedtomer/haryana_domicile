@@ -11,10 +11,12 @@ export const InputField = ({
     onChange,
     error,
     required = true,
+    size = "small",
     ...props
 }) => (
     <TextField
         fullWidth
+        size={size}
         label={label}
         name={name}
         type={type}
@@ -39,11 +41,13 @@ export const SelectField = ({
     error,
     required = true,
     options = [],
+    size = "small",
     ...props
 }) => (
     <TextField
         select
         fullWidth
+        size={size}
         label={label}
         name={name}
         value={value}

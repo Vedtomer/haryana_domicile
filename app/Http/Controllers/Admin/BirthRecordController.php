@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\BirthRecord;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class BirthRecordController extends Controller
 {
@@ -78,6 +77,10 @@ class BirthRecordController extends Controller
             'school_father_name' => 'nullable|string',
             'school_mother_name' => 'nullable|string',
             'other_children' => 'nullable|array',
+            'other_children.*.name' => 'required|string',
+            'other_children.*.dob' => 'required|date',
+            'other_children.*.birth_place' => 'nullable|string',
+            'other_children.*.is_recorded' => 'required|string',
         ]);
     }
 }

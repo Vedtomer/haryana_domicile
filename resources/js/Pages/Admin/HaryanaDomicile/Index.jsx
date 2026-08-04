@@ -16,7 +16,7 @@ export default function Index({ records }) {
                 ]}
                 createHref="/admin/haryana-domicile/create"
                 editHref={(r) => `/admin/haryana-domicile/${r.id}/edit`}
-                printHref={(r) => `/haryana-domicile/print/${r.id}`}
+                printHref={(r) => `/admin/haryana-domicile/${r.id}/print`}
                 deleteHref={(r) => `/admin/haryana-domicile/${r.id}`}
                 emptyLabel="No records found."
             />
