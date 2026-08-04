@@ -53,18 +53,17 @@ export default function FrontendHeader() {
                             src="/csp-logo.webp"
                             alt="CSP Jaankari Logo"
                             style={{
-                                height: 44,
+                                height: 70,
                                 width: 'auto',
                                 objectFit: 'contain',
-                                filter: 'drop-shadow(0 0 6px rgba(147,197,253,0.4))',
                                 transition: 'filter 0.2s, transform 0.2s',
                             }}
                             onMouseEnter={e => {
-                                e.currentTarget.style.filter = 'drop-shadow(0 0 12px rgba(96,165,250,0.7))';
-                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.filter = 'drop-shadow(0 0 10px rgba(147,197,253,0.8))';
+                                e.currentTarget.style.transform = 'scale(1.07)';
                             }}
                             onMouseLeave={e => {
-                                e.currentTarget.style.filter = 'drop-shadow(0 0 6px rgba(147,197,253,0.4))';
+                                e.currentTarget.style.filter = 'none';
                                 e.currentTarget.style.transform = 'scale(1)';
                             }}
                         />

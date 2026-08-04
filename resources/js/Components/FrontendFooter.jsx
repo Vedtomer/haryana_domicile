@@ -49,10 +49,9 @@ export default function FrontendFooter() {
                                 src="/csp-logo.webp"
                                 alt="CSP Jaankari Logo"
                                 style={{
-                                    height: 32,
+                                    height: 52,
                                     width: 'auto',
                                     objectFit: 'contain',
-                                    filter: 'drop-shadow(0 0 4px rgba(147,197,253,0.4)) brightness(0.9)',
                                 }}
                             />
                         </div>

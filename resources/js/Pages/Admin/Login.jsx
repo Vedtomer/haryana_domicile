@@ -23,8 +23,8 @@ export default function Login() {
     return (
         <FrontendLayout>
             <Head title="Login - CSP Jaankari" />
-            <div className="bg-surface-container-lowest min-h-screen flex items-center justify-center p-4 md:p-8 font-body-md text-on-background">
-                <main className="w-full max-w-[1200px] h-auto lg:h-[800px] flex flex-col lg:flex-row rounded-2xl overflow-hidden shadow-[0px_4px_20px_rgba(0,51,102,0.05)] border border-surface-variant bg-surface">
+            <div className="bg-surface-container-lowest py-10 md:py-16 flex items-center justify-center px-4 md:px-8 font-body-md text-on-background">
+                <main className="w-full max-w-[1200px] h-auto lg:min-h-[550px] flex flex-col lg:flex-row rounded-2xl overflow-hidden shadow-[0px_4px_20px_rgba(0,51,102,0.05)] border border-surface-variant bg-surface">
                     {/* Left Side: Illustration */}
                     <section className="hidden lg:flex w-full lg:w-1/2 relative bg-gradient-to-br from-surface to-primary-fixed/20 p-12 items-center justify-center overflow-hidden">
                         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,101,141,0.2) 0%, transparent 70%)' }}></div>
