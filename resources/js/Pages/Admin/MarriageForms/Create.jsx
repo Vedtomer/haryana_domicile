@@ -63,16 +63,17 @@ export default function Create() {
                 {/* General Info */}
                 <SectionHeader title="Marriage Details" />
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} sm={6}>
                         <InputField label="Date of Marriage" name="marriage_date" type="date" value={data.marriage_date} onChange={handleChange} error={errors.marriage_date} />
                     </Grid>
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} sm={6}>
                         <InputField label="Marriage Venue" name="marriage_venue" value={data.marriage_venue} onChange={handleChange} error={errors.marriage_venue} />
                     </Grid>
                 </Grid>
 
                 {/* Groom */}
                 <SectionHeader title="Groom Details" />
+                {/* Groom — v2: Name(4) + Father(4) + Age(4) | Address full-width below */}
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                         <InputField label="Groom Name" name="groom_name" value={data.groom_name} onChange={handleChange} error={errors.groom_name} />
@@ -80,10 +81,10 @@ export default function Create() {
                     <Grid item xs={12} md={4}>
                         <InputField label="Groom Father Name" name="groom_father_name" value={data.groom_father_name} onChange={handleChange} error={errors.groom_father_name} />
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} md={4}>
                         <InputField label="Groom Age" name="groom_age" type="number" value={data.groom_age} onChange={handleChange} error={errors.groom_age} />
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12}>
                         <InputField label="Groom Address" name="groom_address" value={data.groom_address} onChange={handleChange} error={errors.groom_address} />
                     </Grid>
                 </Grid>
@@ -97,10 +98,10 @@ export default function Create() {
                     <Grid item xs={12} md={4}>
                         <InputField label="Bride Father Name" name="bride_father_name" value={data.bride_father_name} onChange={handleChange} error={errors.bride_father_name} />
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} md={4}>
                         <InputField label="Bride Age" name="bride_age" type="number" value={data.bride_age} onChange={handleChange} error={errors.bride_age} />
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12}>
                         <InputField label="Bride Address" name="bride_address" value={data.bride_address} onChange={handleChange} error={errors.bride_address} />
                     </Grid>
                 </Grid>
