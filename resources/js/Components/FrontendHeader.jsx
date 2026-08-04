@@ -23,10 +23,9 @@ export default function FrontendHeader() {
             {/* Multi-layer particle animation: wires + sparkle stars + rings */}
             <FooterParticles />
 
-            {/* Subtle gradient overlay for depth */}
             <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(90deg, rgba(10,22,40,0.4) 0%, transparent 40%, rgba(30,79,194,0.2) 100%)',
+                background: 'linear-gradient(90deg, rgba(10,22,40,0.4) 0%, transparent 40%, rgb(73,108,190) 100%)',
                 pointerEvents: 'none',
             }} />
 
