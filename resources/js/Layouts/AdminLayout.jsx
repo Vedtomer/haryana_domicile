@@ -139,6 +139,15 @@ export default function AdminLayout({ children }) {
                             >
                                 My Profile
                             </Link>
+                            {auth?.user?.type === 'admin' && (
+                                <Link
+                                    href="/admin/payment-settings"
+                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
+                                    QR Settings
+                                </Link>
+                            )}
                             <div className="border-t border-gray-100 my-1"></div>
                             <Link 
                                 href="/logout" 

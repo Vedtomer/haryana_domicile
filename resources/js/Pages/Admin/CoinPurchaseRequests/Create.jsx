@@ -8,9 +8,7 @@ const STATUS_CONFIG = {
     rejected: { label: 'Rejected', classes: 'bg-red-50 text-red-700 border border-red-200' },
 };
 
-// UPI ID — change karo apna actual UPI ID
-const UPI_ID   = 'cspjaankari@upi';
-const UPI_NAME = 'CSP Jaankari';
+// UPI constants removed — values come from backend settings
 
 function PackageCard({ pkg, selected, onSelect }) {
     const hasBonus = pkg.bonus_coins > 0;
@@ -58,7 +56,7 @@ function PackageCard({ pkg, selected, onSelect }) {
     );
 }
 
-export default function Create({ packages, myRequests, userCoins }) {
+export default function Create({ packages, myRequests, userCoins, upiId, upiName }) {
     const [selectedPackage, setSelectedPackage] = useState(null);
     const [preview, setPreview] = useState(null);
 
@@ -86,8 +84,10 @@ export default function Create({ packages, myRequests, userCoins }) {
         post('/admin/coin-requests', { forceFormData: true });
     };
 
-    // Static QR image already configured with UPI payment details
-    const QR_IMAGE = '/images/QR.jpeg';
+    // Dynamic QR built from admin-configured UPI settings
+    const QR_IMAGE = selectedPackage
+        ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${selectedPackage.amount}&cu=INR&tn=CoinPurchase`)}`
+        : null;
 
     return (
         <AdminLayout>
@@ -154,34 +154,11 @@ export default function Create({ packages, myRequests, userCoins }) {
                                     />
                                     <div className="mt-3 space-y-0.5">
                                         <p className="text-xs text-slate-400">UPI ID</p>
-                                        <p className="text-sm font-black text-slate-800 tracking-wide">{UPI_ID}</p>
+                                        <p className="text-sm font-black text-slate-800 tracking-wide">{upiId}</p>
                                         <div className="mt-2 bg-blue-50 rounded-xl px-4 py-2">
                                             <p className="text-xs text-blue-500">Amount to Pay</p>
                                             <p className="text-2xl font-black text-blue-700">₹{selectedPackage.amount}</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                {/* Order breakdown */}
-                                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 text-white text-sm space-y-2">
-                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Order Summary</p>
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Package</span>
-                                        <span className="font-bold">{selectedPackage.label}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Base coins</span>
-                                        <span className="font-bold">{selectedPackage.base_coins}</span>
-                                    </div>
-                                    {selectedPackage.bonus_coins > 0 && (
-                                        <div className="flex justify-between text-green-400">
-                                            <span>Bonus (+{selectedPackage.bonus_pct}%)</span>
-                                            <span className="font-bold">+{selectedPackage.bonus_coins}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between border-t border-slate-700 pt-2 font-black text-base">
-                                        <span>Total Coins</span>
-                                        <span className="text-green-400">{selectedPackage.coins_requested}</span>
                                     </div>
                                 </div>
                             </div>
@@ -189,20 +166,6 @@ export default function Create({ packages, myRequests, userCoins }) {
                             {/* Right — Upload + Submit */}
                             <div className="space-y-4">
                                 <p className="text-sm font-semibold text-slate-700">After payment, upload your screenshot below:</p>
-
-                                {/* UTR */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">
-                                        UTR / Transaction ID <span className="text-slate-400 normal-case font-normal">(optional)</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={data.utr_number}
-                                        onChange={e => setData('utr_number', e.target.value)}
-                                        placeholder="e.g. 423456789012"
-                                        className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none transition-colors"
-                                    />
-                                </div>
 
                                 {/* Screenshot upload */}
                                 <div>

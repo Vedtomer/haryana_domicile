@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CoinPurchaseRequest;
 use App\Models\CoinTransaction;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,8 @@ class CoinPurchaseRequestController extends Controller
             'packages'   => $packages,
             'myRequests' => $myRequests,
             'userCoins'  => auth()->user()->coins,
+            'upiId'      => Setting::get('upi_id',   'cspjaankari@upi'),
+            'upiName'    => Setting::get('upi_name', 'CSP Jaankari'),
         ]);
     }
 
