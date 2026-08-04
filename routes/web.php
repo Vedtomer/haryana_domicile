@@ -47,14 +47,15 @@ Route::middleware('auth')->group(function () {
         // Payment / QR Settings — admin only
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
+
+        // Haryana Domicile PDF Coordinates — admin only
+        Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit');
+        Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save');
     });
 });
 
 // Haryana Domicile Print Route
 Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
-
-// PDF Coordinate Settings Routes
-Route::post('/api/save-coordinates', [PdfCoordinateController::class, 'save'])->name('api.save-coordinates');
 
 // Birth Record Print Route
 Route::get('/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');

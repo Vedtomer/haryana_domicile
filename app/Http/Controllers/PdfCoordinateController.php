@@ -4,44 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\PdfCoordinate;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 use Illuminate\Support\Facades\Log;
 
 class PdfCoordinateController extends Controller
 {
-    public function index()
+    public function edit()
     {
-        // Load all coordinates from database
+        if (auth()->user()->type !== 'admin') {
+            abort(403);
+        }
+
         $dbCoords = PdfCoordinate::all();
-        // Log::info('Loading PDF Coordinates from DB', ['count' => $dbCoords->count(), 'sample' => $dbCoords->first()]);
-        
-        $coords = [];
-        
-        // Group by page
+
+        $allCoords = [];
+        for ($i = 1; $i <= 4; $i++) {
+            $allCoords["page{$i}"] = [];
+        }
+
         foreach ($dbCoords as $coord) {
-            $pageKey = 'page' . $coord->page;
-            if (!isset($coords[$pageKey])) {
-                $coords[$pageKey] = [];
-            }
-            
-            $coords[$pageKey][$coord->field_name] = [
+            $allCoords["page{$coord->page}"][$coord->field_name] = [
                 'x' => $coord->x,
                 'y' => $coord->y,
                 'fontSize' => $coord->font_size,
-                'spacing' => $coord->spacing
+                'spacing' => $coord->spacing,
             ];
         }
-        
-        // Ensure all pages exist
-        for ($i = 1; $i <= 4; $i++) {
-            if (!isset($coords["page$i"])) {
-                $coords["page$i"] = [];
-            }
-        }
+
+        return Inertia::render('Admin/PdfCoordinates/Edit', [
+            'allCoords' => $allCoords,
+        ]);
     }
 
     public function save(Request $request)
     {
+        if (auth()->user()->type !== 'admin') {
+            abort(403);
+        }
+
         $data = $request->all();
         Log::info('Saving PDF Coordinates Payload', ['data_keys' => array_keys($data)]);
         
