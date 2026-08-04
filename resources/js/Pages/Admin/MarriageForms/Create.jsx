@@ -1,6 +1,17 @@
 import React from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
+import { 
+    Button, 
+    Paper, 
+    Typography, 
+    Grid, 
+    Box, 
+    IconButton
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SaveIcon from '@mui/icons-material/Save';
+import { InputField, SectionHeader } from '../../../Components/FormInputs';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -30,102 +41,131 @@ export default function Create() {
         post('/admin/marriage-forms');
     };
 
-    const InputGroup = ({ label, name, type = "text" }) => (
-        <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-            <input
-                type={type}
-                value={data[name]}
-                onChange={e => setData(name, e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                required
-            />
-            {errors[name] && <div className="text-red-500 text-xs mt-1">{errors[name]}</div>}
-        </div>
-    );
+    const handleChange = (e) => {
+        setData(e.target.name, e.target.value);
+    };
 
     return (
         <AdminLayout>
             <Head title="Create Marriage Form" />
-            <div className="flex items-center mb-6">
-                <Link href="/admin/marriage-forms" className="text-gray-500 hover:text-gray-700 mr-4">&larr; Back</Link>
-                <h2 className="text-2xl font-bold text-gray-800">Create Marriage Form</h2>
-            </div>
+            
+            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                <IconButton component={Link} href="/admin/marriage-forms" sx={{ mr: 2 }}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h5" fontWeight="bold" color="text.primary">
+                    Create Marriage Form
+                </Typography>
+            </Box>
 
-            <form onSubmit={submit} className="bg-white rounded-xl shadow p-6 space-y-8">
+            <Paper component="form" onSubmit={submit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
                 
                 {/* General Info */}
-                <section>
-                    <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Marriage Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputGroup label="Date of Marriage" name="marriage_date" type="date" />
-                        <InputGroup label="Marriage Venue" name="marriage_venue" />
-                    </div>
-                </section>
+                <SectionHeader title="Marriage Details" />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Date of Marriage" name="marriage_date" type="date" value={data.marriage_date} onChange={handleChange} error={errors.marriage_date} />
+                    </Grid>
+                    <Grid item xs={12} md={8}>
+                        <InputField label="Marriage Venue" name="marriage_venue" value={data.marriage_venue} onChange={handleChange} error={errors.marriage_venue} />
+                    </Grid>
+                </Grid>
 
                 {/* Groom */}
-                <section>
-                    <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Groom Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputGroup label="Groom Name" name="groom_name" />
-                        <InputGroup label="Groom Father Name" name="groom_father_name" />
-                        <InputGroup label="Groom Age" name="groom_age" type="number" />
-                        <InputGroup label="Groom Address" name="groom_address" />
-                    </div>
-                </section>
+                <SectionHeader title="Groom Details" />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Groom Name" name="groom_name" value={data.groom_name} onChange={handleChange} error={errors.groom_name} />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Groom Father Name" name="groom_father_name" value={data.groom_father_name} onChange={handleChange} error={errors.groom_father_name} />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <InputField label="Groom Age" name="groom_age" type="number" value={data.groom_age} onChange={handleChange} error={errors.groom_age} />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <InputField label="Groom Address" name="groom_address" value={data.groom_address} onChange={handleChange} error={errors.groom_address} />
+                    </Grid>
+                </Grid>
 
                 {/* Bride */}
-                <section>
-                    <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Bride Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputGroup label="Bride Name" name="bride_name" />
-                        <InputGroup label="Bride Father Name" name="bride_father_name" />
-                        <InputGroup label="Bride Age" name="bride_age" type="number" />
-                        <InputGroup label="Bride Address" name="bride_address" />
-                    </div>
-                </section>
+                <SectionHeader title="Bride Details" />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Bride Name" name="bride_name" value={data.bride_name} onChange={handleChange} error={errors.bride_name} />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Bride Father Name" name="bride_father_name" value={data.bride_father_name} onChange={handleChange} error={errors.bride_father_name} />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <InputField label="Bride Age" name="bride_age" type="number" value={data.bride_age} onChange={handleChange} error={errors.bride_age} />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <InputField label="Bride Address" name="bride_address" value={data.bride_address} onChange={handleChange} error={errors.bride_address} />
+                    </Grid>
+                </Grid>
                 
                 {/* Witnesses */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <section>
-                        <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Groom's Witness</h3>
-                        <div className="space-y-4">
-                            <InputGroup label="Name" name="groom_witness_name" />
-                            <InputGroup label="Father Name" name="groom_witness_father_name" />
-                            <InputGroup label="Address" name="groom_witness_address" />
-                        </div>
-                    </section>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6}>
+                        <SectionHeader title="Groom's Witness" />
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <InputField label="Name" name="groom_witness_name" value={data.groom_witness_name} onChange={handleChange} error={errors.groom_witness_name} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InputField label="Father Name" name="groom_witness_father_name" value={data.groom_witness_father_name} onChange={handleChange} error={errors.groom_witness_father_name} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InputField label="Address" name="groom_witness_address" value={data.groom_witness_address} onChange={handleChange} error={errors.groom_witness_address} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     
-                    <section>
-                        <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Bride's Witness</h3>
-                        <div className="space-y-4">
-                            <InputGroup label="Name" name="bride_witness_name" />
-                            <InputGroup label="Father Name" name="bride_witness_father_name" />
-                            <InputGroup label="Address" name="bride_witness_address" />
-                        </div>
-                    </section>
-                </div>
+                    <Grid item xs={12} md={6}>
+                        <SectionHeader title="Bride's Witness" />
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <InputField label="Name" name="bride_witness_name" value={data.bride_witness_name} onChange={handleChange} error={errors.bride_witness_name} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InputField label="Father Name" name="bride_witness_father_name" value={data.bride_witness_father_name} onChange={handleChange} error={errors.bride_witness_father_name} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InputField label="Address" name="bride_witness_address" value={data.bride_witness_address} onChange={handleChange} error={errors.bride_witness_address} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
                 {/* Pandit */}
-                <section>
-                    <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Pandit Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <InputGroup label="Name" name="pandit_name" />
-                        <InputGroup label="Father Name" name="pandit_father_name" />
-                        <InputGroup label="Address" name="pandit_address" />
-                    </div>
-                </section>
+                <SectionHeader title="Pandit Details" />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Name" name="pandit_name" value={data.pandit_name} onChange={handleChange} error={errors.pandit_name} />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Father Name" name="pandit_father_name" value={data.pandit_father_name} onChange={handleChange} error={errors.pandit_father_name} />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <InputField label="Address" name="pandit_address" value={data.pandit_address} onChange={handleChange} error={errors.pandit_address} />
+                    </Grid>
+                </Grid>
 
-                <div className="pt-6 border-t border-gray-200">
-                    <button 
+                <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button 
                         type="submit" 
+                        variant="contained" 
+                        color="primary" 
+                        size="large"
                         disabled={processing}
-                        className="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 focus:outline-none disabled:opacity-50"
+                        startIcon={<SaveIcon />}
+                        sx={{ px: 4, py: 1.5 }}
                     >
                         Save Marriage Form
-                    </button>
-                </div>
-            </form>
+                    </Button>
+                </Box>
+            </Paper>
         </AdminLayout>
     );
 }
