@@ -63,9 +63,7 @@ class MarriageFormController extends Controller
         $pdf = Pdf::loadView('pdf.marriage_form', ['record' => $marriageForm]);
         $pdf->setPaper('A4', 'portrait');
 
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->output();
-        }, 'Marriage_Form_' . $marriageForm->id . '.pdf');
+        return $pdf->stream('Marriage_Form_' . $marriageForm->id . '.pdf');
     }
 
     private function validated(Request $request): array
@@ -78,14 +76,18 @@ class MarriageFormController extends Controller
             'nationality' => 'nullable|string',
             'groom_name' => 'required|string',
             'groom_father_name' => 'required|string',
+            'groom_father_father_name' => 'nullable|string',
             'groom_mother_name' => 'required|string',
             'groom_dob' => 'required|date',
             'groom_address' => 'required|string',
+            'groom_father_address' => 'nullable|string',
             'bride_name' => 'required|string',
             'bride_father_name' => 'required|string',
+            'bride_father_father_name' => 'nullable|string',
             'bride_mother_name' => 'required|string',
             'bride_dob' => 'required|date',
             'bride_address' => 'required|string',
+            'bride_father_address' => 'nullable|string',
             'groom_witness_name' => 'required|string',
             'groom_witness_father_name' => 'required|string',
             'groom_witness_address' => 'required|string',

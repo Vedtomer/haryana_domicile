@@ -59,6 +59,12 @@ const Party = ({ prefix, title, data, errors, onChange, onDobChange }) => (
         <Grid size={12}>
             <InputField label="Complete Postal Address" name={`${prefix}_address`} value={data[`${prefix}_address`]} onChange={onChange} error={errors[`${prefix}_address`]} />
         </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+            <InputField label="Father's Own Father's Name (for Father's Affidavit)" name={`${prefix}_father_father_name`} value={data[`${prefix}_father_father_name`]} onChange={onChange} error={errors[`${prefix}_father_father_name`]} required={false} />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+            <InputField label="Father's Own Address (for Father's Affidavit)" name={`${prefix}_father_address`} value={data[`${prefix}_father_address`]} onChange={onChange} error={errors[`${prefix}_father_address`]} required={false} />
+        </Grid>
     </FieldCard>
 );
 
