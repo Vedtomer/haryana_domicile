@@ -93,8 +93,7 @@ class User extends Authenticatable implements FilamentUser
     {
         DB::transaction(function () use ($amount, $type, $description, $serviceType, $serviceId) {
             // Lock the user row to prevent race conditions
-            $this->lockForUpdate()->decrement('coins', $amount);
-            $this->refresh();
+            $this->applyCoinDelta(-$amount);
 
             // Create transaction record
             CoinTransaction::create([
@@ -133,9 +132,7 @@ class User extends Authenticatable implements FilamentUser
     public function addCoins(int $amount, string $type, string $description, ?int $createdBy = null, ?string $coinType = null): void
     {
         DB::transaction(function () use ($amount, $type, $description, $createdBy, $coinType) {
-            // Lock the user row to prevent race conditions
-            $this->lockForUpdate()->increment('coins', $amount);
-            $this->refresh();
+            $this->applyCoinDelta($amount);
 
             // Create transaction record
             CoinTransaction::create([
@@ -150,6 +147,28 @@ class User extends Authenticatable implements FilamentUser
                 'created_by'   => $createdBy ?? auth()->id(),
             ]);
         });
+    }
+
+    /**
+     * Apply a signed change to this user's balance, locking only their own row.
+     *
+     * Must go through a keyed query: `$this->lockForUpdate()` builds an UNSCOPED
+     * users query, so chaining increment/decrement onto it would move every
+     * user's balance, not just this one's.
+     */
+    private function applyCoinDelta(int $delta): void
+    {
+        $locked = static::query()
+            ->whereKey($this->getKey())
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        $balance = $locked->coins + $delta;
+
+        static::query()->whereKey($this->getKey())->update(['coins' => $balance]);
+
+        $this->coins = $balance;
+        $this->syncOriginalAttribute('coins');
     }
 
     /**

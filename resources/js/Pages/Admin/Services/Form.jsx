@@ -1,0 +1,157 @@
+import React from 'react';
+import { Link, useForm } from '@inertiajs/react';
+
+const FIELD_TYPES = [
+    { value: 'text', label: 'Text' },
+    { value: 'number', label: 'Number' },
+    { value: 'date', label: 'Date' },
+    { value: 'textarea', label: 'Long Text' },
+    { value: 'file', label: 'Document Upload' },
+];
+
+/**
+ * Shared create/edit form for the service catalog.
+ * Built-in module services keep their wiring, so their custom-field builder is hidden.
+ */
+export default function ServiceForm({ service, submitUrl, method, submitLabel }) {
+    const isModule = service?.kind === 'module';
+
+    const { data, setData, post, put, processing, errors } = useForm({
+        name: service?.name ?? '',
+        description: service?.description ?? '',
+        icon: service?.icon ?? '📄',
+        coin_cost: service?.coin_cost ?? 0,
+        is_active: service?.is_active ?? true,
+        sort_order: service?.sort_order ?? 0,
+        fields: service?.fields ?? [],
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        (method === 'put' ? put : post)(submitUrl);
+    };
+
+    const addField = () =>
+        setData('fields', [...data.fields, { label: '', type: 'text', required: true }]);
+
+    const updateField = (index, key, value) =>
+        setData('fields', data.fields.map((f, i) => (i === index ? { ...f, [key]: value } : f)));
+
+    const removeField = (index) =>
+        setData('fields', data.fields.filter((_, i) => i !== index));
+
+    const input = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
+    const label = 'block text-sm font-semibold text-gray-700 mb-1';
+
+    return (
+        <form onSubmit={submit} className="max-w-3xl bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+            {isModule && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                    This is a built-in service with its own form. You can change its price, name and
+                    visibility, but not its fields.
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="sm:col-span-3">
+                    <label className={label}>Service Name *</label>
+                    <input className={input} value={data.name} onChange={(e) => setData('name', e.target.value)} />
+                    {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                    <label className={label}>Icon</label>
+                    <input className={input} value={data.icon} maxLength={4}
+                        onChange={(e) => setData('icon', e.target.value)} placeholder="📄" />
+                </div>
+            </div>
+
+            <div>
+                <label className={label}>Description</label>
+                <textarea className={input} rows={2} value={data.description ?? ''}
+                    onChange={(e) => setData('description', e.target.value)} />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label className={label}>Coin Cost *</label>
+                    <input type="number" min="0" className={input} value={data.coin_cost}
+                        onChange={(e) => setData('coin_cost', e.target.value)} />
+                    <p className="text-xs text-gray-500 mt-1">Set 0 to make this service free.</p>
+                    {errors.coin_cost && <p className="text-sm text-red-600 mt-1">{errors.coin_cost}</p>}
+                </div>
+                <div>
+                    <label className={label}>Sort Order</label>
+                    <input type="number" min="0" className={input} value={data.sort_order}
+                        onChange={(e) => setData('sort_order', e.target.value)} />
+                </div>
+                <div>
+                    <label className={label}>Status</label>
+                    <label className="flex items-center gap-2 mt-2">
+                        <input type="checkbox" className="w-5 h-5 rounded text-blue-600"
+                            checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} />
+                        <span className="text-sm text-gray-700">Visible to users</span>
+                    </label>
+                </div>
+            </div>
+
+            {!isModule && (
+                <div className="pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 className="font-bold text-gray-800">Form Fields</h3>
+                            <p className="text-xs text-gray-500">What should the user fill in when requesting this service?</p>
+                        </div>
+                        <button type="button" onClick={addField}
+                            className="px-3 py-1.5 text-sm font-semibold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                            + Add Field
+                        </button>
+                    </div>
+
+                    {data.fields.length === 0 && (
+                        <p className="text-sm text-gray-400 py-3">
+                            No fields yet — the user will only be able to leave a note.
+                        </p>
+                    )}
+
+                    {data.fields.some((f) => f.type === 'file') && (
+                        <p className="text-xs text-gray-500 mb-2">
+                            Document Upload fields accept PDF, JPG or PNG files up to 5 MB.
+                        </p>
+                    )}
+
+                    <div className="space-y-2">
+                        {data.fields.map((field, i) => (
+                            <div key={i} className="flex flex-wrap items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                                <input className={`${input} flex-1 min-w-[160px] bg-white`} placeholder="Field label (e.g. Aadhaar Number)"
+                                    value={field.label} onChange={(e) => updateField(i, 'label', e.target.value)} />
+                                <select className={`${input} w-40 bg-white`} value={field.type}
+                                    onChange={(e) => updateField(i, 'type', e.target.value)}>
+                                    {FIELD_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                                </select>
+                                <label className="flex items-center gap-1.5 text-sm text-gray-600 px-1">
+                                    <input type="checkbox" className="rounded text-blue-600" checked={!!field.required}
+                                        onChange={(e) => updateField(i, 'required', e.target.checked)} />
+                                    Required
+                                </label>
+                                <button type="button" onClick={() => removeField(i)}
+                                    className="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded">
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                <button type="submit" disabled={processing}
+                    className="px-5 py-2.5 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                    {processing ? 'Saving…' : submitLabel}
+                </button>
+                <Link href="/admin/services" className="px-5 py-2.5 font-semibold text-gray-600 hover:text-gray-800">
+                    Cancel
+                </Link>
+            </div>
+        </form>
+    );
+}

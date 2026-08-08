@@ -33,6 +33,12 @@ class PanRequestController extends Controller
 
     public function store(Request $request)
     {
+        $service = $this->moduleService('pan_request');
+
+        if ($error = $this->serviceBlocker($service)) {
+            return back()->withInput()->with('error', $error);
+        }
+
         // Standard user creation route
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -61,9 +67,12 @@ class PanRequestController extends Controller
             $data['additional_document'] = $request->file('additional_document')->store('pan-documents', 'public');
         }
 
-        PanRequest::create($data);
+        $panRequest = PanRequest::create($data);
 
-        return redirect()->route('admin.pan-requests.index')->with('success', 'PAN Request submitted successfully.');
+        $this->chargeForService($service, $panRequest->id, "PAN Card #{$panRequest->id}");
+
+        return redirect()->route('admin.pan-requests.index')
+            ->with('success', 'PAN Request submitted successfully.' . $this->chargeNote($service));
     }
 
     public function edit(PanRequest $panRequest)

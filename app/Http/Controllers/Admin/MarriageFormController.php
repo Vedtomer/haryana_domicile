@@ -26,11 +26,20 @@ class MarriageFormController extends Controller
 
     public function store(Request $request)
     {
+        $service = $this->moduleService('marriage_form');
+
+        if ($error = $this->serviceBlocker($service)) {
+            return back()->withInput()->with('error', $error);
+        }
+
         $data = $this->validated($request);
         $data['user_id'] = auth()->id();
-        MarriageForm::create($data);
+        $form = MarriageForm::create($data);
 
-        return redirect()->route('admin.marriage-forms.index')->with('success', 'Marriage Form created successfully.');
+        $this->chargeForService($service, $form->id, "Marriage Certificate #{$form->id}");
+
+        return redirect()->route('admin.marriage-forms.index')
+            ->with('success', 'Marriage Form created successfully.' . $this->chargeNote($service));
     }
 
     public function edit(MarriageForm $marriageForm)

@@ -26,11 +26,20 @@ class HaryanaDomicileController extends Controller
 
     public function store(Request $request)
     {
+        $service = $this->moduleService('haryana_domicile');
+
+        if ($error = $this->serviceBlocker($service)) {
+            return back()->withInput()->with('error', $error);
+        }
+
         $data = $this->validated($request);
         $data['user_id'] = auth()->id();
-        HaryanaDomicile::create($data);
+        $record = HaryanaDomicile::create($data);
 
-        return redirect()->route('admin.haryana-domicile.index')->with('success', 'Haryana Domicile record created successfully.');
+        $this->chargeForService($service, $record->id, "Haryana Domicile #{$record->id}");
+
+        return redirect()->route('admin.haryana-domicile.index')
+            ->with('success', 'Haryana Domicile record created successfully.' . $this->chargeNote($service));
     }
 
     public function edit(HaryanaDomicile $haryanaDomicile)

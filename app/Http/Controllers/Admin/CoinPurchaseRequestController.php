@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CoinPurchaseRequest;
 use App\Models\CoinTransaction;
 use App\Models\Setting;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +81,7 @@ class CoinPurchaseRequestController extends Controller
 
         $path = $request->file('payment_screenshot')->store('coin-screenshots', 'public');
 
-        CoinPurchaseRequest::create([
+        $coinRequest = CoinPurchaseRequest::create([
             'user_id'            => auth()->id(),
             'package_amount'     => $data['package_amount'],
             'coins_requested'    => $data['coins_requested'],
@@ -88,6 +89,12 @@ class CoinPurchaseRequestController extends Controller
             'payment_screenshot' => $path,
             'status'             => CoinPurchaseRequest::STATUS_PENDING,
         ]);
+
+        SystemAlert::toAdmins(
+            'New coin purchase request',
+            auth()->user()->name . " paid ₹{$coinRequest->package_amount} for {$coinRequest->coins_requested} coins.",
+            '/admin/coin-requests',
+        );
 
         return redirect()->route('admin.coin-requests.create')
             ->with('success', '✅ Your coin request has been submitted! We will review and approve it shortly.');
@@ -123,6 +130,13 @@ class CoinPurchaseRequestController extends Controller
                 );
             });
 
+            $coinRequest->user->notify(new SystemAlert(
+                'Coins added',
+                "Your purchase of {$coinRequest->coins_requested} coins (₹{$coinRequest->package_amount}) was approved. New balance: {$coinRequest->user->fresh()->coins} coins.",
+                '/dashboard',
+                'success',
+            ));
+
             return back()->with('success', "✅ Approved! {$coinRequest->coins_requested} paid coins added to user. ₹{$coinRequest->package_amount} added to platform revenue.");
         } 
         
@@ -131,6 +145,15 @@ class CoinPurchaseRequestController extends Controller
                 'status' => 'rejected',
                 'admin_notes' => $data['admin_notes']
             ]);
+
+            $coinRequest->user->notify(new SystemAlert(
+                'Coin request rejected',
+                "Your request for {$coinRequest->coins_requested} coins was rejected."
+                    . ($data['admin_notes'] ? ' Reason: ' . $data['admin_notes'] : ''),
+                '/admin/coin-requests',
+                'error',
+            ));
+
             return back()->with('success', 'Request rejected.');
         }
 

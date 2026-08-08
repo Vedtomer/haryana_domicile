@@ -44,6 +44,30 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
+            // Sidebar service links — kept in sync with what the admin has switched on.
+            'navServices' => fn () => $request->user()
+                ? \App\Models\Service::active()->ordered()->get()
+                    ->map(fn ($s) => [
+                        'id' => $s->id,
+                        'name' => $s->name,
+                        'icon' => $s->icon ?: '📄',
+                        'url' => $s->targetUrl(),
+                    ])
+                : [],
+            // Powers the bell in the header on every authenticated page.
+            'notifications' => fn () => $request->user() ? [
+                'unread' => $request->user()->unreadNotifications()->count(),
+                'recent' => $request->user()->notifications()->take(8)->get()
+                    ->map(fn ($n) => [
+                        'id' => $n->id,
+                        'title' => $n->data['title'] ?? '',
+                        'body' => $n->data['body'] ?? '',
+                        'url' => $n->data['url'] ?? null,
+                        'level' => $n->data['level'] ?? 'info',
+                        'read' => (bool) $n->read_at,
+                        'ago' => $n->created_at->diffForHumans(),
+                    ]),
+            ] : null,
         ];
     }
 }

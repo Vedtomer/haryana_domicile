@@ -24,12 +24,25 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('guest
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('dashboard');
-    
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
+        // Service catalog — only admins can add services and set coin prices
+        Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)
+            ->except('show')->middleware('admin');
+
+        // Service requests — users submit, admins process
+        Route::resource('service-requests', \App\Http\Controllers\Admin\ServiceRequestController::class)
+            ->only(['index', 'create', 'store', 'show']);
+        Route::patch('service-requests/{serviceRequest}', [\App\Http\Controllers\Admin\ServiceRequestController::class, 'update'])
+            ->name('service-requests.update')->middleware('admin');
+
+        // Notifications
+        Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/read-all', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+        Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
+
         Route::resource('marriage-forms', \App\Http\Controllers\Admin\MarriageFormController::class);
         Route::get('marriage-forms/{marriage_form}/print', [\App\Http\Controllers\Admin\MarriageFormController::class, 'print'])->name('marriage-forms.print');
         

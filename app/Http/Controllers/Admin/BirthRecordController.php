@@ -25,11 +25,20 @@ class BirthRecordController extends Controller
 
     public function store(Request $request)
     {
+        $service = $this->moduleService('birth_record');
+
+        if ($error = $this->serviceBlocker($service)) {
+            return back()->withInput()->with('error', $error);
+        }
+
         $data = $this->validated($request);
         $data['user_id'] = auth()->id();
-        BirthRecord::create($data);
+        $record = BirthRecord::create($data);
 
-        return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record created successfully.');
+        $this->chargeForService($service, $record->id, "Birth Certificate #{$record->id}");
+
+        return redirect()->route('admin.birth-records.index')
+            ->with('success', 'Birth Record created successfully.' . $this->chargeNote($service));
     }
 
     public function edit(BirthRecord $birthRecord)

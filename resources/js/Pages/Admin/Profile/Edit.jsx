@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import FloatingInput from '../../../Components/FloatingInput';
 
-export default function Edit({ user }) {
+// Plain-language labels — the ledger exists so nothing looks unexplained.
+const TYPE_LABELS = {
+    purchase: 'Coins Purchased',
+    admin_credit: 'Added by Admin',
+    service_deduction: 'Service Used',
+    refund: 'Refunded',
+};
+
+const TYPE_STYLES = {
+    purchase: 'bg-green-100 text-green-700',
+    admin_credit: 'bg-blue-100 text-blue-700',
+    service_deduction: 'bg-amber-100 text-amber-700',
+    refund: 'bg-purple-100 text-purple-700',
+};
+
+export default function Edit({ user, ledger, ledgerSummary }) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name || '',
         email: user.email || '',
@@ -99,6 +114,96 @@ export default function Edit({ user }) {
                             </button>
                         </div>
                     </form>
+                </div>
+
+                {/* Coin Ledger — every credit and deduction, so nothing looks unexplained */}
+                <div id="coin-ledger" className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6 scroll-mt-6">
+                    <div className="px-6 py-5 border-b border-gray-100">
+                        <h3 className="text-lg font-semibold text-gray-900">Coin Ledger</h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Every coin added to or used from your account is listed here.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+                        <div className="px-6 py-4">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance</p>
+                            <p className="text-2xl font-extrabold text-amber-600 mt-1">🪙 {ledgerSummary.balance}</p>
+                        </div>
+                        <div className="px-6 py-4">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Added</p>
+                            <p className="text-2xl font-extrabold text-green-600 mt-1">+{ledgerSummary.added}</p>
+                        </div>
+                        <div className="px-6 py-4">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Used</p>
+                            <p className="text-2xl font-extrabold text-red-500 mt-1">−{ledgerSummary.spent}</p>
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 text-gray-600">
+                                <tr>
+                                    <th className="text-left font-bold px-6 py-3 whitespace-nowrap">Date</th>
+                                    <th className="text-left font-bold px-6 py-3">Details</th>
+                                    <th className="text-right font-bold px-6 py-3 whitespace-nowrap">Coins</th>
+                                    <th className="text-right font-bold px-6 py-3 whitespace-nowrap">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ledger.data.map((txn) => (
+                                    <tr key={txn.id} className="border-t border-gray-100 hover:bg-gray-50">
+                                        <td className="px-6 py-3 text-gray-500 whitespace-nowrap">
+                                            {new Date(txn.created_at).toLocaleDateString()}
+                                            <span className="block text-xs text-gray-400">
+                                                {new Date(txn.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-3">
+                                            <p className="text-gray-800">{txn.description}</p>
+                                            <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${TYPE_STYLES[txn.type] ?? 'bg-gray-100 text-gray-700'}`}>
+                                                {TYPE_LABELS[txn.type] ?? txn.type}
+                                            </span>
+                                            {txn.creator && (
+                                                <span className="text-xs text-gray-400 ml-2">by {txn.creator.name}</span>
+                                            )}
+                                        </td>
+                                        <td className={`px-6 py-3 text-right font-bold whitespace-nowrap ${
+                                            txn.amount < 0 ? 'text-red-500' : 'text-green-600'
+                                        }`}>
+                                            {txn.amount < 0 ? '−' : '+'}{Math.abs(txn.amount)}
+                                        </td>
+                                        <td className="px-6 py-3 text-right text-gray-700 whitespace-nowrap">
+                                            {txn.balance_after}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {ledger.data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-10 text-center text-gray-400">
+                                            No coin activity yet.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {ledger.links.length > 3 && (
+                        <div className="flex flex-wrap gap-1 px-6 py-4 border-t border-gray-100">
+                            {ledger.links.map((link, i) => (
+                                <Link
+                                    key={i}
+                                    href={link.url ?? '#'}
+                                    preserveScroll
+                                    className={`px-3 py-1.5 rounded-lg text-sm ${
+                                        link.active ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-600'
+                                    } ${!link.url ? 'opacity-40 pointer-events-none' : ''}`}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </AdminLayout>
