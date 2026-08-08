@@ -46,14 +46,27 @@
     $district = $record->district ?: '____________';
     $religion = $record->religion ?: 'Hindu';
     $nationality = $record->nationality ?: 'Indian';
-    $brideFatherName = $record->bride_father_father_name
-        ? $record->bride_father_name . ' S/o Shri ' . $record->bride_father_father_name
-        : $record->bride_father_name;
-    $brideFatherAddress = $record->bride_father_address ?: $record->bride_address;
-    $groomFatherName = $record->groom_father_father_name
-        ? $record->groom_father_name . ' S/o Shri ' . $record->groom_father_father_name
-        : $record->groom_father_name;
-    $groomFatherAddress = $record->groom_father_address ?: $record->groom_address;
+    $brideAffidavitBy = $record->bride_affidavit_by ?? 'father';
+    $brideParentTitle = $brideAffidavitBy === 'mother' ? 'Mother' : 'Father';
+    if ($brideAffidavitBy === 'mother') {
+        $brideParentName = $record->bride_mother_name . ' W/o Shri ' . $record->bride_father_name;
+    } else {
+        $brideParentName = $record->bride_father_father_name
+            ? $record->bride_father_name . ' S/o Shri ' . $record->bride_father_father_name
+            : $record->bride_father_name;
+    }
+    $brideParentAddress = $record->bride_father_address ?: $record->bride_address;
+
+    $groomAffidavitBy = $record->groom_affidavit_by ?? 'father';
+    $groomParentTitle = $groomAffidavitBy === 'mother' ? 'Mother' : 'Father';
+    if ($groomAffidavitBy === 'mother') {
+        $groomParentName = $record->groom_mother_name . ' W/o Shri ' . $record->groom_father_name;
+    } else {
+        $groomParentName = $record->groom_father_father_name
+            ? $record->groom_father_name . ' S/o Shri ' . $record->groom_father_father_name
+            : $record->groom_father_name;
+    }
+    $groomParentAddress = $record->groom_father_address ?: $record->groom_address;
 @endphp
 
 {{-- ============================= PAGE 1: APPLICATION ============================= --}}
@@ -245,9 +258,9 @@
 
 <div class="page-break"></div>
 
-{{-- ============================= PAGES 7-8: FATHER OF THE BRIDE ============================= --}}
-<h2 class="underline">Affidavit (Father of the Bride)</h2>
-<p>I, {{ $brideFatherName }}, R/o {{ $brideFatherAddress }}, do hereby solemnly affirm and declare as follows:</p>
+{{-- ============================= PAGES 7-8: PARENT OF THE BRIDE ============================= --}}
+<h2 class="underline">Affidavit ({{ $brideParentTitle }} of the Bride)</h2>
+<p>I, {{ $brideParentName }}, R/o {{ $brideParentAddress }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
     <li>That the marriage of my daughter, {{ $record->bride_name }}, with {{ $record->groom_name }} S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</li>
@@ -266,17 +279,40 @@
 
 <div class="page-break"></div>
 
-<p>Statement of Shri {{ $brideFatherName }}, R/o {{ $brideFatherAddress }}.</p>
-<p>He has stated that the marriage of his daughter, {{ $record->bride_name }}, with {{ $record->groom_name }} S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</p>
+<p>Statement of {{ $brideAffidavitBy === 'mother' ? 'Smt.' : 'Shri' }} {{ $brideParentName }}, R/o {{ $brideParentAddress }}.</p>
+<p>{{ $brideAffidavitBy === 'mother' ? 'She' : 'He' }} has stated that the marriage of {{ $brideAffidavitBy === 'mother' ? 'her' : 'his' }} daughter, {{ $record->bride_name }}, with {{ $record->groom_name }} S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</p>
 <p>The marriage took place with the mutual consent of the bride, the groom, and both families.</p>
-<p>He has no objection to the marriage being registered.</p>
+<p>{{ $brideAffidavitBy === 'mother' ? 'She' : 'He' }} has no objection to the marriage being registered.</p>
 @include('pdf.partials.registrar_statement')
 
 <div class="page-break"></div>
 
-{{-- ============================= PAGES 9-10: FATHER OF THE GROOM ============================= --}}
-<h2 class="underline">Affidavit (Father of the Groom)</h2>
-<p>I, {{ $groomFatherName }}, R/o {{ $groomFatherAddress }}, do hereby solemnly affirm and declare as follows:</p>
+{{-- ============================= PAGES 9-10: GROOM'S AFFIDAVIT ============================= --}}
+<h2 class="underline">Affidavit (Groom)</h2>
+<p>I, {{ $record->groom_name }}, S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, do hereby solemnly affirm and declare as follows:</p>
+<ol>
+    <li>That I am a citizen of India.</li>
+    <li>That my marriage with {{ $record->bride_name }}, D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</li>
+    <li>That at the time of the marriage, I was approximately {{ $record->groom_age }} years of age.</li>
+    <li>That I am happy with the aforementioned marriage.</li>
+    <li>That my marriage was solemnized with the consent of my parents and both families.</li>
+    <li>That I have no objection to this marriage being registered.</li>
+</ol>
+@include('pdf.partials.verification', ['pronoun' => 'my', 'deponentLabel' => 'Deponent'])
+
+<div class="page-break"></div>
+
+<p>Statement of {{ $record->groom_name }}, S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}.</p>
+<p>I state that my marriage to {{ $record->bride_name }}, D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</p>
+<p>This marriage took place of my own free will and with the consent of my parents and both families.</p>
+<p>I have no objection to the marriage being registered.</p>
+@include('pdf.partials.registrar_statement')
+
+<div class="page-break"></div>
+
+{{-- ============================= PAGES 11-12: PARENT OF THE GROOM ============================= --}}
+<h2 class="underline">Affidavit ({{ $groomParentTitle }} of the Groom)</h2>
+<p>I, {{ $groomParentName }}, R/o {{ $groomParentAddress }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
     <li>That the marriage of my son, {{ $record->groom_name }}, with {{ $record->bride_name }} D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, was solemnized on {{ $marriageDate }} in accordance with {{ $religion }} rites and customs at {{ $record->marriage_venue }}, without any dowry.</li>
@@ -295,15 +331,15 @@
 
 <div class="page-break"></div>
 
-<p>Statement of Shri {{ $groomFatherName }}, R/o {{ $groomFatherAddress }}.</p>
-<p>He has stated that the marriage of his son, {{ $record->groom_name }}, with {{ $record->bride_name }} D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, was solemnized on {{ $marriageDate }} at {{ $record->marriage_venue }}, in accordance with {{ $religion }} rites and customs and without any dowry.</p>
+<p>Statement of {{ $groomAffidavitBy === 'mother' ? 'Smt.' : 'Shri' }} {{ $groomParentName }}, R/o {{ $groomParentAddress }}.</p>
+<p>{{ $groomAffidavitBy === 'mother' ? 'She' : 'He' }} has stated that the marriage of {{ $groomAffidavitBy === 'mother' ? 'her' : 'his' }} son, {{ $record->groom_name }}, with {{ $record->bride_name }} D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, was solemnized on {{ $marriageDate }} at {{ $record->marriage_venue }}, in accordance with {{ $religion }} rites and customs and without any dowry.</p>
 <p>The marriage took place with the mutual consent of the bride, the groom, and both families.</p>
-<p>He has no objection to the marriage being registered.</p>
+<p>{{ $groomAffidavitBy === 'mother' ? 'She' : 'He' }} has no objection to the marriage being registered.</p>
 @include('pdf.partials.registrar_statement')
 
 <div class="page-break"></div>
 
-{{-- ============================= PAGES 11-12: GROOM'S WITNESS ============================= --}}
+{{-- ============================= PAGES 13-14: GROOM'S WITNESS ============================= --}}
 <h2 class="underline">Affidavit (Witness on behalf of the Groom)</h2>
 <p>I, Shri {{ $record->groom_witness_name }}, S/o {{ $record->groom_witness_father_name }}, R/o {{ $record->groom_witness_address }}, do hereby solemnly affirm and state as follows:</p>
 <ol>
@@ -333,7 +369,7 @@
 
 <div class="page-break"></div>
 
-{{-- ============================= PAGES 13-14: BRIDE'S WITNESS ============================= --}}
+{{-- ============================= PAGES 15-16: BRIDE'S WITNESS ============================= --}}
 <h2 class="underline">Affidavit (Witness on behalf of the Bride)</h2>
 <p>I, Shri {{ $record->bride_witness_name }}, S/o Shri {{ $record->bride_witness_father_name }}, R/o {{ $record->bride_witness_address }}, do hereby solemnly affirm and state as follows:</p>
 <ol>
@@ -363,7 +399,7 @@
 
 <div class="page-break"></div>
 
-{{-- ============================= PAGES 15-16: PANDIT ============================= --}}
+{{-- ============================= PAGES 17-18: PANDIT ============================= --}}
 <h2 class="underline">Affidavit (Pandit)</h2>
 <p>I, Shri {{ $record->pandit_name }}, S/o Shri {{ $record->pandit_father_name }}, R/o {{ $record->pandit_address }}, do hereby solemnly affirm and state as follows:</p>
 <ol>

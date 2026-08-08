@@ -44,6 +44,12 @@ const FieldCard = ({ title, size = { xs: 12 }, children }) => (
 // keystroke, which remounted every input inside and dropped focus after each character.
 const Party = ({ prefix, title, data, errors, onChange, onDobChange }) => (
     <FieldCard title={title} size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12 }}>
+            <SelectField label="Affidavit By" name={`${prefix}_affidavit_by`} value={data[`${prefix}_affidavit_by`]} onChange={onChange} error={errors[`${prefix}_affidavit_by`]} options={[
+                { value: 'father', label: 'Father' },
+                { value: 'mother', label: 'Mother' },
+            ]} />
+        </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
             <InputField label="Name" name={`${prefix}_name`} value={data[`${prefix}_name`]} onChange={onChange} error={errors[`${prefix}_name`]} />
         </Grid>
