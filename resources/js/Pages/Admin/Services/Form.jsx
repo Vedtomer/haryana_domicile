@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
 const FIELD_TYPES = [
@@ -10,10 +10,65 @@ const FIELD_TYPES = [
 ];
 
 /**
+ * Checkbox-in-a-dropdown multi-select for picking which users a private
+ * service is visible to.
+ */
+function UserMultiSelect({ users, selected, onToggle }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const onClickOutside = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener('mousedown', onClickOutside);
+        return () => document.removeEventListener('mousedown', onClickOutside);
+    }, []);
+
+    const selectedUsers = users.filter((u) => selected.includes(u.id));
+
+    return (
+        <div className="relative mt-1" ref={ref}>
+            <button type="button" onClick={() => setOpen((o) => !o)}
+                className="w-full min-h-[42px] flex flex-wrap items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                {selectedUsers.length === 0 && <span className="text-sm text-gray-400">Select users…</span>}
+                {selectedUsers.map((u) => (
+                    <span key={u.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
+                        {u.name || u.email || u.phone}
+                        <span role="button" tabIndex={0}
+                            onClick={(e) => { e.stopPropagation(); onToggle(u.id); }}
+                            className="hover:text-blue-900">×</span>
+                    </span>
+                ))}
+                <svg className="w-4 h-4 ml-auto text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="absolute z-10 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg divide-y divide-gray-100">
+                    {users.length === 0 && (
+                        <p className="text-sm text-gray-400 p-3">No regular users found yet.</p>
+                    )}
+                    {users.map((u) => (
+                        <label key={u.id} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" className="rounded text-blue-600"
+                                checked={selected.includes(u.id)} onChange={() => onToggle(u.id)} />
+                            <span className="text-sm text-gray-700">{u.name || u.email || u.phone}</span>
+                            {u.email && <span className="text-xs text-gray-400">{u.email}</span>}
+                        </label>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+/**
  * Shared create/edit form for the service catalog.
  * Built-in module services keep their wiring, so their custom-field builder is hidden.
  */
-export default function ServiceForm({ service, submitUrl, method, submitLabel }) {
+export default function ServiceForm({ service, users = [], submitUrl, method, submitLabel }) {
     const isModule = service?.kind === 'module';
 
     const { data, setData, post, put, processing, errors } = useForm({
@@ -22,9 +77,16 @@ export default function ServiceForm({ service, submitUrl, method, submitLabel })
         icon: service?.icon ?? '📄',
         coin_cost: service?.coin_cost ?? 0,
         is_active: service?.is_active ?? true,
+        visibility: service?.visibility ?? 'public',
+        user_ids: service?.user_ids ?? [],
         sort_order: service?.sort_order ?? 0,
         fields: service?.fields ?? [],
     });
+
+    const toggleUser = (id) =>
+        setData('user_ids', data.user_ids.includes(id)
+            ? data.user_ids.filter((u) => u !== id)
+            : [...data.user_ids, id]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -92,6 +154,27 @@ export default function ServiceForm({ service, submitUrl, method, submitLabel })
                         <span className="text-sm text-gray-700">Visible to users</span>
                     </label>
                 </div>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100">
+                <label className={label}>Audience</label>
+                <div className="flex gap-4">
+                    <label className="flex items-center gap-2">
+                        <input type="radio" name="visibility" className="text-blue-600" checked={data.visibility === 'public'}
+                            onChange={() => setData('visibility', 'public')} />
+                        <span className="text-sm text-gray-700">Public — visible to all users</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <input type="radio" name="visibility" className="text-blue-600" checked={data.visibility === 'private'}
+                            onChange={() => setData('visibility', 'private')} />
+                        <span className="text-sm text-gray-700">Private — only selected users</span>
+                    </label>
+                </div>
+                {errors.visibility && <p className="text-sm text-red-600 mt-1">{errors.visibility}</p>}
+
+                {data.visibility === 'private' && (
+                    <UserMultiSelect users={users} selected={data.user_ids} onToggle={toggleUser} />
+                )}
             </div>
 
             {!isModule && (

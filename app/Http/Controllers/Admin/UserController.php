@@ -165,4 +165,23 @@ class UserController extends Controller
         $user->update(['is_active' => !$user->is_active]);
         return back()->with('success', 'User status updated.');
     }
+
+    public function destroy(User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        if ($user->id === auth()->id()) {
+            abort(403, 'You cannot delete your own account.');
+        }
+
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403, 'You can only delete regular users.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+    }
 }

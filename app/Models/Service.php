@@ -3,12 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
     const KIND_MODULE = 'module';   // user fills a built-in form, coins deducted instantly
     const KIND_MANUAL = 'manual';   // user submits a request, admin processes it
+
+    const VISIBILITY_PUBLIC = 'public';
+    const VISIBILITY_PRIVATE = 'private';
 
     /**
      * Built-in modules that already exist in the project. Admins can change the
@@ -51,6 +55,7 @@ class Service extends Model
         'module_key',
         'fields',
         'is_active',
+        'visibility',
         'sort_order',
     ];
 
@@ -66,9 +71,29 @@ class Service extends Model
         return $this->hasMany(ServiceRequest::class);
     }
 
+    /**
+     * Users this service is visible to, when it's private.
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Public services are visible to everyone; private services only to
+     * their assigned users.
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('visibility', self::VISIBILITY_PUBLIC)
+                ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
+        });
     }
 
     public function scopeOrdered($query)
@@ -79,6 +104,11 @@ class Service extends Model
     public function isFree(): bool
     {
         return $this->coin_cost === 0;
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->visibility === self::VISIBILITY_PRIVATE;
     }
 
     public function isModule(): bool

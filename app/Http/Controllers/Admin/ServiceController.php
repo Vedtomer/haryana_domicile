@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -26,29 +27,56 @@ class ServiceController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Services/Create');
+        return Inertia::render('Admin/Services/Create', [
+            'users' => $this->userOptions(),
+        ]);
     }
 
     public function store(Request $request)
     {
         $data = $this->validated($request);
-        Service::create($data);
+        $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
+        unset($data['user_ids']);
+
+        $service = Service::create($data);
+        $service->users()->sync($userIds);
 
         return redirect()->route('admin.services.index')->with('success', 'Service added successfully.');
     }
 
     public function edit(Service $service)
     {
+        $service->load('users:id');
+
         return Inertia::render('Admin/Services/Edit', [
-            'service' => $service,
+            'service' => [
+                ...$service->toArray(),
+                'user_ids' => $service->users->pluck('id'),
+            ],
+            'users' => $this->userOptions(),
         ]);
     }
 
     public function update(Request $request, Service $service)
     {
-        $service->update($this->validated($request, $service));
+        $data = $this->validated($request, $service);
+        $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
+        unset($data['user_ids']);
+
+        $service->update($data);
+        $service->users()->sync($userIds);
 
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');
+    }
+
+    /**
+     * Regular users, for the private-visibility picker.
+     */
+    private function userOptions()
+    {
+        return User::where('type', 'user')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'phone']);
     }
 
     public function destroy(Service $service)
@@ -71,6 +99,9 @@ class ServiceController extends Controller
             'icon' => 'nullable|string|max:16',
             'coin_cost' => 'required|integer|min:0|max:100000',
             'is_active' => 'required|boolean',
+            'visibility' => ['required', Rule::in([Service::VISIBILITY_PUBLIC, Service::VISIBILITY_PRIVATE])],
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'exists:users,id',
             'sort_order' => 'nullable|integer|min:0|max:9999',
             'fields' => 'nullable|array',
             'fields.*.label' => 'required|string|max:120',

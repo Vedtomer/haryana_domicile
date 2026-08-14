@@ -41,6 +41,7 @@ class ServiceRequestController extends Controller
     public function create(Request $request)
     {
         $service = Service::active()
+            ->when(!$this->isStaff(), fn ($q) => $q->visibleTo(auth()->user()))
             ->where('kind', Service::KIND_MANUAL)
             ->where('slug', $request->query('service'))
             ->firstOrFail();
@@ -54,6 +55,7 @@ class ServiceRequestController extends Controller
     public function store(Request $request)
     {
         $service = Service::active()
+            ->when(!$this->isStaff(), fn ($q) => $q->visibleTo(auth()->user()))
             ->where('kind', Service::KIND_MANUAL)
             ->findOrFail($request->input('service_id'));
 

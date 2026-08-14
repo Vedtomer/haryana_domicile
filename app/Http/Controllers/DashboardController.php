@@ -15,7 +15,11 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $services = Service::active()->ordered()->get()->map(function (Service $service) use ($user, $isAdmin) {
+        $services = Service::active()
+            ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
+            ->ordered()
+            ->get()
+            ->map(function (Service $service) use ($user, $isAdmin) {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
