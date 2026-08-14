@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
+import WhatsAppButton from '../Components/WhatsAppButton';
 
 export default function AdminLayout({ children }) {
     const { auth, navServices = [] } = usePage().props;
@@ -199,6 +200,8 @@ export default function AdminLayout({ children }) {
             {dropdownOpen && (
                 <div className="fixed inset-0 z-0" onClick={() => setDropdownOpen(false)}></div>
             )}
+
+            {auth?.user?.type === 'user' && <WhatsAppButton />}
         </div>
     );
 }

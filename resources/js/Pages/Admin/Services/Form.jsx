@@ -70,11 +70,15 @@ function UserMultiSelect({ users, selected, onToggle }) {
  */
 export default function ServiceForm({ service, users = [], submitUrl, method, submitLabel }) {
     const isModule = service?.kind === 'module';
+    const logoInputRef = useRef(null);
+    const [logoPreview, setLogoPreview] = useState(service?.logo_url ?? null);
 
     const { data, setData, post, put, processing, errors } = useForm({
         name: service?.name ?? '',
         description: service?.description ?? '',
         icon: service?.icon ?? '📄',
+        logo: null,
+        remove_logo: false,
         coin_cost: service?.coin_cost ?? 0,
         is_active: service?.is_active ?? true,
         visibility: service?.visibility ?? 'public',
@@ -88,9 +92,22 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
             ? data.user_ids.filter((u) => u !== id)
             : [...data.user_ids, id]);
 
+    const pickLogo = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setData((prev) => ({ ...prev, logo: file, remove_logo: false }));
+        setLogoPreview(URL.createObjectURL(file));
+    };
+
+    const removeLogo = () => {
+        setData((prev) => ({ ...prev, logo: null, remove_logo: true }));
+        setLogoPreview(null);
+        if (logoInputRef.current) logoInputRef.current.value = '';
+    };
+
     const submit = (e) => {
         e.preventDefault();
-        (method === 'put' ? put : post)(submitUrl);
+        (method === 'put' ? put : post)(submitUrl, { forceFormData: true });
     };
 
     const addField = () =>
@@ -114,16 +131,37 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                 </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <div className="sm:col-span-3">
-                    <label className={label}>Service Name *</label>
-                    <input className={input} value={data.name} onChange={(e) => setData('name', e.target.value)} />
-                    {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
-                </div>
-                <div>
-                    <label className={label}>Icon</label>
-                    <input className={input} value={data.icon} maxLength={4}
-                        onChange={(e) => setData('icon', e.target.value)} placeholder="📄" />
+            <div>
+                <label className={label}>Service Name *</label>
+                <input className={input} value={data.name} onChange={(e) => setData('name', e.target.value)} />
+                {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+            </div>
+
+            <div>
+                <label className={label}>Logo</label>
+                <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {logoPreview
+                            ? <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
+                            : <span className="text-2xl">{data.icon || '📄'}</span>}
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                        <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={pickLogo} />
+                        <div className="flex gap-2">
+                            <button type="button" onClick={() => logoInputRef.current?.click()}
+                                className="px-3 py-1.5 text-sm font-semibold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                                {logoPreview ? 'Change logo' : 'Upload logo'}
+                            </button>
+                            {logoPreview && (
+                                <button type="button" onClick={removeLogo}
+                                    className="px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg">
+                                    Remove
+                                </button>
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-500">PNG or JPG, shown as a circle to users. Max 2 MB.</p>
+                        {errors.logo && <p className="text-sm text-red-600">{errors.logo}</p>}
+                    </div>
                 </div>
             </div>
 

@@ -40,7 +40,11 @@ export default function Index({ services }) {
                             <tr key={service.id} className="border-t border-gray-100 hover:bg-gray-50">
                                 <td className="px-4 py-3">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xl">{service.icon || '📄'}</span>
+                                        {service.logo_url ? (
+                                            <img src={service.logo_url} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+                                        ) : (
+                                            <span className="text-xl">{service.icon || '📄'}</span>
+                                        )}
                                         <div>
                                             <p className="font-semibold text-gray-800">{service.name}</p>
                                             {service.description && (

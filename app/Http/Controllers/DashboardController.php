@@ -25,6 +25,7 @@ class DashboardController extends Controller
                 'name' => $service->name,
                 'description' => $service->description,
                 'icon' => $service->icon ?: '📄',
+                'logo_url' => $service->logoUrl(),
                 'coin_cost' => $service->coin_cost,
                 'is_free' => $service->isFree(),
                 'kind' => $service->kind,

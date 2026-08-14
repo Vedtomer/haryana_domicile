@@ -2,6 +2,7 @@ import React from 'react';
 import Toast from '../Components/Toast';
 import FrontendHeader from '../Components/FrontendHeader';
 import FrontendFooter from '../Components/FrontendFooter';
+import WhatsAppButton from '../Components/WhatsAppButton';
 
 export default function FrontendLayout({ children }) {
     return (
@@ -12,6 +13,7 @@ export default function FrontendLayout({ children }) {
                 {children}
             </main>
             <FrontendFooter />
+            <WhatsAppButton />
         </div>
     );
 }

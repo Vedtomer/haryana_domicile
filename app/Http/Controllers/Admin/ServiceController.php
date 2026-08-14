@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -18,7 +19,8 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::withCount('requests')->ordered()->get();
+        $services = Service::withCount('requests')->ordered()->get()
+            ->map(fn (Service $service) => [...$service->toArray(), 'logo_url' => $service->logoUrl()]);
 
         return Inertia::render('Admin/Services/Index', [
             'services' => $services,
@@ -38,6 +40,8 @@ class ServiceController extends Controller
         $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
         unset($data['user_ids']);
 
+        $data = $this->handleLogo($request, $data);
+
         $service = Service::create($data);
         $service->users()->sync($userIds);
 
@@ -52,6 +56,7 @@ class ServiceController extends Controller
             'service' => [
                 ...$service->toArray(),
                 'user_ids' => $service->users->pluck('id'),
+                'logo_url' => $service->logoUrl(),
             ],
             'users' => $this->userOptions(),
         ]);
@@ -63,10 +68,38 @@ class ServiceController extends Controller
         $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
         unset($data['user_ids']);
 
+        $data = $this->handleLogo($request, $data, $service);
+
         $service->update($data);
         $service->users()->sync($userIds);
 
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');
+    }
+
+    /**
+     * Store an uploaded logo (replacing any previous one) or clear it when
+     * "remove_logo" was checked. Leaves $data untouched when neither happens,
+     * so an update() call doesn't wipe out an existing logo.
+     */
+    private function handleLogo(Request $request, array $data, ?Service $service = null): array
+    {
+        // validate() includes 'logo' => null whenever the field was merely
+        // present in the request (which the form always sends), not just
+        // when a file was uploaded. Drop it so update() doesn't wipe an
+        // existing logo on every unrelated field edit.
+        unset($data['logo'], $data['remove_logo']);
+
+        if ($request->hasFile('logo')) {
+            if ($service?->logo) {
+                Storage::disk('public')->delete($service->logo);
+            }
+            $data['logo'] = $request->file('logo')->store('service-logos', 'public');
+        } elseif ($request->boolean('remove_logo') && $service?->logo) {
+            Storage::disk('public')->delete($service->logo);
+            $data['logo'] = null;
+        }
+
+        return $data;
     }
 
     /**
@@ -97,6 +130,8 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'icon' => 'nullable|string|max:16',
+            'logo' => 'nullable|image|max:2048',
+            'remove_logo' => 'nullable|boolean',
             'coin_cost' => 'required|integer|min:0|max:100000',
             'is_active' => 'required|boolean',
             'visibility' => ['required', Rule::in([Service::VISIBILITY_PUBLIC, Service::VISIBILITY_PRIVATE])],

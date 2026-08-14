@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Service extends Model
 {
@@ -50,6 +51,7 @@ class Service extends Model
         'slug',
         'description',
         'icon',
+        'logo',
         'coin_cost',
         'kind',
         'module_key',
@@ -104,6 +106,11 @@ class Service extends Model
     public function isFree(): bool
     {
         return $this->coin_cost === 0;
+    }
+
+    public function logoUrl(): ?string
+    {
+        return $this->logo ? Storage::disk('public')->url($this->logo) : null;
     }
 
     public function isPrivate(): bool

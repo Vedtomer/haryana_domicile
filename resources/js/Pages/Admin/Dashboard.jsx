@@ -28,7 +28,11 @@ function ServiceCard({ service }) {
             className="group relative flex flex-col p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:-translate-y-1 transition-all duration-200"
         >
             <div className="flex items-start justify-between gap-3">
-                <span className="text-3xl leading-none">{service.icon}</span>
+                {service.logo_url ? (
+                    <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+                ) : (
+                    <span className="text-3xl leading-none">{service.icon}</span>
+                )}
 
                 {service.is_free ? (
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
