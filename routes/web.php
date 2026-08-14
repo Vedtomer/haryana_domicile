@@ -45,7 +45,10 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('marriage-forms', \App\Http\Controllers\Admin\MarriageFormController::class);
         Route::get('marriage-forms/{marriage_form}/print', [\App\Http\Controllers\Admin\MarriageFormController::class, 'print'])->name('marriage-forms.print');
-        
+
+        Route::resource('marriage-affidavits', \App\Http\Controllers\Admin\MarriageAffidavitController::class);
+        Route::get('marriage-affidavits/{marriage_affidavit}/print', [\App\Http\Controllers\Admin\MarriageAffidavitController::class, 'print'])->name('marriage-affidavits.print');
+
         Route::resource('birth-records', \App\Http\Controllers\Admin\BirthRecordController::class);
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class);
         Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');

@@ -26,6 +26,12 @@ class Service extends Model
             'index' => '/admin/marriage-forms',
             'create' => '/admin/marriage-forms/create',
         ],
+        'marriage_affidavit' => [
+            'label' => 'New Marriage Certificate',
+            'model' => MarriageAffidavit::class,
+            'index' => '/admin/marriage-affidavits',
+            'create' => '/admin/marriage-affidavits/create',
+        ],
         'birth_record' => [
             'label' => 'Birth Certificate',
             'model' => BirthRecord::class,
