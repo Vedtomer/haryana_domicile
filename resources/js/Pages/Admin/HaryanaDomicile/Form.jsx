@@ -1,5 +1,5 @@
-import React from 'react';
-import { Paper, Grid, Box, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Paper, Grid, Box, Button, CircularProgress } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { InputField, SelectField, SectionHeader } from '../../../Components/FormInputs';
 
@@ -16,6 +16,22 @@ const RELIGION_OPTIONS = [
 
 export default function HaryanaDomicileFields({ data, setData, errors, processing, onSubmit, submitLabel }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
+    const [pincodeLoading, setPincodeLoading] = useState(false);
+
+    const handlePincodeChange = (e) => {
+        const pincode = e.target.value.replace(/\D/g, '').slice(0, 6);
+        setData('pincode', pincode);
+
+        if (pincode.length === 6) {
+            setPincodeLoading(true);
+            window.axios.get(`/admin/pincode-lookup/${pincode}`)
+                .then(({ data: result }) => {
+                    setData((d) => ({ ...d, pincode, district: result.district, tehsil: result.tehsil }));
+                })
+                .catch(() => {})
+                .finally(() => setPincodeLoading(false));
+        }
+    };
 
     return (
         <Paper component="form" onSubmit={onSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
@@ -23,7 +39,16 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
             <SectionHeader title="Personal Information" />
             <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <InputField label="Pincode" name="pincode" required={false} value={data.pincode} onChange={handleChange} error={errors.pincode} />
+                    <InputField
+                        label="Pincode"
+                        name="pincode"
+                        required={false}
+                        value={data.pincode}
+                        onChange={handlePincodeChange}
+                        error={errors.pincode}
+                        inputProps={{ inputMode: 'numeric', maxLength: 6 }}
+                        InputProps={pincodeLoading ? { endAdornment: <CircularProgress size={18} sx={{ mr: 1 }} /> } : undefined}
+                    />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <InputField label="Tehsil" name="tehsil" value={data.tehsil} onChange={handleChange} error={errors.tehsil} />
