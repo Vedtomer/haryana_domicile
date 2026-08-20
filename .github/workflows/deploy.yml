@@ -21,11 +21,13 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p "${{ secrets.DEPLOY_PORT }}" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" '
             set -e
+            # Shared host: bare `php` on PATH is 8.2, incompatible with composer.lock.
+            PHP=/opt/alt/php85/usr/bin/php
             cd "${{ secrets.DEPLOY_PATH }}"
             git fetch origin main
             git reset --hard origin/main
-            composer install --no-dev --optimize-autoloader --no-interaction
-            php artisan migrate --force
-            php artisan optimize:clear
-            php artisan optimize
+            $PHP /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+            $PHP artisan migrate --force
+            $PHP artisan optimize:clear
+            $PHP artisan optimize
           '
