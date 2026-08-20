@@ -65,7 +65,13 @@ export default function Create({ service, userCoins }) {
                             ) : (
                                 <input type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
                                     className={input} value={data.fields[i]}
-                                    onChange={(e) => setField(i, e.target.value)} />
+                                    onChange={(e) => {
+                                        let val = e.target.value;
+                                        if (field.label.toLowerCase().includes('aadhar') && val.length > 12) {
+                                            val = val.slice(0, 12);
+                                        }
+                                        setField(i, val);
+                                    }} />
                             )}
                             {errors[`fields.${i}`] && (
                                 <p className="text-sm text-red-600 mt-1">

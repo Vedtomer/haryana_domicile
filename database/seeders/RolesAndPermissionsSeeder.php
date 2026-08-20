@@ -16,7 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Generate Shield Permissions
-        \Illuminate\Support\Facades\Artisan::call('shield:generate --all --panel=admin --no-interaction');
+        // \Illuminate\Support\Facades\Artisan::call('shield:generate --all --panel=admin --no-interaction');
 
         // Create Roles
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
@@ -27,6 +27,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin->syncPermissions($allPermissions);
 
         // Give basic permissions to user
+        Permission::firstOrCreate(['name' => 'page_CustomDashboard']);
         $publicRole->syncPermissions(['page_CustomDashboard']);
 
         // Create Admin User

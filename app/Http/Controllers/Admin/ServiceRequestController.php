@@ -66,9 +66,10 @@ class ServiceRequestController extends Controller
         $rules = ['note' => 'nullable|string|max:2000'];
         foreach ($service->fields ?? [] as $i => $field) {
             $required = !empty($field['required']) ? 'required' : 'nullable';
+            $maxLength = stripos($field['label'] ?? '', 'aadhar') !== false ? 12 : 500;
             $rules["fields.{$i}"] = ($field['type'] ?? 'text') === 'file'
                 ? "{$required}|file|mimes:pdf,jpg,jpeg,png|max:5120"
-                : "{$required}|string|max:500";
+                : "{$required}|string|max:{$maxLength}";
         }
         $validated = $request->validate($rules);
 

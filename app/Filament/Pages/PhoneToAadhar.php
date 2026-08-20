@@ -22,7 +22,7 @@ class PhoneToAadhar extends Page implements HasForms
     protected static ?string $slug = 'phone-to-aadhar';
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('page_PhoneToAadhar');
     }
 
     public ?array $data = [];

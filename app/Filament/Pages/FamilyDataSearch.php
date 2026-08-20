@@ -25,7 +25,7 @@ class FamilyDataSearch extends Page implements HasForms
     protected static ?string $slug = 'family-data-search';
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('page_FamilyDataSearch');
     }
 
     public ?array $data = [];

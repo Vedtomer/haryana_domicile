@@ -30,7 +30,7 @@ class HaryanaDomicileResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('view_any_haryana::domicile');
     }
 
     public static function form(Form $form): Form
@@ -70,14 +70,19 @@ class HaryanaDomicileResource extends Resource
                             ->numeric(),
                         Forms\Components\TextInput::make('mobile')
                             ->required()
-                            ->tel()
-                            ->maxLength(10),
+                            ->maxLength(10)
+                            ->minLength(10)
+                            ->extraInputAttributes(['onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']),
                         Forms\Components\TextInput::make('aadhar')
                             ->required()
-                            ->maxLength(12),
+                            ->maxLength(12)
+                            ->minLength(12)
+                            ->extraInputAttributes(['onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']),
                         Forms\Components\TextInput::make('ration_card_no')
                             ->label('Ration Card No.')
-                            ->maxLength(255),
+                            ->maxLength(12)
+                            ->minLength(12)
+                            ->extraInputAttributes(['onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']),
                         Forms\Components\TextInput::make('caste')
                             ->required()
                             ->maxLength(255),

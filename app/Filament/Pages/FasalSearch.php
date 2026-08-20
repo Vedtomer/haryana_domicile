@@ -25,7 +25,7 @@ class FasalSearch extends Page implements HasForms
     protected static ?string $slug = 'fasal-search';
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('page_FasalSearch');
     }
 
     public ?array $data = [];
