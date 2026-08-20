@@ -57,6 +57,7 @@ class HandleInertiaRequests extends Middleware
                         'id' => $s->id,
                         'name' => $s->name,
                         'icon' => $s->icon ?: '📄',
+                        'logo_url' => $s->logoUrl(),
                         'url' => $s->targetUrl(),
                     ])
                 : [],

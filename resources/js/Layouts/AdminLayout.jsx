@@ -79,7 +79,11 @@ export default function AdminLayout({ children }) {
                             <div className="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Services</div>
                             {navServices.map((service) => (
                                 <NavItem key={service.id} href={service.url} icon={
-                                    <span className="w-5 h-5 flex items-center justify-center text-base">{service.icon}</span>
+                                    service.logo_url ? (
+                                        <img src={service.logo_url} alt="" className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
+                                    ) : (
+                                        <span className="w-5 h-5 flex items-center justify-center text-base">{service.icon}</span>
+                                    )
                                 }>{service.name}</NavItem>
                             ))}
                             <NavItem href="/admin/service-requests" icon={
