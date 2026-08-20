@@ -9,6 +9,7 @@ export default function AdminLayout({ children }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const { url } = usePage();
+    const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
 
     const NavItem = ({ href, icon, children }) => {
         const isActive = url.startsWith(href);
@@ -31,7 +32,8 @@ export default function AdminLayout({ children }) {
         <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
             <Toast />
             
-            {/* Sidebar */}
+            {/* Sidebar — hidden on the dashboard itself, shown once you navigate elsewhere */}
+            {!isDashboard && (
             <div className="w-72 bg-[#0a1120] text-slate-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.15)] z-20 border-r border-slate-800/60">
                 
                 {/* Horizontal Logo */}
@@ -113,6 +115,7 @@ export default function AdminLayout({ children }) {
                     )}
                 </nav>
             </div>
+            )}
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">

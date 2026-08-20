@@ -44,9 +44,15 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
-            // Sidebar service links — kept in sync with what the admin has switched on.
+            // Sidebar service links — kept in sync with what the admin has switched on,
+            // and filtered by the same visibility rule the dashboard cards use.
             'navServices' => fn () => $request->user()
-                ? \App\Models\Service::active()->ordered()->get()
+                ? \App\Models\Service::active()
+                    ->when(
+                        !($request->user()->isAdmin() || $request->user()->hasRole('super_admin')),
+                        fn ($q) => $q->visibleTo($request->user())
+                    )
+                    ->ordered()->get()
                     ->map(fn ($s) => [
                         'id' => $s->id,
                         'name' => $s->name,
