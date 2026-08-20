@@ -68,7 +68,7 @@ class DashboardController extends Controller
         return [
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'amber', 'url' => '/admin/coin-requests'],
             ['label' => 'My Requests', 'value' => (clone $requests)->count(), 'tone' => 'blue', 'url' => '/admin/service-requests'],
-            ['label' => 'Pending', 'value' => (clone $requests)->whereIn('status', ['pending', 'accepted', 'in_progress'])->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
+            ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
             ['label' => 'Completed', 'value' => (clone $requests)->where('status', 'completed')->count(), 'tone' => 'green', 'url' => '/admin/service-requests?status=completed'],
         ];
     }
