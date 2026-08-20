@@ -25,12 +25,12 @@ class CustomDashboard extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('page_CustomDashboard');
     }
 
     public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->type === 'user';
+        return auth()->check() && auth()->user()->can('page_CustomDashboard');
     }
 
     public function mount()

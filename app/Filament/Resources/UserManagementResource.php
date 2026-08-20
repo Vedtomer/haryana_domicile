@@ -116,37 +116,35 @@ class UserManagementResource extends Resource
                     ->relationship('roles', 'name'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Action::make('add_coins')
-                        ->label('Add Coins')
-                        ->icon('heroicon-o-plus-circle')
-                        ->color('success')
-                        ->form([
-                            TextInput::make('amount')
-                                ->label('Amount')
-                                ->numeric()
-                                ->required()
-                                ->minValue(1),
-                            TextInput::make('description')
-                                ->label('Reason (Optional)')
-                                ->maxLength(255),
-                        ])
-                        ->action(function (User $record, array $data) {
-                            $record->addCoins(
-                                (int)$data['amount'],
-                                \App\Models\CoinTransaction::TYPE_ADMIN_CREDIT,
-                                $data['description'] ?? 'Added by Admin'
-                            );
-                            
-                            Notification::make()
-                                ->title('Success')
-                                ->body("Successfully added {$data['amount']} coins to {$record->name}'s wallet.")
-                                ->success()
-                                ->send();
-                        }),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                Action::make('add_coins')
+                    ->label('Add Coins')
+                    ->icon('heroicon-o-plus-circle')
+                    ->color('success')
+                    ->form([
+                        TextInput::make('amount')
+                            ->label('Amount')
+                            ->numeric()
+                            ->required()
+                            ->minValue(1),
+                        TextInput::make('description')
+                            ->label('Reason (Optional)')
+                            ->maxLength(255),
+                    ])
+                    ->action(function (User $record, array $data) {
+                        $record->addCoins(
+                            (int)$data['amount'],
+                            \App\Models\CoinTransaction::TYPE_ADMIN_CREDIT,
+                            $data['description'] ?? 'Added by Admin'
+                        );
+                        
+                        Notification::make()
+                            ->title('Success')
+                            ->body("Successfully added {$data['amount']} coins to {$record->name}'s wallet.")
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -67,9 +67,9 @@ class DashboardController extends Controller
 
         return [
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'amber', 'url' => '/admin/coin-requests'],
-            ['label' => 'My Requests', 'value' => (clone $requests)->count(), 'tone' => 'blue', 'url' => '/admin/service-requests'],
-            ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
-            ['label' => 'Completed', 'value' => (clone $requests)->where('status', 'completed')->count(), 'tone' => 'green', 'url' => '/admin/service-requests?status=completed'],
+            ['label' => 'Total Requests', 'value' => (clone $requests)->count(), 'tone' => 'blue', 'url' => '/admin/service-requests'],
+            ['label' => 'Pending', 'value' => (clone $requests)->whereIn('status', ['pending', 'in_progress'])->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
+            ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'green', 'url' => '/admin/service-requests?status=completed'],
         ];
     }
 
@@ -80,6 +80,10 @@ class DashboardController extends Controller
             ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
             ['label' => 'Pending Coin Requests', 'value' => CoinPurchaseRequest::pending()->count(), 'tone' => 'amber', 'url' => '/admin/coin-requests'],
             ['label' => 'Active Services', 'value' => Service::active()->count(), 'tone' => 'green', 'url' => '/admin/services'],
+            ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'blue', 'url' => '/admin/users'],
+            ['label' => 'Manage Service', 'value' => Service::count(), 'tone' => 'green', 'url' => '/admin/services'],
+            ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'purple', 'url' => '/admin/service-requests'],
+            ['label' => 'Coin Requests', 'value' => CoinPurchaseRequest::count(), 'tone' => 'amber', 'url' => '/admin/coin-requests'],
         ];
     }
 }

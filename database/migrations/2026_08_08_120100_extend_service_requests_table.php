@@ -17,10 +17,10 @@ return new class extends Migration
             $table->timestamp('refunded_at')->nullable()->after('completed_at');
         });
 
-        // Widen `status` from the original 3-value enum so the admin can move a
-        // request through accepted / in_progress as well.
-        DB::statement("ALTER TABLE service_requests MODIFY status VARCHAR(20) NOT NULL DEFAULT 'pending'");
-        DB::statement("ALTER TABLE service_requests MODIFY input_data TEXT NULL");
+        Schema::table('service_requests', function (Blueprint $table) {
+            $table->string('status', 20)->default('pending')->change();
+            $table->text('input_data')->nullable()->change();
+        });
     }
 
     public function down(): void
@@ -30,6 +30,8 @@ return new class extends Migration
             $table->dropColumn(['service_id', 'coins_charged', 'estimated_time', 'refunded_at']);
         });
 
-        DB::statement("ALTER TABLE service_requests MODIFY status ENUM('pending','completed','rejected') NOT NULL DEFAULT 'pending'");
+        if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE service_requests MODIFY status ENUM('pending','completed','rejected') NOT NULL DEFAULT 'pending'");
+        }
     }
 };
