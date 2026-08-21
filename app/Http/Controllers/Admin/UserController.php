@@ -171,7 +171,7 @@ class UserController extends Controller
         if ($currentCoins > 0) {
             $user->deductCoins(
                 $currentCoins,
-                CoinTransaction::TYPE_ADMIN_DEBIT,
+                CoinTransaction::TYPE_ADMIN_CREDIT,
                 'Admin cleared all coins'
             );
         }
