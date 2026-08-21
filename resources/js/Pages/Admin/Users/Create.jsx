@@ -67,7 +67,7 @@ export default function Create({ user = null }) {
                                     id="phone"
                                     label="Phone Number (Optional)"
                                     value={data.phone}
-                                    onChange={e => setData('phone', e.target.value)}
+                                    onChange={e => setData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                     error={errors.phone}
                                 />
                                 

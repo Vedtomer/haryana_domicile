@@ -84,7 +84,7 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                                 type="text"
                                 label="Phone Number (Optional)"
                                 value={data.phone}
-                                onChange={e => setData('phone', e.target.value)}
+                                onChange={e => setData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                 error={errors.phone}
                                 required={false}
                             />

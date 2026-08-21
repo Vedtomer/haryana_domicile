@@ -77,8 +77,8 @@ export default function Create({ service, userCoins }) {
                                     onChange={(e) => {
                                         let val = e.target.value;
                                         const cap = digitCapFor(field.label);
-                                        if (cap && val.length > cap) {
-                                            val = val.slice(0, cap);
+                                        if (cap) {
+                                            val = val.replace(/\D/g, '').slice(0, cap);
                                         }
                                         setField(i, val);
                                     }} />

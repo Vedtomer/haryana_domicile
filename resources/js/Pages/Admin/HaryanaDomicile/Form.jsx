@@ -22,6 +22,10 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
         setData('aadhar', e.target.value.replace(/\D/g, '').slice(0, 12));
     };
 
+    const handleMobileChange = (e) => {
+        setData('mobile', e.target.value.replace(/\D/g, '').slice(0, 10));
+    };
+
     const handlePincodeChange = (e) => {
         const pincode = e.target.value.replace(/\D/g, '').slice(0, 6);
         setData('pincode', pincode);
@@ -78,7 +82,7 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                    <InputField label="Mobile" name="mobile" type="tel" value={data.mobile} onChange={handleChange} error={errors.mobile} />
+                    <InputField label="Mobile" name="mobile" type="tel" value={data.mobile} onChange={handleMobileChange} error={errors.mobile} />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <InputField label="Aadhar" name="aadhar" value={data.aadhar} onChange={handleAadharChange} error={errors.aadhar} inputProps={{ inputMode: 'numeric', maxLength: 12 }} />
