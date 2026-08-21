@@ -25,6 +25,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/utilities/electricity-bill', function () {
+        return Inertia::render('Utilities/ElectricityBill');
+    })->name('utilities.electricity-bill');
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
