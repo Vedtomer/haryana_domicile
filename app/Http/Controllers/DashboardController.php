@@ -66,10 +66,10 @@ class DashboardController extends Controller
         $requests = ServiceRequest::where('user_id', $user->id);
 
         return [
-            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'amber', 'url' => '/admin/coin-requests'],
-            ['label' => 'Total Requests', 'value' => (clone $requests)->count(), 'tone' => 'blue', 'url' => '/admin/service-requests'],
-            ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
-            ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'green', 'url' => '/admin/service-requests?status=completed'],
+            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests'],
+            ['label' => 'Total Requests', 'value' => (clone $requests)->count(), 'tone' => 'dark-blue', 'url' => '/admin/service-requests'],
+            ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending'],
+            ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed'],
         ];
     }
 

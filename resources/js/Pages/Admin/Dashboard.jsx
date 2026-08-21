@@ -10,9 +10,10 @@ const TONES = {
     'dark-blue': 'bg-gradient-to-br from-slate-800 via-blue-900 to-slate-950 border-blue-950 text-white shadow-lg shadow-blue-950/50',
     'dark-green': 'bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-950 border-emerald-950 text-white shadow-lg shadow-emerald-950/50',
     'dark-purple': 'bg-gradient-to-br from-slate-800 via-purple-900 to-slate-950 border-purple-950 text-white shadow-lg shadow-purple-950/50',
+    'dark-amber': 'bg-gradient-to-br from-slate-800 via-amber-900 to-slate-950 border-amber-950 text-white shadow-lg shadow-amber-950/50',
 };
 
-const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple']);
+const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-amber']);
 
 function StatCard({ label, value, tone, url }) {
     const isDark = DARK_TONES.has(tone);
