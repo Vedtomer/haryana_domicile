@@ -156,6 +156,29 @@ class UserController extends Controller
         return back()->with('success', 'Coins added.');
     }
 
+    public function clearCoins(User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403, 'You can only clear coins for regular users.');
+        }
+
+        $currentCoins = $user->coins;
+        
+        if ($currentCoins > 0) {
+            $user->deductCoins(
+                $currentCoins,
+                CoinTransaction::TYPE_ADMIN_DEBIT,
+                'Admin cleared all coins'
+            );
+        }
+
+        return back()->with('success', 'User coins have been cleared to 0.');
+    }
+
     public function toggleStatus(User $user)
     {
         if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {

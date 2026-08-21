@@ -26,6 +26,11 @@ export default function Index({ users }) {
         router.patch(`/admin/users/${userId}/toggle-status`, {}, { preserveScroll: true });
     };
 
+    const handleClearCoins = (user) => {
+        if (!confirm(`Are you sure you want to reset ${user.name || 'this user'}'s coins to 0?`)) return;
+        router.post(`/admin/users/${user.id}/clear-coins`, {}, { preserveScroll: true });
+    };
+
     const handleDelete = (user) => {
         if (!confirm(`Delete ${user.name || user.email || user.phone || 'this user'}? This cannot be undone.`)) {
             return;
@@ -106,6 +111,13 @@ export default function Index({ users }) {
                                                 className="p-2 rounded-lg text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            </button>
+                                            <button
+                                                onClick={() => handleClearCoins(user)}
+                                                title="Clear Coins to 0"
+                                                className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                             </button>
                                             <Link
                                                 href={`/admin/users/${user.id}/edit`}
