@@ -49,6 +49,9 @@ class DashboardController extends Controller
     {
         if ($service->isModule()) {
             $model = $service->moduleModel();
+            if (!$model) {
+                return 0;
+            }
             $query = $model::query();
         } else {
             $query = ServiceRequest::where('service_id', $service->id);

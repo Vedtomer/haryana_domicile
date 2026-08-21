@@ -50,6 +50,12 @@ class Service extends Model
             'index' => '/admin/pan-requests',
             'create' => '/admin/pan-requests/create',
         ],
+        'electricity_bill' => [
+            'label' => 'Electricity Bill',
+            'model' => null,
+            'index' => '/utilities/electricity-bill',
+            'create' => '/utilities/electricity-bill',
+        ],
     ];
 
     protected $fillable = [
