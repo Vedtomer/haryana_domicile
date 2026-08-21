@@ -222,7 +222,7 @@ export default function AdminLayout({ header, children }) {
                 <div className="fixed inset-0 z-0" onClick={() => setDropdownOpen(false)}></div>
             )}
 
-            {auth?.user?.type === 'user' && <WhatsAppButton />}
+            <WhatsAppButton />
         </div>
     );
 }
