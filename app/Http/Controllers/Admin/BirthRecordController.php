@@ -33,6 +33,19 @@ class BirthRecordController extends Controller
 
         $data = $this->validated($request);
         $data['user_id'] = auth()->id();
+
+        if ($request->hasFile('father_signature')) {
+            $data['father_signature'] = $request->file('father_signature')->store('birth_records/signatures', 'public');
+        } else {
+            unset($data['father_signature']);
+        }
+
+        if ($request->hasFile('mother_signature')) {
+            $data['mother_signature'] = $request->file('mother_signature')->store('birth_records/signatures', 'public');
+        } else {
+            unset($data['mother_signature']);
+        }
+
         $record = BirthRecord::create($data);
 
         $this->chargeForService($service, $record->id, "Birth Certificate #{$record->id}");
@@ -51,7 +64,21 @@ class BirthRecordController extends Controller
     public function update(Request $request, BirthRecord $birthRecord)
     {
         $this->authorizeOwner($birthRecord);
-        $birthRecord->update($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->hasFile('father_signature')) {
+            $data['father_signature'] = $request->file('father_signature')->store('birth_records/signatures', 'public');
+        } else {
+            unset($data['father_signature']); // Prevent updating with string if it fails validation or is not sent
+        }
+
+        if ($request->hasFile('mother_signature')) {
+            $data['mother_signature'] = $request->file('mother_signature')->store('birth_records/signatures', 'public');
+        } else {
+            unset($data['mother_signature']);
+        }
+
+        $birthRecord->update($data);
 
         return redirect()->route('admin.birth-records.index')->with('success', 'Birth Record updated successfully.');
     }
@@ -90,6 +117,8 @@ class BirthRecordController extends Controller
             'other_children.*.dob' => 'required|date',
             'other_children.*.birth_place' => 'nullable|string',
             'other_children.*.is_recorded' => 'required|string',
+            'father_signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'mother_signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
     }
 }

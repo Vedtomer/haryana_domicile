@@ -134,6 +134,20 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
                 <Typography color="text.secondary" fontStyle="italic" sx={{ mb: 2 }}>No other children added.</Typography>
             )}
 
+            <SectionHeader title="Signatures (Optional)" />
+            <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                    <Typography variant="body2" color="text.secondary" mb={1} fontWeight="bold">Father's Signature</Typography>
+                    <input type="file" accept="image/*,.pdf" onChange={e => setData('father_signature', e.target.files[0])} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                    {errors.father_signature && <Typography color="error" variant="caption">{errors.father_signature}</Typography>}
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                    <Typography variant="body2" color="text.secondary" mb={1} fontWeight="bold">Mother's Signature</Typography>
+                    <input type="file" accept="image/*,.pdf" onChange={e => setData('mother_signature', e.target.files[0])} style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                    {errors.mother_signature && <Typography color="error" variant="caption">{errors.mother_signature}</Typography>}
+                </Grid>
+            </Grid>
+
             <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end' }}>
                 <Button type="submit" variant="contained" color="primary" size="large" disabled={processing} startIcon={<SaveIcon />} sx={{ px: 4, py: 1.5 }}>
                     {submitLabel}

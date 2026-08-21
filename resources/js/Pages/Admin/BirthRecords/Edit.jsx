@@ -6,7 +6,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BirthRecordFields from './Form';
 
 export default function Edit({ record }) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'put',
         district: record.district ?? '',
         father_name: record.father_name ?? '',
         mother_name: record.mother_name ?? '',
@@ -26,11 +27,13 @@ export default function Edit({ record }) {
         school_father_name: record.school_father_name ?? '',
         school_mother_name: record.school_mother_name ?? '',
         other_children: record.other_children ?? [],
+        father_signature: null,
+        mother_signature: null,
     });
 
     const submit = (e) => {
         e.preventDefault();
-        put(`/admin/birth-records/${record.id}`);
+        post(`/admin/birth-records/${record.id}`);
     };
 
     return (

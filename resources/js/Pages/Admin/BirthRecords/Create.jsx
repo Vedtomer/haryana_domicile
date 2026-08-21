@@ -26,6 +26,8 @@ export default function Create() {
         school_father_name: '',
         school_mother_name: '',
         other_children: [],
+        father_signature: null,
+        mother_signature: null,
     });
 
     const submit = (e) => {

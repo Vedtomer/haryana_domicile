@@ -32,6 +32,8 @@ class BirthRecord extends Model
         'other_children',
         'father_aadhar',
         'mother_aadhar',
+        'father_signature',
+        'mother_signature',
         'child_document',
     ];
 
