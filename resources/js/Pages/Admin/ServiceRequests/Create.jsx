@@ -16,6 +16,14 @@ export default function Create({ service, userCoins }) {
 
     const input = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
 
+    // Aadhaar numbers are always 12 digits; mobile/WhatsApp numbers are always 10.
+    const digitCapFor = (label) => {
+        const l = label.toLowerCase();
+        if (l.includes('aadha')) return 12;
+        if (l.includes('mobile') || l.includes('phone') || l.includes('whatsapp')) return 10;
+        return null;
+    };
+
     return (
         <AdminLayout>
             <Head title={service.name} />
@@ -65,10 +73,12 @@ export default function Create({ service, userCoins }) {
                             ) : (
                                 <input type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
                                     className={input} value={data.fields[i]}
+                                    maxLength={field.type === 'number' ? undefined : digitCapFor(field.label) ?? undefined}
                                     onChange={(e) => {
                                         let val = e.target.value;
-                                        if (field.label.toLowerCase().includes('aadhar') && val.length > 12) {
-                                            val = val.slice(0, 12);
+                                        const cap = digitCapFor(field.label);
+                                        if (cap && val.length > cap) {
+                                            val = val.slice(0, cap);
                                         }
                                         setField(i, val);
                                     }} />

@@ -20,14 +20,20 @@ export default function Create() {
         post('/admin/pan-requests');
     };
 
-    const InputGroup = ({ label, name, type = "text", placeholder="" }) => (
+    const InputGroup = ({ label, name, type = "text", placeholder="", maxLength }) => (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
             <input
                 type={type}
                 value={type === 'file' ? undefined : data[name]}
-                onChange={e => type === 'file' ? setData(name, e.target.files[0]) : setData(name, e.target.value)}
+                onChange={e => {
+                    if (type === 'file') return setData(name, e.target.files[0]);
+                    let val = e.target.value;
+                    if (maxLength && val.length > maxLength) val = val.slice(0, maxLength);
+                    setData(name, val);
+                }}
                 placeholder={placeholder}
+                maxLength={type === 'number' ? undefined : maxLength}
                 className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {errors[name] && <div className="text-red-500 text-xs mt-1">{errors[name]}</div>}
@@ -48,8 +54,8 @@ export default function Create() {
                     <h3 className="text-lg font-bold text-blue-600 mb-4 border-b pb-2">Applicant Details</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <InputGroup label="Applicant Name" name="name" />
-                        <InputGroup label="Aadhar Number" name="aadhar_number" type="number" />
-                        <InputGroup label="Mobile Number" name="mobile" type="tel" />
+                        <InputGroup label="Aadhar Number" name="aadhar_number" type="number" maxLength={12} />
+                        <InputGroup label="Mobile Number" name="mobile" type="tel" maxLength={10} />
                         <InputGroup label="Payment UTR / Transaction ID" name="utr_number" />
                     </div>
                 </section>
