@@ -5,7 +5,7 @@ import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
 
-export default function AdminLayout({ children }) {
+export default function AdminLayout({ header, children }) {
     const { auth, navServices = [] } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -124,8 +124,13 @@ export default function AdminLayout({ children }) {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-end px-8 z-10 relative gap-3">
+                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-8 z-10 relative">
+                    
+                    <div className="flex-1 truncate">
+                        {header}
+                    </div>
 
+                    <div className="flex items-center gap-3">
                     {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
                         <>
@@ -204,6 +209,7 @@ export default function AdminLayout({ children }) {
                                 Sign Out
                             </Link>
                         </div>
+                    </div>
                     </div>
                 </header>
                 <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950">

@@ -77,19 +77,21 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const { auth } = usePage().props;
 
     return (
-        <AdminLayout>
+        <AdminLayout
+            header={
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
+                        Welcome back, {auth?.user?.name}
+                    </h1>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                        {isAdmin
+                            ? 'Manage services, users and requests from here.'
+                            : 'Pick a service below to get started.'}
+                    </p>
+                </div>
+            }
+        >
             <Head title="Dashboard" />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">
-                    Welcome back, {auth?.user?.name}
-                </h1>
-                <p className="text-gray-500 mt-1">
-                    {isAdmin
-                        ? 'Manage services, users and requests from here.'
-                        : 'Pick a service below to get started.'}
-                </p>
-            </div>
 
             <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
                 {stats.map((stat) => (
