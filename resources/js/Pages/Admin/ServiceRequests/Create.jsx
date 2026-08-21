@@ -16,10 +16,10 @@ export default function Create({ service, userCoins }) {
 
     const input = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
 
-    // Aadhaar numbers are always 12 digits; mobile/WhatsApp numbers are always 10.
     const digitCapFor = (label) => {
         const l = label.toLowerCase();
         if (l.includes('aadha')) return 12;
+        if (l.includes('ration')) return 12;
         if (l.includes('mobile') || l.includes('phone') || l.includes('whatsapp')) return 10;
         return null;
     };
