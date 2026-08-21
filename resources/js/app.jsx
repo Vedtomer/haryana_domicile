@@ -4,6 +4,9 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { initTheme } from './theme';
+
+initTheme();
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 

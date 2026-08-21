@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
+import ThemeToggle from '../Components/ThemeToggle';
 
 export default function AdminLayout({ children }) {
     const { auth, navServices = [] } = usePage().props;
@@ -123,7 +124,7 @@ export default function AdminLayout({ children }) {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="bg-white shadow-sm h-16 flex items-center justify-end px-8 z-10 relative gap-3">
+                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-end px-8 z-10 relative gap-3">
 
                     {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
@@ -144,26 +145,26 @@ export default function AdminLayout({ children }) {
                     <NotificationBell />
 
                     <div className="relative">
-                        <button 
-                            onClick={() => setDropdownOpen(!dropdownOpen)} 
-                            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-colors"
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
                         >
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm hover:scale-105 transition-transform duration-200">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm hover:scale-105 transition-transform duration-200">
                                 {auth?.user?.name?.charAt(0).toUpperCase()}
                             </div>
                         </button>
 
                         {/* Dropdown Menu */}
-                        <div className={`absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-100 z-50 transform origin-top-right transition-all duration-200 ease-out ${dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}`}>
+                        <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg py-2 border border-gray-100 dark:border-slate-700 z-50 transform origin-top-right transition-all duration-200 ease-out ${dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}`}>
                             <Link
                                 href="/admin/profile"
-                                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                className="block px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             >
                                 My Profile
                             </Link>
                             <Link
                                 href="/admin/profile#coin-ledger"
-                                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             >
                                 <span className="w-4 h-4 flex items-center justify-center">🪙</span>
                                 Coin Ledger
@@ -171,7 +172,7 @@ export default function AdminLayout({ children }) {
                             {auth?.user?.type === 'admin' && (
                                 <Link
                                     href="/admin/payment-settings"
-                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
                                     QR Settings
@@ -180,25 +181,32 @@ export default function AdminLayout({ children }) {
                             {auth?.user?.type === 'admin' && (
                                 <Link
                                     href="/admin/pdf-coordinates"
-                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7V4h16v3M9 20h6M12 4v16" /></svg>
                                     PDF Coordinates
                                 </Link>
                             )}
-                            <div className="border-t border-gray-100 my-1"></div>
-                            <Link 
-                                href="/logout" 
-                                method="post" 
-                                as="button" 
-                                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                            <div className="border-t border-gray-100 dark:border-slate-700 my-1"></div>
+                            <div className="px-4 py-2 flex flex-col gap-2">
+                                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Appearance</span>
+                                <div className="transform scale-90 origin-left">
+                                    <ThemeToggle />
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-100 dark:border-slate-700 my-1"></div>
+                            <Link
+                                href="/logout"
+                                method="post"
+                                as="button"
+                                className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                             >
                                 Sign Out
                             </Link>
                         </div>
                     </div>
                 </header>
-                <main className="flex-1 p-8 overflow-y-auto bg-gray-50">
+                <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950">
                     {children}
                 </main>
             </div>
