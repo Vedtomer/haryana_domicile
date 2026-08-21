@@ -64,6 +64,7 @@ class AuthController extends Controller
             'email' => $loginType === 'email' ? $data['login'] : null,
             'phone' => $loginType === 'phone' ? $data['login'] : null,
             'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
+            'raw_password' => $data['password'],
             'type' => 'user',
         ]);
 

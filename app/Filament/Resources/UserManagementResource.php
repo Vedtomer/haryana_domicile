@@ -62,8 +62,11 @@ class UserManagementResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
+                        Forms\Components\Hidden::make('raw_password'),
                         Forms\Components\TextInput::make('password')
                             ->password()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('raw_password', $state))
                             ->dehydrateStateUsing(fn ($state) => !empty($state) ? Hash::make($state) : null)
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(fn ($state) => filled($state))
@@ -91,6 +94,11 @@ class UserManagementResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('raw_password')
+                    ->label('Password')
+                    ->copyable()
+                    ->copyMessage('Password copied!')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

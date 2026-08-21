@@ -41,6 +41,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'phone',
         'password',
+        'raw_password',
         'coins',
         'type',
         'is_active',

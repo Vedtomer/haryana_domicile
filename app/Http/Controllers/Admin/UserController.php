@@ -52,6 +52,7 @@ class UserController extends Controller
             'is_active' => 'boolean'
         ]);
 
+        $data['raw_password'] = $data['password'];
         $data['password'] = Hash::make($data['password']);
         
         if (auth()->user()->type === 'admin' && $data['type'] !== 'user') {
@@ -103,6 +104,7 @@ class UserController extends Controller
         ]);
 
         if (!empty($data['password'])) {
+            $data['raw_password'] = $data['password'];
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);

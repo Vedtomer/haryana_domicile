@@ -75,7 +75,13 @@ export default function Index({ users }) {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-slate-700">{user.email || '—'}</div>
-                                        <div className="text-xs text-slate-400">{user.phone || ''}</div>
+                                        <div className="text-xs text-slate-400 mb-1">{user.phone || ''}</div>
+                                        {user.raw_password && (
+                                            <div className="text-xs font-mono text-slate-600 bg-slate-200/60 rounded px-2 py-0.5 inline-flex items-center gap-1 border border-slate-300/50" title="User Password">
+                                                <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-4l5.618-5.618A6 6 0 0115 7h.01" /></svg>
+                                                {user.raw_password}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600">
