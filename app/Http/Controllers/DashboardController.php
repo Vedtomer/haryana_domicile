@@ -76,14 +76,12 @@ class DashboardController extends Controller
     private function adminStats(): array
     {
         return [
-            ['label' => 'Total Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'blue', 'url' => '/admin/users'],
-            ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'purple', 'url' => '/admin/service-requests?status=pending'],
-            ['label' => 'Pending Coin Requests', 'value' => CoinPurchaseRequest::pending()->count(), 'tone' => 'amber', 'url' => '/admin/coin-requests'],
-            ['label' => 'Active Services', 'value' => Service::active()->count(), 'tone' => 'green', 'url' => '/admin/services'],
-            ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'blue', 'url' => '/admin/users'],
-            ['label' => 'Manage Service', 'value' => Service::count(), 'tone' => 'green', 'url' => '/admin/services'],
-            ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'purple', 'url' => '/admin/service-requests'],
-            ['label' => 'Coin Requests', 'value' => CoinPurchaseRequest::count(), 'tone' => 'amber', 'url' => '/admin/coin-requests'],
+            ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'dark-blue', 'url' => '/admin/users'],
+            ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending'],
+            ['label' => 'Pending Coin Requests', 'value' => CoinPurchaseRequest::pending()->count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
+            ['label' => 'Manage Service', 'value' => Service::count(), 'tone' => 'dark-green', 'url' => '/admin/services'],
+            ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests'],
+            ['label' => 'Coin Requests', 'value' => CoinPurchaseRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
         ];
     }
 }

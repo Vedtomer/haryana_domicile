@@ -7,15 +7,23 @@ const TONES = {
     green: 'bg-green-50 border-green-100 text-green-700',
     purple: 'bg-purple-50 border-purple-100 text-purple-700',
     amber: 'bg-amber-50 border-amber-100 text-amber-700',
+    'dark-blue': 'bg-gradient-to-br from-slate-800 via-blue-900 to-slate-950 border-blue-950 text-white shadow-lg shadow-blue-950/50',
+    'dark-green': 'bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-950 border-emerald-950 text-white shadow-lg shadow-emerald-950/50',
+    'dark-purple': 'bg-gradient-to-br from-slate-800 via-purple-900 to-slate-950 border-purple-950 text-white shadow-lg shadow-purple-950/50',
 };
 
+const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple']);
+
 function StatCard({ label, value, tone, url }) {
+    const isDark = DARK_TONES.has(tone);
     return (
         <Link
             href={url}
-            className={`block p-5 rounded-xl border transition hover:shadow-md hover:-translate-y-0.5 ${TONES[tone] ?? TONES.blue}`}
+            className={`block p-5 rounded-xl border transition-all duration-200 hover:-translate-y-1 ${
+                isDark ? 'hover:shadow-2xl' : 'hover:shadow-md hover:-translate-y-0.5'
+            } ${TONES[tone] ?? TONES.blue}`}
         >
-            <p className="text-sm font-semibold opacity-80">{label}</p>
+            <p className={`text-sm font-semibold ${isDark ? 'opacity-90' : 'opacity-80'}`}>{label}</p>
             <p className="text-3xl font-extrabold mt-1">{value}</p>
         </Link>
     );
@@ -83,7 +91,7 @@ export default function Dashboard({ services, stats, isAdmin }) {
                 </p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
                 {stats.map((stat) => (
                     <StatCard key={stat.label} {...stat} />
                 ))}
