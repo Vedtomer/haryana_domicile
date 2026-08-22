@@ -66,6 +66,18 @@ class ServiceSeeder extends Seeder
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
             ],
+            [
+                'name' => 'Vehicle Details (RC)',
+                'slug' => 'vehicle-details',
+                'description' => 'Instantly download complete RC details PDF by entering the vehicle registration number.',
+                'icon' => '🚗',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'vehicle_details',
+                'sort_order' => 6,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+            ],
         ];
 
         foreach ($services as $service) {

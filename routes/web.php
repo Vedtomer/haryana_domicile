@@ -46,6 +46,29 @@ Route::middleware('auth')->group(function () {
         return back()->with('error', 'Bill not found. Please check your Account Number.');
     })->name('utilities.electricity-bill.download');
 
+    Route::get('/utilities/vehicle-details', function () {
+        return Inertia::render('Utilities/VehicleDetails');
+    })->name('utilities.vehicle-details');
+
+    Route::get('/utilities/vehicle-details/download', function (Request $request) {
+        $regNo = $request->query('reg_no');
+        if (!$regNo) return back()->with('error', 'Vehicle Registration Number is required');
+
+        $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&DJ=" . urlencode($regNo);
+        $response = \Illuminate\Support\Facades\Http::get($url);
+
+        if ($response->successful() && $response->json('success') && $response->json('data.data')) {
+            $data = $response->json('data.data');
+            
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
+            return response($pdf->output())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="Vehicle_Details_' . strtoupper($regNo) . '.pdf"');
+        }
+
+        return back()->with('error', 'Vehicle details not found. Please check the Registration Number.');
+    })->name('utilities.vehicle-details.download');
+
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
         // Service catalog — only admins can add services and set coin prices

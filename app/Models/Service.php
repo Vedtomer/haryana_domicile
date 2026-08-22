@@ -56,6 +56,12 @@ class Service extends Model
             'index' => '/utilities/electricity-bill',
             'create' => '/utilities/electricity-bill',
         ],
+        'vehicle_details' => [
+            'label' => 'Vehicle Details',
+            'model' => null,
+            'index' => '/utilities/vehicle-details',
+            'create' => '/utilities/vehicle-details',
+        ],
     ];
 
     protected $fillable = [
