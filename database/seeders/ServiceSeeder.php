@@ -77,6 +77,8 @@ class ServiceSeeder extends Seeder
                 'sort_order' => 6,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => true,
+                'unlock_cost' => 999,
             ],
         ];
 

@@ -16,6 +16,7 @@ class DashboardController extends Controller
         $isAdmin = $this->isStaff();
 
         $services = Service::active()
+            ->with('users')
             ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
             ->ordered()
             ->get()
@@ -29,6 +30,9 @@ class DashboardController extends Controller
                 'coin_cost' => $service->coin_cost,
                 'is_free' => $service->isFree(),
                 'kind' => $service->kind,
+                'is_premium' => $service->is_premium,
+                'unlock_cost' => $service->unlock_cost,
+                'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
                 'url' => $service->targetUrl(),
                 'count' => $this->countFor($service, $user, $isAdmin),
             ];

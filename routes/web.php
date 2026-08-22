@@ -47,10 +47,21 @@ Route::middleware('auth')->group(function () {
     })->name('utilities.electricity-bill.download');
 
     Route::get('/utilities/vehicle-details', function () {
+        $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
         return Inertia::render('Utilities/VehicleDetails');
     })->name('utilities.vehicle-details');
 
     Route::get('/utilities/vehicle-details/download', function (Request $request) {
+        $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return back()->with('error', 'Please unlock this premium service first.');
+        }
+
         $regNo = $request->query('reg_no');
         if (!$regNo) return back()->with('error', 'Vehicle Registration Number is required');
 
@@ -68,6 +79,27 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('error', 'Vehicle details not found. Please check the Registration Number.');
     })->name('utilities.vehicle-details.download');
+
+    // Premium Service Unlock
+    Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {
+        $user = auth()->user();
+        if (!$service->is_premium) {
+            return back()->with('error', 'This service is not premium.');
+        }
+        if ($service->users()->where('user_id', $user->id)->exists()) {
+            return back()->with('error', 'Service is already unlocked.');
+        }
+        if ($user->coins < $service->unlock_cost) {
+            return back()->with('error', 'Insufficient coins to unlock. Please recharge.');
+        }
+        
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $service) {
+            $user->deductCoins($service->unlock_cost, \App\Models\CoinTransaction::TYPE_SERVICE, "Unlocked Premium Service: {$service->name}");
+            $service->users()->attach($user->id);
+        });
+
+        return back()->with('success', "Service {$service->name} unlocked successfully!");
+    })->name('services.unlock');
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {

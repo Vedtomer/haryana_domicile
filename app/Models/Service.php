@@ -76,13 +76,17 @@ class Service extends Model
         'fields',
         'is_active',
         'visibility',
+        'is_premium',
+        'unlock_cost',
         'sort_order',
     ];
 
     protected $casts = [
         'coin_cost' => 'integer',
+        'unlock_cost' => 'integer',
         'sort_order' => 'integer',
         'is_active' => 'boolean',
+        'is_premium' => 'boolean',
         'fields' => 'array',
     ];
 
