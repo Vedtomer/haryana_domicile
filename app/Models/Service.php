@@ -68,6 +68,12 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-family-id',
             'create' => '/utilities/aadhar-to-family-id',
         ],
+        'aadhaar_services' => [
+            'label' => 'Aadhaar Services',
+            'model' => null,
+            'index' => '/utilities/aadhaar-services',
+            'create' => '/utilities/aadhaar-services',
+        ],
     ];
 
     protected $fillable = [
