@@ -12,6 +12,8 @@ export default function AdminLayout({ header, children }) {
 
     const { url } = usePage();
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
+    const isAdmin = auth?.user?.type === 'admin' || auth?.user?.type === 'super_admin';
+    const showSidebar = !isDashboard && isAdmin;
 
     const NavItem = ({ href, icon, children }) => {
         const isActive = url.startsWith(href);
@@ -34,8 +36,8 @@ export default function AdminLayout({ header, children }) {
         <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
             <Toast />
             
-            {/* Sidebar — hidden on the dashboard itself, shown once you navigate elsewhere */}
-            {!isDashboard && (
+            {/* Sidebar — hidden on the dashboard itself, and hidden for regular users */}
+            {showSidebar && (
             <>
                 {/* Mobile Overlay */}
                 <div 
@@ -115,7 +117,7 @@ export default function AdminLayout({ header, children }) {
                 <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-10 relative">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">
-                        {!isDashboard && (
+                        {showSidebar && (
                             <button 
                                 className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
                                 onClick={() => setSidebarOpen(true)}
@@ -123,9 +125,31 @@ export default function AdminLayout({ header, children }) {
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
                         )}
-                        <div className="truncate">
+
+                        {!showSidebar && (
+                            <Link href="/dashboard" className="flex items-center gap-2 mr-2 hover:opacity-80 transition-opacity">
+                                <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="100" height="100" rx="20" fill="url(#paint0_linear)"/>
+                                    <path d="M70 30L30 70M30 30L70 70" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <circle cx="50" cy="50" r="15" fill="#0f172a"/>
+                                    <circle cx="50" cy="50" r="10" fill="url(#paint1_linear)"/>
+                                </svg>
+                                <div className="hidden sm:flex flex-col justify-center">
+                                    <h2 className="text-lg font-black tracking-tight leading-none text-slate-800 dark:text-white" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                        CSP Jaankari
+                                    </h2>
+                                </div>
+                            </Link>
+                        )}
+
+                        <div className={`truncate ${!showSidebar ? 'hidden sm:block border-l pl-3 ml-1 border-slate-200 dark:border-slate-700' : ''}`}>
                             {header}
                         </div>
+                        {!showSidebar && (
+                            <div className="truncate sm:hidden">
+                                {header}
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3 flex-shrink-0">
