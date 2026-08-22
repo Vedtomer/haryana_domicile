@@ -54,6 +54,18 @@ class ServiceSeeder extends Seeder
                 'module_key' => 'pan_request',
                 'sort_order' => 4,
             ],
+            [
+                'name' => 'Electricity Bill',
+                'slug' => 'electricity-bill',
+                'description' => 'View and instantly download your Haryana electricity bill.',
+                'icon' => '⚡',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'electricity_bill',
+                'sort_order' => 5,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+            ],
         ];
 
         foreach ($services as $service) {

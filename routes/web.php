@@ -23,28 +23,29 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/utilities/electricity-bill', function () {
+    return Inertia::render('Utilities/ElectricityBill');
+})->name('utilities.electricity-bill');
+
+Route::get('/utilities/electricity-bill/download', function (Request $request) {
+    $uid = $request->query('uid');
+    if (!$uid) return back()->with('error', 'Account number is required');
+
+    $url = "https://uhbvn.org.in/Rapdrp/BD?UID=" . $uid;
+    $response = \Illuminate\Support\Facades\Http::get($url);
+
+    // UHBVN returns text/plain or HTML if invalid, and application/pdf if valid
+    if ($response->successful() && str_contains($response->header('Content-Type'), 'pdf')) {
+        return response($response->body())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="Electricity_Bill_' . $uid . '.pdf"');
+    }
+
+    return back()->with('error', 'Bill not found. Please check your Account Number.');
+})->name('utilities.electricity-bill.download');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/utilities/electricity-bill', function () {
-        return Inertia::render('Utilities/ElectricityBill');
-    })->name('utilities.electricity-bill');
-
-    Route::get('/utilities/electricity-bill/download', function (Request $request) {
-        $uid = $request->query('uid');
-        if (!$uid) return back()->with('error', 'Account number is required');
-
-        $url = "https://uhbvn.org.in/Rapdrp/BD?UID=" . $uid;
-        $response = \Illuminate\Support\Facades\Http::get($url);
-
-        // UHBVN returns text/plain or HTML if invalid, and application/pdf if valid
-        if ($response->successful() && str_contains($response->header('Content-Type'), 'pdf')) {
-            return response($response->body())
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="Electricity_Bill_' . $uid . '.pdf"');
-        }
-
-        return back()->with('error', 'Bill not found. Please check your Account Number.');
-    })->name('utilities.electricity-bill.download');
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
