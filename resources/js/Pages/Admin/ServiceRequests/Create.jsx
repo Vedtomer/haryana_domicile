@@ -28,12 +28,18 @@ export default function Create({ service, userCoins }) {
         <AdminLayout>
             <Head title={service.name} />
 
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-1">
-                    <span className="text-3xl">{service.icon || '📄'}</span>
-                    <h1 className="text-2xl font-bold text-gray-800">{service.name}</h1>
+            <div className="max-w-2xl mx-auto">
+                <div className="flex items-center gap-4 mb-4">
+                    {service.logo_url ? (
+                        <img src={service.logo_url} alt="" className="w-14 h-14 rounded-full object-cover shadow-sm border border-slate-200 flex-shrink-0" />
+                    ) : (
+                        <span className="text-5xl">{service.icon || '📄'}</span>
+                    )}
+                    <div>
+                        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">{service.name}</h1>
+                        {service.description && <p className="text-slate-500 mt-1">{service.description}</p>}
+                    </div>
                 </div>
-                {service.description && <p className="text-gray-500 mb-5">{service.description}</p>}
 
                 <div className="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
                     <span className="text-sm text-amber-800 font-semibold">
