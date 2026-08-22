@@ -50,23 +50,7 @@ export default function AdminLayout({ header, children }) {
                 {/* Horizontal Logo */}
                 <div className="p-6 flex items-center justify-between border-b border-slate-800/60 mb-6 bg-slate-900/30">
                     <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        {/* Custom Generated Logo */}
-                        <svg className="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="100" height="100" rx="20" fill="url(#paint0_linear)"/>
-                            <path d="M70 30L30 70M30 30L70 70" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-                            <circle cx="50" cy="50" r="15" fill="#0f172a"/>
-                            <circle cx="50" cy="50" r="10" fill="url(#paint1_linear)"/>
-                            <defs>
-                                <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#3B82F6" />
-                                    <stop offset="1" stopColor="#6366F1" />
-                                </linearGradient>
-                                <linearGradient id="paint1_linear" x1="40" y1="40" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#60A5FA" />
-                                    <stop offset="1" stopColor="#818CF8" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
+                        <img src="/images/logo.png" className="w-10 h-10 object-contain drop-shadow-sm" alt="CSP Jaankari Logo" />
                         <div className="flex flex-col justify-center">
                             <h2 className="text-2xl font-black tracking-tight leading-none text-white drop-shadow-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
                                 CSP Jaankari
@@ -128,12 +112,7 @@ export default function AdminLayout({ header, children }) {
 
                         {!showSidebar && (
                             <Link href="/dashboard" className="flex items-center gap-2 mr-2 hover:opacity-80 transition-opacity">
-                                <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="100" height="100" rx="20" fill="url(#paint0_linear)"/>
-                                    <path d="M70 30L30 70M30 30L70 70" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <circle cx="50" cy="50" r="15" fill="#0f172a"/>
-                                    <circle cx="50" cy="50" r="10" fill="url(#paint1_linear)"/>
-                                </svg>
+                                <img src="/images/logo.png" className="w-8 h-8 flex-shrink-0 object-contain drop-shadow-sm" alt="CSP Jaankari Logo" />
                                 <div className="hidden sm:flex flex-col justify-center">
                                     <h2 className="text-lg font-black tracking-tight leading-none text-slate-800 dark:text-white" style={{ fontFamily: 'Inter, sans-serif' }}>
                                         CSP Jaankari
