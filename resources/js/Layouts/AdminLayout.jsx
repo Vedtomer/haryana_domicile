@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Link, usePage, router } from '@inertiajs/react';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
@@ -14,6 +14,36 @@ export default function AdminLayout({ header, children }) {
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
     const isAdmin = auth?.user?.type === 'admin' || auth?.user?.type === 'super_admin';
     const showSidebar = !isDashboard && isAdmin;
+
+    // Auto-logout after 10 minutes of inactivity
+    useEffect(() => {
+        let timeout;
+        const resetTimer = () => {
+            clearTimeout(timeout);
+            // 10 minutes in milliseconds
+            timeout = setTimeout(() => {
+                if (auth?.user) {
+                    router.post('/logout');
+                }
+            }, 10 * 60 * 1000);
+        };
+
+        if (auth?.user) {
+            window.addEventListener('mousemove', resetTimer);
+            window.addEventListener('keydown', resetTimer);
+            window.addEventListener('click', resetTimer);
+            window.addEventListener('scroll', resetTimer);
+            resetTimer();
+        }
+
+        return () => {
+            clearTimeout(timeout);
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('keydown', resetTimer);
+            window.removeEventListener('click', resetTimer);
+            window.removeEventListener('scroll', resetTimer);
+        };
+    }, [auth?.user]);
 
     const NavItem = ({ href, icon, children }) => {
         const isActive = url.startsWith(href);
