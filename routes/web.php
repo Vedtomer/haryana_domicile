@@ -92,29 +92,31 @@ Route::middleware('auth')->group(function () {
     Route::post('/utilities/vehicle-to-mobile/search', [\App\Http\Controllers\VehicleToMobileController::class, 'search'])->name('utilities.vehicle-to-mobile.search');
 
     Route::get('/utilities/vehicle-details', function () {
-        $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
         return Inertia::render('Utilities/VehicleDetails');
     })->name('utilities.vehicle-details');
 
     Route::get('/utilities/vehicle-details/download', function (Request $request) {
         $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
         $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return back()->with('error', 'Please unlock this premium service first.');
-        }
-
+        
         $regNo = $request->query('reg_no');
         if (!$regNo) return back()->with('error', 'Vehicle Registration Number is required');
+
+        $coinCost = $service ? $service->coin_cost : 20; // Default to 20 if service not found
+        if ($user->coins < $coinCost && !$user->isAdmin() && !$user->hasRole('super_admin')) {
+            return back()->with('error', "Insufficient coins. This service requires {$coinCost} coins.");
+        }
 
         $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&DJ=" . urlencode($regNo);
         $response = \Illuminate\Support\Facades\Http::get($url);
 
         if ($response->successful() && $response->json('success') && $response->json('data.data')) {
             $data = $response->json('data.data');
+            
+            // Deduct coins only if successful
+            if (!$user->isAdmin() && !$user->hasRole('super_admin')) {
+                $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle Details Download: ' . strtoupper($regNo));
+            }
             
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
             return response($pdf->output())
