@@ -11,6 +11,11 @@ Route::get('/', function () {
     return Inertia::render('Frontend/Home');
 });
 
+Route::get('/migrate-db', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    return 'Database migrated successfully! Please go back to your dashboard.';
+});
+
 use App\Http\Controllers\AuthController;
 
 Route::get('/admin', function () {
