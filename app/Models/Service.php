@@ -80,6 +80,12 @@ class Service extends Model
             'index' => '/utilities/pdf-resizer',
             'create' => '/utilities/pdf-resizer',
         ],
+        'vehicle_to_mobile' => [
+            'label' => 'Vehicle to Mobile Number',
+            'model' => null,
+            'index' => '/utilities/vehicle-to-mobile',
+            'create' => '/utilities/vehicle-to-mobile',
+        ],
     ];
 
     protected $fillable = [
