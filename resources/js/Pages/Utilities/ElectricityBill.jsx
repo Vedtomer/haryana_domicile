@@ -8,12 +8,22 @@ import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 export default function ElectricityBill() {
     const [accountNumber, setAccountNumber] = useState('');
 
+    const [isDownloading, setIsDownloading] = useState(false);
+
     const handleDownload = (e) => {
         e.preventDefault();
         const digitsOnly = accountNumber.replace(/\D/g, '');
         if (digitsOnly.length < 5) return; // Basic check
-        window.open(`https://uhbvn.org.in/Rapdrp/BD?UID=${digitsOnly}`, '_blank');
-        setAccountNumber('');
+        
+        setIsDownloading(true);
+        // Direct browser to the backend route to force download
+        window.location.href = `/utilities/electricity-bill/download?uid=${digitsOnly}`;
+        
+        // Reset state after a short delay since it's a direct download
+        setTimeout(() => {
+            setIsDownloading(false);
+            setAccountNumber('');
+        }, 2000);
     };
 
     return (
@@ -68,7 +78,7 @@ export default function ElectricityBill() {
                                 type="submit"
                                 variant="contained"
                                 size="large"
-                                disabled={!accountNumber || accountNumber.length < 5}
+                                disabled={!accountNumber || accountNumber.length < 5 || isDownloading}
                                 startIcon={<FileDownloadIcon />}
                                 sx={{
                                     py: 1.5,
@@ -84,7 +94,7 @@ export default function ElectricityBill() {
                                     }
                                 }}
                             >
-                                Download Bill
+                                {isDownloading ? 'Downloading...' : 'Download Bill'}
                             </Button>
                         </form>
 
