@@ -61,7 +61,7 @@ export default function Home() {
                             <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">We provide a comprehensive suite of digital services to streamline documentation.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {/* Service Card 1 */}
                             <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-primary transition-all duration-300 group cursor-pointer">
                                 <div className="w-14 h-14 bg-primary-fixed text-on-primary-fixed rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -97,15 +97,6 @@ export default function Home() {
                                 <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Birth Records</h3>
                                 <p className="font-body-md text-body-md text-on-surface-variant">Register new births and generate official certificates with automated records.</p>
                             </div>
-                            
-                            {/* Service Card 5 */}
-                            <Link href="/utilities/electricity-bill" className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-amber-500 transition-all duration-300 group cursor-pointer block">
-                                <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
-                                </div>
-                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Electricity Bill</h3>
-                                <p className="font-body-md text-body-md text-on-surface-variant">Instantly view and download your Haryana electricity bill securely for free.</p>
-                            </Link>
                         </div>
                     </div>
                 </div>
