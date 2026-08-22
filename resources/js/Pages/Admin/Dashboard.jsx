@@ -34,7 +34,7 @@ function ServiceCard({ service, onUnlockClick }) {
     const isLockedPremium = service.is_premium && !service.is_unlocked;
 
     const cardContent = (
-        <div className={`group relative flex flex-col p-5 bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${isLockedPremium ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100' : 'hover:shadow-lg hover:border-blue-300 hover:-translate-y-1'}`}>
+        <div className={`group relative flex flex-col h-56 p-5 bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${isLockedPremium ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100' : 'hover:shadow-lg hover:border-blue-300 hover:-translate-y-1'}`}>
             <div className="flex items-start justify-between gap-3">
                 {service.logo_url ? (
                     <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 flex-shrink-0" />
@@ -58,7 +58,7 @@ function ServiceCard({ service, onUnlockClick }) {
                 )}
             </div>
 
-            <h3 className="mt-3 font-bold text-gray-800 group-hover:text-blue-700 transition-colors">
+            <h3 className="mt-3 font-bold text-gray-800 group-hover:text-blue-700 transition-colors line-clamp-2">
                 {service.name}
             </h3>
 
@@ -66,7 +66,7 @@ function ServiceCard({ service, onUnlockClick }) {
                 <p className="mt-1 text-sm text-gray-500 line-clamp-2">{service.description}</p>
             )}
 
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
                 <span className="text-sm text-gray-500">
                     <span className="font-bold text-gray-800 text-base">{service.count}</span> total
                 </span>
