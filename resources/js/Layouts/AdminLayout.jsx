@@ -209,7 +209,7 @@ export default function AdminLayout({ header, children }) {
                             className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
                         >
                             <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm hover:scale-105 transition-transform duration-200">
-                                {auth?.user?.name?.charAt(0).toUpperCase()}
+                                <span className="material-symbols-outlined text-2xl">person</span>
                             </div>
                         </button>
 
