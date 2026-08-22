@@ -1,0 +1,16 @@
+{
+  "name": "Haryana Domicile",
+  "short_name": "Haryana Domicile",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192 512x512 1254x1254 any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

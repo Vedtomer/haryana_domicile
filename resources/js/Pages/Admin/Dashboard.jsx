@@ -94,7 +94,7 @@ export default function Dashboard({ services, stats, isAdmin }) {
         >
             <Head title="Dashboard" />
 
-            <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
+            <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'md:grid-cols-3 lg:grid-cols-4' : 'md:grid-cols-4'}`}>
                 {stats.map((stat) => (
                     <StatCard key={stat.label} {...stat} />
                 ))}
@@ -118,7 +118,7 @@ export default function Dashboard({ services, stats, isAdmin }) {
                     {isAdmin && ' Use "Add Service" to create the first one.'}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                     {services.map((service) => (
                         <ServiceCard key={service.id} service={service} />
                     ))}

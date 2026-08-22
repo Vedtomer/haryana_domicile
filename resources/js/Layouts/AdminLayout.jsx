@@ -8,6 +8,7 @@ import ThemeToggle from '../Components/ThemeToggle';
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [] } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const { url } = usePage();
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
@@ -35,10 +36,17 @@ export default function AdminLayout({ header, children }) {
             
             {/* Sidebar — hidden on the dashboard itself, shown once you navigate elsewhere */}
             {!isDashboard && (
-            <div className="w-72 bg-[#0a1120] text-slate-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.15)] z-20 border-r border-slate-800/60">
+            <>
+                {/* Mobile Overlay */}
+                <div 
+                    className={`fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    onClick={() => setSidebarOpen(false)}
+                ></div>
+                
+                <div className={`fixed inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out w-72 bg-[#0a1120] text-slate-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.15)] border-r border-slate-800/60`}>
                 
                 {/* Horizontal Logo */}
-                <div className="p-6 flex items-center justify-center border-b border-slate-800/60 mb-6 bg-slate-900/30">
+                <div className="p-6 flex items-center justify-between border-b border-slate-800/60 mb-6 bg-slate-900/30">
                     <div className="flex items-center gap-3">
                         {/* Custom Generated Logo */}
                         <svg className="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,6 +72,9 @@ export default function AdminLayout({ header, children }) {
                             <span className="text-[10px] text-blue-300 font-bold uppercase tracking-[0.2em] mt-1">Management Portal</span>
                         </div>
                     </div>
+                    <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setSidebarOpen(false)}>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
                 </div>
                 
                 <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
@@ -118,17 +129,28 @@ export default function AdminLayout({ header, children }) {
                     )}
                 </nav>
             </div>
+            </>
             )}
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-8 z-10 relative">
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-10 relative">
                     
-                    <div className="flex-1 truncate">
-                        {header}
+                    <div className="flex-1 min-w-0 flex items-center gap-3">
+                        {!isDashboard && (
+                            <button 
+                                className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                                onClick={() => setSidebarOpen(true)}
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            </button>
+                        )}
+                        <div className="truncate">
+                            {header}
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-shrink-0">
                     {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
                         <>
