@@ -86,16 +86,7 @@ export default function AdminLayout({ header, children }) {
                         Dashboard
                     </NavItem>
 
-                    <div className="px-4 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Services & Apps</div>
-                    {navServices.map((service) => (
-                        <NavItem key={service.id} href={service.url} icon={
-                            service.logo_url ? (
-                                <img src={service.logo_url} alt="" className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
-                            ) : (
-                                <span className="w-5 h-5 flex items-center justify-center text-base">{service.icon}</span>
-                            )
-                        }>{service.name}</NavItem>
-                    ))}
+
                     {auth?.user?.type === 'user' && (
                         <NavItem href="/admin/service-requests" icon={
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
