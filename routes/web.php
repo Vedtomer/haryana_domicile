@@ -71,6 +71,15 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Utilities/AadhaarServices');
     })->name('utilities.aadhaar-services');
 
+    Route::get('/utilities/pdf-resizer', function () {
+        $service = \App\Models\Service::where('slug', 'pdf-resizer')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/PdfResizer');
+    })->name('utilities.pdf-resizer');
+
     Route::get('/utilities/vehicle-details', function () {
         $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
         $user = auth()->user();

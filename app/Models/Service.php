@@ -74,6 +74,12 @@ class Service extends Model
             'index' => '/utilities/aadhaar-services',
             'create' => '/utilities/aadhaar-services',
         ],
+        'pdf_resizer' => [
+            'label' => 'PDF Resizer',
+            'model' => null,
+            'index' => '/utilities/pdf-resizer',
+            'create' => '/utilities/pdf-resizer',
+        ],
     ];
 
     protected $fillable = [
