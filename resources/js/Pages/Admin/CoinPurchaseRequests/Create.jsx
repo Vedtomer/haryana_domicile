@@ -58,6 +58,8 @@ function PackageCard({ pkg, selected, onSelect }) {
 
 export default function Create({ packages, myRequests, userCoins, upiId, upiName }) {
     const [selectedPackage, setSelectedPackage] = useState(null);
+    const [isCustom, setIsCustom] = useState(false);
+    const [customAmount, setCustomAmount] = useState('');
     const [preview, setPreview] = useState(null);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -68,8 +70,19 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
     });
 
     const handlePackageSelect = (pkg) => {
+        setIsCustom(false);
         setSelectedPackage(pkg);
         setData(d => ({ ...d, package_amount: pkg.amount, coins_requested: pkg.coins_requested }));
+    };
+
+    const handleCustomSubmit = (e) => {
+        e.preventDefault();
+        const amt = parseInt(customAmount);
+        if (amt > 0) {
+            const pkg = { amount: amt, coins_requested: amt, label: 'Custom', base_coins: amt, bonus_coins: 0, bonus_pct: 0 };
+            setSelectedPackage(pkg);
+            setData(d => ({ ...d, package_amount: amt, coins_requested: amt }));
+        }
     };
 
     const handleFile = (e) => {
@@ -120,7 +133,48 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                         onSelect={handlePackageSelect}
                                     />
                                 ))}
+                                
+                                {/* Custom Amount Card */}
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsCustom(true); setSelectedPackage(null); }}
+                                    className={`relative w-full text-left rounded-xl border-2 p-3.5 transition-all duration-200 ${
+                                        isCustom ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-blue-300'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Custom</p>
+                                    </div>
+                                    <p className="text-xl font-black text-blue-600 mb-2">₹ Any</p>
+                                    <p className="text-xs text-slate-500 font-semibold">Enter custom amount</p>
+                                </button>
                             </div>
+                            
+                            {isCustom && !selectedPackage && (
+                                <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100 max-w-sm">
+                                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Enter Amount (₹)</label>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="number" 
+                                            min="1"
+                                            value={customAmount}
+                                            onChange={(e) => setCustomAmount(e.target.value)}
+                                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                                            placeholder="E.g. 50"
+                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={handleCustomSubmit}
+                                            disabled={!customAmount || parseInt(customAmount) < 1}
+                                            className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                    {customAmount > 0 && <p className="text-xs text-green-600 mt-2 font-semibold">You will get {customAmount} coins</p>}
+                                </div>
+                            )}
+
                             {errors.package_amount && <p className="text-sm text-red-500 mt-2">{errors.package_amount}</p>}
                         </div>
                     )}
