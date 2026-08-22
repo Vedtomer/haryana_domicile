@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 
 export default function AadhaarServices() {
     const { auth } = usePage().props;
+    const [activeUrl, setActiveUrl] = useState(null);
 
     const services = [
         {
@@ -66,46 +67,70 @@ export default function AadhaarServices() {
             <Head title="Aadhaar Services" />
 
             <div className="max-w-6xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
-                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden mb-8">
-                    <div className="p-8 md:p-10 text-center">
-                        <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 text-indigo-600 dark:text-indigo-400 rounded-full mb-6 mx-auto shadow-inner">
-                            <span className="material-symbols-outlined text-4xl">fingerprint</span>
-                        </div>
-                        <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3 tracking-tight">
-                            UIDAI Aadhaar Services
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium text-lg leading-relaxed">
-                            Access all official Aadhaar services below. For security purposes, these links will securely redirect you to the official UIDAI portal where you may need to verify via OTP.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
-                    {services.map((service, index) => (
-                        <a
-                            key={index}
-                            href={service.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex flex-col bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-100 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1"
-                        >
-                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 bg-${service.color}-50 dark:bg-${service.color}-900/20 text-${service.color}-600 dark:text-${service.color}-400 group-hover:scale-110 transition-transform duration-300`}>
-                                <span className="material-symbols-outlined text-3xl">{service.icon}</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {service.title}
+                {activeUrl ? (
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[80vh]">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                            <h3 className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                <span className="material-symbols-outlined">fingerprint</span>
+                                Aadhaar Portal
                             </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 flex-grow font-medium leading-relaxed">
-                                {service.description}
-                            </p>
-                            
-                            <div className="mt-6 flex items-center text-sm font-bold text-blue-600 dark:text-blue-400">
-                                Access Portal 
-                                <span className="material-symbols-outlined ml-1 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            <button
+                                onClick={() => setActiveUrl(null)}
+                                className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg font-bold text-sm flex items-center gap-1 transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-sm">close</span>
+                                Close & Go Back
+                            </button>
+                        </div>
+                        <iframe
+                            src={activeUrl}
+                            className="w-full flex-grow border-0"
+                            title="Aadhaar Portal"
+                            allow="camera; microphone; geolocation"
+                        ></iframe>
+                    </div>
+                ) : (
+                    <>
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden mb-8">
+                            <div className="p-8 md:p-10 text-center">
+                                <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 text-indigo-600 dark:text-indigo-400 rounded-full mb-6 mx-auto shadow-inner">
+                                    <span className="material-symbols-outlined text-4xl">fingerprint</span>
+                                </div>
+                                <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3 tracking-tight">
+                                    UIDAI Aadhaar Services
+                                </h2>
+                                <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium text-lg leading-relaxed">
+                                    Access all official Aadhaar services below. The official portal will load directly within this dashboard so you don't have to leave the site.
+                                </p>
                             </div>
-                        </a>
-                    ))}
-                </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+                            {services.map((service, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setActiveUrl(service.url)}
+                                    className="group flex flex-col text-left bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-100 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1"
+                                >
+                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 bg-${service.color}-50 dark:bg-${service.color}-900/20 text-${service.color}-600 dark:text-${service.color}-400 group-hover:scale-110 transition-transform duration-300`}>
+                                        <span className="material-symbols-outlined text-3xl">{service.icon}</span>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        {service.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 flex-grow font-medium leading-relaxed">
+                                        {service.description}
+                                    </p>
+                                    
+                                    <div className="mt-6 flex items-center text-sm font-bold text-blue-600 dark:text-blue-400">
+                                        Open Here
+                                        <span className="material-symbols-outlined ml-1 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         </AdminLayout>
     );
