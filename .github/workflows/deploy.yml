@@ -32,6 +32,7 @@ jobs:
             $PHP /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
             $PHP artisan storage:link || true
             $PHP artisan migrate --force
+            $PHP artisan db:seed --class=ServiceSeeder --force
             $PHP artisan optimize:clear
             $PHP artisan optimize
           '
