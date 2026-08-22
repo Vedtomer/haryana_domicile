@@ -87,6 +87,11 @@ function ServiceCard({ service, onUnlockClick }) {
         return <div onClick={() => onUnlockClick(service)}>{cardContent}</div>;
     }
 
+    const isExternal = service.url && (service.url.startsWith('http://') || service.url.startsWith('https://'));
+    if (isExternal) {
+        return <a href={service.url} target="_blank" rel="noopener noreferrer">{cardContent}</a>;
+    }
+
     return <Link href={service.url}>{cardContent}</Link>;
 }
 
@@ -183,8 +188,23 @@ export default function Dashboard({ services, stats, isAdmin }) {
                             >
                                 <span className="material-symbols-outlined">close</span>
                             </button>
-                            <span className="material-symbols-outlined text-[64px] mb-2 drop-shadow-md">workspace_premium</span>
-                            <h3 className="text-2xl font-black tracking-tight">Premium Service</h3>
+                            
+                            {/* Service Logo/Icon */}
+                            <div className="flex justify-center mb-3">
+                                {unlockingService.logo_url ? (
+                                    <img src={unlockingService.logo_url} alt="" className="w-20 h-20 rounded-full object-cover border-4 border-white/30 shadow-lg bg-white" />
+                                ) : (
+                                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/30 shadow-lg">
+                                        <span className="text-4xl leading-none">{unlockingService.icon || '📦'}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <h3 className="text-xl font-black tracking-tight drop-shadow-sm px-4">{unlockingService.name}</h3>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white text-amber-600 mt-2 shadow-sm uppercase tracking-wider">
+                                <span className="material-symbols-outlined text-[14px]">lock</span>
+                                Premium
+                            </span>
                         </div>
                         <div className="p-6 text-center">
                             <p className="text-slate-600 font-medium mb-6">
