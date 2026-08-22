@@ -46,6 +46,17 @@ Route::middleware('auth')->group(function () {
         return back()->with('error', 'Bill not found. Please check your Account Number.');
     })->name('utilities.electricity-bill.download');
 
+    Route::get('/utilities/aadhar-to-family-id', function () {
+        $service = \App\Models\Service::where('slug', 'aadhar-to-family-id')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/AadharToFamilyId');
+    })->name('utilities.aadhar-to-family-id');
+
+    Route::post('/utilities/aadhar-to-family-id/search', [\App\Http\Controllers\AadharToFamilyIdController::class, 'search'])->name('utilities.aadhar-to-family-id.search');
+
     Route::get('/utilities/vehicle-details', function () {
         $service = \App\Models\Service::where('slug', 'vehicle-details')->first();
         $user = auth()->user();

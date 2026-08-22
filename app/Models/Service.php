@@ -62,6 +62,12 @@ class Service extends Model
             'index' => '/utilities/vehicle-details',
             'create' => '/utilities/vehicle-details',
         ],
+        'aadhar_to_family_id' => [
+            'label' => 'Aadhar to Family ID',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-family-id',
+            'create' => '/utilities/aadhar-to-family-id',
+        ],
     ];
 
     protected $fillable = [
