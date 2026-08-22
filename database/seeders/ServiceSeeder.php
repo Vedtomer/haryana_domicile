@@ -83,7 +83,19 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            Service::firstOrCreate(['slug' => $service['slug']], $service);
+            $existing = Service::where('slug', $service['slug'])->first();
+            if (!$existing) {
+                Service::create($service);
+            } else {
+                // Update new fields without overwriting user-configured coin_cost/is_active
+                $existing->update([
+                    'is_premium' => $service['is_premium'] ?? false,
+                    'unlock_cost' => $service['unlock_cost'] ?? 0,
+                    'icon' => $service['icon'],
+                    'description' => $service['description'],
+                    'sort_order' => $service['sort_order'],
+                ]);
+            }
         }
     }
 }
