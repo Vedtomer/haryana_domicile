@@ -94,7 +94,7 @@ Route::middleware('auth')->group(function () {
         }
         
         \Illuminate\Support\Facades\DB::transaction(function () use ($user, $service) {
-            $user->deductCoins($service->unlock_cost, \App\Models\CoinTransaction::TYPE_SERVICE, "Unlocked Premium Service: {$service->name}");
+            $user->deductCoins($service->unlock_cost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, "Unlocked Premium Service: {$service->name}");
             $service->users()->attach($user->id);
         });
 
