@@ -47,7 +47,7 @@ export default function AdminLayout({ header, children }) {
                 
                 {/* Horizontal Logo */}
                 <div className="p-6 flex items-center justify-between border-b border-slate-800/60 mb-6 bg-slate-900/30">
-                    <div className="flex items-center gap-3">
+                    <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         {/* Custom Generated Logo */}
                         <svg className="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="100" height="100" rx="20" fill="url(#paint0_linear)"/>
@@ -71,20 +71,13 @@ export default function AdminLayout({ header, children }) {
                             </h2>
                             <span className="text-[10px] text-blue-300 font-bold uppercase tracking-[0.2em] mt-1">Management Portal</span>
                         </div>
-                    </div>
+                    </Link>
                     <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setSidebarOpen(false)}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
                 
-                <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-                    <div className="px-4 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Main Menu</div>
-                    
-                    <NavItem href="/dashboard" icon={
-                        <svg className={`w-5 h-5 ${url.startsWith('/dashboard') ? 'text-white' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                    }>
-                        Dashboard
-                    </NavItem>
+                <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar pt-2">
 
 
                     {(auth?.user?.type === 'admin' || auth?.user?.type === 'super_admin') && (
