@@ -14,7 +14,7 @@ export default function Create({ service, userCoins }) {
 
     const cannotAfford = service.coin_cost > 0 && userCoins < service.coin_cost;
 
-    const input = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
+    const input = 'w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
 
     const digitCapFor = (label) => {
         const l = label.toLowerCase();
@@ -41,7 +41,7 @@ export default function Create({ service, userCoins }) {
                     </div>
                 </div>
 
-                <div className="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
                     <span className="text-sm text-amber-800 font-semibold">
                         {service.coin_cost === 0
                             ? 'This service is free.'
@@ -51,7 +51,7 @@ export default function Create({ service, userCoins }) {
                 </div>
 
                 {cannotAfford && (
-                    <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
                         You don't have enough coins for this service.{' '}
                         <Link href="/admin/coin-requests" className="font-bold underline">Buy coins</Link>
                     </div>
@@ -59,7 +59,7 @@ export default function Create({ service, userCoins }) {
 
                 <form
                     onSubmit={(e) => { e.preventDefault(); post('/admin/service-requests'); }}
-                    className="bg-white rounded-xl border border-gray-200 p-6 space-y-4"
+                    className="bg-white rounded-xl border border-gray-200 p-5 space-y-3"
                 >
                     {(service.fields ?? []).map((field, i) => (
                         <div key={i}>
@@ -67,12 +67,12 @@ export default function Create({ service, userCoins }) {
                                 {field.label}{field.required && ' *'}
                             </label>
                             {field.type === 'textarea' ? (
-                                <textarea className={input} rows={3} value={data.fields[i]}
+                                <textarea className={input} rows={2} value={data.fields[i]}
                                     onChange={(e) => setField(i, e.target.value)} />
                             ) : field.type === 'file' ? (
                                 <>
                                     <input type="file" accept=".pdf,.jpg,.jpeg,.png"
-                                        className={`${input} bg-white file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold`}
+                                        className={`${input} bg-white file:mr-3 file:px-3 file:py-1 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold`}
                                         onChange={(e) => setField(i, e.target.files[0] ?? null)} />
                                     <p className="text-xs text-gray-500 mt-1">PDF, JPG or PNG, up to 5 MB.</p>
                                 </>
@@ -101,7 +101,7 @@ export default function Create({ service, userCoins }) {
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
                             Additional Note
                         </label>
-                        <textarea className={input} rows={3} value={data.note}
+                        <textarea className={input} rows={2} value={data.note}
                             onChange={(e) => setData('note', e.target.value)}
                             placeholder="Anything else the admin should know?" />
                     </div>

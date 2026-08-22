@@ -46,6 +46,8 @@ class ServiceRequestController extends Controller
             ->where('slug', $request->query('service'))
             ->firstOrFail();
 
+        $service->logo_url = $service->logoUrl();
+
         return Inertia::render('Admin/ServiceRequests/Create', [
             'service' => $service,
             'userCoins' => auth()->user()->coins,
