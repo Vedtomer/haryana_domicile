@@ -15,10 +15,10 @@ class VehicleToMobileController extends Controller
 
         $service = \App\Models\Service::where('slug', 'vehicle-to-mobile')->first();
         $user = auth()->user();
-        
-        // Basic check for premium service access if the service exists
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Please unlock this premium service first.']);
+
+        $coinCost = $service ? $service->coin_cost : 20;
+        if ($user->coins < $coinCost && !$user->isAdmin() && !$user->hasRole('super_admin')) {
+            return response()->json(['success' => false, 'message' => "Insufficient coins. This service requires {$coinCost} coins."]);
         }
 
         $vehicleNo = $request->input('vehicle_number');
@@ -33,6 +33,10 @@ class VehicleToMobileController extends Controller
                 $data = $response->json();
                 
                 if (isset($data['success']) && $data['success'] == true) {
+                    if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                        $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle to Mobile: ' . strtoupper($vehicleNo));
+                    }
+                    
                     return response()->json([
                         'success' => true,
                         'mobile' => $data['mobile'] ?? 'Not Available',

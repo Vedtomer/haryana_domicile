@@ -82,10 +82,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/utilities/vehicle-to-mobile', function () {
         $service = \App\Models\Service::where('slug', 'vehicle-to-mobile')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
         return Inertia::render('Utilities/VehicleToMobile');
     })->name('utilities.vehicle-to-mobile');
 
