@@ -71,14 +71,14 @@ class ServiceSeeder extends Seeder
                 'slug' => 'vehicle-details',
                 'description' => 'Instantly download complete RC details PDF by entering the vehicle registration number.',
                 'icon' => '🚗',
-                'coin_cost' => 0,
+                'coin_cost' => 20,
                 'kind' => Service::KIND_MODULE,
                 'module_key' => 'vehicle_details',
                 'sort_order' => 6,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
-                'is_premium' => true,
-                'unlock_cost' => 999,
+                'is_premium' => false,
+                'unlock_cost' => 0,
             ],
         ];
 
