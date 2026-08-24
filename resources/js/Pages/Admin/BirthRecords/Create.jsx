@@ -30,9 +30,8 @@ export default function Create() {
         mother_signature: null,
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        post('/admin/birth-records');
+    const submit = (e, saveAndCreate = false) => {
+        post(saveAndCreate ? '/admin/birth-records?save_and_create=1' : '/admin/birth-records');
     };
 
     return (
@@ -48,7 +47,7 @@ export default function Create() {
                 </Typography>
             </Box>
 
-            <BirthRecordFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Save Birth Record" />
+            <BirthRecordFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Save Birth Record" showSaveAndCreate={true} />
         </AdminLayout>
     );
 }

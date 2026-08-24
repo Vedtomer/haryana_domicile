@@ -14,9 +14,15 @@ const RELIGION_OPTIONS = [
     { value: 'Other', label: 'Other' },
 ];
 
-export default function HaryanaDomicileFields({ data, setData, errors, processing, onSubmit, submitLabel }) {
+export default function HaryanaDomicileFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
     const [pincodeLoading, setPincodeLoading] = useState(false);
+    const [isSaveAndCreate, setIsSaveAndCreate] = useState(false);
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e, isSaveAndCreate);
+    };
 
     const handleAadharChange = (e) => {
         setData('aadhar', e.target.value.replace(/\D/g, '').slice(0, 12));
@@ -46,7 +52,7 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
     };
 
     return (
-        <Paper component="form" onSubmit={onSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Paper component="form" onSubmit={handleFormSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
             <SectionHeader title="Personal Information" />
             <Grid container spacing={3}>
@@ -106,8 +112,30 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
                 </Grid>
             </Grid>
 
-            <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end' }}>
-                <Button type="submit" variant="contained" color="primary" size="large" disabled={processing} startIcon={<SaveIcon />} sx={{ px: 4, py: 1.5 }}>
+            <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                {showSaveAndCreate && (
+                    <Button 
+                        type="submit" 
+                        variant="outlined" 
+                        color="primary" 
+                        size="large" 
+                        disabled={processing} 
+                        onClick={() => setIsSaveAndCreate(true)} 
+                        sx={{ px: 4, py: 1.5 }}
+                    >
+                        Save & Create New
+                    </Button>
+                )}
+                <Button 
+                    type="submit" 
+                    variant="contained" 
+                    color="primary" 
+                    size="large" 
+                    disabled={processing} 
+                    onClick={() => setIsSaveAndCreate(false)}
+                    startIcon={<SaveIcon />} 
+                    sx={{ px: 4, py: 1.5 }}
+                >
                     {submitLabel}
                 </Button>
             </Box>

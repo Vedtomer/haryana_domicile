@@ -41,9 +41,8 @@ export default function Create() {
         pandit_address: '',
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        post('/admin/marriage-forms');
+    const submit = (e, saveAndCreate = false) => {
+        post(saveAndCreate ? '/admin/marriage-forms?save_and_create=1' : '/admin/marriage-forms');
     };
 
     return (
@@ -59,13 +58,14 @@ export default function Create() {
                 </Typography>
             </Box>
 
-            <MarriageFormFields
-                data={data}
-                setData={setData}
-                errors={errors}
-                processing={processing}
-                onSubmit={submit}
-                submitLabel="Save Marriage Form"
+            <MarriageFormFields 
+                data={data} 
+                setData={setData} 
+                errors={errors} 
+                processing={processing} 
+                onSubmit={submit} 
+                submitLabel="Save Marriage Form" 
+                showSaveAndCreate={true} 
             />
         </AdminLayout>
     );

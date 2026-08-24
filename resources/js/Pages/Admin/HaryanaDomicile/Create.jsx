@@ -23,9 +23,8 @@ export default function Create() {
         child_name: '',
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        post('/admin/haryana-domicile');
+    const submit = (e, saveAndCreate = false) => {
+        post(saveAndCreate ? '/admin/haryana-domicile?save_and_create=1' : '/admin/haryana-domicile');
     };
 
     return (
@@ -41,7 +40,7 @@ export default function Create() {
                 </Typography>
             </Box>
 
-            <HaryanaDomicileFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Save Domicile Record" />
+            <HaryanaDomicileFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Save Domicile Record" showSaveAndCreate={true} />
         </AdminLayout>
     );
 }

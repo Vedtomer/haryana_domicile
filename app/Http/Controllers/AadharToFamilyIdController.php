@@ -15,11 +15,6 @@ class AadharToFamilyIdController extends Controller
 
         $service = \App\Models\Service::where('slug', 'aadhar-to-family-id')->first();
         $user = auth()->user();
-        
-        // Basic check for premium service access if the service exists
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Please unlock this premium service first.']);
-        }
 
         $aadhar = $request->input('aadhar');
         $url = "https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum=" . $aadhar;
@@ -35,6 +30,16 @@ class AadharToFamilyIdController extends Controller
                 if (isset($data['success']) && $data['success'] == true) {
                     // Extract family ID
                     if (isset($data['Payload'][0]['familyID'])) {
+                        \App\Models\ServiceRequest::create([
+                            'user_id' => $user->id,
+                            'service_id' => $service ? $service->id : null,
+                            'service_name' => $service ? $service->name : 'Aadhar to Family ID',
+                            'input_data' => ['Aadhar Number' => $aadhar, 'Family ID' => $data['Payload'][0]['familyID']],
+                            'coins_charged' => 0,
+                            'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
+                            'completed_at' => now(),
+                        ]);
+
                         return response()->json([
                             'success' => true,
                             'family_id' => $data['Payload'][0]['familyID'],

@@ -8,6 +8,7 @@ export default function Create({ service, userCoins }) {
         fields: (service.fields ?? []).map((f) => (f.type === 'file' ? null : '')),
         note: '',
     });
+    const [isSaveAndCreate, setIsSaveAndCreate] = React.useState(false);
 
     const setField = (index, value) =>
         setData('fields', data.fields.map((v, i) => (i === index ? value : v)));
@@ -58,7 +59,10 @@ export default function Create({ service, userCoins }) {
                 )}
 
                 <form
-                    onSubmit={(e) => { e.preventDefault(); post('/admin/service-requests'); }}
+                    onSubmit={(e) => { 
+                        e.preventDefault(); 
+                        post(isSaveAndCreate ? '/admin/service-requests?save_and_create=1' : '/admin/service-requests'); 
+                    }}
                     className="bg-white rounded-xl border border-gray-200 p-5 space-y-3"
                 >
                     {(service.fields ?? []).map((field, i) => (
@@ -107,9 +111,13 @@ export default function Create({ service, userCoins }) {
                     </div>
 
                     <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
-                        <button type="submit" disabled={processing || cannotAfford}
+                        <button type="submit" disabled={processing || cannotAfford} onClick={() => setIsSaveAndCreate(false)}
                             className="px-5 py-2.5 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">
                             {processing ? 'Submitting…' : 'Submit Request'}
+                        </button>
+                        <button type="submit" disabled={processing || cannotAfford} onClick={() => setIsSaveAndCreate(true)}
+                            className="px-5 py-2.5 font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 disabled:opacity-50">
+                            Save & Create New
                         </button>
                         <Link href="/dashboard" className="px-5 py-2.5 font-semibold text-gray-600 hover:text-gray-800">
                             Cancel

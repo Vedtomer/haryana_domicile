@@ -38,6 +38,11 @@ class MarriageAffidavitController extends Controller
 
         $this->chargeForService($service, $affidavit->id, "New Marriage Certificate #{$affidavit->id}");
 
+        if ($request->boolean('save_and_create')) {
+            return redirect()->route('admin.marriage-affidavits.create')
+            ->with('success', 'Marriage Affidavit created successfully.' . $this->chargeNote($service));
+        }
+
         return redirect()->route('admin.marriage-affidavits.index')
             ->with('success', 'Marriage Affidavit created successfully.' . $this->chargeNote($service));
     }

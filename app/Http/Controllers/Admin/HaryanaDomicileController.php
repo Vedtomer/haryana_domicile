@@ -38,6 +38,11 @@ class HaryanaDomicileController extends Controller
 
         $this->chargeForService($service, $record->id, "Haryana Domicile #{$record->id}");
 
+        if ($request->boolean('save_and_create')) {
+            return redirect()->route('admin.haryana-domicile.create')
+            ->with('success', 'Haryana Domicile record created successfully.' . $this->chargeNote($service));
+        }
+
         return redirect()->route('admin.haryana-domicile.index')
             ->with('success', 'Haryana Domicile record created successfully.' . $this->chargeNote($service));
     }

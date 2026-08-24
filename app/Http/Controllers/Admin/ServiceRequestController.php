@@ -125,6 +125,11 @@ class ServiceRequestController extends Controller
             '/admin/service-requests/' . $serviceRequest->id,
         );
 
+        if ($request->boolean('save_and_create')) {
+            return redirect()->route('admin.service-requests.create', ['service' => $service->slug])
+                ->with('success', "Request submitted. We'll update you as soon as it's reviewed." . $this->chargeNote($service));
+        }
+
         return redirect()->route('admin.service-requests.index')
             ->with('success', "Request submitted. We'll update you as soon as it's reviewed." . $this->chargeNote($service));
     }

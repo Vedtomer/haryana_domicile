@@ -88,8 +88,14 @@ const Witness = ({ prefix, title, data, errors, onChange }) => (
     </FieldCard>
 );
 
-export default function MarriageFormFields({ data, setData, errors, processing, onSubmit, submitLabel }) {
+export default function MarriageFormFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
+    const [isSaveAndCreate, setIsSaveAndCreate] = React.useState(false);
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e, isSaveAndCreate);
+    };
 
     const handleMarriageDateChange = (e) => {
         const marriage_date = e.target.value;
@@ -107,7 +113,7 @@ export default function MarriageFormFields({ data, setData, errors, processing, 
     };
 
     return (
-        <Paper component="form" onSubmit={onSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Paper component="form" onSubmit={handleFormSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Grid container spacing={3}>
 
                 <FieldCard title="Marriage Details" size={12}>
@@ -148,13 +154,27 @@ export default function MarriageFormFields({ data, setData, errors, processing, 
 
             </Grid>
 
-            <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                {showSaveAndCreate && (
+                    <Button 
+                        type="submit" 
+                        variant="outlined" 
+                        color="primary" 
+                        size="large" 
+                        disabled={processing} 
+                        onClick={() => setIsSaveAndCreate(true)} 
+                        sx={{ px: 4, py: 1.5 }}
+                    >
+                        Save & Create New
+                    </Button>
+                )}
                 <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     size="large"
                     disabled={processing}
+                    onClick={() => setIsSaveAndCreate(false)}
                     startIcon={<SaveIcon />}
                     sx={{ px: 4, py: 1.5 }}
                 >

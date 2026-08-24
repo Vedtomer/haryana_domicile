@@ -11,8 +11,14 @@ const GENDER_OPTIONS = [
     { value: 'Transgender', label: 'Transgender' },
 ];
 
-export default function BirthRecordFields({ data, setData, errors, processing, onSubmit, submitLabel }) {
+export default function BirthRecordFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
+    const [isSaveAndCreate, setIsSaveAndCreate] = React.useState(false);
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e, isSaveAndCreate);
+    };
 
     const addOtherChild = () => {
         setData('other_children', [...data.other_children, { name: '', dob: '', birth_place: '', is_recorded: 'Yes' }]);
@@ -31,7 +37,7 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
     };
 
     return (
-        <Paper component="form" onSubmit={onSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Paper component="form" onSubmit={handleFormSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
             <SectionHeader title="Search Details" />
             <Grid container spacing={3}>
@@ -148,8 +154,30 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
                 </Grid>
             </Grid>
 
-            <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end' }}>
-                <Button type="submit" variant="contained" color="primary" size="large" disabled={processing} startIcon={<SaveIcon />} sx={{ px: 4, py: 1.5 }}>
+            <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                {showSaveAndCreate && (
+                    <Button 
+                        type="submit" 
+                        variant="outlined" 
+                        color="primary" 
+                        size="large" 
+                        disabled={processing} 
+                        onClick={() => setIsSaveAndCreate(true)} 
+                        sx={{ px: 4, py: 1.5 }}
+                    >
+                        Save & Create New
+                    </Button>
+                )}
+                <Button 
+                    type="submit" 
+                    variant="contained" 
+                    color="primary" 
+                    size="large" 
+                    disabled={processing} 
+                    onClick={() => setIsSaveAndCreate(false)}
+                    startIcon={<SaveIcon />} 
+                    sx={{ px: 4, py: 1.5 }}
+                >
                     {submitLabel}
                 </Button>
             </Box>

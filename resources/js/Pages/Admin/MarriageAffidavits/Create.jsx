@@ -22,9 +22,8 @@ export default function Create() {
         bride_address: '',
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        post('/admin/marriage-affidavits');
+    const submit = (e, saveAndCreate = false) => {
+        post(saveAndCreate ? '/admin/marriage-affidavits?save_and_create=1' : '/admin/marriage-affidavits');
     };
 
     return (
@@ -40,14 +39,7 @@ export default function Create() {
                 </Typography>
             </Box>
 
-            <MarriageAffidavitFields
-                data={data}
-                setData={setData}
-                errors={errors}
-                processing={processing}
-                onSubmit={submit}
-                submitLabel="Save Marriage Affidavit"
-            />
+            <MarriageAffidavitFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Save Marriage Affidavit" showSaveAndCreate={true} />
         </AdminLayout>
     );
 }

@@ -43,6 +43,17 @@ Route::middleware('auth')->group(function () {
 
         // UHBVN returns text/plain or HTML if invalid, and application/pdf if valid
         if ($response->successful() && str_contains($response->header('Content-Type'), 'pdf')) {
+            $service = \App\Models\Service::where('slug', 'electricity-bill')->first();
+            \App\Models\ServiceRequest::create([
+                'user_id' => auth()->id(),
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'Electricity Bill',
+                'input_data' => ['Account Number (UID)' => $uid],
+                'coins_charged' => 0,
+                'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+
             return response($response->body())
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'attachment; filename="Electricity_Bill_' . $uid . '.pdf"');
@@ -113,6 +124,16 @@ Route::middleware('auth')->group(function () {
             if (!$user->isAdmin() && !$user->hasRole('super_admin')) {
                 $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle Details Download: ' . strtoupper($regNo));
             }
+
+            \App\Models\ServiceRequest::create([
+                'user_id' => $user->id,
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'Vehicle Details (RC)',
+                'input_data' => ['Vehicle Registration Number' => strtoupper($regNo)],
+                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
             
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
             return response($pdf->output())

@@ -50,6 +50,11 @@ class BirthRecordController extends Controller
 
         $this->chargeForService($service, $record->id, "Birth Certificate #{$record->id}");
 
+        if ($request->boolean('save_and_create')) {
+            return redirect()->route('admin.birth-records.create')
+            ->with('success', 'Birth Record created successfully.' . $this->chargeNote($service));
+        }
+
         return redirect()->route('admin.birth-records.index')
             ->with('success', 'Birth Record created successfully.' . $this->chargeNote($service));
     }

@@ -38,6 +38,11 @@ class MarriageFormController extends Controller
 
         $this->chargeForService($service, $form->id, "Marriage Certificate #{$form->id}");
 
+        if ($request->boolean('save_and_create')) {
+            return redirect()->route('admin.marriage-forms.create')
+            ->with('success', 'Marriage Form created successfully.' . $this->chargeNote($service));
+        }
+
         return redirect()->route('admin.marriage-forms.index')
             ->with('success', 'Marriage Form created successfully.' . $this->chargeNote($service));
     }
