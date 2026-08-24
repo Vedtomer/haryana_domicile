@@ -190,6 +190,30 @@ export default function Dashboard({ services, stats, isAdmin }) {
                             </div>
                         </Link>
                     )}
+
+                    {isAdmin && (
+                        <Link href="/admin/user-permissions" className="group relative flex flex-col h-56 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
+                                    <span className="material-symbols-outlined text-[24px]">shield_person</span>
+                                </div>
+                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-700">
+                                    ADMIN
+                                </span>
+                            </div>
+                            <h3 className="mt-4 font-bold text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-2">
+                                User Permissions
+                            </h3>
+                            <p className="mt-1 text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                                Control which services are visible to which users. Assign or revoke access instantly.
+                            </p>
+                            <div className="mt-auto pt-3 border-t border-blue-200/50 flex items-center justify-end">
+                                <span className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                    Open <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                </span>
+                            </div>
+                        </Link>
+                    )}
                     
                     {services.map((service) => (
                         <ServiceCard 
