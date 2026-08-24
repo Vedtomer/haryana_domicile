@@ -158,10 +158,14 @@ export default function UserPermissions({ users, services }) {
                                                         : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'
                                                 }`}
                                             >
-                                                <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl text-2xl shadow-sm ${
+                                                <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl text-2xl shadow-sm overflow-hidden ${
                                                     hasAccess ? 'bg-blue-100 border border-blue-200' : 'bg-gray-100 border border-gray-200'
                                                 }`}>
-                                                    {service.icon || '📄'}
+                                                    {service.logo_url ? (
+                                                        <img src={service.logo_url} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span>{service.icon || '📄'}</span>
+                                                    )}
                                                 </div>
                                                 
                                                 <div className="flex-1 min-w-0">

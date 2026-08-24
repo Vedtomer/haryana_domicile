@@ -28,7 +28,19 @@ class UserPermissionsController extends Controller
             });
 
         // Get all active services
-        $services = Service::ordered()->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost']);
+        $services = Service::ordered()
+            ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo_path'])
+            ->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'icon' => $service->icon,
+                    'slug' => $service->slug,
+                    'description' => $service->description,
+                    'coin_cost' => $service->coin_cost,
+                    'logo_url' => $service->logoUrl(),
+                ];
+            });
 
         return Inertia::render('Admin/UserPermissions/Index', [
             'users' => $users,
