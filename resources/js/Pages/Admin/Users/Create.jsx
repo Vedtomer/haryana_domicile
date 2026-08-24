@@ -42,6 +42,15 @@ export default function Create({ user = null }) {
                     </div>
                 </div>
 
+                {!isEdit && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                        <span className="material-symbols-outlined text-red-600">warning</span>
+                        <p className="text-sm text-red-700 font-semibold leading-relaxed">
+                            ध्यान दें: अगर यूज़र रजिस्ट्रेशन के बाद वॉलेट रिचार्ज नहीं करता है या 10 दिनों तक कोई काम नहीं करता है, तो उसकी आईडी डिलीट कर दी जाएगी।
+                        </p>
+                    </div>
+                )}
+
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                     <form onSubmit={submit} className="divide-y divide-slate-100">
                         <div className="p-8 space-y-8">
