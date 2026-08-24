@@ -53,6 +53,13 @@ export default function Register() {
                                     <p className="text-body-md font-body-md text-on-surface-variant">Join 10M+ happy citizens for quick 2-minute setup.</p>
                                 </div>
 
+                                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                                    <span className="material-symbols-outlined text-red-600 mt-0.5">warning</span>
+                                    <p className="text-sm text-red-700 font-semibold leading-snug">
+                                        ध्यान दें: अगर आप रजिस्ट्रेशन के बाद वॉलेट रिचार्ज नहीं करते हैं या 10 दिनों तक कोई काम नहीं करते हैं, तो आपकी आईडी डिलीट कर दी जाएगी।
+                                    </p>
+                                </div>
+
                                 {/* Form */}
                                 <form onSubmit={submit} className="flex flex-col gap-stack-md">
                                     <div className="flex flex-col gap-base">
