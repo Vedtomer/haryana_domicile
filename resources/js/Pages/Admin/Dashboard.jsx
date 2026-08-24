@@ -146,13 +146,9 @@ export default function Dashboard({ services, stats, isAdmin }) {
                         </>
                     )}
                     {!isAdmin && (
-                        <Link
-                            href="/admin/service-requests"
-                            className="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition flex items-center gap-2"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">history</span>
-                            View History
-                        </Link>
+                        <>
+                            {/* View History is available as a grid card */}
+                        </>
                     )}
                 </div>
             </div>
