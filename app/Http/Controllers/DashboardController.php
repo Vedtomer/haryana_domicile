@@ -86,6 +86,7 @@ class DashboardController extends Controller
             ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'dark-blue', 'url' => '/admin/users'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-amber', 'url' => '/admin/user-permissions'],
             ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending'],
+            ['label' => 'Add Service', 'value' => 'New Service', 'tone' => 'dark-green', 'url' => '/admin/services/create'],
             ['label' => 'Pending Coin Requests', 'value' => CoinPurchaseRequest::pending()->count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
             ['label' => 'Manage Service', 'value' => Service::count(), 'tone' => 'dark-green', 'url' => '/admin/services'],
             ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests'],

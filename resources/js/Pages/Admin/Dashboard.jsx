@@ -141,12 +141,15 @@ export default function Dashboard({ services, stats, isAdmin }) {
                 <h2 className="text-lg font-bold text-gray-800">Services</h2>
                 <div className="flex gap-2">
                     {isAdmin && (
-                        <Link
-                            href="/admin/services/create"
-                            className="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
-                        >
-                            + Add Service
-                        </Link>
+                        <>
+                            <Link
+                                href="/admin/user-permissions"
+                                className="px-4 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition flex items-center gap-2"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">shield_person</span>
+                                User Permissions
+                            </Link>
+                        </>
                     )}
                     {!isAdmin && (
                         <Link
