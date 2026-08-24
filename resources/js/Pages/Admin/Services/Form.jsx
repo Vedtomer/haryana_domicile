@@ -81,7 +81,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
         remove_logo: false,
         coin_cost: service?.coin_cost ?? 0,
         is_active: service?.is_active ?? true,
-        visibility: service?.visibility ?? 'public',
+        visibility: service?.visibility ?? 'private',
         user_ids: service?.user_ids ?? [],
         sort_order: service?.sort_order ?? 0,
         fields: service?.fields ?? [],

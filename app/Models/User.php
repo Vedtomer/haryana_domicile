@@ -80,6 +80,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Get all services explicitly assigned to this user
+     */
+    public function services()
+    {
+        return $this->belongsToMany(Service::class);
+    }
+
+    /**
      * Check if user has enough coins
      */
     public function hasEnoughCoins(int $amount): bool

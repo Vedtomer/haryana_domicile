@@ -64,7 +64,7 @@ class ServiceSeeder extends Seeder
                 'module_key' => 'electricity_bill',
                 'sort_order' => 5,
                 'is_active' => true,
-                'visibility' => Service::VISIBILITY_PUBLIC,
+                'visibility' => Service::VISIBILITY_PRIVATE,
             ],
             [
                 'name' => 'Vehicle Details (RC)',
@@ -76,7 +76,7 @@ class ServiceSeeder extends Seeder
                 'module_key' => 'vehicle_details',
                 'sort_order' => 6,
                 'is_active' => true,
-                'visibility' => Service::VISIBILITY_PUBLIC,
+                'visibility' => Service::VISIBILITY_PRIVATE,
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
