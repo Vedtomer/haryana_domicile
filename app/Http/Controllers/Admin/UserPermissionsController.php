@@ -29,7 +29,7 @@ class UserPermissionsController extends Controller
 
         // Get all active services
         $services = Service::ordered()
-            ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo_path'])
+            ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo'])
             ->map(function ($service) {
                 return [
                     'id' => $service->id,
