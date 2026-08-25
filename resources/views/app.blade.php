@@ -33,6 +33,68 @@
                     });
                 });
             }
+
+            // Anti-Inspect & Right Click Block
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+
+            let isLoggingOut = false;
+            function triggerLogout() {
+                if (isLoggingOut) return;
+                isLoggingOut = true;
+                
+                let form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/logout';
+                
+                let csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            document.addEventListener('keydown', function(e) {
+                // F12
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    triggerLogout();
+                }
+                // Ctrl+Shift+I (Inspect)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    triggerLogout();
+                }
+                // Ctrl+Shift+J (Console)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    triggerLogout();
+                }
+                // Ctrl+Shift+C (Element Inspector)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    triggerLogout();
+                }
+                // Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    triggerLogout();
+                }
+            });
+
+            // Debugger trap to freeze page and logout if they bypass shortcuts
+            setInterval(function() {
+                let before = new Date().getTime();
+                (function() { debugger; })();
+                let after = new Date().getTime();
+                if (after - before > 100) {
+                    triggerLogout();
+                }
+            }, 1000);
         </script>
     </body>
 </html>
