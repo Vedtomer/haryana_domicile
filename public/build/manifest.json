@@ -1,141 +1,124 @@
 {
-  "_AdminLayout-CMg_1ZQb.js": {
-    "file": "assets/AdminLayout-CMg_1ZQb.js",
+  "_AdminLayout-TtQlWyUG.js": {
+    "file": "assets/AdminLayout-TtQlWyUG.js",
     "name": "AdminLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_WhatsAppButton-ChQPAyDS.js"
     ]
   },
-  "_Alert-CNoF09i6.js": {
-    "file": "assets/Alert-CNoF09i6.js",
-    "name": "Alert",
-    "imports": [
-      "resources/js/app.jsx",
-      "_Modal-kftCR7p2.js",
-      "_Grow-CUhA4hdL.js",
-      "_IconButton-DIG-4z20.js"
-    ]
-  },
-  "_ArrowBack-tyH0mVwF.js": {
-    "file": "assets/ArrowBack-tyH0mVwF.js",
+  "_ArrowBack-CLFffDWH.js": {
+    "file": "assets/ArrowBack-CLFffDWH.js",
     "name": "ArrowBack",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-CUhA4hdL.js"
+      "_Grow-DyCLkElh.js"
     ]
   },
-  "_Box-DqLI76Oe.js": {
-    "file": "assets/Box-DqLI76Oe.js",
+  "_Box-7fJWLzni.js": {
+    "file": "assets/Box-7fJWLzni.js",
     "name": "Box",
     "imports": [
-      "_Modal-kftCR7p2.js",
+      "_Modal-M2jO7ong.js",
       "resources/js/app.jsx"
     ]
   },
-  "_ConfirmDialog-CcBAL7ak.js": {
-    "file": "assets/ConfirmDialog-CcBAL7ak.js",
+  "_ConfirmDialog-BgKOkQz4.js": {
+    "file": "assets/ConfirmDialog-BgKOkQz4.js",
     "name": "ConfirmDialog",
     "imports": [
       "resources/js/app.jsx",
-      "_Modal-kftCR7p2.js"
+      "_Modal-M2jO7ong.js"
     ]
   },
-  "_Delete-rnrtfBkO.js": {
-    "file": "assets/Delete-rnrtfBkO.js",
+  "_Delete-VHhAMeq4.js": {
+    "file": "assets/Delete-VHhAMeq4.js",
     "name": "Delete",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-CUhA4hdL.js"
+      "_Grow-DyCLkElh.js"
     ]
   },
-  "_FloatingInput-kl1mBmZu.js": {
-    "file": "assets/FloatingInput-kl1mBmZu.js",
+  "_FloatingInput-B8YU0WiC.js": {
+    "file": "assets/FloatingInput-B8YU0WiC.js",
     "name": "FloatingInput",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_FormInputs-DZcwyA-e.js": {
-    "file": "assets/FormInputs-DZcwyA-e.js",
+  "_FormInputs-DZ3kPeW0.js": {
+    "file": "assets/FormInputs-DZ3kPeW0.js",
     "name": "FormInputs",
     "imports": [
-      "_Modal-kftCR7p2.js",
+      "_Modal-M2jO7ong.js",
       "resources/js/app.jsx",
-      "_TextField-BI7aJjij.js",
-      "_Box-DqLI76Oe.js"
+      "_TextField-D1QecAbR.js",
+      "_Box-7fJWLzni.js",
+      "_Grow-DyCLkElh.js"
     ]
   },
-  "_FrontendLayout-iQQQKSH2.js": {
-    "file": "assets/FrontendLayout-iQQQKSH2.js",
+  "_FrontendLayout-AUlAH-X-.js": {
+    "file": "assets/FrontendLayout-AUlAH-X-.js",
     "name": "FrontendLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_WhatsAppButton-ChQPAyDS.js"
     ]
   },
-  "_Grow-CUhA4hdL.js": {
-    "file": "assets/Grow-CUhA4hdL.js",
+  "_Grow-DyCLkElh.js": {
+    "file": "assets/Grow-DyCLkElh.js",
     "name": "Grow",
     "imports": [
       "resources/js/app.jsx",
-      "_Modal-kftCR7p2.js"
+      "_Modal-M2jO7ong.js"
     ]
   },
-  "_IconButton-DIG-4z20.js": {
-    "file": "assets/IconButton-DIG-4z20.js",
+  "_IconButton-C7eYpf-k.js": {
+    "file": "assets/IconButton-C7eYpf-k.js",
     "name": "IconButton",
     "imports": [
       "resources/js/app.jsx",
-      "_Modal-kftCR7p2.js"
+      "_Modal-M2jO7ong.js"
     ]
   },
-  "_Modal-kftCR7p2.js": {
-    "file": "assets/Modal-kftCR7p2.js",
+  "_Modal-M2jO7ong.js": {
+    "file": "assets/Modal-M2jO7ong.js",
     "name": "Modal",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_ResourceIndex-C_WXnWh5.js": {
-    "file": "assets/ResourceIndex-C_WXnWh5.js",
+  "_ResourceIndex-DuCYmAg5.js": {
+    "file": "assets/ResourceIndex-DuCYmAg5.js",
     "name": "ResourceIndex",
     "imports": [
       "resources/js/app.jsx",
-      "_Delete-rnrtfBkO.js",
-      "_Grow-CUhA4hdL.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_Box-DqLI76Oe.js",
-      "_Modal-kftCR7p2.js",
-      "_IconButton-DIG-4z20.js"
+      "_Delete-VHhAMeq4.js",
+      "_Grow-DyCLkElh.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_Box-7fJWLzni.js",
+      "_Modal-M2jO7ong.js",
+      "_IconButton-C7eYpf-k.js"
     ]
   },
-  "_Save-DwJTuJj0.js": {
-    "file": "assets/Save-DwJTuJj0.js",
-    "name": "Save",
-    "imports": [
-      "resources/js/app.jsx",
-      "_Grow-CUhA4hdL.js"
-    ]
-  },
-  "_StatusBadge-nnVwB8mS.js": {
-    "file": "assets/StatusBadge-nnVwB8mS.js",
+  "_StatusBadge-DJkNvXyE.js": {
+    "file": "assets/StatusBadge-DJkNvXyE.js",
     "name": "StatusBadge",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_TextField-BI7aJjij.js": {
-    "file": "assets/TextField-BI7aJjij.js",
+  "_TextField-D1QecAbR.js": {
+    "file": "assets/TextField-D1QecAbR.js",
     "name": "TextField",
     "imports": [
       "resources/js/app.jsx",
-      "_Modal-kftCR7p2.js",
-      "_Grow-CUhA4hdL.js"
+      "_Modal-M2jO7ong.js",
+      "_Grow-DyCLkElh.js"
     ]
   },
-  "_WhatsAppButton-ae5aXMdQ.js": {
-    "file": "assets/WhatsAppButton-ae5aXMdQ.js",
+  "_WhatsAppButton-ChQPAyDS.js": {
+    "file": "assets/WhatsAppButton-ChQPAyDS.js",
     "name": "WhatsAppButton",
     "imports": [
       "resources/js/app.jsx"
@@ -151,601 +134,568 @@
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Create.jsx": {
-    "file": "assets/Create-5U9i-Oxe.js",
+    "file": "assets/Create-CT_76TPG.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/BirthRecords/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/BirthRecords/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_Delete-rnrtfBkO.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js",
+      "_Delete-VHhAMeq4.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Edit.jsx": {
-    "file": "assets/Edit-BFbXPNQS.js",
+    "file": "assets/Edit-BGmeV5m-.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/BirthRecords/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/BirthRecords/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_Delete-rnrtfBkO.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js",
+      "_Delete-VHhAMeq4.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Form.jsx": {
-    "file": "assets/Form-DjBK_t-C.js",
+    "file": "assets/Form-DKqir0W2.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/BirthRecords/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Save-DwJTuJj0.js",
-      "_Delete-rnrtfBkO.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_Modal-kftCR7p2.js",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Grow-CUhA4hdL.js",
-      "_TextField-BI7aJjij.js"
+      "_FormInputs-DZ3kPeW0.js",
+      "_Delete-VHhAMeq4.js",
+      "_Modal-M2jO7ong.js",
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_TextField-D1QecAbR.js",
+      "_Grow-DyCLkElh.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Index.jsx": {
-    "file": "assets/Index-B4ZKppym.js",
+    "file": "assets/Index-B0-yF3s2.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/BirthRecords/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ResourceIndex-C_WXnWh5.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Delete-rnrtfBkO.js",
-      "_Grow-CUhA4hdL.js",
-      "_Modal-kftCR7p2.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_ResourceIndex-DuCYmAg5.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Delete-VHhAMeq4.js",
+      "_Grow-DyCLkElh.js",
+      "_Modal-M2jO7ong.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx": {
-    "file": "assets/Create-CVTljosg.js",
+    "file": "assets/Create-ByXKr9Hr.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx": {
-    "file": "assets/Index-DD2bQMlx.js",
+    "file": "assets/Index-DfHiyl5m.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Dashboard.jsx": {
-    "file": "assets/Dashboard-RuIiIWzS.js",
+    "file": "assets/Dashboard-Ks-W0kQB.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Admin/Dashboard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx": {
-    "file": "assets/Create-D3PdE5b_.js",
+    "file": "assets/Create-Ciq7Rvjn.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Edit.jsx": {
-    "file": "assets/Edit-BiWCYJRf.js",
+    "file": "assets/Edit-DIcCnBY1.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx": {
-    "file": "assets/Form-C2mVx5YE.js",
+    "file": "assets/Form-DC8AWfRC.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_Modal-kftCR7p2.js",
-      "_Box-DqLI76Oe.js",
-      "_Grow-CUhA4hdL.js",
-      "_TextField-BI7aJjij.js"
+      "_FormInputs-DZ3kPeW0.js",
+      "_Modal-M2jO7ong.js",
+      "_Box-7fJWLzni.js",
+      "_TextField-D1QecAbR.js",
+      "_Grow-DyCLkElh.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx": {
-    "file": "assets/Index-ktdpCwha.js",
+    "file": "assets/Index-BkUgS1pm.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ResourceIndex-C_WXnWh5.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Delete-rnrtfBkO.js",
-      "_Grow-CUhA4hdL.js",
-      "_Modal-kftCR7p2.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_ResourceIndex-DuCYmAg5.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Delete-VHhAMeq4.js",
+      "_Grow-DyCLkElh.js",
+      "_Modal-M2jO7ong.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Login.jsx": {
-    "file": "assets/Login-D2fpwlVX.js",
+    "file": "assets/Login-Cf6FVClC.js",
     "name": "Login",
     "src": "resources/js/Pages/Admin/Login.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-iQQQKSH2.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
-    ],
-    "css": [
-      "assets/app-os2dgMXJ.css"
-    ]
-  },
-  "resources/js/Pages/Admin/ManualPan/Create.jsx": {
-    "file": "assets/Create-Dy1ELjWY.js",
-    "name": "Create",
-    "src": "resources/js/Pages/Admin/ManualPan/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_Alert-CNoF09i6.js",
-      "_Modal-kftCR7p2.js",
-      "_Box-DqLI76Oe.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_TextField-BI7aJjij.js",
-      "_Grow-CUhA4hdL.js",
-      "_IconButton-DIG-4z20.js"
+      "_FrontendLayout-AUlAH-X-.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Create.jsx": {
-    "file": "assets/Create-CEbJQGVV.js",
+    "file": "assets/Create-zcJoFviO.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Edit.jsx": {
-    "file": "assets/Edit-D9iSrwJ7.js",
+    "file": "assets/Edit-sEYUkT0J.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx": {
-    "file": "assets/Form-V0FYFDlc.js",
+    "file": "assets/Form-BULsJija.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_Modal-kftCR7p2.js",
-      "_Box-DqLI76Oe.js",
-      "_Grow-CUhA4hdL.js",
-      "_TextField-BI7aJjij.js"
+      "_FormInputs-DZ3kPeW0.js",
+      "_Modal-M2jO7ong.js",
+      "_Box-7fJWLzni.js",
+      "_TextField-D1QecAbR.js",
+      "_Grow-DyCLkElh.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Index.jsx": {
-    "file": "assets/Index-C4NpWl7v.js",
+    "file": "assets/Index-CC5rsA6P.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ResourceIndex-C_WXnWh5.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Delete-rnrtfBkO.js",
-      "_Grow-CUhA4hdL.js",
-      "_Modal-kftCR7p2.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_ResourceIndex-DuCYmAg5.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Delete-VHhAMeq4.js",
+      "_Grow-DyCLkElh.js",
+      "_Modal-M2jO7ong.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Create.jsx": {
-    "file": "assets/Create-BK7fAbYu.js",
+    "file": "assets/Create-DsHHCnyT.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/MarriageForms/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/MarriageForms/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Edit.jsx": {
-    "file": "assets/Edit-D4WkWSUP.js",
+    "file": "assets/Edit-KtrpgMab.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/MarriageForms/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ArrowBack-tyH0mVwF.js",
+      "_AdminLayout-TtQlWyUG.js",
+      "_ArrowBack-CLFffDWH.js",
       "resources/js/Pages/Admin/MarriageForms/Form.jsx",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js",
-      "_Modal-kftCR7p2.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Grow-CUhA4hdL.js",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_TextField-BI7aJjij.js"
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js",
+      "_Modal-M2jO7ong.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Grow-DyCLkElh.js",
+      "_FormInputs-DZ3kPeW0.js",
+      "_TextField-D1QecAbR.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Form.jsx": {
-    "file": "assets/Form-CYZR5iiL.js",
+    "file": "assets/Form-Cv9fUwlc.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/MarriageForms/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Save-DwJTuJj0.js",
-      "_FormInputs-DZcwyA-e.js",
-      "_Modal-kftCR7p2.js",
-      "_Box-DqLI76Oe.js",
-      "_Grow-CUhA4hdL.js",
-      "_TextField-BI7aJjij.js"
+      "_FormInputs-DZ3kPeW0.js",
+      "_Modal-M2jO7ong.js",
+      "_Box-7fJWLzni.js",
+      "_TextField-D1QecAbR.js",
+      "_Grow-DyCLkElh.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Index.jsx": {
-    "file": "assets/Index-v1HGNd3A.js",
+    "file": "assets/Index-C2FbJWED.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/MarriageForms/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ResourceIndex-C_WXnWh5.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Delete-rnrtfBkO.js",
-      "_Grow-CUhA4hdL.js",
-      "_Modal-kftCR7p2.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_Box-DqLI76Oe.js",
-      "_IconButton-DIG-4z20.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_ResourceIndex-DuCYmAg5.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Delete-VHhAMeq4.js",
+      "_Grow-DyCLkElh.js",
+      "_Modal-M2jO7ong.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_Box-7fJWLzni.js",
+      "_IconButton-C7eYpf-k.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Notifications/Index.jsx": {
-    "file": "assets/Index-CWTVPLqi.js",
+    "file": "assets/Index-2qDwFstI.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Notifications/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Create.jsx": {
-    "file": "assets/Create-Xz1q0EGj.js",
+    "file": "assets/Create-CCpPA1zq.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/PanRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Edit.jsx": {
-    "file": "assets/Edit-BQ1KChls.js",
+    "file": "assets/Edit-B11Bx6wV.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PanRequests/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Index.jsx": {
-    "file": "assets/Index-y-2_UscG.js",
+    "file": "assets/Index-douzFQVI.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/PanRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/PaymentSettings/Edit.jsx": {
-    "file": "assets/Edit-CZTtKZk3.js",
+    "file": "assets/Edit-DQtY96sG.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PaymentSettings/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/PdfCoordinates/Edit.jsx": {
-    "file": "assets/Edit-BLGQJJTe.js",
+    "file": "assets/Edit-Cwg5gnaq.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PdfCoordinates/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Profile/Edit.jsx": {
-    "file": "assets/Edit-CAMv5nOU.js",
+    "file": "assets/Edit-BWCa3wQy.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Profile/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_FloatingInput-kl1mBmZu.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_FloatingInput-B8YU0WiC.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Create.jsx": {
-    "file": "assets/Create-lm3Y9OXg.js",
+    "file": "assets/Create-DfFyWslh.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/ServiceRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Index.jsx": {
-    "file": "assets/Index-pTITDk_c.js",
+    "file": "assets/Index-CFAjonAN.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/ServiceRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_StatusBadge-nnVwB8mS.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_StatusBadge-DJkNvXyE.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Show.jsx": {
-    "file": "assets/Show-C0ojG5J4.js",
+    "file": "assets/Show-DGY9JzfH.js",
     "name": "Show",
     "src": "resources/js/Pages/Admin/ServiceRequests/Show.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_StatusBadge-nnVwB8mS.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_StatusBadge-DJkNvXyE.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Services/Create.jsx": {
-    "file": "assets/Create-opzlYlxZ.js",
+    "file": "assets/Create-B-UeQggl.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/Services/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
+      "_AdminLayout-TtQlWyUG.js",
       "resources/js/Pages/Admin/Services/Form.jsx",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Services/Edit.jsx": {
-    "file": "assets/Edit-DjvdvjhA.js",
+    "file": "assets/Edit-L5lmjB5b.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Services/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
+      "_AdminLayout-TtQlWyUG.js",
       "resources/js/Pages/Admin/Services/Form.jsx",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Services/Form.jsx": {
-    "file": "assets/Form-Dp3pPahd.js",
+    "file": "assets/Form-C7Gbhbk0.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/Services/Form.jsx",
     "isDynamicEntry": true,
@@ -757,199 +707,198 @@
     ]
   },
   "resources/js/Pages/Admin/Services/Index.jsx": {
-    "file": "assets/Index-BghIDqQC.js",
+    "file": "assets/Index-MRCJCeyl.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Services/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_ConfirmDialog-CcBAL7ak.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_Modal-kftCR7p2.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_ConfirmDialog-BgKOkQz4.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_Modal-M2jO7ong.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/UserPermissions/Index.jsx": {
-    "file": "assets/Index-BdNZO2lL.js",
+    "file": "assets/Index-D_wVZy1Y.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/UserPermissions/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Create.jsx": {
-    "file": "assets/Create-ih39qPOH.js",
+    "file": "assets/Create-s6Rg9_PH.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/Users/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_FloatingInput-kl1mBmZu.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_FloatingInput-B8YU0WiC.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Edit.jsx": {
-    "file": "assets/Edit-DxapxuVU.js",
+    "file": "assets/Edit-yelGWZhy.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Users/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "resources/js/Pages/Admin/Users/Create.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_FloatingInput-kl1mBmZu.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js",
+      "_FloatingInput-B8YU0WiC.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Admin/Users/Index.jsx": {
-    "file": "assets/Index-30DzRot2.js",
+    "file": "assets/Index-DYqxLsyy.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Users/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Frontend/Home.jsx": {
-    "file": "assets/Home-DUnLNC5z.js",
+    "file": "assets/Home-C8UMMlw8.js",
     "name": "Home",
     "src": "resources/js/Pages/Frontend/Home.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-iQQQKSH2.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_FrontendLayout-AUlAH-X-.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Frontend/Register.jsx": {
-    "file": "assets/Register-DF6mn_H1.js",
+    "file": "assets/Register-DojRXRM8.js",
     "name": "Register",
     "src": "resources/js/Pages/Frontend/Register.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-iQQQKSH2.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_FrontendLayout-AUlAH-X-.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/AadhaarServices.jsx": {
-    "file": "assets/AadhaarServices-DBiU2OYT.js",
+    "file": "assets/AadhaarServices-kof1kIJX.js",
     "name": "AadhaarServices",
     "src": "resources/js/Pages/Utilities/AadhaarServices.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/AadharToFamilyId.jsx": {
-    "file": "assets/AadharToFamilyId-S3t-fT2o.js",
+    "file": "assets/AadharToFamilyId-BuQ9j4MV.js",
     "name": "AadharToFamilyId",
     "src": "resources/js/Pages/Utilities/AadharToFamilyId.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/ElectricityBill.jsx": {
-    "file": "assets/ElectricityBill-DN8ye7A7.js",
+    "file": "assets/ElectricityBill-DDhBsKb8.js",
     "name": "ElectricityBill",
     "src": "resources/js/Pages/Utilities/ElectricityBill.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_Grow-CUhA4hdL.js",
-      "_Modal-kftCR7p2.js",
-      "_TextField-BI7aJjij.js",
-      "_Alert-CNoF09i6.js",
-      "_WhatsAppButton-ae5aXMdQ.js",
-      "_IconButton-DIG-4z20.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_Grow-DyCLkElh.js",
+      "_Modal-M2jO7ong.js",
+      "_TextField-D1QecAbR.js",
+      "_IconButton-C7eYpf-k.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/PdfResizer.jsx": {
-    "file": "assets/PdfResizer-DBgrPVmZ.js",
+    "file": "assets/PdfResizer-urnR1L-m.js",
     "name": "PdfResizer",
     "src": "resources/js/Pages/Utilities/PdfResizer.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/VehicleDetails.jsx": {
-    "file": "assets/VehicleDetails-BhmdnNWT.js",
+    "file": "assets/VehicleDetails-B6XTtUx8.js",
     "name": "VehicleDetails",
     "src": "resources/js/Pages/Utilities/VehicleDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/Pages/Utilities/VehicleToMobile.jsx": {
-    "file": "assets/VehicleToMobile-C3tLnJa3.js",
+    "file": "assets/VehicleToMobile-DT-296jg.js",
     "name": "VehicleToMobile",
     "src": "resources/js/Pages/Utilities/VehicleToMobile.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-CMg_1ZQb.js",
-      "_WhatsAppButton-ae5aXMdQ.js"
+      "_AdminLayout-TtQlWyUG.js",
+      "_WhatsAppButton-ChQPAyDS.js"
     ],
     "css": [
       "assets/app-os2dgMXJ.css"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-Jj527hIk.js",
+    "file": "assets/app-BuDbXGum.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -966,7 +915,6 @@
       "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
       "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
       "resources/js/Pages/Admin/Login.jsx",
-      "resources/js/Pages/Admin/ManualPan/Create.jsx",
       "resources/js/Pages/Admin/MarriageAffidavits/Create.jsx",
       "resources/js/Pages/Admin/MarriageAffidavits/Edit.jsx",
       "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",

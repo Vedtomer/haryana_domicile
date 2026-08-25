@@ -194,10 +194,7 @@ Route::middleware('auth')->group(function () {
         Route::get('pincode-lookup/{pincode}', [\App\Http\Controllers\Admin\PincodeLookupController::class, 'lookup'])->name('pincode-lookup');
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
-        // Automated Manual PAN Card PDF Generator
-        Route::get('manual-pan-card', [\App\Http\Controllers\Admin\ManualPanController::class, 'create'])->name('manual-pan.create');
-        Route::post('manual-pan-card/generate', [\App\Http\Controllers\Admin\ManualPanController::class, 'generate'])->name('manual-pan.generate');
-        Route::get('manual-pan-card/download', [\App\Http\Controllers\Admin\ManualPanController::class, 'download'])->name('manual-pan.download');
+
         
         Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
