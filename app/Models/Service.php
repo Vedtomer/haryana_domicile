@@ -86,6 +86,12 @@ class Service extends Model
             'index' => '/utilities/vehicle-to-mobile',
             'create' => '/utilities/vehicle-to-mobile',
         ],
+        'manual_pan_card' => [
+            'label' => 'Manual PAN Card Generator',
+            'model' => null,
+            'index' => '/admin/manual-pan-card',
+            'create' => '/admin/manual-pan-card',
+        ],
     ];
 
     protected $fillable = [
