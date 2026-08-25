@@ -160,29 +160,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                    {!isAdmin && (
-                        <Link href="/admin/service-requests" className="group relative flex flex-col h-56 p-5 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border border-indigo-200 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100">
-                                    <span className="material-symbols-outlined text-[24px]">history</span>
-                                </div>
-                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-700">
-                                    LOGS
-                                </span>
-                            </div>
-                            <h3 className="mt-4 font-bold text-gray-900 group-hover:text-indigo-700 transition-colors line-clamp-2">
-                                History & My Requests
-                            </h3>
-                            <p className="mt-1 text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                                View status of your manual requests and history of all instant services.
-                            </p>
-                            <div className="mt-auto pt-3 border-t border-indigo-200/50 flex items-center justify-end">
-                                <span className="text-xs font-semibold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                    Open <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                                </span>
-                            </div>
-                        </Link>
-                    )}
 
 
                     
