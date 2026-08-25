@@ -36,7 +36,7 @@ class ManualPanController extends Controller
         }
 
         $request->validate([
-            'pan_number' => 'required|string|max:10',
+            'pan_number' => ['required', 'string', 'size:10', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
             'name' => 'required|string|max:100',
             'father_name' => 'required|string|max:100',
             'dob' => 'required|string|max:20',

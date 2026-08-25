@@ -102,13 +102,16 @@ export default function Create({ service }) {
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <InputField
-                                    label="PAN Number"
+                                    label="PAN Number (e.g. ABCDE1234F)"
                                     name="pan_number"
                                     value={data.pan_number}
-                                    onChange={(e) => setData('pan_number', e.target.value.toUpperCase())}
+                                    onChange={(e) => {
+                                        let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                        setData('pan_number', val);
+                                    }}
                                     error={errors.pan_number}
                                     required
-                                    inputProps={{ maxLength: 10, style: { textTransform: 'uppercase' } }}
+                                    inputProps={{ maxLength: 10, pattern: "[A-Z]{5}[0-9]{4}[A-Z]{1}", title: "Format: 5 Letters, 4 Numbers, 1 Letter" }}
                                 />
                             </Grid>
                         </Grid>
