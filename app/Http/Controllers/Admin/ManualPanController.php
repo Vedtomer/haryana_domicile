@@ -45,9 +45,12 @@ class ManualPanController extends Controller
         ]);
 
         try {
-            // Save uploaded images temporarily
-            $photoPath = $request->file('photo')->store('temp', 'public');
-            $sigPath = $request->file('signature')->store('temp', 'public');
+            // Save uploaded images temporarily with correct extensions (required by FPDF)
+            $photoExt = $request->file('photo')->extension() ?: 'jpg';
+            $sigExt = $request->file('signature')->extension() ?: 'jpg';
+            
+            $photoPath = $request->file('photo')->storeAs('temp', uniqid('photo_').'.'.$photoExt, 'public');
+            $sigPath = $request->file('signature')->storeAs('temp', uniqid('sig_').'.'.$sigExt, 'public');
             
             $fullPhotoPath = Storage::disk('public')->path($photoPath);
             $fullSigPath = Storage::disk('public')->path($sigPath);

@@ -15,6 +15,9 @@ export default function Create({ service }) {
         signature: null,
     });
 
+    const [photoPreview, setPhotoPreview] = React.useState(null);
+    const [signaturePreview, setSignaturePreview] = React.useState(null);
+
     useEffect(() => {
         if (flash?.download_url) {
             // Automatically trigger the download
@@ -118,10 +121,19 @@ export default function Create({ service }) {
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/png"
-                                        onChange={(e) => setData('photo', e.target.files[0])}
-                                        style={{ width: '100%' }}
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            setData('photo', file);
+                                            if (file) setPhotoPreview(URL.createObjectURL(file));
+                                        }}
+                                        style={{ width: '100%', marginBottom: photoPreview ? '10px' : '0' }}
                                         required
                                     />
+                                    {photoPreview && (
+                                        <div className="mt-2 text-center">
+                                            <img src={photoPreview} alt="Photo Preview" className="max-h-32 object-contain mx-auto border rounded shadow-sm" />
+                                        </div>
+                                    )}
                                     {errors.photo && <Typography color="error" variant="caption">{errors.photo}</Typography>}
                                 </Box>
                             </Grid>
@@ -131,10 +143,19 @@ export default function Create({ service }) {
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/png"
-                                        onChange={(e) => setData('signature', e.target.files[0])}
-                                        style={{ width: '100%' }}
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            setData('signature', file);
+                                            if (file) setSignaturePreview(URL.createObjectURL(file));
+                                        }}
+                                        style={{ width: '100%', marginBottom: signaturePreview ? '10px' : '0' }}
                                         required
                                     />
+                                    {signaturePreview && (
+                                        <div className="mt-2 text-center">
+                                            <img src={signaturePreview} alt="Signature Preview" className="max-h-16 object-contain mx-auto border rounded shadow-sm bg-white" />
+                                        </div>
+                                    )}
                                     {errors.signature && <Typography color="error" variant="caption">{errors.signature}</Typography>}
                                 </Box>
                             </Grid>
