@@ -14,6 +14,7 @@ export default function AdminLayout({ header, children }) {
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
     const isAdmin = auth?.user?.type === 'admin' || auth?.user?.type === 'super_admin';
     const showSidebar = !isDashboard && isAdmin;
+    const showSpellingWarning = url.includes('/create') || url.includes('/edit') || url.includes('/utilities/');
 
     const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
 
@@ -272,6 +273,19 @@ export default function AdminLayout({ header, children }) {
                     </div>
                 </header>
                 <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950">
+                    {showSpellingWarning && (
+                        <div className="mb-6 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
+                            <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">
+                                <span className="material-symbols-outlined text-sm">warning</span>
+                                Alert
+                            </div>
+                            <div className="flex-1 overflow-hidden relative flex items-center">
+                                <div className="animate-marquee-ltr whitespace-nowrap text-red-700 dark:text-red-400 font-bold px-4 py-2 text-lg">
+                                    सभी डिटेल्स सही सही भरे With Spelling ✅🙏
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {children}
                 </main>
             </div>
