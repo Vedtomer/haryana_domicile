@@ -98,6 +98,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/utilities/vehicle-to-mobile/search', [\App\Http\Controllers\VehicleToMobileController::class, 'search'])->name('utilities.vehicle-to-mobile.search');
 
+    Route::get('/utilities/mobile-to-details', function () {
+        return Inertia::render('Utilities/MobileLookup');
+    })->name('utilities.mobile-to-details');
+
+    Route::post('/utilities/mobile-to-details/search', [\App\Http\Controllers\TelegramLookupController::class, 'search'])->name('utilities.mobile-to-details.search');
+
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');
     })->name('utilities.vehicle-details');
