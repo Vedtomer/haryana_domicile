@@ -97,5 +97,16 @@ class ServiceSeeder extends Seeder
                 ]);
             }
         }
+
+        // Clean up old Telegram services that are no longer used
+        $oldSlugs = [
+            'telegram-num',
+            'telegram-aadhar',
+            'telegram-familyinfo',
+            'telegram-pan',
+            'telegram-ration',
+            'mobile-to-details' // the old one
+        ];
+        Service::whereIn('slug', $oldSlugs)->delete();
     }
 }
