@@ -274,7 +274,7 @@ export default function AdminLayout({ header, children }) {
                 </header>
                 <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950">
                     {showSpellingWarning && (
-                        <div className="mb-6 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
+                        <div className="mb-6 max-w-3xl mx-auto bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
                             <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">
                                 <span className="material-symbols-outlined text-sm">warning</span>
                                 Alert
