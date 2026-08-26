@@ -86,36 +86,6 @@ class Service extends Model
             'index' => '/utilities/vehicle-to-mobile',
             'create' => '/utilities/vehicle-to-mobile',
         ],
-        'telegram_num' => [
-            'label' => 'Mobile to Details',
-            'model' => null,
-            'index' => '/utilities/mobile-to-details',
-            'create' => '/utilities/mobile-to-details',
-        ],
-        'telegram_aadhar' => [
-            'label' => 'Aadhar Details',
-            'model' => null,
-            'index' => '/utilities/telegram-aadhar',
-            'create' => '/utilities/telegram-aadhar',
-        ],
-        'telegram_familyinfo' => [
-            'label' => 'Family Info (PPP)',
-            'model' => null,
-            'index' => '/utilities/telegram-familyinfo',
-            'create' => '/utilities/telegram-familyinfo',
-        ],
-        'telegram_pan' => [
-            'label' => 'PAN Card Details',
-            'model' => null,
-            'index' => '/utilities/telegram-pan',
-            'create' => '/utilities/telegram-pan',
-        ],
-        'telegram_ration' => [
-            'label' => 'Ration Card Details',
-            'model' => null,
-            'index' => '/utilities/telegram-ration',
-            'create' => '/utilities/telegram-ration',
-        ],
     ];
 
     protected $fillable = [
