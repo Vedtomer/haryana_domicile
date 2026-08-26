@@ -102,7 +102,23 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Utilities/MobileLookup');
     })->name('utilities.mobile-to-details');
 
-    Route::post('/utilities/mobile-to-details/search', [\App\Http\Controllers\TelegramLookupController::class, 'search'])->name('utilities.mobile-to-details.search');
+    Route::get('/utilities/telegram-aadhar', function () {
+        return Inertia::render('Utilities/TelegramAadhar');
+    })->name('utilities.telegram-aadhar');
+
+    Route::get('/utilities/telegram-familyinfo', function () {
+        return Inertia::render('Utilities/TelegramFamilyInfo');
+    })->name('utilities.telegram-familyinfo');
+
+    Route::get('/utilities/telegram-pan', function () {
+        return Inertia::render('Utilities/TelegramPan');
+    })->name('utilities.telegram-pan');
+
+    Route::get('/utilities/telegram-ration', function () {
+        return Inertia::render('Utilities/TelegramRation');
+    })->name('utilities.telegram-ration');
+
+    Route::post('/utilities/telegram-search', [\App\Http\Controllers\TelegramLookupController::class, 'search'])->name('utilities.telegram-search');
 
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');

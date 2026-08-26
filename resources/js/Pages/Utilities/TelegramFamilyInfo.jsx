@@ -3,9 +3,9 @@ import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
-export default function MobileLookup() {
+export default function TelegramFamilyInfo() {
     const { auth } = usePage().props;
-    const [number, setNumber] = useState('');
+    const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
@@ -13,8 +13,8 @@ export default function MobileLookup() {
     const handleSearch = async (e) => {
         e.preventDefault();
         
-        if (number.length < 10) {
-            setError('Please enter a valid mobile number.');
+        if (inputValue.length < 4) {
+            setError('Please enter a valid Family ID.');
             return;
         }
 
@@ -23,11 +23,11 @@ export default function MobileLookup() {
         setResult(null);
 
         try {
-            const response = await axios.post('/utilities/telegram-search', { type: 'num', input: number });
+            const response = await axios.post('/utilities/telegram-search', { type: 'familyinfo', input: inputValue });
             if (response.data.success) {
                 setResult(response.data.details);
             } else {
-                setError(response.data.message || 'Details not found for this number.');
+                setError(response.data.message || 'Details not found for this ID.');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred while fetching the details.');
@@ -41,47 +41,47 @@ export default function MobileLookup() {
             header={
                 <div className="flex flex-col">
                     <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Mobile Number to Details
+                        Family ID Details Lookup
                     </h1>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Instantly retrieve owner details from mobile number
+                        Instantly retrieve details associated with a Family ID (PPP)
                     </p>
                 </div>
             }
         >
-            <Head title="Mobile to Details" />
+            <Head title="Family ID Lookup" />
 
             <div className="max-w-xl mx-auto mt-8">
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="p-8">
                         <div className="flex items-center justify-center w-16 h-16 bg-blue-50 text-blue-600 rounded-full mb-6 mx-auto">
-                            <span className="material-symbols-outlined text-3xl">contact_phone</span>
+                            <span className="material-symbols-outlined text-3xl">family_home</span>
                         </div>
                         <h2 className="text-2xl font-black text-center text-slate-800 dark:text-white mb-2 tracking-tight">
-                            Find Number Details
+                            Find Family Info
                         </h2>
                         <p className="text-center text-slate-500 mb-8 font-medium">
-                            Enter a 10-digit mobile number to fetch the associated details instantly.
+                            Enter a Family ID to fetch the associated family members and details instantly.
                         </p>
 
                         <form onSubmit={handleSearch} className="space-y-5">
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    Mobile Number
+                                    Family ID
                                 </label>
                                 <input
                                     type="text"
                                     maxLength="15"
-                                    value={number}
-                                    onChange={(e) => setNumber(e.target.value.replace(/[^0-9+]/g, ''))}
-                                    placeholder="e.g. 9876543210"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-lg tracking-widest font-bold transition-all text-center dark:text-white"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                                    placeholder="e.g. ABC1234"
+                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-lg tracking-widest font-bold transition-all text-center dark:text-white uppercase"
                                 />
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={loading || number.length < 10}
+                                disabled={loading || inputValue.length < 4}
                                 className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-lg rounded-xl shadow-lg shadow-blue-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                             >
                                 {loading ? (

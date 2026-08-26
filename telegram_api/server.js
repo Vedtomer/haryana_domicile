@@ -41,11 +41,11 @@ async function startTelegramClient() {
 
 app.get('/api/lookup', async (req, res) => {
     try {
-        const { number } = req.query;
-        if (!number) return res.status(400).json({ success: false, error: 'Number is required' });
+        const { command } = req.query;
+        if (!command) return res.status(400).json({ success: false, error: 'Command is required' });
         if (!botUsername) return res.status(500).json({ success: false, error: 'Bot username is not configured in .env' });
         
-        console.log(`Sending lookup request for number ${number} to bot ${botUsername}`);
+        console.log(`Sending command "${command}" to bot ${botUsername}`);
         
         // Ensure client is connected
         if (!client || !client.connected) {
@@ -53,7 +53,7 @@ app.get('/api/lookup', async (req, res) => {
         }
         
         // Send message to the bot
-        await client.sendMessage(botUsername, { message: number });
+        await client.sendMessage(botUsername, { message: command });
         
         // Wait 4 seconds for the bot to reply
         await new Promise(resolve => setTimeout(resolve, 4000));
