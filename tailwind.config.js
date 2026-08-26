@@ -11,13 +11,13 @@ export default {
     theme: {
         extend: {
             keyframes: {
-                'marquee-ltr': {
-                    '0%': { transform: 'translateX(-100%)' },
-                    '100%': { transform: 'translateX(100%)' },
+                'marquee-rtl': {
+                    '0%': { transform: 'translateX(100%)' },
+                    '100%': { transform: 'translateX(-100%)' },
                 },
             },
             animation: {
-                'marquee-ltr': 'marquee-ltr 15s linear infinite',
+                'marquee-rtl': 'marquee-rtl 15s linear infinite',
             },
             "colors": {
                 "primary-fixed-dim": "#adc6ff",

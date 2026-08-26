@@ -280,7 +280,7 @@ export default function AdminLayout({ header, children }) {
                                 Alert
                             </div>
                             <div className="flex-1 overflow-hidden relative flex items-center">
-                                <div className="animate-marquee-ltr whitespace-nowrap text-red-700 dark:text-red-400 font-bold px-4 py-2 text-lg">
+                                <div className="animate-marquee-rtl whitespace-nowrap text-red-700 dark:text-red-400 font-bold px-4 py-2 text-lg">
                                     सभी डिटेल्स सही सही भरे With Spelling ✅🙏
                                 </div>
                             </div>
