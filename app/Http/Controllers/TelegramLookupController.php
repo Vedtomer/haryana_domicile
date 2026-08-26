@@ -58,10 +58,11 @@ class TelegramLookupController extends Controller
         ];
         
         $fullCommand = $commandMap[$type];
+        $apiUrl = env('TELEGRAM_API_URL', 'http://localhost:4000');
 
         try {
-            // Call the local Node.js Telegram API
-            $response = Http::timeout(10)->get('http://localhost:4000/api/lookup', [
+            // Call the Telegram API
+            $response = Http::timeout(10)->get($apiUrl . '/api/lookup', [
                 'command' => $fullCommand
             ]);
 
