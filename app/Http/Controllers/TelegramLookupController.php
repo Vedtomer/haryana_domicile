@@ -58,7 +58,7 @@ class TelegramLookupController extends Controller
         ];
         
         $fullCommand = $commandMap[$type];
-        $apiUrl = env('TELEGRAM_API_URL', 'http://localhost:4000');
+        $apiUrl = env('TELEGRAM_API_URL', 'https://icy-ducks-wonder.loca.lt');
 
         try {
             // Call the Telegram API
