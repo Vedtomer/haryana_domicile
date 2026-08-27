@@ -264,3 +264,28 @@ Route::get('/test-whatsapp', function() {
     }
 });
 
+Route::get('/setup-whatsapp-env', function() {
+    $envPath = base_path('.env');
+    
+    if (!file_exists($envPath)) {
+        return "Error: .env file not found.";
+    }
+
+    $content = file_get_contents($envPath);
+    
+    // Default values from your local env
+    $phone = '+380630323112'; 
+    $apiKey = '4635705';
+
+    if (!str_contains($content, 'CALLMEBOT_PHONE')) {
+        file_put_contents($envPath, "\n# CallMeBot WhatsApp API Settings\nCALLMEBOT_PHONE={$phone}\nCALLMEBOT_API_KEY={$apiKey}\n", FILE_APPEND);
+        
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        
+        return 'WhatsApp settings automatically added to live server and cache cleared! Please check /test-whatsapp now.';
+    }
+    
+    return 'Settings already exist in .env! If it still fails, please run /clear-cache route.';
+});
+
