@@ -52,9 +52,17 @@ class SystemAlert extends Notification
         \Illuminate\Support\Facades\Log::info("CallMeBot Attempt:", ['phone' => $phone, 'apiKey' => $apiKey]);
 
         if (!empty($phone) && !empty($apiKey)) {
-            $message = "*" . $title . "*\n" . $body;
+            // Clean up the message to avoid issues with special characters (like ₹)
+            $safeBody = str_replace('₹', 'Rs. ', $body);
+            $message = "*" . $title . "*\n" . $safeBody;
+            
             if ($url) {
-                $message .= "\n" . url($url);
+                // Remove localhost if APP_URL is not set properly on live server
+                $fullUrl = url($url);
+                if (str_contains($fullUrl, 'localhost')) {
+                    $fullUrl = $url; // Just send the relative path if APP_URL is broken
+                }
+                $message .= "\nLink: " . $fullUrl;
             }
 
             try {
