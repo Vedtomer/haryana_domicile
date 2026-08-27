@@ -46,8 +46,8 @@ class SystemAlert extends Notification
         }
 
         // Send WhatsApp Alert via CallMeBot
-        $phone = env('CALLMEBOT_PHONE');
-        $apiKey = env('CALLMEBOT_API_KEY');
+        $phone = config('services.callmebot.phone');
+        $apiKey = config('services.callmebot.api_key');
 
         if (!empty($phone) && !empty($apiKey)) {
             $message = "*" . $title . "*\n" . $body;
