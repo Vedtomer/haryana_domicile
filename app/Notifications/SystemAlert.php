@@ -44,5 +44,26 @@ class SystemAlert extends Notification
         if ($admins->isNotEmpty()) {
             NotificationFacade::send($admins, new self($title, $body, $url, $level));
         }
+
+        // Send WhatsApp Alert via CallMeBot
+        $phone = env('CALLMEBOT_PHONE');
+        $apiKey = env('CALLMEBOT_API_KEY');
+
+        if (!empty($phone) && !empty($apiKey)) {
+            $message = "*" . $title . "*\n" . $body;
+            if ($url) {
+                $message .= "\n" . url($url);
+            }
+
+            try {
+                \Illuminate\Support\Facades\Http::timeout(5)->get('https://api.callmebot.com/whatsapp.php', [
+                    'phone' => $phone,
+                    'text' => $message,
+                    'apikey' => $apiKey,
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('CallMeBot Error: ' . $e->getMessage());
+            }
+        }
     }
 }
