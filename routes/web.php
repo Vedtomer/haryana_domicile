@@ -226,4 +226,10 @@ Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'p
 Route::get('/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
 
 
-
+Route::get('/cc', function() {
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    return 'All caches cleared successfully!';
+});
