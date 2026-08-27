@@ -65,17 +65,24 @@ class SystemAlert extends Notification
                 $message .= "\nLink: " . $fullUrl;
             }
 
-            try {
-                \Illuminate\Support\Facades\Log::info("Sending CallMeBot request...");
-                $response = \Illuminate\Support\Facades\Http::timeout(10)->withOptions(['verify' => false])->get('https://api.callmebot.com/whatsapp.php', [
-                    'phone' => $phone,
-                    'text' => $message,
-                    'apikey' => $apiKey,
-                ]);
-                \Illuminate\Support\Facades\Log::info("CallMeBot Response:", ['status' => $response->status(), 'body' => $response->body()]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('CallMeBot Error: ' . $e->getMessage());
-            }
+            // Run the API call AFTER the HTTP response is sent to the user's browser.
+            // This prevents 504 Gateway Timeouts if CallMeBot is slow.
+            app()->terminating(function () use ($phone, $message, $apiKey) {
+                try {
+                    \Illuminate\Support\Facades\Log::info("Sending CallMeBot request...");
+                    $response = \Illuminate\Support\Facades\Http::connectTimeout(5)
+                        ->timeout(10)
+                        ->withOptions(['verify' => false])
+                        ->get('https://api.callmebot.com/whatsapp.php', [
+                            'phone' => $phone,
+                            'text' => $message,
+                            'apikey' => $apiKey,
+                        ]);
+                    \Illuminate\Support\Facades\Log::info("CallMeBot Response:", ['status' => $response->status(), 'body' => $response->body()]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('CallMeBot Error: ' . $e->getMessage());
+                }
+            });
         } else {
             \Illuminate\Support\Facades\Log::warning("CallMeBot phone or API key is empty in config!");
         }
