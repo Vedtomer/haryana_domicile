@@ -224,3 +224,12 @@ Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'p
 
 // Birth Record Print Route
 Route::get('/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
+
+// Clear Cache Route (For Public Server)
+Route::get('/clear-cache', function() {
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    return 'Cache cleared successfully! You can now test WhatsApp notifications.';
+});

@@ -49,6 +49,8 @@ class SystemAlert extends Notification
         $phone = config('services.callmebot.phone');
         $apiKey = config('services.callmebot.api_key');
 
+        \Illuminate\Support\Facades\Log::info("CallMeBot Attempt:", ['phone' => $phone, 'apiKey' => $apiKey]);
+
         if (!empty($phone) && !empty($apiKey)) {
             $message = "*" . $title . "*\n" . $body;
             if ($url) {
@@ -56,14 +58,18 @@ class SystemAlert extends Notification
             }
 
             try {
-                \Illuminate\Support\Facades\Http::timeout(5)->get('https://api.callmebot.com/whatsapp.php', [
+                \Illuminate\Support\Facades\Log::info("Sending CallMeBot request...");
+                $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://api.callmebot.com/whatsapp.php', [
                     'phone' => $phone,
                     'text' => $message,
                     'apikey' => $apiKey,
                 ]);
+                \Illuminate\Support\Facades\Log::info("CallMeBot Response:", ['status' => $response->status(), 'body' => $response->body()]);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('CallMeBot Error: ' . $e->getMessage());
             }
+        } else {
+            \Illuminate\Support\Facades\Log::warning("CallMeBot phone or API key is empty in config!");
         }
     }
 }
