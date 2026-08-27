@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HaryanaDomicile;
 use App\Models\PdfCoordinate;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -37,6 +38,12 @@ class HaryanaDomicileController extends Controller
         $record = HaryanaDomicile::create($data);
 
         $this->chargeForService($service, $record->id, "Haryana Domicile #{$record->id}");
+
+        SystemAlert::toAdmins(
+            'New Haryana Domicile Request',
+            auth()->user()->name . " requested a Haryana Domicile (#{$record->id}).",
+            '/admin/haryana-domicile'
+        );
 
         if ($request->boolean('save_and_create')) {
             return redirect()->route('admin.haryana-domicile.create')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PanRequest;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -70,6 +71,12 @@ class PanRequestController extends Controller
         $panRequest = PanRequest::create($data);
 
         $this->chargeForService($service, $panRequest->id, "PAN Card #{$panRequest->id}");
+
+        SystemAlert::toAdmins(
+            'New PAN Card Request',
+            auth()->user()->name . " requested a PAN Card (#{$panRequest->id}).",
+            '/admin/pan-requests'
+        );
 
         return redirect()->route('admin.pan-requests.index')
             ->with('success', 'PAN Request submitted successfully.' . $this->chargeNote($service));

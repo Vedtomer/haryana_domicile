@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BirthRecord;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -49,6 +50,12 @@ class BirthRecordController extends Controller
         $record = BirthRecord::create($data);
 
         $this->chargeForService($service, $record->id, "Birth Certificate #{$record->id}");
+
+        SystemAlert::toAdmins(
+            'New Birth Record Request',
+            auth()->user()->name . " requested a Birth Certificate (#{$record->id}).",
+            '/admin/birth-records'
+        );
 
         if ($request->boolean('save_and_create')) {
             return redirect()->route('admin.birth-records.create')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MarriageForm;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,6 +38,12 @@ class MarriageFormController extends Controller
         $form = MarriageForm::create($data);
 
         $this->chargeForService($service, $form->id, "Marriage Certificate #{$form->id}");
+
+        SystemAlert::toAdmins(
+            'New Marriage Form Request',
+            auth()->user()->name . " requested a Marriage Form (#{$form->id}).",
+            '/admin/marriage-forms'
+        );
 
         if ($request->boolean('save_and_create')) {
             return redirect()->route('admin.marriage-forms.create')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MarriageAffidavit;
+use App\Notifications\SystemAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,6 +38,12 @@ class MarriageAffidavitController extends Controller
         $affidavit = MarriageAffidavit::create($data);
 
         $this->chargeForService($service, $affidavit->id, "New Marriage Certificate #{$affidavit->id}");
+
+        SystemAlert::toAdmins(
+            'New Marriage Affidavit Request',
+            auth()->user()->name . " requested a Marriage Affidavit (#{$affidavit->id}).",
+            '/admin/marriage-affidavits'
+        );
 
         if ($request->boolean('save_and_create')) {
             return redirect()->route('admin.marriage-affidavits.create')
