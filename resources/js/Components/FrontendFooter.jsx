@@ -99,7 +99,6 @@ export default function FrontendFooter() {
                         >
                             support@cspjaankari.com
                         </p>
-                        <p style={{ fontSize: 12, color: '#bfdbfe' }}>Haryana, India</p>
                     </div>
                 </div>
 
