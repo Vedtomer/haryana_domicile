@@ -233,3 +233,34 @@ Route::get('/clear-cache', function() {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     return 'Cache cleared successfully! You can now test WhatsApp notifications.';
 });
+
+Route::get('/test-whatsapp', function() {
+    $phone = config('services.callmebot.phone');
+    $apiKey = config('services.callmebot.api_key');
+    
+    if (empty($phone) || empty($apiKey)) {
+        return "ERROR: Phone or API Key is empty. Check your .env file! Phone: '{$phone}', Key: '{$apiKey}'";
+    }
+
+    try {
+        $response = \Illuminate\Support\Facades\Http::timeout(10)->withOptions(['verify' => false])->get('https://api.callmebot.com/whatsapp.php', [
+            'phone' => $phone,
+            'text' => 'Test message from public server to check API status.',
+            'apikey' => $apiKey,
+        ]);
+        
+        return [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'phone' => $phone,
+            'error' => null
+        ];
+    } catch (\Exception $e) {
+        return [
+            'status' => 500,
+            'error' => $e->getMessage(),
+            'phone' => $phone
+        ];
+    }
+});
+

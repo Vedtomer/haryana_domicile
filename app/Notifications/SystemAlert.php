@@ -59,7 +59,7 @@ class SystemAlert extends Notification
 
             try {
                 \Illuminate\Support\Facades\Log::info("Sending CallMeBot request...");
-                $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://api.callmebot.com/whatsapp.php', [
+                $response = \Illuminate\Support\Facades\Http::timeout(10)->withOptions(['verify' => false])->get('https://api.callmebot.com/whatsapp.php', [
                     'phone' => $phone,
                     'text' => $message,
                     'apikey' => $apiKey,
