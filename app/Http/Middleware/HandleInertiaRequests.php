@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
+                'login_voice' => $request->session()->get('login_voice'),
             ],
             // Sidebar service links — kept in sync with what the admin has switched on,
             // and filtered by the same visibility rule the dashboard cards use.
