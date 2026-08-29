@@ -6,9 +6,21 @@ import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
 
 export default function AdminLayout({ header, children }) {
-    const { auth, navServices = [] } = usePage().props;
+    const { auth, navServices = [], flash } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        if (flash?.login_voice) {
+            const utterance = new SpeechSynthesisUtterance(flash.login_voice);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            // Slight delay to ensure DOM is ready and audio is not blocked by browser autoplay rules
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+            }, 500);
+        }
+    }, [flash?.login_voice]);
 
     const { url } = usePage();
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');

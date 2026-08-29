@@ -38,7 +38,7 @@ class AuthController extends Controller
                 return back()->withErrors(['login' => 'Your account has been deactivated.'])->onlyInput('login');
             }
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
         }
 
         return back()->withErrors([
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended('/dashboard');
+        return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
     }
 
     public function logout(Request $request)
