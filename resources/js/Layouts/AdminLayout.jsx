@@ -16,47 +16,6 @@ export default function AdminLayout({ header, children }) {
     const showSidebar = !isDashboard && isAdmin;
     const showSpellingWarning = url.includes('/create') || url.includes('/edit') || url.includes('/utilities/');
 
-    const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
-
-    // Auto-logout countdown timer
-    useEffect(() => {
-        let interval;
-        const resetTimer = () => {
-            setTimeLeft(10 * 60);
-        };
-
-        if (auth?.user) {
-            window.addEventListener('mousemove', resetTimer);
-            window.addEventListener('keydown', resetTimer);
-            window.addEventListener('click', resetTimer);
-            window.addEventListener('scroll', resetTimer);
-            
-            interval = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        clearInterval(interval);
-                        router.post('/logout');
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        }
-
-        return () => {
-            clearInterval(interval);
-            window.removeEventListener('mousemove', resetTimer);
-            window.removeEventListener('keydown', resetTimer);
-            window.removeEventListener('click', resetTimer);
-            window.removeEventListener('scroll', resetTimer);
-        };
-    }, [auth?.user]);
-
-    const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s.toString().padStart(2, '0')}`;
-    };
 
     const NavItem = ({ href, icon, children }) => {
         const isActive = url.startsWith(href);
@@ -181,15 +140,7 @@ export default function AdminLayout({ header, children }) {
 
                     <div className="flex items-center gap-3 flex-shrink-0">
                     
-                    {/* Auto-logout Timer */}
-                    {auth?.user && (
-                        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold border rounded-xl transition-colors ${
-                            timeLeft < 60 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
-                        }`}>
-                            <span className="material-symbols-outlined text-[16px]">timer</span>
-                            {formatTime(timeLeft)}
-                        </div>
-                    )}
+
 
                     {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
