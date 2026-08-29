@@ -3,16 +3,7 @@ import { Paper, Grid, Box, Button, CircularProgress } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { InputField, SelectField, SectionHeader } from '../../../Components/FormInputs';
 
-const RELIGION_OPTIONS = [
-    { value: 'Hindu', label: 'Hindu' },
-    { value: 'Muslim', label: 'Muslim' },
-    { value: 'Sikh', label: 'Sikh' },
-    { value: 'Christian', label: 'Christian' },
-    { value: 'Jain', label: 'Jain' },
-    { value: 'Buddhist', label: 'Buddhist' },
-    { value: 'Zoroastrian', label: 'Zoroastrian' },
-    { value: 'Other', label: 'Other' },
-];
+
 
 export default function HaryanaDomicileFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
@@ -105,7 +96,7 @@ export default function HaryanaDomicileFields({ data, setData, errors, processin
                     <InputField label="Caste" name="caste" value={data.caste} onChange={handleChange} error={errors.caste} />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                    <SelectField label="Religion (Dharam)" name="religion" required={false} value={data.religion} onChange={handleChange} error={errors.religion} options={RELIGION_OPTIONS} />
+                    <InputField label="Religion (Dharam)" name="religion" required={false} value={data.religion} onChange={handleChange} error={errors.religion} />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <InputField label="Child Name (Optional)" name="child_name" required={false} value={data.child_name} onChange={handleChange} error={errors.child_name} />
