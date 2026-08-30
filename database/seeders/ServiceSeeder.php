@@ -80,6 +80,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Aadhar Update Form',
+                'slug' => 'aadhar-update',
+                'description' => 'Generate printable Aadhar update form filled with handwriting font.',
+                'icon' => '📝',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'aadhar_update',
+                'sort_order' => 7,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

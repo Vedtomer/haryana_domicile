@@ -86,6 +86,12 @@ class Service extends Model
             'index' => '/utilities/vehicle-to-mobile',
             'create' => '/utilities/vehicle-to-mobile',
         ],
+        'aadhar_update' => [
+            'label' => 'Aadhar Update Form',
+            'model' => AadharUpdate::class,
+            'index' => '/admin/aadhar-update',
+            'create' => '/admin/aadhar-update/create',
+        ],
     ];
 
     protected $fillable = [

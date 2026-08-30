@@ -193,6 +193,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('birth-records', \App\Http\Controllers\Admin\BirthRecordController::class);
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class);
         Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
+        
+        Route::resource('aadhar-update', \App\Http\Controllers\Admin\AadharUpdateController::class);
+        Route::get('aadhar-update/{aadhar_update}/print', [\App\Http\Controllers\Admin\AadharUpdateController::class, 'print'])->name('aadhar-update.print');
+
         Route::get('pincode-lookup/{pincode}', [\App\Http\Controllers\Admin\PincodeLookupController::class, 'lookup'])->name('pincode-lookup');
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
