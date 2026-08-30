@@ -1,233 +1,118 @@
-import React from 'react';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
+import React, { useState } from 'react';
+import { Paper, Grid, Box, Button, CircularProgress } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import { InputField, SectionHeader } from '../../../Components/FormInputs';
 
-export default function Form({ data, setData, errors }) {
-    const handleChange = (e) => {
-        setData(e.target.name, e.target.value);
+export default function AadharUpdateFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
+    const handleChange = (e) => setData(e.target.name, e.target.value);
+    const [isSaveAndCreate, setIsSaveAndCreate] = useState(false);
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e, isSaveAndCreate);
+    };
+
+    const handleAadharChange = (e) => {
+        setData('aadhar_number', e.target.value.replace(/\D/g, '').slice(0, 12));
+    };
+
+    const handlePincodeChange = (e) => {
+        setData('pin_code', e.target.value.replace(/\D/g, '').slice(0, 6));
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <InputLabel htmlFor="aadhar_number" value="Aadhar Number" />
-                <TextInput
-                    id="aadhar_number"
-                    name="aadhar_number"
-                    value={data.aadhar_number}
-                    className="mt-1 block w-full"
-                    autoComplete="off"
-                    onChange={handleChange}
-                    required
-                    maxLength="12"
-                />
-                <InputError message={errors.aadhar_number} className="mt-2" />
-            </div>
+        <Paper component="form" onSubmit={handleFormSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
-            <div>
-                <InputLabel htmlFor="name" value="Resident Name" />
-                <TextInput
-                    id="name"
-                    name="name"
-                    value={data.name}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                    required
-                />
-                <InputError message={errors.name} className="mt-2" />
-            </div>
+            <SectionHeader title="Resident Details" />
+            <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Aadhar Number" name="aadhar_number" value={data.aadhar_number} onChange={handleAadharChange} error={errors.aadhar_number} inputProps={{ inputMode: 'numeric', maxLength: 12 }} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Resident Name" name="name" value={data.name} onChange={handleChange} error={errors.name} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                    <InputField label="Date of Birth" name="dob" type="date" required={false} value={data.dob} onChange={handleChange} error={errors.dob} InputLabelProps={{ shrink: true }} />
+                </Grid>
+            </Grid>
 
-            <div>
-                <InputLabel htmlFor="c_o" value="C/O (Care Of)" />
-                <TextInput
-                    id="c_o"
-                    name="c_o"
-                    value={data.c_o}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.c_o} className="mt-2" />
-            </div>
+            <SectionHeader title="Address Details" />
+            <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="C/O (Care Of)" name="c_o" required={false} value={data.c_o} onChange={handleChange} error={errors.c_o} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="House No/ Bldg/ Apt" name="house_no" required={false} value={data.house_no} onChange={handleChange} error={errors.house_no} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Street/ Road/ Lane" name="street" required={false} value={data.street} onChange={handleChange} error={errors.street} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Landmark" name="landmark" required={false} value={data.landmark} onChange={handleChange} error={errors.landmark} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Area/ Locality/ Sector" name="locality" required={false} value={data.locality} onChange={handleChange} error={errors.locality} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Village/ Town/ City" name="village_town" value={data.village_town} onChange={handleChange} error={errors.village_town} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <InputField label="Post Office" name="post_office" required={false} value={data.post_office} onChange={handleChange} error={errors.post_office} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <InputField label="District" name="district" value={data.district} onChange={handleChange} error={errors.district} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <InputField label="State" name="state" value={data.state} onChange={handleChange} error={errors.state} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <InputField label="PIN Code" name="pin_code" value={data.pin_code} onChange={handlePincodeChange} error={errors.pin_code} inputProps={{ inputMode: 'numeric', maxLength: 6 }} />
+                </Grid>
+            </Grid>
 
-            <div>
-                <InputLabel htmlFor="house_no" value="House No/ Bldg/ Apt" />
-                <TextInput
-                    id="house_no"
-                    name="house_no"
-                    value={data.house_no}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.house_no} className="mt-2" />
-            </div>
+            <SectionHeader title="Certifier Details (Optional)" />
+            <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Certifier Name" name="certifier_name" required={false} value={data.certifier_name} onChange={handleChange} error={errors.certifier_name} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Designation" name="certifier_designation" required={false} value={data.certifier_designation} onChange={handleChange} error={errors.certifier_designation} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Office Address" name="certifier_address" required={false} value={data.certifier_address} onChange={handleChange} error={errors.certifier_address} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <InputField label="Contact No" name="certifier_contact" required={false} value={data.certifier_contact} onChange={handleChange} error={errors.certifier_contact} />
+                </Grid>
+            </Grid>
 
-            <div>
-                <InputLabel htmlFor="street" value="Street/ Road/ Lane" />
-                <TextInput
-                    id="street"
-                    name="street"
-                    value={data.street}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.street} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="landmark" value="Landmark" />
-                <TextInput
-                    id="landmark"
-                    name="landmark"
-                    value={data.landmark}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.landmark} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="locality" value="Area/ Locality/ Sector" />
-                <TextInput
-                    id="locality"
-                    name="locality"
-                    value={data.locality}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.locality} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="village_town" value="Village/ Town/ City" />
-                <TextInput
-                    id="village_town"
-                    name="village_town"
-                    value={data.village_town}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                    required
-                />
-                <InputError message={errors.village_town} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="post_office" value="Post Office" />
-                <TextInput
-                    id="post_office"
-                    name="post_office"
-                    value={data.post_office}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.post_office} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="district" value="District" />
-                <TextInput
-                    id="district"
-                    name="district"
-                    value={data.district}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                    required
-                />
-                <InputError message={errors.district} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="state" value="State" />
-                <TextInput
-                    id="state"
-                    name="state"
-                    value={data.state}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                    required
-                />
-                <InputError message={errors.state} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="pin_code" value="PIN Code" />
-                <TextInput
-                    id="pin_code"
-                    name="pin_code"
-                    value={data.pin_code}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                    required
-                    maxLength="6"
-                />
-                <InputError message={errors.pin_code} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="dob" value="Date of Birth" />
-                <TextInput
-                    id="dob"
-                    name="dob"
-                    type="date"
-                    value={data.dob}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.dob} className="mt-2" />
-            </div>
-
-            <div className="md:col-span-2 pt-4 pb-2 border-b">
-                <h3 className="text-lg font-semibold text-gray-700">Certifier Details (Optional)</h3>
-            </div>
-
-            <div>
-                <InputLabel htmlFor="certifier_name" value="Certifier Name" />
-                <TextInput
-                    id="certifier_name"
-                    name="certifier_name"
-                    value={data.certifier_name}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.certifier_name} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="certifier_designation" value="Designation" />
-                <TextInput
-                    id="certifier_designation"
-                    name="certifier_designation"
-                    value={data.certifier_designation}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.certifier_designation} className="mt-2" />
-            </div>
-
-            <div className="md:col-span-2">
-                <InputLabel htmlFor="certifier_address" value="Office Address" />
-                <TextInput
-                    id="certifier_address"
-                    name="certifier_address"
-                    value={data.certifier_address}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.certifier_address} className="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel htmlFor="certifier_contact" value="Contact No" />
-                <TextInput
-                    id="certifier_contact"
-                    name="certifier_contact"
-                    value={data.certifier_contact}
-                    className="mt-1 block w-full"
-                    onChange={handleChange}
-                />
-                <InputError message={errors.certifier_contact} className="mt-2" />
-            </div>
-
-        </div>
+            <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                {showSaveAndCreate && (
+                    <Button 
+                        type="submit" 
+                        variant="outlined" 
+                        color="primary" 
+                        size="large" 
+                        disabled={processing} 
+                        onClick={() => setIsSaveAndCreate(true)} 
+                        sx={{ px: 4, py: 1.5 }}
+                    >
+                        Save & Create New
+                    </Button>
+                )}
+                <Button 
+                    type="submit" 
+                    variant="contained" 
+                    color="primary" 
+                    size="large" 
+                    disabled={processing} 
+                    onClick={() => setIsSaveAndCreate(false)}
+                    startIcon={<SaveIcon />} 
+                    sx={{ px: 4, py: 1.5 }}
+                >
+                    {submitLabel}
+                </Button>
+            </Box>
+        </Paper>
     );
 }
