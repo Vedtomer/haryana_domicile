@@ -116,7 +116,6 @@ class AadharUpdateController extends Controller
             'district' => ['x' => 1200, 'y' => 800, 'fontSize' => 30],
             'state' => ['x' => 1200, 'y' => 850, 'fontSize' => 30],
             'pin_code' => ['x' => 1200, 'y' => 950, 'fontSize' => 30, 'spacing' => 60],
-            'dob' => ['x' => 1500, 'y' => 600, 'fontSize' => 30],
             
             // Certifier Details
             'certifier_name' => ['x' => 400, 'y' => 1800, 'fontSize' => 30],
@@ -193,7 +192,6 @@ class AadharUpdateController extends Controller
             'district' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'pin_code' => 'required|string|max:6',
-            'dob' => 'nullable|date',
             'certifier_name' => 'nullable|string|max:255',
             'certifier_designation' => 'nullable|string|max:255',
             'certifier_address' => 'nullable|string',

@@ -19,7 +19,6 @@ export default function Create() {
         district: '',
         state: '',
         pin_code: '',
-        dob: '',
         certifier_name: '',
         certifier_designation: '',
         certifier_address: '',

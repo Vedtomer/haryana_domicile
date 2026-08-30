@@ -19,7 +19,6 @@ export default function Edit({ record }) {
         district: record.district || '',
         state: record.state || '',
         pin_code: record.pin_code || '',
-        dob: record.dob || '',
         certifier_name: record.certifier_name || '',
         certifier_designation: record.certifier_designation || '',
         certifier_address: record.certifier_address || '',

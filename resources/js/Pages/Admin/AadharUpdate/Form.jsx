@@ -31,9 +31,6 @@ export default function AadharUpdateFields({ data, setData, errors, processing, 
                 <Grid size={{ xs: 12, md: 6 }}>
                     <InputField label="Resident Name" name="name" value={data.name} onChange={handleChange} error={errors.name} />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                    <InputField label="Date of Birth" name="dob" type="date" required={false} value={data.dob} onChange={handleChange} error={errors.dob} InputLabelProps={{ shrink: true }} />
-                </Grid>
             </Grid>
 
             <SectionHeader title="Address Details" />

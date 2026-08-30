@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('district');
             $table->string('state');
             $table->string('pin_code');
-            $table->date('dob')->nullable();
             $table->string('certifier_name')->nullable();
             $table->string('certifier_designation')->nullable();
             $table->string('certifier_address')->nullable();
