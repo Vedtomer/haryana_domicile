@@ -88,37 +88,94 @@ class AadharUpdateController extends Controller
 
     private function generatePdfAndGetUrl(AadharUpdate $record): string
     {
-        // For now, returning a placeholder or a very basic generated PDF
-        // Since we don't have the template yet, I will use FPDF to generate a simple text PDF
+        $imagePath = public_path('aadhar_update/template-1.jpg');
+        $fontPath = public_path('fonts/Typist.ttf');
+        
+        if (!file_exists($imagePath)) {
+            throw new \Exception("Aadhar update template image not found at $imagePath");
+        }
+        if (!file_exists($fontPath)) {
+            throw new \Exception("Font not found at $fontPath");
+        }
+
+        // Load image
+        $image = imagecreatefromjpeg($imagePath);
+        $color = imagecolorallocate($image, 20, 20, 150); // Dark blue/black handwritten look
+
+        // --- HARDCODED COORDINATES (Tweak these to align text perfectly) ---
+        $coords = [
+            'aadhar_number' => ['x' => 1000, 'y' => 370, 'fontSize' => 35, 'spacing' => 75],
+            'name' => ['x' => 450, 'y' => 600, 'fontSize' => 30],
+            'c_o' => ['x' => 200, 'y' => 700, 'fontSize' => 30],
+            'house_no' => ['x' => 200, 'y' => 750, 'fontSize' => 30],
+            'street' => ['x' => 200, 'y' => 800, 'fontSize' => 30],
+            'landmark' => ['x' => 200, 'y' => 850, 'fontSize' => 30],
+            'locality' => ['x' => 200, 'y' => 900, 'fontSize' => 30],
+            'village_town' => ['x' => 200, 'y' => 950, 'fontSize' => 30],
+            'post_office' => ['x' => 1200, 'y' => 750, 'fontSize' => 30],
+            'district' => ['x' => 1200, 'y' => 800, 'fontSize' => 30],
+            'state' => ['x' => 1200, 'y' => 850, 'fontSize' => 30],
+            'pin_code' => ['x' => 1200, 'y' => 950, 'fontSize' => 30, 'spacing' => 60],
+            'dob' => ['x' => 1500, 'y' => 600, 'fontSize' => 30],
+            
+            // Certifier Details
+            'certifier_name' => ['x' => 400, 'y' => 1800, 'fontSize' => 30],
+            'certifier_designation' => ['x' => 400, 'y' => 1850, 'fontSize' => 30],
+            'certifier_address' => ['x' => 400, 'y' => 1900, 'fontSize' => 30],
+            'certifier_contact' => ['x' => 400, 'y' => 1950, 'fontSize' => 30],
+        ];
+
+        // Draw each field
+        foreach ($coords as $field => $c) {
+            $value = $record->{$field} ?? '';
+            if (empty($value)) continue;
+
+            if (isset($c['spacing'])) {
+                // Draw as individual boxes (like Aadhar or Pincode)
+                $this->fillNumberBoxesOnImage($image, $c['x'], $c['y'], $value, strlen($value), $fontPath, $c['fontSize'], $color, $c['spacing']);
+            } else {
+                // Draw as standard text
+                imagettftext($image, $c['fontSize'], 0, $c['x'], $c['y'], $color, $fontPath, $value);
+            }
+        }
+
+        // Save filled image to temp directory
         $tempDir = storage_path('app/tmp');
         if (!file_exists($tempDir)) {
             mkdir($tempDir, 0755, true);
         }
-        
+        $filledImagePath = $tempDir . "/aadhar_update_filled_{$record->id}.jpg";
+        imagejpeg($image, $filledImagePath, 95);
+        imagedestroy($image);
+
+        // Create PDF from image using FPDI
         $pdf = new \setasign\Fpdi\Fpdi();
-        $pdf->AddPage();
-        
-        // Use standard font for placeholder
-        $pdf->SetFont('Helvetica', 'B', 16);
-        $pdf->Cell(0, 10, 'Aadhar Update Form (Placeholder)', 0, 1, 'C');
-        
-        $pdf->SetFont('Helvetica', '', 12);
-        $pdf->Cell(0, 10, "Aadhar Number: " . $record->aadhar_number, 0, 1);
-        $pdf->Cell(0, 10, "Name: " . $record->name, 0, 1);
-        $pdf->Cell(0, 10, "Address: " . $record->house_no . ', ' . $record->village_town, 0, 1);
-        
+        $pdf->AddPage('P', 'A4');
+        $pdf->Image($filledImagePath, 0, 0, 210, 297); // A4 size in mm
+
         $pdfPath = $tempDir . '/aadhar_update_' . $record->id . '.pdf';
         $pdf->Output('F', $pdfPath);
 
         // Copy to public for serving
-        $publicPath = public_path('tmp/aadhar_update_' . $record->id . '.pdf');
         $publicDir = public_path('tmp');
         if (!file_exists($publicDir)) {
             mkdir($publicDir, 0755, true);
         }
+        $publicPath = public_path('tmp/aadhar_update_' . $record->id . '.pdf');
         copy($pdfPath, $publicPath);
 
         return url('/tmp/aadhar_update_' . $record->id . '.pdf') . '?t=' . time();
+    }
+
+    private function fillNumberBoxesOnImage($image, $startX, $y, $number, $count, $fontPath, $fontSize, $color, $spacing = 32)
+    {
+        $number = str_pad($number, $count, ' ', STR_PAD_RIGHT);
+        $chars = str_split($number);
+
+        for ($i = 0; $i < $count; $i++) {
+            $x = $startX + ($i * $spacing);
+            imagettftext($image, $fontSize, 0, $x + 8, $y, $color, $fontPath, $chars[$i] ?? '');
+        }
     }
 
     private function validated(Request $request): array
