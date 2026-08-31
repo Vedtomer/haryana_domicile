@@ -52,23 +52,20 @@ export default function PassportMaker({ auth, service }) {
     }, [isProcessing]);
 
     return (
-        <>
+        <AdminLayout
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Passport Photo Maker</h2>}
+        >
             <Head title="Passport Photo Maker" />
             
-            {/* Floating Back Button */}
-            <div className="fixed top-4 left-4 z-50">
-                <button 
-                    onClick={() => router.get(route('dashboard'))}
-                    className="bg-white/80 backdrop-blur-md hover:bg-white text-gray-800 p-2 rounded-full shadow-lg border border-gray-200 transition-all flex items-center justify-center"
-                    title="Back to Dashboard"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
-                    </svg>
-                </button>
-            </div>
+            {/* Hide the spelling warning that AdminLayout injects automatically to prevent layout shifting */}
+            <style>{`
+                main > div.bg-red-100 { display: none !important; }
+                main > div.dark\\:bg-red-900\\/30 { display: none !important; }
+            `}</style>
 
-            <div className="w-screen h-screen overflow-hidden bg-gray-50">
+            {/* Negative margin counteracts the p-8 padding of AdminLayout main tag */}
+            <div className="-m-8 h-[calc(100vh-64px)] w-[calc(100%+4rem)] overflow-hidden">
                 <iframe 
                     ref={iframeRef}
                     src="/passport_maker/index.html" 
@@ -77,6 +74,6 @@ export default function PassportMaker({ auth, service }) {
                     allow="fullscreen"
                 />
             </div>
-        </>
+        </AdminLayout>
     );
 }

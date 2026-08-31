@@ -1,0 +1,1 @@
+import{j as r}from"./app-CoWmT_t1.js";import o from"./Create-CI6d9vrE.js";import"./app-BbIOV-K4.js";import"./AdminLayout-TVBUwWJz.js";import"./WhatsAppButton-Cjxp9cg8.js";import"./FloatingInput-TpAGZw7b.js";function f(t){return r.jsx(o,{...t})}export{f as default};
