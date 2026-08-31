@@ -132,12 +132,15 @@ export class CustomCropper {
         if (!this.canvas || !this.img) return;
 
         const img = this.getRotatedSourceCanvas(this.img, this.rotation);
-        const maxW = this.wrapper.clientWidth - 20;
-        const maxH = this.wrapper.clientHeight - 20;
+        const maxW = Math.max(this.wrapper.clientWidth - 20, 100);
+        const maxH = Math.max(this.wrapper.clientHeight - 20, 100);
 
         let scale = Math.min(maxW / img.width, maxH / img.height);
-        this.canvas.width = img.width * scale;
-        this.canvas.height = img.height * scale;
+        // Ensure valid scale
+        if (scale <= 0 || !isFinite(scale)) scale = 1;
+        
+        this.canvas.width = Math.max(1, img.width * scale);
+        this.canvas.height = Math.max(1, img.height * scale);
 
         const ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
