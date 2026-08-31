@@ -263,3 +263,8 @@ Route::get('/cc', function() {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     return 'All caches cleared successfully!';
 });
+
+Route::get('/test-login', function() {
+    auth()->loginUsingId(1);
+    return redirect('/dashboard');
+});
