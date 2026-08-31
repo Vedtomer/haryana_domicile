@@ -97,6 +97,15 @@ export default function Home() {
                                 <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Birth Records</h3>
                                 <p className="font-body-md text-body-md text-on-surface-variant">Register new births and generate official certificates with automated records.</p>
                             </div>
+
+                            {/* Service Card 5 */}
+                            <div className="bg-surface rounded-2xl p-8 border border-outline-variant hover:shadow-xl hover:border-secondary transition-all duration-300 group cursor-pointer">
+                                <div className="w-14 h-14 bg-secondary-fixed text-on-secondary-fixed rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>id_badge</span>
+                                </div>
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">Passport Photos</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant">Create and print passport-sized photos with automated background removal.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
