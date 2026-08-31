@@ -231,11 +231,6 @@ export class CustomCropper {
         const startCropY = this.crop.y;
 
         const onMouseMove = (moveEvent) => {
-            if (moveEvent.type === 'mousemove' && moveEvent.buttons === 0) {
-                onMouseUp();
-                return;
-            }
-            
             const mTouch = moveEvent.touches ? moveEvent.touches[0] : moveEvent;
             const deltaX = (mTouch.clientX - startMouseX) / this.canvas.offsetWidth;
             const deltaY = (mTouch.clientY - startMouseY) / this.canvas.offsetHeight;
@@ -258,12 +253,21 @@ export class CustomCropper {
             document.removeEventListener('mouseup', onMouseUp);
             document.removeEventListener('touchmove', onMouseMove);
             document.removeEventListener('touchend', onMouseUp);
+            document.removeEventListener('mouseout', onMouseOut);
+        };
+
+        const onMouseOut = (e) => {
+            // Cancel drag if mouse leaves the iframe bounds completely
+            if (e.relatedTarget === null || e.relatedTarget === document.documentElement) {
+                onMouseUp();
+            }
         };
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
         document.addEventListener('touchmove', onMouseMove, { passive: false });
         document.addEventListener('touchend', onMouseUp);
+        document.addEventListener('mouseout', onMouseOut);
     }
 
     startCropResize(e, handle, updateFrameStyle) {
@@ -278,11 +282,6 @@ export class CustomCropper {
         const nRatio = ar * (canvasH / canvasW);
 
         const onMouseMove = (moveEvent) => {
-            if (moveEvent.type === 'mousemove' && moveEvent.buttons === 0) {
-                onMouseUp();
-                return;
-            }
-
             const mTouch = moveEvent.touches ? moveEvent.touches[0] : moveEvent;
             let deltaX = (mTouch.clientX - startMouseX) / canvasW;
             let deltaY = (mTouch.clientY - startMouseY) / canvasH;
@@ -361,12 +360,20 @@ export class CustomCropper {
             document.removeEventListener('mouseup', onMouseUp);
             document.removeEventListener('touchmove', onMouseMove);
             document.removeEventListener('touchend', onMouseUp);
+            document.removeEventListener('mouseout', onMouseOut);
+        };
+
+        const onMouseOut = (e) => {
+            if (e.relatedTarget === null || e.relatedTarget === document.documentElement) {
+                onMouseUp();
+            }
         };
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
         document.addEventListener('touchmove', onMouseMove, { passive: false });
         document.addEventListener('touchend', onMouseUp);
+        document.addEventListener('mouseout', onMouseOut);
     }
 
     nudge(direction, step = 0.01) {
