@@ -24,13 +24,22 @@ export class CustomCropper {
     }
 
     async init(imageElementOrUrl) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             this.img = new Image();
-            this.img.crossOrigin = 'anonymous';
+            
+            // Only set crossOrigin for http/https URLs, not blob/data
+            if (typeof imageElementOrUrl === 'string' && imageElementOrUrl.startsWith('http')) {
+                this.img.crossOrigin = 'anonymous';
+            }
+            
             this.img.onload = () => {
                 this.crop = this.getDefaultCrop(this.img.width, this.img.height);
                 this.setupCropperViewport();
                 resolve();
+            };
+            this.img.onerror = (e) => {
+                console.error("CustomCropper image load error:", e);
+                resolve(); // resolve anyway to avoid hanging
             };
             if (typeof imageElementOrUrl === 'string') {
                 this.img.src = imageElementOrUrl;
