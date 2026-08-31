@@ -100,6 +100,9 @@ Route::middleware('auth')->group(function () {
 
 
 
+    Route::get('/utilities/passport-maker', [\App\Http\Controllers\PassportMakerController::class, 'index'])->name('utilities.passport-maker');
+    Route::post('/utilities/passport-maker/deduct-coins', [\App\Http\Controllers\PassportMakerController::class, 'deductCoins'])->name('utilities.passport-maker.deduct-coins');
+
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');
     })->name('utilities.vehicle-details');

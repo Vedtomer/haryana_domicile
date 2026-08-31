@@ -92,6 +92,12 @@ class Service extends Model
             'index' => '/admin/aadhar-update',
             'create' => '/admin/aadhar-update/create',
         ],
+        'passport_maker' => [
+            'label' => 'Passport Photo Maker',
+            'model' => null,
+            'index' => '/utilities/passport-maker',
+            'create' => '/utilities/passport-maker',
+        ],
     ];
 
     protected $fillable = [
