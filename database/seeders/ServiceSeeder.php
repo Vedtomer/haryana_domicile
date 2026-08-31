@@ -94,6 +94,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Passport Photo Maker',
+                'slug' => 'passport-maker',
+                'description' => 'Create passport size photos with AI background removal and print-ready layouts.',
+                'icon' => 'fas fa-id-badge',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'passport_maker',
+                'sort_order' => 8,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {
