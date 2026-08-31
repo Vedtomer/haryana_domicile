@@ -104,6 +104,12 @@ class Service extends Model
             'index' => '/utilities/passport-maker',
             'create' => '/utilities/passport-maker',
         ],
+        'tenth_passbook' => [
+            'label' => '10th Passbook Editor',
+            'model' => TenthPassbook::class,
+            'index' => '/admin/tenth-passbook',
+            'create' => '/admin/tenth-passbook/create',
+        ],
     ];
 
     protected $fillable = [
