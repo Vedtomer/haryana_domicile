@@ -232,6 +232,11 @@ Route::middleware('auth')->group(function () {
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
 
+        // Maintenance Mode — admin only
+        Route::get('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'edit'])->name('maintenance.edit')->middleware('admin');
+        Route::put('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'update'])->name('maintenance.update')->middleware('admin');
+        Route::post('maintenance/toggle', [\App\Http\Controllers\Admin\MaintenanceController::class, 'toggle'])->name('maintenance.toggle')->middleware('admin');
+
         // Haryana Domicile PDF Coordinates — admin only
         Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit');
         Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save');
