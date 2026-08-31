@@ -26,10 +26,10 @@ window.requestDownloadPermission = function(type, details) {
     });
 };
 
-import { ApiService } from './api.js';
-import { EditorService, CustomCropper } from './editor.js';
-import { LayoutService } from './layout.js';
-import { FaceDetectionService } from './faceDetection.js';
+import { ApiService } from './api.js?v=4';
+import { EditorService, CustomCropper } from './editor.js?v=4';
+import { LayoutService } from './layout.js?v=4';
+import { FaceDetectionService } from './faceDetection.js?v=4';
 
 class App {
     constructor() {
