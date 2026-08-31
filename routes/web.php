@@ -13,7 +13,8 @@ Route::get('/', function () {
 
 Route::get('/migrate-db', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-    return 'Database migrated successfully! Please go back to your dashboard.';
+    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
+    return 'Database migrated and seeded successfully! Please go back to your dashboard.';
 });
 
 use App\Http\Controllers\AuthController;
