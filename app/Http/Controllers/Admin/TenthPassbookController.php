@@ -127,17 +127,15 @@ class TenthPassbookController extends Controller
         $pdf->SetFillColor(255, 255, 255);
 
         // Erase old data with white rectangles (X, Y, W, H)
-        $pdf->Rect(68, 96, 70, 5, 'F'); // Erase Name
-        $pdf->Rect(68, 105, 70, 5, 'F'); // Erase Father Name
-        $pdf->Rect(68, 114, 70, 5, 'F'); // Erase Mother Name
-        $pdf->Rect(58, 121, 70, 5, 'F'); // Erase DOB
+        $pdf->Rect(65, 90, 90, 35, 'F'); // Erase Name, Father, Mother, DOB block
+        $pdf->Rect(162, 33, 35, 45, 'F'); // Erase Old Photo block
 
         // Adjust these coordinates! (X, Y) in mm
         $coords = [
-            'name' => ['x' => 69, 'y' => 100],
-            'father_name' => ['x' => 69, 'y' => 109.5],
-            'mother_name' => ['x' => 69, 'y' => 118.5],
-            'dob' => ['x' => 58.6, 'y' => 125.5],
+            'name' => ['x' => 69, 'y' => 97],
+            'father_name' => ['x' => 69, 'y' => 106.5],
+            'mother_name' => ['x' => 69, 'y' => 115.5],
+            'dob' => ['x' => 58.6, 'y' => 122.5],
         ];
 
         foreach ($coords as $field => $c) {
@@ -151,8 +149,8 @@ class TenthPassbookController extends Controller
         if ($record->image_path) {
             $imagePath = storage_path('app/public/' . $record->image_path);
             if (file_exists($imagePath)) {
-                // Photo placed on the right side
-                $pdf->Image($imagePath, 160, 95, 25, 30);
+                // Photo placed on the right side where old photo was
+                $pdf->Image($imagePath, 165, 36, 28, 36);
             }
         }
 
