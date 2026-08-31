@@ -110,6 +110,12 @@ class Service extends Model
             'index' => '/admin/tenth-passbook',
             'create' => '/admin/tenth-passbook/create',
         ],
+        'airtel_passbook' => [
+            'label' => 'Airtel Passbook',
+            'model' => AirtelPassbook::class,
+            'index' => '/admin/airtel-passbook',
+            'create' => '/admin/airtel-passbook/create',
+        ],
     ];
 
     protected $fillable = [
