@@ -45,6 +45,8 @@ class User extends Authenticatable implements FilamentUser
         'coins',
         'type',
         'is_active',
+        'last_activity_at',
+        'deactivated_reason',
     ];
 
     /**
@@ -65,10 +67,29 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'coins' => 'integer',
+            'email_verified_at'   => 'datetime',
+            'password'            => 'hashed',
+            'coins'               => 'integer',
+            'last_activity_at'    => 'datetime',
         ];
+    }
+
+    /**
+     * Mark this user as recently active (call on any coin purchase or service use).
+     * Resets the inactivity clock.
+     */
+    public function touchActivity(): void
+    {
+        $this->updateQuietly(['last_activity_at' => now()]);
+    }
+
+    /**
+     * Returns true when account was deactivated specifically due to inactivity
+     * (as opposed to an admin ban).
+     */
+    public function isDeactivatedByInactivity(): bool
+    {
+        return !$this->is_active && $this->deactivated_reason === 'inactivity';
     }
 
     /**
@@ -77,6 +98,22 @@ class User extends Authenticatable implements FilamentUser
     public function coinTransactions()
     {
         return $this->hasMany(CoinTransaction::class);
+    }
+
+    /**
+     * Get all reactivation requests for this user
+     */
+    public function reactivationRequests()
+    {
+        return $this->hasMany(ReactivationRequest::class);
+    }
+
+    /**
+     * Get the latest pending reactivation request
+     */
+    public function pendingReactivation()
+    {
+        return $this->reactivationRequests()->where('status', 'pending')->latest()->first();
     }
 
     /**

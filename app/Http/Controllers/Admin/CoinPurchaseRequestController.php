@@ -97,6 +97,9 @@ class CoinPurchaseRequestController extends Controller
             '/admin/coin-requests',
         );
 
+        // Reset inactivity clock — user is actively using the platform
+        auth()->user()->touchActivity();
+
         return redirect()->route('admin.coin-requests.create')
             ->with('success', '✅ Your coin request has been submitted! We will review and approve it shortly.');
     }

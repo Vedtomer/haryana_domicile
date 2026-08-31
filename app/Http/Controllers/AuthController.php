@@ -33,10 +33,21 @@ class AuthController extends Controller
         ];
 
         if (Auth::attempt($credentials)) {
-            if (!Auth::user()->is_active) {
+            $user = Auth::user();
+
+            if (!$user->is_active) {
                 Auth::logout();
-                return back()->withErrors(['login' => 'Your account has been deactivated.'])->onlyInput('login');
+
+                // Inactivity-deactivated users get a special reactivation page
+                if ($user->deactivated_reason === 'inactivity') {
+                    return redirect('/reactivate?user_id=' . $user->id)
+                        ->with('info', 'Aapki ID inactive ho gayi hai. ₹99 reactivation fee de kar dobara activate karein.');
+                }
+
+                // Admin-banned users get generic error
+                return back()->withErrors(['login' => 'Your account has been deactivated by admin.'])->onlyInput('login');
             }
+
             $request->session()->regenerate();
             return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
         }
