@@ -32,12 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'show'])->name('reactivate.show');
 Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'store'])->name('reactivate.store');
 
-// Public maintenance page — shown to users during maintenance (Inertia redirects here)
-Route::get('/maintenance-page', function () {
-    $message = \App\Models\Setting::get('maintenance_message', 'Site par kaam chal raha hai. Thodi der mein wapas aayein.');
-    return response()->view('maintenance', ['message' => $message], 503);
-})->name('maintenance.page');
-Route::middleware(['auth', 'maintenance'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
     Route::get('/utilities/electricity-bill', function () {
@@ -238,10 +233,7 @@ Route::middleware(['auth', 'maintenance'])->group(function () {
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
 
-        // Maintenance Mode — admin only
-        Route::get('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'edit'])->name('maintenance.edit')->middleware('admin');
-        Route::put('maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'update'])->name('maintenance.update')->middleware('admin');
-        Route::post('maintenance/toggle', [\App\Http\Controllers\Admin\MaintenanceController::class, 'toggle'])->name('maintenance.toggle')->middleware('admin');
+
 
         // Haryana Domicile PDF Coordinates — admin only
         Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit');

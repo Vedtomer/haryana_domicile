@@ -92,7 +92,6 @@ class DashboardController extends Controller
             ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests'],
             ['label' => 'Coin Requests', 'value' => CoinPurchaseRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
             ['label' => 'Reactivation Requests', 'value' => \App\Models\ReactivationRequest::where('status', 'pending')->count() . ' Pending', 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests'],
-            ['label' => 'Maintenance Mode', 'value' => 'Toggle', 'tone' => 'dark-purple', 'url' => '/admin/maintenance'],
         ];
     }
 }
