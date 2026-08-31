@@ -231,6 +231,11 @@ export class CustomCropper {
         const startCropY = this.crop.y;
 
         const onMouseMove = (moveEvent) => {
+            if (moveEvent.type === 'mousemove' && moveEvent.buttons === 0) {
+                onMouseUp();
+                return;
+            }
+            
             const mTouch = moveEvent.touches ? moveEvent.touches[0] : moveEvent;
             const deltaX = (mTouch.clientX - startMouseX) / this.canvas.offsetWidth;
             const deltaY = (mTouch.clientY - startMouseY) / this.canvas.offsetHeight;
@@ -273,6 +278,11 @@ export class CustomCropper {
         const nRatio = ar * (canvasH / canvasW);
 
         const onMouseMove = (moveEvent) => {
+            if (moveEvent.type === 'mousemove' && moveEvent.buttons === 0) {
+                onMouseUp();
+                return;
+            }
+
             const mTouch = moveEvent.touches ? moveEvent.touches[0] : moveEvent;
             let deltaX = (mTouch.clientX - startMouseX) / canvasW;
             let deltaY = (mTouch.clientY - startMouseY) / canvasH;
