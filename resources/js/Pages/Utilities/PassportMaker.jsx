@@ -17,7 +17,7 @@ export default function PassportMaker({ auth, service }) {
                 const { messageId, downloadType, details } = event.data;
                 
                 try {
-                    const response = await axios.post(route('utilities.passport-maker.deduct-coins'), {
+                    const response = await axios.post('/utilities/passport-maker/deduct-coins', {
                         downloadType,
                         details
                     });
