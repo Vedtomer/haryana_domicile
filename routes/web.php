@@ -37,7 +37,7 @@ Route::get('/maintenance-page', function () {
     $message = \App\Models\Setting::get('maintenance_message', 'Site par kaam chal raha hai. Thodi der mein wapas aayein.');
     return response()->view('maintenance', ['message' => $message], 503);
 })->name('maintenance.page');
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'maintenance'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
     Route::get('/utilities/electricity-bill', function () {
