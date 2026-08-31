@@ -212,8 +212,8 @@ Route::middleware('auth')->group(function () {
         Route::get('pincode-lookup/{pincode}', [\App\Http\Controllers\Admin\PincodeLookupController::class, 'lookup'])->name('pincode-lookup');
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
-
-        
+        Route::resource('manual-pan-cards', \App\Http\Controllers\Admin\ManualPanCardController::class);
+        Route::get('manual-pan-cards/{manual_pan_card}/print', [\App\Http\Controllers\Admin\ManualPanCardController::class, 'print'])->name('manual-pan-cards.print'); 
         Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');

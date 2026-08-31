@@ -50,6 +50,12 @@ class Service extends Model
             'index' => '/admin/pan-requests',
             'create' => '/admin/pan-requests/create',
         ],
+        'manual_pan_card' => [
+            'label' => 'Manual PAN Card',
+            'model' => ManualPanCard::class,
+            'index' => '/admin/manual-pan-cards',
+            'create' => '/admin/manual-pan-cards/create',
+        ],
         'electricity_bill' => [
             'label' => 'Electricity Bill',
             'model' => null,

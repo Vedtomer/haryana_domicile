@@ -19,7 +19,7 @@ class PdfCoordinateController extends Controller
         $dbCoords = PdfCoordinate::all();
 
         $allCoords = [];
-        for ($i = 1; $i <= 4; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $allCoords["page{$i}"] = [];
         }
 
@@ -47,7 +47,7 @@ class PdfCoordinateController extends Controller
         Log::info('Saving PDF Coordinates Payload', ['data_keys' => array_keys($data)]);
         
         // If data has page structure
-        if (isset($data['page1']) || isset($data['page2']) || isset($data['page3']) || isset($data['page4'])) {
+        if (isset($data['page1']) || isset($data['page2']) || isset($data['page3']) || isset($data['page4']) || isset($data['page5'])) {
             foreach ($data as $pageKey => $fields) {
                 if (!str_starts_with($pageKey, 'page')) continue;
                 

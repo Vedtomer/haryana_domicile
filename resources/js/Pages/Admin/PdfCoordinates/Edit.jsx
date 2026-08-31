@@ -47,6 +47,14 @@ const PAGE_CONFIG = {
         { key: 'child_name', label: '8. Child Name' },
     ],
     4: [],
+    5: [
+        { key: 'pan_number', label: 'PAN Number' },
+        { key: 'name', label: 'Name' },
+        { key: 'father_name', label: 'Father Name' },
+        { key: 'dob', label: 'Date of Birth' },
+        { key: 'photo', label: 'Photo (Image)' },
+        { key: 'signature', label: 'Signature (Image)' },
+    ],
 };
 
 const PAGE_TITLES = {
@@ -54,6 +62,7 @@ const PAGE_TITLES = {
     2: 'Page 2: Declaration',
     3: 'Page 3: Patwari Report',
     4: 'Page 4: Tehsildar Report',
+    5: 'Page 5: Manual PAN Card',
 };
 
 const SAMPLE_DATA = {
@@ -184,7 +193,7 @@ export default function PdfCoordinatesEdit({ allCoords: initialCoords }) {
                             onChange={(e) => setCurrentPage(Number(e.target.value))}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
                         >
-                            {[1, 2, 3, 4].map((p) => (
+                            {[1, 2, 3, 4, 5].map((p) => (
                                 <option key={p} value={p}>{PAGE_TITLES[p]}</option>
                             ))}
                         </select>
