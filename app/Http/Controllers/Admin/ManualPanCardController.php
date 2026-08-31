@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Support\Facades\Storage;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
 
 class ManualPanCardController extends Controller
 {
