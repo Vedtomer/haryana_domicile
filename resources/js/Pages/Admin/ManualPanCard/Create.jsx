@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
-import FormBlocker from '../../../Components/FormBlocker';
 import InputError from '../../../Components/InputError';
 
 export default function Create({ blocker, cost }) {
@@ -23,7 +22,11 @@ export default function Create({ blocker, cost }) {
         return (
             <AdminLayout>
                 <Head title="Manual PAN Card - Blocked" />
-                <FormBlocker message={blocker} />
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+                        <p className="text-red-600 dark:text-red-400 font-medium">{blocker}</p>
+                    </div>
+                </div>
             </AdminLayout>
         );
     }
