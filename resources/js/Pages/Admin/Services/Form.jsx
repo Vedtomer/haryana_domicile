@@ -272,6 +272,12 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                 <Link href="/admin/services" className="px-5 py-2.5 font-semibold text-gray-600 hover:text-gray-800">
                     Cancel
                 </Link>
+                {service?.id && !isModule && (
+                    <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-service-delete-dialog', { detail: service }))}
+                        className="ml-auto px-5 py-2.5 font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                        Delete Service
+                    </button>
+                )}
             </div>
         </form>
     );
