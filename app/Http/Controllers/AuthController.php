@@ -72,11 +72,12 @@ class AuthController extends Controller
         ]);
 
         $user = \App\Models\User::create([
-            'email' => $loginType === 'email' ? $data['login'] : null,
-            'phone' => $loginType === 'phone' ? $data['login'] : null,
-            'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
-            'raw_password' => $data['password'],
-            'type' => 'user',
+            'email'            => $loginType === 'email' ? $data['login'] : null,
+            'phone'            => $loginType === 'phone' ? $data['login'] : null,
+            'password'         => \Illuminate\Support\Facades\Hash::make($data['password']),
+            'raw_password'     => $data['password'],
+            'type'             => 'user',
+            'last_activity_at' => now(), // 7-din ka inactivity clock yahan se shuru hoga
         ]);
 
         // Trigger booted method or sync manually just in case
