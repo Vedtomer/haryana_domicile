@@ -82,12 +82,10 @@ export default function Index({ services }) {
                                         className="px-3 py-1.5 font-semibold text-blue-600 hover:bg-blue-50 rounded-lg">
                                         Edit
                                     </Link>
-                                    {service.kind !== 'module' && (
-                                        <button onClick={() => setToDelete(service)}
-                                            className="px-3 py-1.5 font-semibold text-red-600 hover:bg-red-50 rounded-lg">
-                                            Delete
-                                        </button>
-                                    )}
+                                    <button onClick={() => setToDelete(service)}
+                                        className="px-3 py-1.5 font-semibold text-red-600 hover:bg-red-50 rounded-lg">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))}

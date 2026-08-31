@@ -114,11 +114,6 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
-        // Built-in modules are wired into real forms — hide them instead of deleting.
-        if ($service->isModule()) {
-            return back()->with('error', 'Built-in services cannot be deleted. Switch them off instead.');
-        }
-
         $service->delete();
 
         return back()->with('success', 'Service deleted.');
