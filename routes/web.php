@@ -31,6 +31,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Reactivation — no auth required (user is logged out)
 Route::get('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'show'])->name('reactivate.show');
 Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'store'])->name('reactivate.store');
+
+// Public maintenance page — shown to users during maintenance (Inertia redirects here)
+Route::get('/maintenance-page', function () {
+    $message = \App\Models\Setting::get('maintenance_message', 'Site par kaam chal raha hai. Thodi der mein wapas aayein.');
+    return response()->view('maintenance', ['message' => $message], 503);
+})->name('maintenance.page');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
