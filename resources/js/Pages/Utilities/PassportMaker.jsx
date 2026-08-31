@@ -58,13 +58,13 @@ export default function PassportMaker({ auth, service }) {
         >
             <Head title="Passport Photo Maker" />
 
-            <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg" style={{ height: '80vh' }}>
+            <div className="py-2 h-[calc(100vh-80px)]">
+                <div className="w-full h-full sm:px-2 lg:px-4">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg h-full border border-gray-200">
                         <iframe 
                             ref={iframeRef}
                             src="/passport_maker/index.html" 
-                            style={{ width: '100%', height: '100%', border: 'none' }}
+                            className="w-full h-full border-none"
                             title="Passport Photo Maker"
                             allow="fullscreen"
                         />
