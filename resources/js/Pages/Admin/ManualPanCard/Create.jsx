@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
-import InputError from '../../../Components/InputError';
+
 
 export default function Create({ blocker, cost }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -65,7 +65,7 @@ export default function Create({ blocker, cost }) {
                                     placeholder="ABCDE1234F"
                                     className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                 />
-                                <InputError message={errors.pan_number} className="mt-1" />
+                                {errors.pan_number && <div className="text-red-500 text-sm mt-1">{errors.pan_number}</div>}
                             </div>
 
                             <div>
@@ -77,7 +77,7 @@ export default function Create({ blocker, cost }) {
                                     required
                                     className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                 />
-                                <InputError message={errors.name} className="mt-1" />
+                                {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
                             </div>
 
                             <div>
@@ -89,7 +89,7 @@ export default function Create({ blocker, cost }) {
                                     required
                                     className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                 />
-                                <InputError message={errors.father_name} className="mt-1" />
+                                {errors.father_name && <div className="text-red-500 text-sm mt-1">{errors.father_name}</div>}
                             </div>
 
                             <div>
@@ -102,7 +102,7 @@ export default function Create({ blocker, cost }) {
                                     required
                                     className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                 />
-                                <InputError message={errors.dob} className="mt-1" />
+                                {errors.dob && <div className="text-red-500 text-sm mt-1">{errors.dob}</div>}
                             </div>
                         </div>
 
@@ -116,7 +116,7 @@ export default function Create({ blocker, cost }) {
                                     required
                                     className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-slate-800 dark:file:text-blue-400"
                                 />
-                                <InputError message={errors.photo} className="mt-1" />
+                                {errors.photo && <div className="text-red-500 text-sm mt-1">{errors.photo}</div>}
                             </div>
 
                             <div>
@@ -128,7 +128,7 @@ export default function Create({ blocker, cost }) {
                                     required
                                     className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-slate-800 dark:file:text-blue-400"
                                 />
-                                <InputError message={errors.signature} className="mt-1" />
+                                {errors.signature && <div className="text-red-500 text-sm mt-1">{errors.signature}</div>}
                             </div>
                         </div>
 
