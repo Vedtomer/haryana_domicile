@@ -66,7 +66,7 @@ class ManualPanCardController extends Controller
 
         $this->chargeForService($service, $record->id, "Manual PAN Card ({$record->pan_number})");
 
-        return redirect()->route('manual-pan-cards.index')->with('success', 'PAN Card generated successfully!' . $this->chargeNote($service));
+        return redirect()->route('admin.manual-pan-cards.index')->with('success', 'PAN Card generated successfully!' . $this->chargeNote($service));
     }
 
     public function print(ManualPanCard $manualPanCard)
@@ -75,6 +75,22 @@ class ManualPanCardController extends Controller
 
         $pdfUrl = $this->generatePdfAndGetUrl($manualPanCard);
         return redirect($pdfUrl);
+    }
+
+    public function destroy(ManualPanCard $manualPanCard)
+    {
+        $this->authorizeOwner($manualPanCard);
+
+        if ($manualPanCard->photo_path) {
+            Storage::disk('public')->delete($manualPanCard->photo_path);
+        }
+        if ($manualPanCard->signature_path) {
+            Storage::disk('public')->delete($manualPanCard->signature_path);
+        }
+
+        $manualPanCard->delete();
+
+        return redirect()->route('admin.manual-pan-cards.index')->with('success', 'PAN Card deleted successfully.');
     }
 
     private function generatePdfAndGetUrl(ManualPanCard $record): string
