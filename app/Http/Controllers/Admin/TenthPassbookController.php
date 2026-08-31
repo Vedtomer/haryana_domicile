@@ -122,21 +122,28 @@ class TenthPassbookController extends Controller
         $pdf->AddPage();
         $pdf->useTemplate($tplId, 0, 0, 210); // Assuming A4 (210x297mm)
 
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFillColor(255, 255, 255);
+
+        // Erase old data with white rectangles (X, Y, W, H)
+        $pdf->Rect(68, 96, 70, 5, 'F'); // Erase Name
+        $pdf->Rect(68, 105, 70, 5, 'F'); // Erase Father Name
+        $pdf->Rect(68, 114, 70, 5, 'F'); // Erase Mother Name
+        $pdf->Rect(58, 121, 70, 5, 'F'); // Erase DOB
 
         // Adjust these coordinates! (X, Y) in mm
         $coords = [
-            'name' => ['x' => 50, 'y' => 50],
-            'father_name' => ['x' => 50, 'y' => 60],
-            'mother_name' => ['x' => 50, 'y' => 70],
-            'dob' => ['x' => 50, 'y' => 80],
+            'name' => ['x' => 69, 'y' => 100],
+            'father_name' => ['x' => 69, 'y' => 109.5],
+            'mother_name' => ['x' => 69, 'y' => 118.5],
+            'dob' => ['x' => 58.6, 'y' => 125.5],
         ];
 
         foreach ($coords as $field => $c) {
             if (!empty($record->{$field})) {
-                $pdf->SetXY($c['x'], $c['y']);
-                $pdf->Write(0, $record->{$field});
+                $pdf->SetXY($c['x'], $c['y'] - 4);
+                $pdf->Write(0, strtoupper($record->{$field}));
             }
         }
 
@@ -144,8 +151,8 @@ class TenthPassbookController extends Controller
         if ($record->image_path) {
             $imagePath = storage_path('app/public/' . $record->image_path);
             if (file_exists($imagePath)) {
-                // Adjust image coordinates and size! (X, Y, W, H)
-                $pdf->Image($imagePath, 150, 40, 30, 40);
+                // Photo placed on the right side
+                $pdf->Image($imagePath, 160, 95, 25, 30);
             }
         }
 
