@@ -139,6 +139,9 @@ class SaralStatusController extends Controller
         }
 
         if (empty($extractedHtml)) {
+             // Debug: save the raw html to a file to understand what e-Disha is returning
+             @file_put_contents(storage_path('logs/edisha_debug.html'), $postHtml);
+             
              return response()->json([
                 'success' => false,
                 'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
