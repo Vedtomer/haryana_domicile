@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, Link } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
 
 export default function TwoFactorChallenge() {
@@ -47,13 +47,24 @@ export default function TwoFactorChallenge() {
                                     {errors.code && <p className="text-red-500 text-xs mt-1 text-center">{errors.code}</p>}
                                 </div>
                                 
-                                <button 
-                                    type="submit"
-                                    disabled={processing || data.code.length < 6}
-                                    className="w-full py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 hover:-translate-y-[2px] transition-all shadow-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-                                >
-                                    {processing ? 'Verifying...' : 'Verify & Continue'}
-                                </button>
+                                <div className="flex flex-col gap-3 mt-4">
+                                    <button 
+                                        type="submit"
+                                        disabled={processing || data.code.length < 6}
+                                        className="w-full py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 hover:-translate-y-[2px] transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                                    >
+                                        {processing ? 'Verifying...' : 'Verify & Continue'}
+                                    </button>
+
+                                    <Link 
+                                        href="/logout" 
+                                        method="post" 
+                                        as="button" 
+                                        className="w-full py-3 bg-slate-200 text-slate-700 rounded-xl font-label-md text-label-md hover:bg-slate-300 hover:-translate-y-[2px] transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Cancel & Logout
+                                    </Link>
+                                </div>
                             </form>
                         </div>
                     </main>

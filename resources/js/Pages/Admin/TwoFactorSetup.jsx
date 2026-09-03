@@ -54,12 +54,20 @@ export default function TwoFactorSetup({ qrCodeSvg, secret }) {
                                 <li>Once added, the app will generate a new 6-digit code every 30 seconds.</li>
                             </ol>
                             
-                            <div className="mt-8 pt-6 border-t border-gray-100">
+                            <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col gap-3">
                                 <Link
                                     href="/dashboard"
                                     className="block text-center w-full px-4 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-lg transition-colors shadow-sm"
                                 >
                                     I have scanned the code, continue to Dashboard
+                                </Link>
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="block text-center w-full px-4 py-3 bg-gray-200 text-gray-700 hover:bg-gray-300 font-bold rounded-lg transition-colors shadow-sm"
+                                >
+                                    Cancel & Logout
                                 </Link>
                             </div>
                         </div>
