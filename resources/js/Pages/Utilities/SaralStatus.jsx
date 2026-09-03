@@ -9,6 +9,7 @@ export default function SaralStatus() {
     const [mobileNo, setMobileNo] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [downloadUrl, setDownloadUrl] = useState(null);
     const [error, setError] = useState(null);
 
     const handleSearch = async (e) => {
@@ -22,6 +23,7 @@ export default function SaralStatus() {
         setLoading(true);
         setError(null);
         setResult(null);
+        setDownloadUrl(null);
 
         try {
             const response = await axios.post('/utilities/saral-status/search', { 
@@ -29,7 +31,8 @@ export default function SaralStatus() {
                 mobile_no: mobileNo.trim()
             });
             if (response.data.success) {
-                setResult(response.data.html);
+                setResult(response.data.html || response.data.result);
+                setDownloadUrl(response.data.download_url);
             } else {
                 setError(response.data.message || 'Status not found or an error occurred.');
             }
@@ -103,7 +106,7 @@ export default function SaralStatus() {
 
                                 <div>
                                     <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
-                                        Mobile / Family ID <span className="text-xs font-normal text-slate-500">(Optional for Detailed View)</span>
+                                        Mobile / Family ID <span className="text-xs font-normal text-slate-500">(Required for Download)</span>
                                     </label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -152,15 +155,21 @@ export default function SaralStatus() {
                                         Status Results
                                     </h3>
                                     
-                                    <a 
-                                        href="https://status.saralharyana.nic.in/reports/GetSaralCertificate" 
-                                        target="_blank" 
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">download</span>
-                                        Download Certificate
-                                    </a>
+                                    {downloadUrl ? (
+                                        <a 
+                                            href={downloadUrl} 
+                                            target="_blank" 
+                                            rel="noreferrer"
+                                            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">download</span>
+                                            Download Certificate
+                                        </a>
+                                    ) : (
+                                        <div className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
+                                            * Enter Mobile/Family ID to unlock Download
+                                        </div>
+                                    )}
                                 </div>
                                 <div 
                                     className="overflow-x-auto result-table-container bg-slate-50 p-4 rounded-xl border border-slate-200"

@@ -79,6 +79,33 @@ class SaralStatusController extends Controller
         ]);
 
         $postHtml = $postResponse->body();
+        
+        // Check if e-Disha requires us to click a "Download Certificate" button
+        $downloadUrl = null;
+        if (strpos($postHtml, 'name="btnDownload"') !== false) {
+            preg_match('/id="__VIEWSTATE" value="(.*?)"/', $postHtml, $postViewstateMatch);
+            preg_match('/id="__VIEWSTATEGENERATOR" value="(.*?)"/', $postHtml, $postGeneratorMatch);
+            $postCookies = $postResponse->header('Set-Cookie') ? (is_array($postResponse->header('Set-Cookie')) ? implode('; ', $postResponse->header('Set-Cookie')) : $postResponse->header('Set-Cookie')) : $cookies;
+            
+            $downloadResponse = Http::withHeaders([
+                'Cookie' => $postCookies,
+                'User-Agent' => $userAgent,
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'Referer' => 'https://edisha.gov.in/eForms/Status'
+            ])->asForm()->post('https://edisha.gov.in/eForms/Status', [
+                '__VIEWSTATE' => $postViewstateMatch[1] ?? '',
+                '__VIEWSTATEGENERATOR' => $postGeneratorMatch[1] ?? '',
+                'txtEtranId' => $saralId,
+                'txtmobile' => $mobileNo,
+                'btnDownload' => 'Download Certificate'
+            ]);
+            
+            $downloadHtml = $downloadResponse->body();
+            // Look for: window.open('../DisplayCert.aspx?EdishaXtnID=C+TYdbF...', '_blank');
+            if (preg_match('/DisplayCert\.aspx\?EdishaXtnID=([^"\']+)/i', $downloadHtml, $certMatch)) {
+                $downloadUrl = 'https://edisha.gov.in/DisplayCert.aspx?EdishaXtnID=' . $certMatch[1];
+            }
+        }
 
         // 3. Parse the result
         if (strpos($postHtml, "alert('TransactionID or SaralID does not exists')") !== false || strpos($postHtml, "alert('Mobile Number does not exists')") !== false) {
@@ -185,7 +212,8 @@ class SaralStatusController extends Controller
 
         return response()->json([
             'success' => true,
-            'html' => $extractedHtml,
+            'result' => $extractedHtml,
+            'download_url' => $downloadUrl ?? null,
             'message' => 'Status found successfully.'
         ]);
     }
