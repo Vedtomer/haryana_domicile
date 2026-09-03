@@ -14,6 +14,7 @@ Route::get('/', function () {
 Route::get('/migrate-db', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
+    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
     return 'Database migrated and seeded successfully! Please go back to your dashboard.';
 });
 
