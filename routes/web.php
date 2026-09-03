@@ -122,6 +122,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/aadhar-to-family-id/search', [\App\Http\Controllers\AadharToFamilyIdController::class, 'search'])->name('utilities.aadhar-to-family-id.search');
 
+    Route::get('/utilities/aadhar-to-name', function () {
+        $service = \App\Models\Service::where('slug', 'aadhar-to-name')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/AadharToName');
+    })->name('utilities.aadhar-to-name');
+
+    Route::post('/utilities/aadhar-to-name/search', [\App\Http\Controllers\AadharToNameController::class, 'search'])->name('utilities.aadhar-to-name.search');
+
     Route::get('/utilities/aadhar-to-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-pan')->first();
         $user = auth()->user();
