@@ -10,6 +10,7 @@ export default function Index({ records }) {
                 pageTitle="Birth Records"
                 items={records}
                 columns={[
+                    { label: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString() },
                     { label: 'Child Name', render: (r) => r.child_name },
                     { label: 'Father Name', render: (r) => r.father_name },
                     { label: 'DOB', render: (r) => r.dob?.slice(0, 10) },

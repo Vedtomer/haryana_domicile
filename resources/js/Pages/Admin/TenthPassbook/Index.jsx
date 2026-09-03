@@ -9,6 +9,7 @@ export default function Index({ records }) {
                 title="10th Passbook Records"
                 items={records}
                 columns={[
+                    { label: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString() },
                     { label: 'Name', render: (r) => r.name },
                     { label: 'Father Name', render: (r) => r.father_name },
                     { label: 'Mother Name', render: (r) => r.mother_name },

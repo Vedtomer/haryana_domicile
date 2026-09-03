@@ -9,10 +9,11 @@ export default function Index({ affidavits }) {
                 title="New Marriage Certificate"
                 items={affidavits}
                 columns={[
+                    { label: 'Requested', render: (f) => new Date(f.created_at).toLocaleDateString() },
                     { label: 'ID', render: (f) => `#${f.id}` },
                     { label: 'Groom Name', render: (f) => f.groom_name },
                     { label: 'Bride Name', render: (f) => f.bride_name },
-                    { label: 'Date', render: (f) => f.marriage_date },
+                    { label: 'Marriage Date', render: (f) => f.marriage_date },
                 ]}
                 createHref="/admin/marriage-affidavits/create"
                 editHref={(f) => `/admin/marriage-affidavits/${f.id}/edit`}

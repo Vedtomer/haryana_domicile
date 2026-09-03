@@ -9,6 +9,7 @@ export default function Index({ records }) {
                 title="Airtel Passbook Records"
                 items={records}
                 columns={[
+                    { label: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString() },
                     { label: 'Name', render: (r) => `${r.first_name} ${r.last_name || ''}`.trim() },
                     { label: 'Account Number', render: (r) => r.account_number },
                     { label: 'Reference Number', render: (r) => r.reference_number },

@@ -9,10 +9,11 @@ export default function Index({ forms }) {
                 title="Marriage Forms"
                 items={forms}
                 columns={[
+                    { label: 'Requested', render: (f) => new Date(f.created_at).toLocaleDateString() },
                     { label: 'ID', render: (f) => `#${f.id}` },
                     { label: 'Groom Name', render: (f) => f.groom_name },
                     { label: 'Bride Name', render: (f) => f.bride_name },
-                    { label: 'Date', render: (f) => f.marriage_date },
+                    { label: 'Marriage Date', render: (f) => f.marriage_date },
                 ]}
                 createHref="/admin/marriage-forms/create"
                 editHref={(f) => `/admin/marriage-forms/${f.id}/edit`}

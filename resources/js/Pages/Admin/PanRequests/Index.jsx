@@ -22,6 +22,7 @@ export default function Index({ requests, isAdmin }) {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applicant Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aadhar</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">UTR Number</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -32,6 +33,7 @@ export default function Index({ requests, isAdmin }) {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{req.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{req.aadhar_number}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{req.utr_number}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(req.created_at).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                         req.status === 'accepted' ? 'bg-green-100 text-green-800' :

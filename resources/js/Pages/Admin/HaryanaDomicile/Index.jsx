@@ -9,6 +9,7 @@ export default function Index({ records }) {
                 title="Haryana Domicile Records"
                 items={records}
                 columns={[
+                    { label: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString() },
                     { label: 'Name', render: (r) => r.name },
                     { label: 'Father/Husband Name', render: (r) => r.father_name },
                     { label: 'Mobile', render: (r) => r.mobile },
