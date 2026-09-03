@@ -453,5 +453,13 @@
             sidebar.classList.add('sidebar-collapsed');
         }
     </script>
+    <script type="module">
+        import devtools from '/devtools-detect.js';
+        window.addEventListener('devtoolschange', event => {
+            if (event.detail.isOpen) {
+                window.location.href = '/logout';
+            }
+        });
+    </script>
 </body>
 </html>
