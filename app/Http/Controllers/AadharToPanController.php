@@ -34,15 +34,19 @@ class AadharToPanController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
                 
-                // Let's recursively search for a PAN number string in the response or check common keys
-                $panFound = $this->findPanRecursively($data);
-                
-                // Some APIs return true/success in status or success fields
-                $isSuccess = (isset($data['status']) && $data['status'] == true) || 
-                             (isset($data['success']) && $data['success'] == true) || 
-                             $panFound;
+                // Specific structure handling based on API
+                $panNumber = null;
+                $isFound = false;
 
-                if ($isSuccess && $panFound) {
+                if (isset($data['Status']) && $data['Status'] === 'Success' && !empty($data['full_panno'])) {
+                    $panNumber = strtoupper($data['full_panno']);
+                    $isFound = true;
+                } else if ($this->findPanRecursively($data)) {
+                    $panNumber = $this->findPanRecursively($data);
+                    $isFound = true;
+                }
+
+                if ($isFound && $panNumber) {
                     
                     if (!$user->isAdmin() && !$user->hasRole('super_admin')) {
                         $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Aadhar to PAN Search: ' . $aadhar);
@@ -52,7 +56,7 @@ class AadharToPanController extends Controller
                         'user_id' => $user->id,
                         'service_id' => $service ? $service->id : null,
                         'service_name' => $service ? $service->name : 'Aadhar To Pan Unmasked Instant',
-                        'input_data' => ['Aadhar Number' => $aadhar, 'PAN Number' => $panFound],
+                        'input_data' => ['Aadhar Number' => $aadhar, 'PAN Number' => $panNumber],
                         'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
                         'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
                         'completed_at' => now(),
@@ -60,7 +64,7 @@ class AadharToPanController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'pan_number' => $panFound,
+                        'pan_number' => $panNumber,
                         'data' => $data,
                         'message' => 'PAN details found successfully.'
                     ]);
