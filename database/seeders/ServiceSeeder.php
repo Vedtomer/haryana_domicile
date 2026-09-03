@@ -164,6 +164,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Pan Details Server Instant',
+                'slug' => 'pan-details-instant',
+                'description' => 'Get complete PAN card details instantly using PAN number.',
+                'icon' => 'fingerprint',
+                'coin_cost' => 29,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'pan_details_instant',
+                'sort_order' => 13,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

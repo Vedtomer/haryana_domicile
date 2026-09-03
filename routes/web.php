@@ -133,6 +133,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/aadhar-to-name/search', [\App\Http\Controllers\AadharToNameController::class, 'search'])->name('utilities.aadhar-to-name.search');
 
+    Route::get('/utilities/pan-details-instant', function () {
+        $service = \App\Models\Service::where('slug', 'pan-details-instant')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/PanDetails');
+    })->name('utilities.pan-details-instant');
+
+    Route::post('/utilities/pan-details-instant/search', [\App\Http\Controllers\PanDetailsController::class, 'search'])->name('utilities.pan-details-instant.search');
+
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
         $user = auth()->user();
