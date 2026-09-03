@@ -5,7 +5,9 @@ import FooterParticles from '../../Components/FooterParticles';
 
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
-        login: '',
+        name: '',
+        email: '',
+        phone: '',
         password: '',
     });
 
@@ -63,21 +65,56 @@ export default function Register() {
                                 {/* Form */}
                                 <form onSubmit={submit} className="flex flex-col gap-stack-md">
                                     <div className="flex flex-col gap-base">
-                                        <label className="font-label-md text-label-md text-on-surface" htmlFor="login">Email or Mobile Number</label>
+                                        <label className="font-label-md text-label-md text-on-surface" htmlFor="name">Full Name</label>
                                         <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
                                             <input 
-                                                id="login" 
-                                                name="login"
-                                                value={data.login}
-                                                onChange={(e) => setData('login', e.target.value)}
+                                                id="name" 
+                                                name="name"
+                                                value={data.name}
+                                                onChange={(e) => setData('name', e.target.value)}
                                                 className="w-full bg-transparent border-none py-3 px-4 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
-                                                placeholder="Enter email or mobile" 
+                                                placeholder="Enter your full name" 
                                                 type="text"
                                                 required
                                             />
                                         </div>
-                                        {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
+                                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                     </div>
+
+                                    <div className="flex flex-col gap-base">
+                                        <label className="font-label-md text-label-md text-on-surface" htmlFor="phone">Mobile Number</label>
+                                        <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
+                                            <input 
+                                                id="phone" 
+                                                name="phone"
+                                                value={data.phone}
+                                                onChange={(e) => setData('phone', e.target.value)}
+                                                className="w-full bg-transparent border-none py-3 px-4 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
+                                                placeholder="Enter mobile number" 
+                                                type="tel"
+                                                required
+                                            />
+                                        </div>
+                                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                                    </div>
+
+                                    <div className="flex flex-col gap-base">
+                                        <label className="font-label-md text-label-md text-on-surface" htmlFor="email">Email Address</label>
+                                        <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
+                                            <input 
+                                                id="email" 
+                                                name="email"
+                                                value={data.email}
+                                                onChange={(e) => setData('email', e.target.value)}
+                                                className="w-full bg-transparent border-none py-3 px-4 text-body-md text-on-surface focus:ring-0 focus:outline-none rounded-lg" 
+                                                placeholder="Enter email address" 
+                                                type="email"
+                                                required
+                                            />
+                                        </div>
+                                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                    </div>
+
                                     <div className="flex flex-col gap-base">
                                         <label className="font-label-md text-label-md text-on-surface" htmlFor="password">Password</label>
                                         <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">

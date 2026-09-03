@@ -55,13 +55,4 @@ class TwoFactorController extends Controller
             'secret' => $user->google2fa_secret,
         ]);
     }
-    
-    public function remove()
-    {
-        $user = auth()->user();
-        $user->google2fa_secret = null;
-        $user->save();
-        
-        return back()->with('success', 'Two Factor Authentication disabled.');
-    }
 }

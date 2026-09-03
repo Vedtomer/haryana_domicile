@@ -60,21 +60,17 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-
         $data = $request->validate([
-            'login' => [
-                'required',
-                'string',
-                $loginType === 'email' ? 'email' : 'max:20',
-                'unique:users,' . $loginType,
-            ],
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:4',
         ]);
 
         $user = \App\Models\User::create([
-            'email'            => $loginType === 'email' ? $data['login'] : null,
-            'phone'            => $loginType === 'phone' ? $data['login'] : null,
+            'name'             => $data['name'],
+            'email'            => $data['email'],
+            'phone'            => $data['phone'],
             'password'         => \Illuminate\Support\Facades\Hash::make($data['password']),
             'raw_password'     => $data['password'],
             'type'             => 'user',

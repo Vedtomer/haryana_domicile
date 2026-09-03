@@ -5,13 +5,6 @@ import AdminLayout from '../../Layouts/AdminLayout';
 export default function TwoFactorSetup({ qrCodeSvg, secret }) {
     const { post, processing } = useForm();
 
-    const handleDisable = (e) => {
-        e.preventDefault();
-        if (confirm('Are you sure you want to disable Two-Factor Authentication?')) {
-            post('/2fa/remove');
-        }
-    };
-
     return (
         <AdminLayout
             header={
@@ -20,7 +13,7 @@ export default function TwoFactorSetup({ qrCodeSvg, secret }) {
                         Two-Factor Authentication (2FA)
                     </h1>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Secure your account with Google Authenticator.
+                        Secure your account with Google Authenticator. This is required to access your dashboard.
                     </p>
                 </div>
             }
@@ -35,7 +28,7 @@ export default function TwoFactorSetup({ qrCodeSvg, secret }) {
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-gray-900">Setup Authenticator App</h2>
-                            <p className="text-sm text-gray-500">Scan the QR code with Google Authenticator or Authy.</p>
+                            <p className="text-sm text-gray-500">Scan the QR code with Google Authenticator or Authy to continue.</p>
                         </div>
                     </div>
 
@@ -62,15 +55,12 @@ export default function TwoFactorSetup({ qrCodeSvg, secret }) {
                             </ol>
                             
                             <div className="mt-8 pt-6 border-t border-gray-100">
-                                <h3 className="font-bold text-red-600 mb-2">Disable 2FA</h3>
-                                <p className="mb-4">If you want to remove 2FA from your account, click the button below.</p>
-                                <button
-                                    onClick={handleDisable}
-                                    disabled={processing}
-                                    className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-lg transition-colors border border-red-200"
+                                <Link
+                                    href="/dashboard"
+                                    className="block text-center w-full px-4 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-lg transition-colors shadow-sm"
                                 >
-                                    {processing ? 'Disabling...' : 'Disable 2FA'}
-                                </button>
+                                    I have scanned the code, continue to Dashboard
+                                </Link>
                             </div>
                         </div>
                     </div>

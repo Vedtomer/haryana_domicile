@@ -17,14 +17,20 @@ class Ensure2FA
     {
         $user = $request->user();
 
+        if (!$user) {
+            return $next($request);
+        }
+
         if ($request->routeIs('2fa.*') || $request->routeIs('logout')) {
             return $next($request);
         }
 
-        if ($user && $user->google2fa_secret) {
-            if (!$request->session()->has('2fa_verified')) {
-                return redirect()->route('2fa.challenge');
-            }
+        if (!$user->google2fa_secret) {
+            return redirect()->route('2fa.setup');
+        }
+
+        if (!$request->session()->has('2fa_verified')) {
+            return redirect()->route('2fa.challenge');
         }
 
         return $next($request);
