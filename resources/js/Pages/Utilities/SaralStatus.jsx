@@ -6,6 +6,7 @@ import axios from 'axios';
 export default function SaralStatus() {
     const { auth } = usePage().props;
     const [saralId, setSaralId] = useState('');
+    const [mobileNo, setMobileNo] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
@@ -13,8 +14,8 @@ export default function SaralStatus() {
     const handleSearch = async (e) => {
         e.preventDefault();
         
-        if (!saralId.trim()) {
-            setError('Please enter a valid Saral Certificate Number.');
+        if (!saralId.trim() && !mobileNo.trim()) {
+            setError('Please enter either a Saral ID or a Mobile Number.');
             return;
         }
 
@@ -23,7 +24,10 @@ export default function SaralStatus() {
         setResult(null);
 
         try {
-            const response = await axios.post('/utilities/saral-status/search', { saral_id: saralId.trim() });
+            const response = await axios.post('/utilities/saral-status/search', { 
+                saral_id: saralId.trim(),
+                mobile_no: mobileNo.trim()
+            });
             if (response.data.success) {
                 setResult(response.data.html);
             } else {
@@ -52,7 +56,7 @@ export default function SaralStatus() {
                         Saral Certificate Status
                     </h1>
                     <p className="text-lg text-slate-500 max-w-xl mx-auto">
-                        Enter your e-Disha/Saral Certificate Reference Number to instantly check its current status.
+                        Enter your e-Disha/Saral ID OR your Mobile Number to instantly check its current status.
                     </p>
                 </div>
 
@@ -68,32 +72,64 @@ export default function SaralStatus() {
                                 </div>
                             )}
 
-                            <div>
-                                <label htmlFor="saralId" className="block text-sm font-bold text-slate-700 mb-2">
-                                    Certificate Number (Saral ID)
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span className="material-symbols-outlined text-slate-400">numbers</span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                                <div>
+                                    <label htmlFor="saralId" className="block text-sm font-bold text-slate-700 mb-2">
+                                        Certificate Number (Saral ID)
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <span className="material-symbols-outlined text-slate-400">numbers</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            id="saralId"
+                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
+                                            placeholder="e.g. CIDR/2023/12345"
+                                            value={saralId}
+                                            onChange={(e) => {
+                                                setSaralId(e.target.value.toUpperCase());
+                                                if (e.target.value) setMobileNo(''); // Clear other field
+                                            }}
+                                        />
                                     </div>
-                                    <input
-                                        type="text"
-                                        id="saralId"
-                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
-                                        placeholder="e.g. CIDR/2023/12345"
-                                        value={saralId}
-                                        onChange={(e) => setSaralId(e.target.value.toUpperCase())}
-                                        required
-                                    />
                                 </div>
-                                <p className="mt-2 text-sm text-slate-500 font-medium">
-                                    Enter the complete EDisha/Saral ID exactly as it appears on your receipt.
-                                </p>
+
+                                <div className="hidden md:flex items-center justify-center absolute inset-0 pointer-events-none">
+                                    <span className="bg-white px-3 py-1 rounded-full border border-slate-200 text-slate-400 font-bold text-xs uppercase shadow-sm">OR</span>
+                                </div>
+                                
+                                <div className="flex md:hidden items-center justify-center my-[-10px]">
+                                    <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-400 font-bold text-xs uppercase">OR</span>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 mb-2">
+                                        Mobile Number
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <span className="material-symbols-outlined text-slate-400">smartphone</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            id="mobileNo"
+                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
+                                            placeholder="e.g. 9876543210"
+                                            value={mobileNo}
+                                            maxLength={12}
+                                            onChange={(e) => {
+                                                setMobileNo(e.target.value);
+                                                if (e.target.value) setSaralId(''); // Clear other field
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={loading || !saralId.trim()}
+                                disabled={loading || (!saralId.trim() && !mobileNo.trim())}
                                 className="w-full flex items-center justify-center gap-3 py-4 px-8 text-base font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {loading ? (

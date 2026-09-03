@@ -13,10 +13,20 @@ class SaralStatusController extends Controller
     public function search(Request $request)
     {
         $request->validate([
-            'saral_id' => 'required|string|max:50',
+            'saral_id' => 'nullable|string|max:50',
+            'mobile_no' => 'nullable|string|max:15',
         ]);
 
-        $saralId = $request->input('saral_id');
+        $saralId = $request->input('saral_id') ?? '';
+        $mobileNo = $request->input('mobile_no') ?? '';
+
+        if (empty($saralId) && empty($mobileNo)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide either a Saral ID or Mobile Number.'
+            ]);
+        }
+
         $user = auth()->user();
 
         // 1. Fetch the page to get the viewstate and cookies
@@ -52,17 +62,17 @@ class SaralStatusController extends Controller
             '__VIEWSTATE' => $viewstateMatch[1],
             '__VIEWSTATEGENERATOR' => $generatorMatch[1],
             'txtETranID' => $saralId,
-            'txtMobile' => '',
+            'txtMobile' => $mobileNo,
             'btnSearch' => 'Search'
         ]);
 
         $postHtml = $postResponse->body();
 
         // 3. Parse the result
-        if (strpos($postHtml, "alert('TransactionID or SaralID does not exists')") !== false) {
+        if (strpos($postHtml, "alert('TransactionID or SaralID does not exists')") !== false || strpos($postHtml, "alert('Mobile Number does not exists')") !== false) {
             return response()->json([
                 'success' => false,
-                'message' => 'TransactionID or SaralID does not exist.'
+                'message' => 'The provided TransactionID, SaralID, or Mobile Number does not exist.'
             ]);
         }
 
