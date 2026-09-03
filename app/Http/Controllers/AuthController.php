@@ -49,6 +49,7 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
+            Auth::logoutOtherDevices($request->password);
             return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
         }
 
