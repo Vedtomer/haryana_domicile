@@ -18,6 +18,26 @@ Route::get('/migrate-db', function () {
     return 'Database migrated and seeded successfully! Please go back to your dashboard.';
 });
 
+Route::get('/force-add-service', function () {
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'aadhar-to-pan'],
+        [
+            'name' => 'Aadhar To Pan Unmasked Instant',
+            'description' => 'Instantly find the unmasked PAN number linked to an Aadhaar number.',
+            'icon' => '🔍',
+            'coin_cost' => 69,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_to_pan',
+            'sort_order' => 9,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
+});
+
 use App\Http\Controllers\AuthController;
 
 Route::get('/admin', function () {
