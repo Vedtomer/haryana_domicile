@@ -146,14 +146,22 @@ export default function Register() {
                                         </label>
                                     </div>
 
-                                    <button 
-                                        type="submit"
-                                        disabled={processing}
-                                        className="w-full py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 hover:-translate-y-[2px] transition-all shadow-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-                                    >
-                                        {processing ? 'Creating Account...' : 'Create Account'}
-                                        {!processing && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>}
-                                    </button>
+                                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                                        <Link 
+                                            href="/login"
+                                            className="w-full sm:w-1/3 py-3 bg-slate-200 text-slate-700 rounded-xl font-label-md text-label-md hover:bg-slate-300 hover:-translate-y-[2px] transition-all flex items-center justify-center gap-2 text-center"
+                                        >
+                                            Cancel
+                                        </Link>
+                                        <button 
+                                            type="submit"
+                                            disabled={processing}
+                                            className="w-full sm:w-2/3 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 hover:-translate-y-[2px] transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                                        >
+                                            {processing ? 'Creating Account...' : 'Create Account'}
+                                            {!processing && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>}
+                                        </button>
+                                    </div>
                                     
                                     <div className="text-center mt-2">
                                         <span className="font-body-sm text-body-sm text-on-surface-variant">Already have an account? </span>
