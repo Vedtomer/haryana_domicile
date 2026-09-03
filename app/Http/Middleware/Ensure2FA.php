@@ -25,12 +25,10 @@ class Ensure2FA
             return $next($request);
         }
 
-        if (!$user->google2fa_secret) {
-            return redirect()->route('2fa.setup');
-        }
-
-        if (!$request->session()->has('2fa_verified')) {
-            return redirect()->route('2fa.challenge');
+        if ($user->google2fa_secret) {
+            if (!$request->session()->has('2fa_verified')) {
+                return redirect()->route('2fa.challenge');
+            }
         }
 
         return $next($request);
