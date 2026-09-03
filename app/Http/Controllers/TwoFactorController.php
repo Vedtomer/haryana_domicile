@@ -49,6 +49,9 @@ class TwoFactorController extends Controller
         );
         $writer = new \BaconQrCode\Writer($renderer);
         $qrCodeSvg = $writer->writeString($qrCodeUrl);
+        
+        // Force SVG to be responsive by replacing hardcoded width/height
+        $qrCodeSvg = str_replace('width="400" height="400"', 'width="100%" height="100%"', $qrCodeSvg);
 
         return \Inertia\Inertia::render('Admin/TwoFactorSetup', [
             'qrCodeSvg' => $qrCodeSvg,
