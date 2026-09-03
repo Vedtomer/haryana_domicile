@@ -34,6 +34,12 @@ Route::get('/reactivate', [\App\Http\Controllers\ReactivationController::class, 
 Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'store'])->name('reactivate.store');
 
 Route::middleware('auth')->group(function () {
+    // 2FA Routes
+    Route::get('/2fa/challenge', [\App\Http\Controllers\TwoFactorController::class, 'showChallenge'])->name('2fa.challenge');
+    Route::post('/2fa/challenge', [\App\Http\Controllers\TwoFactorController::class, 'verifyChallenge'])->name('2fa.verify');
+    Route::get('/2fa/setup', [\App\Http\Controllers\TwoFactorController::class, 'setup'])->name('2fa.setup');
+    Route::post('/2fa/remove', [\App\Http\Controllers\TwoFactorController::class, 'remove'])->name('2fa.remove');
+
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
     Route::get('/utilities/electricity-bill', function () {
