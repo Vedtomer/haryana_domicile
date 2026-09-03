@@ -108,6 +108,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Aadhar To Pan Unmasked Instant',
+                'slug' => 'aadhar-to-pan',
+                'description' => 'Instantly find the unmasked PAN number linked to an Aadhaar number.',
+                'icon' => '🔍',
+                'coin_cost' => 69,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'aadhar_to_pan',
+                'sort_order' => 9,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

@@ -84,6 +84,17 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/utilities/aadhar-to-family-id/search', [\App\Http\Controllers\AadharToFamilyIdController::class, 'search'])->name('utilities.aadhar-to-family-id.search');
 
+    Route::get('/utilities/aadhar-to-pan', function () {
+        $service = \App\Models\Service::where('slug', 'aadhar-to-pan')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/AadharToPan');
+    })->name('utilities.aadhar-to-pan');
+
+    Route::post('/utilities/aadhar-to-pan/search', [\App\Http\Controllers\AadharToPanController::class, 'search'])->name('utilities.aadhar-to-pan.search');
+
     Route::get('/utilities/aadhaar-services', function () {
         $service = \App\Models\Service::where('slug', 'aadhaar-services')->first();
         $user = auth()->user();
