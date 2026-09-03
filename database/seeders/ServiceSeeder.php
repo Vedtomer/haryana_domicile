@@ -136,6 +136,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Aadhar To Name',
+                'slug' => 'aadhar-to-name',
+                'description' => 'Find name details using Aadhar number.',
+                'icon' => 'badge',
+                'coin_cost' => 19,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'aadhar_to_name',
+                'sort_order' => 11,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {
