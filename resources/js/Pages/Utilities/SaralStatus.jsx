@@ -146,10 +146,22 @@ export default function SaralStatus() {
 
                         {result && (
                             <div className="mt-10 pt-8 border-t border-slate-100">
-                                <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-green-500">check_circle</span>
-                                    Status Results
-                                </h3>
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-green-500">check_circle</span>
+                                        Status Results
+                                    </h3>
+                                    
+                                    <a 
+                                        href="https://status.saralharyana.nic.in/reports/GetSaralCertificate" 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">download</span>
+                                        Download Certificate
+                                    </a>
+                                </div>
                                 <div 
                                     className="overflow-x-auto result-table-container bg-slate-50 p-4 rounded-xl border border-slate-200"
                                     dangerouslySetInnerHTML={{ __html: result }}
