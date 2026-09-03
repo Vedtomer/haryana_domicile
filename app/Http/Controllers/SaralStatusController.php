@@ -107,7 +107,7 @@ class SaralStatusController extends Controller
 
         $extractedHtml = '';
         
-        // Safely parse HTML using DOMDocument to handle nested tables
+        // Safely parse HTML using DOMDocument to handle nested tables/divs
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true); // Suppress HTML structure errors
         @$dom->loadHTML('<?xml encoding="utf-8" ?>' . $postHtml);
@@ -115,24 +115,40 @@ class SaralStatusController extends Controller
         
         $xpath = new \DOMXPath($dom);
         
-        // 1. First, try to find a table with id starting with grd_
-        $gridTables = $xpath->query('//table[starts-with(@id, "grd_")]');
-        if ($gridTables->length > 0) {
-            foreach ($gridTables as $table) {
-                $extractedHtml .= $dom->saveHTML($table) . '<br/><br/>';
-            }
-        } else {
-            // 2. If no grid table, search for all tables
-            $tables = $xpath->query('//table');
-            foreach ($tables as $table) {
-                $tableHtml = $dom->saveHTML($table);
-                // Check if it's a data table (not the layout header)
-                if (stripos($tableHtml, 'Header1_lblUserName') === false) {
-                    // Check if it has data keywords
-                    if (stripos($tableHtml, 'Status') !== false || stripos($tableHtml, 'Applicant') !== false || stripos($tableHtml, 'Remark') !== false || stripos($tableHtml, 'Action') !== false) {
-                        // Check if this table is inside another table that we already matched.
-                        // (We only want the top-most valid table, or just append it and DOMDocument ensures it's complete)
-                        $extractedHtml .= $tableHtml . '<br/><br/>';
+        // 1. e-Disha's new layout uses <div id="idstatus">
+        $statusPanel = $xpath->query('//div[@id="idstatus"]');
+        if ($statusPanel->length > 0) {
+            $rawStatus = $dom->saveHTML($statusPanel->item(0));
+            // Convert Bootstrap classes to Tailwind for seamless UI integration
+            $rawStatus = str_replace('class="panel panel-primary"', 'class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"', $rawStatus);
+            $rawStatus = str_replace('class="panel-heading"', 'class="bg-slate-50 border-b border-slate-200 px-4 py-3 text-lg font-bold text-slate-800"', $rawStatus);
+            $rawStatus = preg_replace('/class="form-group[^"]*"/', 'class="flex flex-col sm:flex-row sm:items-center px-4 py-3 border-b border-slate-100 last:border-0"', $rawStatus);
+            $rawStatus = preg_replace('/class="col-sm-3 control-label[^"]*"/', 'class="sm:w-1/3 text-sm font-bold text-slate-500 uppercase tracking-wide"', $rawStatus);
+            $rawStatus = str_replace('class="col-sm-3"', 'class="sm:w-2/3 text-sm font-semibold text-slate-900 mt-1 sm:mt-0"', $rawStatus);
+            $rawStatus = str_replace('class="col-sm-4 text-danger"', 'class="sm:w-2/3 text-sm font-bold text-blue-600 mt-1 sm:mt-0"', $rawStatus);
+            $rawStatus = str_replace('class="col-sm-4"', 'class="sm:w-2/3 text-sm font-semibold text-slate-900 mt-1 sm:mt-0"', $rawStatus);
+            $rawStatus = str_replace('class="col-sm-6"', 'class="sm:w-2/3 text-sm font-semibold text-slate-900 mt-1 sm:mt-0"', $rawStatus);
+            $rawStatus = str_replace('style="', 'data-old-style="', $rawStatus); // strip inline styles
+
+            $extractedHtml .= $rawStatus;
+        }
+        
+        // 2. If it's still using grids (older services), try to find a table with id starting with grd_
+        if (empty($extractedHtml)) {
+            $gridTables = $xpath->query('//table[starts-with(@id, "grd_")]');
+            if ($gridTables->length > 0) {
+                foreach ($gridTables as $table) {
+                    $extractedHtml .= $dom->saveHTML($table) . '<br/><br/>';
+                }
+            } else {
+                // 3. Fallback: search for any tables with keywords
+                $tables = $xpath->query('//table');
+                foreach ($tables as $table) {
+                    $tableHtml = $dom->saveHTML($table);
+                    if (stripos($tableHtml, 'Header1_lblUserName') === false) {
+                        if (stripos($tableHtml, 'Status') !== false || stripos($tableHtml, 'Applicant') !== false || stripos($tableHtml, 'Remark') !== false || stripos($tableHtml, 'Action') !== false) {
+                            $extractedHtml .= $tableHtml . '<br/><br/>';
+                        }
                     }
                 }
             }
@@ -149,7 +165,7 @@ class SaralStatusController extends Controller
         }
         
         // Clean up the extracted HTML a bit (e.g., remove specific inline styles that break our UI)
-        $extractedHtml = preg_replace('/style=".*?"/i', '', $extractedHtml);
+        $extractedHtml = preg_replace('/data-old-style=".*?"/i', '', $extractedHtml);
         // Add Tailwind classes to tables
         $extractedHtml = str_replace('<table', '<table class="w-full text-sm text-left text-gray-500 border border-gray-200 rounded-lg overflow-hidden"', $extractedHtml);
         $extractedHtml = str_replace('<th', '<th class="px-4 py-3 bg-gray-50 text-gray-700 font-bold uppercase border-b border-gray-200"', $extractedHtml);
