@@ -35,7 +35,7 @@ export default function TwoFactorSetup({ qrCodeSvg, secret }) {
                     <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
                         <div className="w-full md:w-1/2 flex flex-col items-center border border-gray-200 p-4 rounded-xl bg-gray-50">
                             <div 
-                                className="w-48 h-48 bg-white p-2 rounded-lg shadow-sm border border-gray-100 mb-4"
+                                className="w-48 h-48 bg-white p-2 rounded-lg shadow-sm border border-gray-100 mb-4 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
                                 dangerouslySetInnerHTML={{ __html: qrCodeSvg }}
                             />
                             <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Secret Key</p>
