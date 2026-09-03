@@ -51,59 +51,72 @@ export default function AadharToPan() {
     };
 
     return (
-        <AdminLayout
-            header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Aadhar to Unmasked PAN
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Instantly retrieve Unmasked PAN Number using Aadhar Number
-                    </p>
-                </div>
-            }
-        >
+        <AdminLayout>
             <Head title="Aadhar to PAN" />
 
-            <div className="max-w-xl mx-auto mt-8">
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
-                    <div className="p-8">
-                        <div className="flex items-center justify-center w-16 h-16 bg-blue-50 text-blue-600 rounded-full mb-6 mx-auto">
-                            <span className="material-symbols-outlined text-3xl">credit_card</span>
-                        </div>
-                        <h2 className="text-2xl font-black text-center text-slate-800 dark:text-white mb-2 tracking-tight">
-                            Find Unmasked PAN
-                        </h2>
-                        <p className="text-center text-slate-500 mb-8 font-medium">
-                            Enter a 12-digit Aadhar number to fetch the associated PAN instantly.
-                        </p>
+            <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                {/* Header section */}
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-100 text-blue-700 mb-6 shadow-inner">
+                        <span className="material-symbols-outlined text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            credit_card
+                        </span>
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+                        Find Unmasked PAN
+                    </h1>
+                    <p className="text-lg text-slate-500 max-w-xl mx-auto">
+                        Enter a 12-digit Aadhaar number to instantly fetch the associated Unmasked PAN.
+                    </p>
+                </div>
 
-                        <form onSubmit={handleSearch} className="space-y-5">
+                {/* Form Card */}
+                <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                    <div className="p-8 sm:p-12">
+                        <form onSubmit={handleSearch} className="space-y-6">
+                            
+                            {error && (
+                                <div className="p-4 bg-red-50 rounded-xl border border-red-100 flex items-start gap-3">
+                                    <span className="material-symbols-outlined text-red-500 mt-0.5">error</span>
+                                    <p className="text-sm text-red-700 font-medium">{error}</p>
+                                </div>
+                            )}
+
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    Aadhar Number
+                                <label htmlFor="aadhar" className="block text-sm font-bold text-slate-700 mb-2">
+                                    Aadhaar Number
                                 </label>
-                                <input
-                                    type="text"
-                                    maxLength="12"
-                                    value={aadhar}
-                                    onChange={(e) => {
-                                        const val = e.target.value.replace(/\D/g, '').slice(0, 12);
-                                        setAadhar(val);
-                                    }}
-                                    placeholder="e.g. 123456789012"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-lg tracking-widest font-bold transition-all text-center dark:text-white"
-                                />
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span className="material-symbols-outlined text-slate-400">badge</span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        id="aadhar"
+                                        maxLength="12"
+                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-widest text-center"
+                                        placeholder="e.g. 123456789012"
+                                        value={aadhar}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '').slice(0, 12);
+                                            setAadhar(val);
+                                        }}
+                                        required
+                                    />
+                                </div>
+                                <p className="mt-2 text-sm text-slate-500 font-medium">
+                                    Enter the 12-digit number without spaces or dashes.
+                                </p>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading || aadhar.length !== 12}
-                                className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-lg rounded-xl shadow-lg shadow-blue-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                className="w-full flex items-center justify-center gap-3 py-4 px-8 text-base font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {loading ? (
                                     <>
-                                        <svg className="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -111,41 +124,41 @@ export default function AadharToPan() {
                                     </>
                                 ) : (
                                     <>
-                                        <span className="material-symbols-outlined font-bold">search</span>
+                                        <span className="material-symbols-outlined">search</span>
                                         Find PAN (Cost: 69 Coins)
                                     </>
                                 )}
                             </button>
                         </form>
 
-                        {error && (
-                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-                                <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
-                                <p className="text-red-700 dark:text-red-300 font-medium">{error}</p>
-                            </div>
-                        )}
-
                         {result && (
-                            <div className="mt-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-800/50 rounded-2xl text-center transform animate-in fade-in zoom-in duration-300">
-                                <span className="inline-block px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-black uppercase tracking-widest rounded-full mb-3">
-                                    Result Found
-                                </span>
-                                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Unmasked PAN Number</p>
-                                <div className="text-4xl font-black text-green-700 dark:text-green-400 tracking-tight select-all">
+                            <div className="mt-10 p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl text-center transform animate-in fade-in zoom-in duration-300 shadow-sm">
+                                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 text-green-600 rounded-full mb-4">
+                                    <span className="material-symbols-outlined text-[24px]">check_circle</span>
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">Unmasked PAN Number</h3>
+                                <div className="text-5xl font-black text-green-700 tracking-tight select-all">
                                     {result}
                                 </div>
                             </div>
                         )}
                     </div>
                     
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 border-t border-slate-200 dark:border-slate-800 text-center flex items-center justify-between">
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                            Live API lookup
-                        </p>
-                        <p className="text-sm font-bold text-orange-600">
-                            Available Coins: {auth.user.coins}
-                        </p>
+                    <div className="bg-slate-50 px-8 py-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-start gap-4">
+                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-1">
+                                <span className="material-symbols-outlined text-[20px]">info</span>
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-slate-900">Live API Lookup</h4>
+                                <p className="mt-1 text-sm text-slate-500 leading-relaxed">
+                                    The details are fetched instantly via live database lookup.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex-shrink-0 bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold text-sm shadow-inner border border-orange-200">
+                            Balance: {auth.user.coins} Coins
+                        </div>
                     </div>
                 </div>
             </div>
