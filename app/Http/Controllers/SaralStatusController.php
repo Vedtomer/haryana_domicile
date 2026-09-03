@@ -107,18 +107,31 @@ class SaralStatusController extends Controller
 
         $extractedHtml = '';
         
-        // Match any gridviews (standard ASP.NET)
-        preg_match_all('/<table[^>]*?id="grd_[^>]*?>.*?<\/table>/is', $postHtml, $gridMatches);
-        if (!empty($gridMatches[0])) {
-            $extractedHtml = implode('<br/><br/>', $gridMatches[0]);
+        // Safely parse HTML using DOMDocument to handle nested tables
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true); // Suppress HTML structure errors
+        @$dom->loadHTML('<?xml encoding="utf-8" ?>' . $postHtml);
+        libxml_clear_errors();
+        
+        $xpath = new \DOMXPath($dom);
+        
+        // 1. First, try to find a table with id starting with grd_
+        $gridTables = $xpath->query('//table[starts-with(@id, "grd_")]');
+        if ($gridTables->length > 0) {
+            foreach ($gridTables as $table) {
+                $extractedHtml .= $dom->saveHTML($table) . '<br/><br/>';
+            }
         } else {
-            // Broaden search: any table that contains common status keywords but is NOT the header layout
-            preg_match_all('/<table[^>]*>.*?<\/table>/is', $postHtml, $allTables);
-            if (!empty($allTables[0])) {
-                foreach ($allTables[0] as $tableHtml) {
-                    // Check if it looks like a data table and not the page header
-                    if (stripos($tableHtml, 'Header1_lblUserName') === false && 
-                       (stripos($tableHtml, 'Status') !== false || stripos($tableHtml, 'Applicant') !== false || stripos($tableHtml, 'Remark') !== false || stripos($tableHtml, 'Action') !== false)) {
+            // 2. If no grid table, search for all tables
+            $tables = $xpath->query('//table');
+            foreach ($tables as $table) {
+                $tableHtml = $dom->saveHTML($table);
+                // Check if it's a data table (not the layout header)
+                if (stripos($tableHtml, 'Header1_lblUserName') === false) {
+                    // Check if it has data keywords
+                    if (stripos($tableHtml, 'Status') !== false || stripos($tableHtml, 'Applicant') !== false || stripos($tableHtml, 'Remark') !== false || stripos($tableHtml, 'Action') !== false) {
+                        // Check if this table is inside another table that we already matched.
+                        // (We only want the top-most valid table, or just append it and DOMDocument ensures it's complete)
                         $extractedHtml .= $tableHtml . '<br/><br/>';
                     }
                 }
@@ -126,25 +139,10 @@ class SaralStatusController extends Controller
         }
 
         if (empty($extractedHtml)) {
-             // If we still can't find a table, try to extract the main content panel if it exists
-             preg_match('/<div class="panel-body">(.*?)<\/div>\s*<(div|form)/is', $postHtml, $panelMatch);
-             if (!empty($panelMatch[1])) {
-                 // Strip out the search form and inputs
-                 $rawHtml = preg_replace('/<div class="form-group">.*?<\/div>/is', '', $panelMatch[1]);
-                 $rawHtml = preg_replace('/<input[^>]*>/i', '', $rawHtml);
-                 
-                 // If there's substantial text left, show it
-                 if (strlen(strip_tags($rawHtml)) > 50) {
-                     $extractedHtml = trim($rawHtml);
-                 }
-             }
-
-             if (empty($extractedHtml)) {
-                 return response()->json([
-                    'success' => false,
-                    'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
-                 ]);
-             }
+             return response()->json([
+                'success' => false,
+                'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
+             ]);
         }
         
         // Clean up the extracted HTML a bit (e.g., remove specific inline styles that break our UI)
