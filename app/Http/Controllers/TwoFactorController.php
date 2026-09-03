@@ -55,4 +55,24 @@ class TwoFactorController extends Controller
             'secret' => $user->google2fa_secret,
         ]);
     }
+
+    public function resetSetup(Request $request)
+    {
+        $request->validate(['password' => 'required|string']);
+        
+        $user = $request->user();
+        
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Incorrect password.']);
+        }
+        
+        // Reset the 2FA secret
+        $user->google2fa_secret = null;
+        $user->save();
+        
+        // Remove verified session flag if present
+        $request->session()->forget('2fa_verified');
+        
+        return redirect()->route('2fa.setup')->with('success', 'Authentication app reset. Please scan the new QR code.');
+    }
 }
