@@ -75,7 +75,7 @@ export default function SaralStatus() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
                                 <div>
                                     <label htmlFor="saralId" className="block text-sm font-bold text-slate-700 mb-2">
-                                        Certificate Number (Saral ID)
+                                        Certificate Number (Saral ID) <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -87,25 +87,23 @@ export default function SaralStatus() {
                                             className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
                                             placeholder="e.g. CIDR/2023/12345"
                                             value={saralId}
-                                            onChange={(e) => {
-                                                setSaralId(e.target.value.toUpperCase());
-                                                if (e.target.value) setMobileNo(''); // Clear other field
-                                            }}
+                                            onChange={(e) => setSaralId(e.target.value.toUpperCase())}
+                                            required
                                         />
                                     </div>
                                 </div>
 
                                 <div className="hidden md:flex items-center justify-center absolute inset-0 pointer-events-none">
-                                    <span className="bg-white px-3 py-1 rounded-full border border-slate-200 text-slate-400 font-bold text-xs uppercase shadow-sm">OR</span>
+                                    <span className="bg-white px-3 py-1 rounded-full border border-slate-200 text-slate-400 font-bold text-xs uppercase shadow-sm">AND</span>
                                 </div>
                                 
                                 <div className="flex md:hidden items-center justify-center my-[-10px]">
-                                    <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-400 font-bold text-xs uppercase">OR</span>
+                                    <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-400 font-bold text-xs uppercase">AND</span>
                                 </div>
 
                                 <div>
-                                    <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 mb-2">
-                                        Mobile Number
+                                    <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                                        Mobile / Family ID <span className="text-xs font-normal text-slate-500">(Optional for Detailed View)</span>
                                     </label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -118,10 +116,7 @@ export default function SaralStatus() {
                                             placeholder="e.g. 9876543210"
                                             value={mobileNo}
                                             maxLength={12}
-                                            onChange={(e) => {
-                                                setMobileNo(e.target.value);
-                                                if (e.target.value) setSaralId(''); // Clear other field
-                                            }}
+                                            onChange={(e) => setMobileNo(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -129,7 +124,7 @@ export default function SaralStatus() {
 
                             <button
                                 type="submit"
-                                disabled={loading || (!saralId.trim() && !mobileNo.trim())}
+                                disabled={loading || !saralId.trim()}
                                 className="w-full flex items-center justify-center gap-3 py-4 px-8 text-base font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {loading ? (
