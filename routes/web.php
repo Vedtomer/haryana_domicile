@@ -128,8 +128,8 @@ Route::middleware('auth')->group(function () {
         $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&DJ=" . urlencode($regNo);
         $response = \Illuminate\Support\Facades\Http::get($url);
 
-        if ($response->successful() && $response->json('success') && $response->json('data.data')) {
-            $data = $response->json('data.data');
+        if ($response->successful() && $response->json('data') && $response->json('data.regNo')) {
+            $data = $response->json('data');
             
             // Deduct coins only if successful
             if (!$user->isAdmin() && !$user->hasRole('super_admin')) {
