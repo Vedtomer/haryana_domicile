@@ -150,6 +150,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Aadhar To Pan Mask',
+                'slug' => 'aadhar-to-mask-pan',
+                'description' => 'Find masked PAN card number linked to an Aadhar number.',
+                'icon' => 'credit_card',
+                'coin_cost' => 19,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'aadhar_to_mask_pan',
+                'sort_order' => 12,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

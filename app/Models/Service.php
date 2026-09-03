@@ -92,6 +92,12 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-name',
             'create' => '/utilities/aadhar-to-name',
         ],
+        'aadhar_to_mask_pan' => [
+            'label' => 'Aadhar To Pan Mask',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-mask-pan',
+            'create' => '/utilities/aadhar-to-mask-pan',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,
