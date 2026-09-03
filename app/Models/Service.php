@@ -74,6 +74,12 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-family-id',
             'create' => '/utilities/aadhar-to-family-id',
         ],
+        'aadhar_to_pan' => [
+            'label' => 'Aadhar To Pan Unmasked Instant',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-pan',
+            'create' => '/utilities/aadhar-to-pan',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,
