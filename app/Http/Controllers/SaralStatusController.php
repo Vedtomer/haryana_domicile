@@ -29,8 +29,14 @@ class SaralStatusController extends Controller
 
         $user = auth()->user();
 
+        $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36';
+
         // 1. Fetch the page to get the viewstate and cookies
-        $response = Http::get('https://edisha.gov.in/eForms/Status');
+        $response = Http::withHeaders([
+            'User-Agent' => $userAgent,
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language' => 'en-US,en;q=0.9',
+        ])->get('https://edisha.gov.in/eForms/Status');
         
         if (!$response->successful()) {
             return response()->json([
@@ -57,7 +63,13 @@ class SaralStatusController extends Controller
 
         // 2. Post the data
         $postResponse = Http::withHeaders([
-            'Cookie' => $cookies
+            'Cookie' => $cookies,
+            'User-Agent' => $userAgent,
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language' => 'en-US,en;q=0.9',
+            'Referer' => 'https://edisha.gov.in/eForms/Status',
+            'Origin' => 'https://edisha.gov.in',
+            'Content-Type' => 'application/x-www-form-urlencoded'
         ])->asForm()->post('https://edisha.gov.in/eForms/Status', [
             '__VIEWSTATE' => $viewstateMatch[1],
             '__VIEWSTATEGENERATOR' => $generatorMatch[1],
@@ -116,11 +128,23 @@ class SaralStatusController extends Controller
         if (empty($extractedHtml)) {
              // If we still can't find a table, try to extract the main content panel if it exists
              preg_match('/<div class="panel-body">(.*?)<\/div>\s*<(div|form)/is', $postHtml, $panelMatch);
-             
-             return response()->json([
-                'success' => false,
-                'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
-            ]);
+             if (!empty($panelMatch[1])) {
+                 // Strip out the search form and inputs
+                 $rawHtml = preg_replace('/<div class="form-group">.*?<\/div>/is', '', $panelMatch[1]);
+                 $rawHtml = preg_replace('/<input[^>]*>/i', '', $rawHtml);
+                 
+                 // If there's substantial text left, show it
+                 if (strlen(strip_tags($rawHtml)) > 50) {
+                     $extractedHtml = trim($rawHtml);
+                 }
+             }
+
+             if (empty($extractedHtml)) {
+                 return response()->json([
+                    'success' => false,
+                    'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
+                 ]);
+             }
         }
         
         // Clean up the extracted HTML a bit (e.g., remove specific inline styles that break our UI)

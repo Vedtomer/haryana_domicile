@@ -56,7 +56,7 @@ export default function SaralStatus() {
                         Saral Certificate Status
                     </h1>
                     <p className="text-lg text-slate-500 max-w-xl mx-auto">
-                        Enter your e-Disha/Saral ID OR your Mobile Number to instantly check its current status.
+                        Enter your Saral Certificate Reference Number to instantly check its current status.
                     </p>
                 </div>
 
@@ -161,12 +161,12 @@ export default function SaralStatus() {
                     <div className="bg-slate-50 px-8 py-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
                             <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-1">
-                                <span className="material-symbols-outlined text-[20px]">info</span>
+                                <span className="material-symbols-outlined text-[20px]">verified</span>
                             </div>
                             <div>
-                                <h4 className="text-sm font-bold text-slate-900">Live Portal Integration</h4>
+                                <h4 className="text-sm font-bold text-slate-900">Official Status</h4>
                                 <p className="mt-1 text-sm text-slate-500 leading-relaxed">
-                                    The details are fetched instantly via live Haryana e-Disha Status portal.
+                                    The details provided are fetched in real-time.
                                 </p>
                             </div>
                         </div>
