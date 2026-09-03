@@ -80,6 +80,12 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-pan',
             'create' => '/utilities/aadhar-to-pan',
         ],
+        'saral_status' => [
+            'label' => 'Saral Certificate Status',
+            'model' => null,
+            'index' => '/utilities/saral-status',
+            'create' => '/utilities/saral-status',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,

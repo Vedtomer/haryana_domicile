@@ -122,6 +122,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Saral Certificate Status',
+                'slug' => 'saral-status',
+                'description' => 'Check the status of any Saral Certificate using its reference number instantly.',
+                'icon' => '📃',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'saral_status',
+                'sort_order' => 10,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PRIVATE,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

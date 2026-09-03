@@ -35,6 +35,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'saral-status'],
+        [
+            'name' => 'Saral Certificate Status',
+            'description' => 'Check the status of any Saral Certificate using its reference number instantly.',
+            'icon' => '📃',
+            'coin_cost' => 0,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'saral_status',
+            'sort_order' => 10,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -115,6 +131,17 @@ Route::middleware('auth')->group(function () {
     })->name('utilities.aadhar-to-pan');
 
     Route::post('/utilities/aadhar-to-pan/search', [\App\Http\Controllers\AadharToPanController::class, 'search'])->name('utilities.aadhar-to-pan.search');
+
+    Route::get('/utilities/saral-status', function () {
+        $service = \App\Models\Service::where('slug', 'saral-status')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/SaralStatus');
+    })->name('utilities.saral-status');
+
+    Route::post('/utilities/saral-status/search', [\App\Http\Controllers\SaralStatusController::class, 'search'])->name('utilities.saral-status.search');
 
     Route::get('/utilities/aadhaar-services', function () {
         $service = \App\Models\Service::where('slug', 'aadhaar-services')->first();
