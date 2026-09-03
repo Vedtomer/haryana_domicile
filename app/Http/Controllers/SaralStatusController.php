@@ -83,13 +83,16 @@ class SaralStatusController extends Controller
             ]);
         }
 
-        // Search for grids or tables containing the status
-        // Usually edisha puts it in grd_Action or grd_Docs or just a general table layout
-        // We will extract everything inside the main panel-body that is not the form
-        
-        // Let's try to grab any table that doesn't have id="Header1_..." or the layout tables.
-        // Actually, just looking for <table ... id="grd_... 
-        
+        // Check for specific error message span
+        preg_match('/<span id="lblErrMsg"[^>]*>(.*?)<\/span>/is', $postHtml, $errMsgMatch);
+        $errMsg = !empty($errMsgMatch[1]) ? trim(strip_tags($errMsgMatch[1])) : '';
+        if (!empty($errMsg)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Portal Error: ' . $errMsg
+            ]);
+        }
+
         $extractedHtml = '';
         
         // Match any gridviews (standard ASP.NET)
@@ -97,21 +100,26 @@ class SaralStatusController extends Controller
         if (!empty($gridMatches[0])) {
             $extractedHtml = implode('<br/><br/>', $gridMatches[0]);
         } else {
-            // If no specific grid, maybe they render a raw HTML table under a specific div.
-            // In ASP.NET, often results are in a div. Let's look for standard table if no grids found,
-            // but exclude layout tables (which are width 100% with no borders usually).
-            // This regex tries to find tables with borders or classes like table-bordered
-            preg_match_all('/<table[^>]*?(class="[^"]*?table[^"]*?"|border="[1-9]").*?>.*?<\/table>/is', $postHtml, $tableMatches);
-            if (!empty($tableMatches[0])) {
-                $extractedHtml = implode('<br/>', $tableMatches[0]);
+            // Broaden search: any table that contains common status keywords but is NOT the header layout
+            preg_match_all('/<table[^>]*>.*?<\/table>/is', $postHtml, $allTables);
+            if (!empty($allTables[0])) {
+                foreach ($allTables[0] as $tableHtml) {
+                    // Check if it looks like a data table and not the page header
+                    if (stripos($tableHtml, 'Header1_lblUserName') === false && 
+                       (stripos($tableHtml, 'Status') !== false || stripos($tableHtml, 'Applicant') !== false || stripos($tableHtml, 'Remark') !== false || stripos($tableHtml, 'Action') !== false)) {
+                        $extractedHtml .= $tableHtml . '<br/><br/>';
+                    }
+                }
             }
         }
 
         if (empty($extractedHtml)) {
+             // If we still can't find a table, try to extract the main content panel if it exists
+             preg_match('/<div class="panel-body">(.*?)<\/div>\s*<(div|form)/is', $postHtml, $panelMatch);
+             
              return response()->json([
                 'success' => false,
                 'message' => 'Could not extract status details. The ID might be invalid or the portal layout changed.',
-                // 'debug_html' => substr($postHtml, 5000, 2000) // Un-comment for debugging
             ]);
         }
         
