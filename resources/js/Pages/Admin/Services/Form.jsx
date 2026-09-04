@@ -179,11 +179,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                     <p className="text-xs text-gray-500 mt-1">Set 0 to make this service free.</p>
                     {errors.coin_cost && <p className="text-sm text-red-600 mt-1">{errors.coin_cost}</p>}
                 </div>
-                <div>
-                    <label className={label}>Sort Order</label>
-                    <input type="number" min="0" className={input} value={data.sort_order}
-                        onChange={(e) => setData('sort_order', e.target.value)} />
-                </div>
+
                 <div>
                     <label className={label}>Status</label>
                     <label className="flex items-center gap-2 mt-2">

@@ -100,10 +100,15 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortOrder, setSortOrder] = useState('a-z');
 
-    const filteredServices = services.filter(service => 
-        service.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredServices = services
+        .filter(service => service.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => {
+            if (sortOrder === 'a-z') return a.name.localeCompare(b.name);
+            if (sortOrder === 'z-a') return b.name.localeCompare(a.name);
+            return 0;
+        });
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -144,15 +149,26 @@ export default function Dashboard({ services, stats, isAdmin }) {
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
                 <h2 className="text-lg font-bold text-gray-800">Services</h2>
-                <div className="w-full sm:w-64 relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input
-                        type="text"
-                        placeholder="Search services..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
-                    />
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <div className="w-full sm:w-64 relative">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <input
+                            type="text"
+                            placeholder="Search services..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
+                        />
+                    </div>
+                    <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="w-full sm:w-auto py-2 pl-3 pr-8 bg-white border border-gray-200 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all text-gray-600 font-medium"
+                    >
+                        <option value="a-z">Sort A to Z</option>
+                        <option value="z-a">Sort Z to A</option>
+                        <option value="default">Default Order</option>
+                    </select>
                 </div>
             </div>
 
