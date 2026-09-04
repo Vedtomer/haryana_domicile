@@ -115,6 +115,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'voter-mobile-update'],
+        [
+            'name' => 'Voter Mobile Update Instant',
+            'description' => 'Link mobile number to Voter ID (EPIC) instantly.',
+            'icon' => 'contact_phone',
+            'coin_cost' => 19,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_mobile_update',
+            'sort_order' => 15,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -251,6 +267,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.learning-licence-pdf');
 
     Route::post('/utilities/learning-licence-pdf/search', [\App\Http\Controllers\LearningLicenceController::class, 'search'])->name('utilities.learning-licence-pdf.search');
+
+    Route::get('/utilities/voter-mobile-update', function () {
+        $service = \App\Models\Service::where('slug', 'voter-mobile-update')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/VoterMobileUpdate');
+    })->name('utilities.voter-mobile-update');
+
+    Route::post('/utilities/voter-mobile-update/search', [\App\Http\Controllers\VoterMobileUpdateController::class, 'search'])->name('utilities.voter-mobile-update.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();

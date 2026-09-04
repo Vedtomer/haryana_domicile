@@ -164,6 +164,12 @@ class Service extends Model
             'index' => '/utilities/learning-licence-pdf',
             'create' => '/utilities/learning-licence-pdf',
         ],
+        'voter_mobile_update' => [
+            'label' => 'Voter Mobile Update Instant',
+            'model' => null,
+            'index' => '/utilities/voter-mobile-update',
+            'create' => '/utilities/voter-mobile-update',
+        ],
 
     ];
 
