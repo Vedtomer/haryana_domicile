@@ -170,6 +170,12 @@ class Service extends Model
             'index' => '/utilities/voter-mobile-update',
             'create' => '/utilities/voter-mobile-update',
         ],
+        'mobile_to_pan' => [
+            'label' => 'Mobile To Pan No. Instant',
+            'model' => null,
+            'index' => '/utilities/mobile-to-pan',
+            'create' => '/utilities/mobile-to-pan',
+        ],
 
     ];
 

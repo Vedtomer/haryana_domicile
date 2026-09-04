@@ -131,6 +131,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'mobile-to-pan'],
+        [
+            'name' => 'Mobile To Pan No. Instant',
+            'description' => 'Get PAN Number instantly using Mobile Number and Name',
+            'icon' => 'find_in_page',
+            'coin_cost' => 149,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'mobile_to_pan',
+            'sort_order' => 16,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -278,6 +294,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.voter-mobile-update');
 
     Route::post('/utilities/voter-mobile-update/search', [\App\Http\Controllers\VoterMobileUpdateController::class, 'search'])->name('utilities.voter-mobile-update.search');
+
+    Route::get('/utilities/mobile-to-pan', function () {
+        $service = \App\Models\Service::where('slug', 'mobile-to-pan')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/MobileToPan');
+    })->name('utilities.mobile-to-pan');
+
+    Route::post('/utilities/mobile-to-pan/search', [\App\Http\Controllers\MobileToPanController::class, 'search'])->name('utilities.mobile-to-pan.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
