@@ -67,6 +67,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'pan-to-aadhar-unmasked'],
+        [
+            'name' => 'PAN To Aadhaar Unmasked Instant',
+            'description' => 'Get unmasked Aadhaar details instantly using PAN.',
+            'icon' => 'badge',
+            'coin_cost' => 99,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pan_to_aadhar_unmasked',
+            'sort_order' => 12,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -170,6 +186,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.pan-full-details-instant');
 
     Route::post('/utilities/pan-full-details-instant/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search'])->name('utilities.pan-full-details-instant.search');
+
+    Route::get('/utilities/pan-to-aadhar-unmasked', function () {
+        $service = \App\Models\Service::where('slug', 'pan-to-aadhar-unmasked')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/PanToAadhar');
+    })->name('utilities.pan-to-aadhar-unmasked');
+
+    Route::post('/utilities/pan-to-aadhar-unmasked/search', [\App\Http\Controllers\PanToAadharController::class, 'search'])->name('utilities.pan-to-aadhar-unmasked.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
