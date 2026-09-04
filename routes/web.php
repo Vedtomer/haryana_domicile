@@ -147,6 +147,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'rc-pdf-instant'],
+        [
+            'name' => 'Rc Pdf Instant',
+            'description' => 'Download Vehicle RC PDF instantly.',
+            'icon' => 'local_shipping',
+            'coin_cost' => 99,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'rc_pdf_instant',
+            'sort_order' => 17,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -305,6 +321,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.mobile-to-pan');
 
     Route::post('/utilities/mobile-to-pan/search', [\App\Http\Controllers\MobileToPanController::class, 'search'])->name('utilities.mobile-to-pan.search');
+
+    Route::get('/utilities/rc-pdf-instant', function () {
+        $service = \App\Models\Service::where('slug', 'rc-pdf-instant')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/RcPdf');
+    })->name('utilities.rc-pdf-instant');
+
+    Route::post('/utilities/rc-pdf-instant/search', [\App\Http\Controllers\RcPdfController::class, 'search'])->name('utilities.rc-pdf-instant.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();

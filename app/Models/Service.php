@@ -176,6 +176,12 @@ class Service extends Model
             'index' => '/utilities/mobile-to-pan',
             'create' => '/utilities/mobile-to-pan',
         ],
+        'rc_pdf_instant' => [
+            'label' => 'Rc Pdf Instant',
+            'model' => null,
+            'index' => '/utilities/rc-pdf-instant',
+            'create' => '/utilities/rc-pdf-instant',
+        ],
 
     ];
 
