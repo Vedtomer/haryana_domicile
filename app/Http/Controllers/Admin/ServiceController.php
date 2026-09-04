@@ -37,13 +37,11 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
-        $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
-        unset($data['user_ids']);
+        $data['visibility'] = Service::VISIBILITY_PUBLIC;
 
         $data = $this->handleLogo($request, $data);
 
         $service = Service::create($data);
-        $service->users()->sync($userIds);
 
         return redirect()->route('admin.services.index')->with('success', 'Service added successfully.');
     }
@@ -55,7 +53,6 @@ class ServiceController extends Controller
         return Inertia::render('Admin/Services/Edit', [
             'service' => [
                 ...$service->toArray(),
-                'user_ids' => $service->users->pluck('id'),
                 'logo_url' => $service->logoUrl(),
             ],
             'users' => $this->userOptions(),
@@ -65,13 +62,11 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         $data = $this->validated($request, $service);
-        $userIds = $data['visibility'] === Service::VISIBILITY_PRIVATE ? ($data['user_ids'] ?? []) : [];
-        unset($data['user_ids']);
+        $data['visibility'] = Service::VISIBILITY_PUBLIC;
 
         $data = $this->handleLogo($request, $data, $service);
 
         $service->update($data);
-        $service->users()->sync($userIds);
 
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');
     }
@@ -129,9 +124,6 @@ class ServiceController extends Controller
             'remove_logo' => 'nullable|boolean',
             'coin_cost' => 'required|integer|min:0|max:100000',
             'is_active' => 'required|boolean',
-            'visibility' => ['required', Rule::in([Service::VISIBILITY_PUBLIC, Service::VISIBILITY_PRIVATE])],
-            'user_ids' => 'nullable|array',
-            'user_ids.*' => 'exists:users,id',
             'sort_order' => 'nullable|integer|min:0|max:9999',
             'fields' => 'nullable|array',
             'fields.*.label' => 'required|string|max:120',

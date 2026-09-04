@@ -194,26 +194,6 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                 </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-100">
-                <label className={label}>Audience</label>
-                <div className="flex gap-4">
-                    <label className="flex items-center gap-2">
-                        <input type="radio" name="visibility" className="text-blue-600" checked={data.visibility === 'public'}
-                            onChange={() => setData('visibility', 'public')} />
-                        <span className="text-sm text-gray-700">Public — visible to all users</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                        <input type="radio" name="visibility" className="text-blue-600" checked={data.visibility === 'private'}
-                            onChange={() => setData('visibility', 'private')} />
-                        <span className="text-sm text-gray-700">Private — only selected users</span>
-                    </label>
-                </div>
-                {errors.visibility && <p className="text-sm text-red-600 mt-1">{errors.visibility}</p>}
-
-                {data.visibility === 'private' && (
-                    <UserMultiSelect users={users} selected={data.user_ids} onToggle={toggleUser} />
-                )}
-            </div>
 
             {!isModule && (
                 <div className="pt-4 border-t border-gray-100">
