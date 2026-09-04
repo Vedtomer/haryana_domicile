@@ -51,6 +51,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'pan-full-details-instant'],
+        [
+            'name' => 'PAN Full Details Instant',
+            'description' => 'Get complete PAN card details instantly.',
+            'icon' => 'fingerprint',
+            'coin_cost' => 19,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pan_full_details_instant',
+            'sort_order' => 11,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
