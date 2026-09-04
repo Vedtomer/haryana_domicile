@@ -83,6 +83,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'pan-to-uid-advance'],
+        [
+            'name' => 'Pan To Uid Advance Instant',
+            'description' => 'Get advanced UID details instantly using PAN.',
+            'icon' => 'fingerprint',
+            'coin_cost' => 149,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pan_to_uid_advance',
+            'sort_order' => 13,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -197,6 +213,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.pan-to-aadhar-unmasked');
 
     Route::post('/utilities/pan-to-aadhar-unmasked/search', [\App\Http\Controllers\PanToAadharController::class, 'search'])->name('utilities.pan-to-aadhar-unmasked.search');
+
+    Route::get('/utilities/pan-to-uid-advance', function () {
+        $service = \App\Models\Service::where('slug', 'pan-to-uid-advance')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/PanToUid');
+    })->name('utilities.pan-to-uid-advance');
+
+    Route::post('/utilities/pan-to-uid-advance/search', [\App\Http\Controllers\PanToUidController::class, 'search'])->name('utilities.pan-to-uid-advance.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
