@@ -99,6 +99,22 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'learning-licence-pdf'],
+        [
+            'name' => 'Learning Licence PDF Download',
+            'description' => 'Download Learning Licence PDF instantly.',
+            'icon' => 'directions_car',
+            'coin_cost' => 19,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'learning_licence_pdf',
+            'sort_order' => 14,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
@@ -224,6 +240,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.pan-to-uid-advance');
 
     Route::post('/utilities/pan-to-uid-advance/search', [\App\Http\Controllers\PanToUidController::class, 'search'])->name('utilities.pan-to-uid-advance.search');
+
+    Route::get('/utilities/learning-licence-pdf', function () {
+        $service = \App\Models\Service::where('slug', 'learning-licence-pdf')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/LearningLicencePdf');
+    })->name('utilities.learning-licence-pdf');
+
+    Route::post('/utilities/learning-licence-pdf/search', [\App\Http\Controllers\LearningLicenceController::class, 'search'])->name('utilities.learning-licence-pdf.search');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
