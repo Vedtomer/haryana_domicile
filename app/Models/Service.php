@@ -140,6 +140,13 @@ class Service extends Model
             'index' => '/admin/airtel-passbook',
             'create' => '/admin/airtel-passbook/create',
         ],
+        'pan_full_details_instant' => [
+            'label' => 'PAN Full Details Instant',
+            'model' => null,
+            'index' => '/utilities/pan-full-details-instant',
+            'create' => '/utilities/pan-full-details-instant',
+        ],
+
     ];
 
     protected $fillable = [
