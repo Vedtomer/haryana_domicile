@@ -16,16 +16,14 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const isNoticeActive = Date.now() <= EXPIRY_TIMESTAMP;
 
-    // Modal popup state for deleted accounts notice
-    const [showNoticeModal, setShowNoticeModal] = useState(false);
+    // Modal popup state for deleted accounts notice (open by default on visit)
+    const [showNoticeModal, setShowNoticeModal] = useState(isNoticeActive);
     const [modalAnimating, setModalAnimating] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         if (isNoticeActive) {
-            // Auto open popup modal when user lands on Login page
-            setShowNoticeModal(true);
-            const timer = setTimeout(() => setModalAnimating(true), 60);
+            const timer = setTimeout(() => setModalAnimating(true), 50);
             return () => clearTimeout(timer);
         }
     }, [isNoticeActive]);
@@ -157,61 +155,10 @@ export default function Login() {
                         <main className="w-full max-w-[460px] rounded-2xl overflow-hidden shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-2 border-blue-600 bg-surface">
                             {/* Right Side: Login Form */}
                             <div className="w-full relative z-10 p-6 sm:p-8">
-                            <div className="mb-6">
+                            <div className="mb-8">
                                 <h1 className="text-2xl font-bold text-primary mb-1">Welcome back</h1>
                                 <p className="text-xs text-on-surface-variant">Sign in to access your CSP services dashboard</p>
                             </div>
-
-                            {/* Prominent Red Alert: Deleted Accounts Notice (Active for 10 Days) */}
-                            {isNoticeActive && (
-                                <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-600 via-red-600 to-rose-700 border-2 border-red-400 text-white shadow-xl shadow-red-600/30">
-                                    <div className="flex items-start gap-3.5">
-                                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/20 border border-white/30 flex-shrink-0 flex items-center justify-center text-white shadow-inner">
-                                            <span className="material-symbols-outlined text-2xl sm:text-3xl animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
-                                                warning
-                                            </span>
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1.5">
-                                                <span className="bg-white text-red-700 text-xs font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">
-                                                    जरूरी सूचना
-                                                </span>
-                                                <span className="text-xs text-red-100 font-semibold tracking-wide">
-                                                    Notice
-                                                </span>
-                                            </div>
-                                            
-                                            <p className="text-base sm:text-lg font-black leading-snug text-white drop-shadow-sm">
-                                                जिस भी यूज़र की ID में Email नहीं थी, वह डिलीट कर दी गई है!
-                                            </p>
-                                            
-                                            <p className="text-sm font-medium text-red-100 mt-1.5 leading-relaxed">
-                                                कृपया अपनी वैध Email ID के साथ नया रजिस्ट्रेशन करें।
-                                            </p>
-
-                                            <div className="mt-3.5 flex flex-col sm:flex-row gap-2">
-                                                <Link
-                                                    href="/register"
-                                                    className="inline-flex items-center justify-center gap-2 flex-1 py-2.5 px-3 bg-white text-red-700 hover:bg-red-50 active:scale-[0.98] font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all text-center"
-                                                >
-                                                    <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
-                                                        person_add
-                                                    </span>
-                                                    नया रजिस्ट्रेशन करें
-                                                </Link>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setShowNoticeModal(true); setTimeout(() => setModalAnimating(true), 20); }}
-                                                    className="inline-flex items-center justify-center gap-1 py-2.5 px-3 bg-red-800/60 hover:bg-red-800 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all border border-red-300/40 text-center"
-                                                >
-                                                    <span className="material-symbols-outlined text-base">open_in_new</span>
-                                                    पूरी सूचना देखें
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Form */}
                             <form onSubmit={submit} className="flex flex-col gap-stack-md">
