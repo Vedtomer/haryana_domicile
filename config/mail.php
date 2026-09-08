@@ -14,7 +14,7 @@ return [
      |
      */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => in_array(env('MAIL_MAILER'), [null, '', 'log', 'array']) ? 'smtp' : env('MAIL_MAILER'),
 
     /*
      |--------------------------------------------------------------------------
@@ -41,11 +41,12 @@ return [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            'host' => in_array(env('MAIL_HOST'), [null, '', '127.0.0.1', 'localhost', 'mailhog']) ? 'smtp.gmail.com' : env('MAIL_HOST'),
+            'port' => in_array(env('MAIL_PORT'), [null, '', 2525, '2525', 1025, '1025']) ? 587 : (int) env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION') ?: 'tls',
+            'username' => env('MAIL_USERNAME') ?: 'cspjaankari@gmail.com',
+            'password' => env('MAIL_PASSWORD') ?: 'vxylxculrpmijvkb',
+            'timeout' => 15,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string)env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
@@ -111,8 +112,8 @@ return [
      */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => in_array(env('MAIL_FROM_ADDRESS'), [null, '', 'hello@example.com']) ? 'cspjaankari@gmail.com' : env('MAIL_FROM_ADDRESS'),
+        'name' => in_array(env('MAIL_FROM_NAME'), [null, '', 'Example', 'Laravel']) ? 'CSP Jaankari' : env('MAIL_FROM_NAME'),
     ],
 
     /*

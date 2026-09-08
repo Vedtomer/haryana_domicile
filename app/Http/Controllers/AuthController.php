@@ -99,14 +99,45 @@ class AuthController extends Controller
         // Set 60-second cooldown
         \Illuminate\Support\Facades\Cache::store('file')->put($cooldownKey, time() + 60, 60);
 
+        $mailSent = false;
+        $lastError = '';
+
+        // Attempt 1: Default SMTP (Port 587 TLS)
         try {
-            \Illuminate\Support\Facades\Mail::to($email)
+            \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
                 ->send(new \App\Mail\RegistrationOtpMail($otp, $data['name']));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send registration OTP email: ' . $e->getMessage());
+            $mailSent = true;
+        } catch (\Throwable $e) {
+            $lastError = $e->getMessage();
+            \Illuminate\Support\Facades\Log::warning('Registration OTP email (587 TLS) failed, retrying on 465 SSL: ' . $lastError);
+        }
+
+        // Attempt 2: Fallback to Port 465 SSL (in case hosting firewall blocks 587)
+        if (!$mailSent) {
+            try {
+                config([
+                    'mail.mailers.smtp.port' => 465,
+                    'mail.mailers.smtp.scheme' => 'smtps',
+                    'mail.mailers.smtp.encryption' => 'ssl',
+                ]);
+                app('mail.manager')->purge('smtp');
+                \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
+                    ->send(new \App\Mail\RegistrationOtpMail($otp, $data['name']));
+                $mailSent = true;
+            } catch (\Throwable $e2) {
+                $lastError = $e2->getMessage();
+                \Illuminate\Support\Facades\Log::error('Registration OTP email (465 SSL) also failed: ' . $lastError);
+            }
+        }
+
+        if (!$mailSent) {
+            // Remove OTP from cache so user can retry immediately without being stuck
+            \Illuminate\Support\Facades\Cache::store('file')->forget($cacheKey);
+            \Illuminate\Support\Facades\Cache::store('file')->forget($cooldownKey);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to deliver OTP email. Please check your email address or try again.',
+                'message' => 'Email deliver karne me samasya aayi: ' . $lastError,
             ], 500);
         }
 
