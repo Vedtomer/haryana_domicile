@@ -181,6 +181,12 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                 </div>
 
                 <div>
+                    <label className={label}>Sort Order</label>
+                    <input type="number" min="0" className={input} value={data.sort_order}
+                        onChange={(e) => setData('sort_order', e.target.value)} />
+                </div>
+
+                <div>
                     <label className={label}>Status</label>
                     <label className="flex items-center gap-2 mt-2">
                         <input type="checkbox" className="w-5 h-5 rounded text-blue-600"
