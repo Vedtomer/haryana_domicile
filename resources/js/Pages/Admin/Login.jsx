@@ -3,6 +3,9 @@ import { useForm, Head, Link } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
 import FooterParticles from '../../Components/FooterParticles';
 
+// Notice active for 10 days: Sep 8, 2026 -> Sep 18, 2026 23:59:59 IST
+const EXPIRY_TIMESTAMP = new Date('2026-09-18T23:59:59+05:30').getTime();
+
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
         login: '',
@@ -11,6 +14,7 @@ export default function Login() {
 
     const [mounted, setMounted] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const isNoticeActive = Date.now() <= EXPIRY_TIMESTAMP;
 
     useEffect(() => {
         setMounted(true);
@@ -48,10 +52,54 @@ export default function Login() {
                     <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
                         <main className="w-full max-w-[460px] rounded-2xl overflow-hidden shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-2 border-blue-600 bg-surface">
                             {/* Right Side: Login Form */}
-                            <div className="w-full relative z-10 p-8">
-                            <div className="mb-8">
-                                <h1 className="text-2xl font-bold text-primary mb-2">Welcome back</h1>
+                            <div className="w-full relative z-10 p-6 sm:p-8">
+                            <div className="mb-6">
+                                <h1 className="text-2xl font-bold text-primary mb-1">Welcome back</h1>
+                                <p className="text-xs text-on-surface-variant">Sign in to access your CSP services dashboard</p>
                             </div>
+
+                            {/* Prominent Red Alert: Deleted Accounts Notice (Active for 10 Days) */}
+                            {isNoticeActive && (
+                                <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-600 via-red-600 to-rose-700 border-2 border-red-400 text-white shadow-xl shadow-red-600/30">
+                                    <div className="flex items-start gap-3.5">
+                                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/20 border border-white/30 flex-shrink-0 flex items-center justify-center text-white shadow-inner">
+                                            <span className="material-symbols-outlined text-2xl sm:text-3xl animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                warning
+                                            </span>
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1.5">
+                                                <span className="bg-white text-red-700 text-xs font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">
+                                                    जरूरी सूचना
+                                                </span>
+                                                <span className="text-xs text-red-100 font-semibold tracking-wide">
+                                                    Notice
+                                                </span>
+                                            </div>
+                                            
+                                            <p className="text-base sm:text-lg font-black leading-snug text-white drop-shadow-sm">
+                                                जिस भी यूज़र की ID में Email नहीं थी, वह डिलीट कर दी गई है!
+                                            </p>
+                                            
+                                            <p className="text-sm font-medium text-red-100 mt-1.5 leading-relaxed">
+                                                कृपया अपनी वैध Email ID के साथ नया रजिस्ट्रेशन करें।
+                                            </p>
+
+                                            <div className="mt-3.5">
+                                                <Link
+                                                    href="/register"
+                                                    className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white text-red-700 hover:bg-red-50 active:scale-[0.98] font-bold text-sm sm:text-base rounded-xl shadow-md transition-all"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                        person_add
+                                                    </span>
+                                                    नया रजिस्ट्रेशन करें (New Registration)
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Form */}
                             <form onSubmit={submit} className="flex flex-col gap-stack-md">
