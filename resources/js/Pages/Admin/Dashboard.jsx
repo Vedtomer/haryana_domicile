@@ -15,17 +15,64 @@ const TONES = {
 
 const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-amber']);
 
-function StatCard({ label, value, tone, url }) {
+const ICON_MAP = {
+    'Manage Users': 'group',
+    'User Permissions': 'admin_panel_settings',
+    'Pending Requests': 'hourglass_top',
+    'Add Service': 'add_circle',
+    'Manage Service': 'miscellaneous_services',
+    'Service Requests': 'assignment',
+    'Reactivation Requests': 'how_to_reg',
+    'My Coin Balance': 'monetization_on',
+    'History & My Requests': 'history',
+    'Pending': 'pending_actions',
+    'Completed': 'check_circle',
+};
+
+function StatCard({ label, value, tone, url, icon }) {
     const isDark = DARK_TONES.has(tone);
+    const resolvedIcon = icon || ICON_MAP[label] || 'analytics';
+
     return (
         <Link
             href={url}
-            className={`block p-5 rounded-xl border transition-all duration-200 hover:-translate-y-1 ${
-                isDark ? 'hover:shadow-2xl' : 'hover:shadow-md hover:-translate-y-0.5'
+            className={`relative overflow-hidden block p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 group ${
+                isDark ? 'hover:shadow-2xl hover:shadow-black/40' : 'hover:shadow-lg'
             } ${TONES[tone] ?? TONES.blue}`}
         >
-            <p className={`text-sm font-semibold ${isDark ? 'opacity-90' : 'opacity-80'}`}>{label}</p>
-            <p className="text-3xl font-extrabold mt-1">{value}</p>
+            {/* Ambient Background Watermark Icon */}
+            <div className="absolute -right-2 -bottom-2 opacity-10 pointer-events-none transition-transform duration-500 group-hover:scale-125 group-hover:-rotate-6">
+                <span className="material-symbols-outlined text-7xl sm:text-8xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {resolvedIcon}
+                </span>
+            </div>
+
+            <div className="relative z-10 flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <p className={`text-xs sm:text-sm font-semibold truncate ${isDark ? 'text-white/80' : 'opacity-80'}`}>
+                        {label}
+                    </p>
+                    <p className="text-2xl sm:text-3xl font-extrabold mt-1.5 tracking-tight truncate">
+                        {value}
+                    </p>
+                </div>
+
+                {/* Prominent Logo / Icon Badge */}
+                <div
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transition-all duration-300 group-hover:scale-110 ${
+                        isDark
+                            ? 'bg-white/15 border border-white/20 text-white backdrop-blur-sm shadow-inner'
+                            : 'bg-white/80 border border-current/10 text-current shadow-sm'
+                    }`}
+                >
+                    <span
+                        className="material-symbols-outlined text-2xl sm:text-3xl"
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                        {resolvedIcon}
+                    </span>
+                </div>
+            </div>
         </Link>
     );
 }
