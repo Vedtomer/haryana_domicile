@@ -473,6 +473,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
         // Service catalog — only admins can add services and set coin prices
+        Route::patch('services/{service}/toggle-active', [\App\Http\Controllers\Admin\ServiceController::class, 'toggleActive'])
+            ->name('services.toggle-active')->middleware('admin');
         Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)
             ->except('show')->middleware('admin');
 
