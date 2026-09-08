@@ -31,19 +31,20 @@ class SaralStatusController extends Controller
 
         $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36';
 
-        // 1. Fetch the page to get the viewstate and cookies
-        $response = Http::withHeaders([
-            'User-Agent' => $userAgent,
-            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language' => 'en-US,en;q=0.9',
-        ])->get('https://edisha.gov.in/eForms/Status');
-        
-        if (!$response->successful()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to connect to the Saral portal. Please try again later.'
-            ]);
-        }
+        try {
+            // 1. Fetch the page to get the viewstate and cookies
+            $response = Http::connectTimeout(5)->timeout(15)->withHeaders([
+                'User-Agent' => $userAgent,
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language' => 'en-US,en;q=0.9',
+            ])->get('https://edisha.gov.in/eForms/Status');
+            
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to connect to the Saral portal. Please try again later.'
+                ]);
+            }
 
         $html = $response->body();
         $cookies = $response->header('Set-Cookie');
@@ -62,7 +63,7 @@ class SaralStatusController extends Controller
         }
 
         // 2. Post the data
-        $postResponse = Http::withHeaders([
+        $postResponse = Http::connectTimeout(5)->timeout(15)->withHeaders([
             'Cookie' => $cookies,
             'User-Agent' => $userAgent,
             'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -87,7 +88,7 @@ class SaralStatusController extends Controller
             preg_match('/id="__VIEWSTATEGENERATOR" value="(.*?)"/', $postHtml, $postGeneratorMatch);
             $postCookies = $postResponse->header('Set-Cookie') ? (is_array($postResponse->header('Set-Cookie')) ? implode('; ', $postResponse->header('Set-Cookie')) : $postResponse->header('Set-Cookie')) : $cookies;
             
-            $downloadResponse = Http::withHeaders([
+            $downloadResponse = Http::connectTimeout(5)->timeout(15)->withHeaders([
                 'Cookie' => $postCookies,
                 'User-Agent' => $userAgent,
                 'Content-Type' => 'application/x-www-form-urlencoded',
@@ -216,5 +217,11 @@ class SaralStatusController extends Controller
             'download_url' => $downloadUrl ?? null,
             'message' => 'Status found successfully.'
         ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Saral portal is taking too long to respond or is currently unavailable. Please try again.'
+            ]);
+        }
     }
 }

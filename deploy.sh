@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH="/home/whitedevil/.local/bin:$PATH"
+
 echo "🚀 Starting deployment process..."
 
 # Build the latest frontend assets

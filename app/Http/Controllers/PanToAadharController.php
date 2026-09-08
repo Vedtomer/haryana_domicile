@@ -38,7 +38,7 @@ class PanToAadharController extends Controller
                "&dob=" . urlencode($dob);
 
         try {
-            $response = Http::timeout(30)->get($url);
+            $response = Http::connectTimeout(5)->timeout(20)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

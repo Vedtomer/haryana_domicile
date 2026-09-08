@@ -27,7 +27,7 @@ class VehicleToMobileController extends Controller
         $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&v2num=" . urlencode($vehicleNo);
 
         try {
-            $response = Http::get($url);
+            $response = Http::connectTimeout(5)->timeout(15)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

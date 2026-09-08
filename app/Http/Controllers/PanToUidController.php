@@ -25,7 +25,7 @@ class PanToUidController extends Controller
         $url = "https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_uid_s1.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&pan=" . urlencode($pan);
 
         try {
-            $response = Http::timeout(30)->get($url);
+            $response = Http::connectTimeout(5)->timeout(20)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

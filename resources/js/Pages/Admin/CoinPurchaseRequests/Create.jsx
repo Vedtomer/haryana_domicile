@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
 const STATUS_CONFIG = {
@@ -56,18 +56,31 @@ function PackageCard({ pkg, selected, onSelect }) {
     );
 }
 
-export default function Create({ packages, myRequests, userCoins, upiId, upiName }) {
+export default function Create({ packages, myRequests, userCoins, upiId, upiName, whatsappNumber }) {
+    const { auth, flash, whatsappNumber: sharedWhatsapp } = usePage().props;
+    const targetWhatsapp = (whatsappNumber || sharedWhatsapp || '380630323112').replace(/[^0-9]/g, '');
+
     const [selectedPackage, setSelectedPackage] = useState(null);
     const [isCustom, setIsCustom] = useState(false);
     const [customAmount, setCustomAmount] = useState('');
     const [preview, setPreview] = useState(null);
+    const [successData, setSuccessData] = useState(null);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         package_amount: '',
         coins_requested: '',
         utr_number: '',
         payment_screenshot: null,
     });
+
+    useEffect(() => {
+        if (flash?.submitted_request) {
+            setSuccessData(flash.submitted_request);
+            setSelectedPackage(null);
+            setPreview(null);
+            reset();
+        }
+    }, [flash?.submitted_request]);
 
     const handlePackageSelect = (pkg) => {
         setIsCustom(false);
@@ -94,7 +107,41 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/coin-requests', { forceFormData: true });
+        post('/admin/coin-requests', {
+            forceFormData: true,
+            onSuccess: (page) => {
+                if (page.props.flash?.submitted_request) {
+                    setSuccessData(page.props.flash.submitted_request);
+                } else {
+                    setSuccessData({
+                        package_amount: data.package_amount,
+                        coins_requested: data.coins_requested,
+                    });
+                }
+                setSelectedPackage(null);
+                setPreview(null);
+                reset();
+            },
+        });
+    };
+
+    const getWhatsAppUrl = (reqData) => {
+        const user = auth?.user || {};
+        let msg = `*Coin Purchase - Payment Screenshot*\n`;
+        msg += `------------------------------------\n`;
+        if (user.name)  msg += `👤 *Name:* ${user.name}\n`;
+        if (user.phone) msg += `📱 *Phone:* ${user.phone}\n`;
+        if (user.email) msg += `📧 *Email:* ${user.email}\n`;
+        msg += `💰 *Amount Paid:* ₹${reqData.package_amount}\n`;
+        msg += `🪙 *Coins Requested:* ${reqData.coins_requested}\n`;
+        if (reqData.id) msg += `🆔 *Request ID:* #${reqData.id}\n`;
+        if (reqData.payment_screenshot) {
+            msg += `🔗 *Receipt:* ${reqData.payment_screenshot}\n`;
+        }
+        msg += `------------------------------------\n`;
+        msg += `I have made the payment. Please verify and credit coins. Payment screenshot attached.`;
+
+        return `https://wa.me/${targetWhatsapp}?text=${encodeURIComponent(msg)}`;
     };
 
     // Dynamic QR built from admin-configured UPI settings
@@ -277,6 +324,7 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Paid</th>
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
+                                        <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -294,11 +342,115 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                                         {cfg.label}
                                                     </span>
                                                 </td>
+                                                <td className="px-5 py-3 text-right">
+                                                    {req.status === 'pending' ? (
+                                                        <a
+                                                            href={getWhatsAppUrl({
+                                                                id: req.id,
+                                                                package_amount: req.package_amount,
+                                                                coins_requested: req.coins_requested,
+                                                                payment_screenshot: req.payment_screenshot ? `/storage/${req.payment_screenshot}` : null,
+                                                            })}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Send Screenshot on WhatsApp"
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs rounded-lg shadow-sm transition-all hover:scale-105"
+                                                        >
+                                                            <svg viewBox="0 0 32 32" className="w-3.5 h-3.5 fill-white flex-shrink-0">
+                                                                <path d="M16.004 3C9.376 3 4 8.373 4 15c0 2.34.653 4.527 1.787 6.393L4 29l7.79-1.75A11.94 11.94 0 0016.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.9c-1.98 0-3.833-.55-5.417-1.505l-.389-.23-4.62 1.038 1.06-4.502-.253-.402A9.86 9.86 0 016.1 15c0-5.467 4.443-9.9 9.904-9.9 5.462 0 9.904 4.433 9.904 9.9s-4.442 9.9-9.904 9.9zm5.44-7.41c-.298-.15-1.763-.87-2.037-.97-.273-.1-.472-.15-.67.15-.198.298-.767.97-.94 1.17-.174.198-.348.223-.646.075-.298-.15-1.258-.464-2.396-1.48-.886-.79-1.484-1.767-1.658-2.065-.174-.298-.019-.46.131-.61.135-.134.298-.348.447-.522.15-.174.199-.298.298-.497.1-.198.05-.372-.025-.522-.075-.15-.67-1.615-.917-2.212-.242-.582-.487-.503-.67-.512l-.57-.01c-.198 0-.522.075-.795.373-.273.298-1.04 1.017-1.04 2.48 0 1.464 1.065 2.878 1.213 3.076.15.199 2.096 3.2 5.078 4.488.71.306 1.263.489 1.694.626.712.227 1.36.195 1.873.118.571-.085 1.763-.72 2.012-1.416.248-.696.248-1.293.174-1.417-.075-.124-.273-.198-.571-.348z"/>
+                                                            </svg>
+                                                            <span>WhatsApp</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 font-medium">—</span>
+                                                    )}
+                                                </td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* PAYMENT SUCCESS MODAL */}
+                {successData && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 text-center border border-slate-100 relative overflow-hidden">
+                            {/* Top decorative gradient bar */}
+                            <div className="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-500"></div>
+
+                            {/* Close button */}
+                            <button
+                                type="button"
+                                onClick={() => setSuccessData(null)}
+                                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+
+                            {/* Success Icon */}
+                            <div className="w-20 h-20 mx-auto mb-4 bg-emerald-50 rounded-full flex items-center justify-center border-4 border-emerald-100 text-emerald-500 shadow-sm">
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            {/* Badge & Title */}
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-3 py-1 rounded-full mb-2">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Payment Request Submitted
+                            </span>
+                            <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-1">Payment Successful!</h3>
+                            <p className="text-xs text-slate-500 mb-5">
+                                आपकी कॉइन रिक्वेस्ट सफलतापूर्वक दर्ज कर ली गई है।
+                            </p>
+
+                            {/* Receipt Summary Card */}
+                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-5 text-left space-y-2.5">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-slate-500 font-medium">Amount Paid:</span>
+                                    <span className="text-slate-900 font-black text-base">₹{successData.package_amount}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-slate-500 font-medium">Coins to Credit:</span>
+                                    <span className="text-emerald-600 font-black text-base">🪙 {successData.coins_requested} Coins</span>
+                                </div>
+                                {successData.id && (
+                                    <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-200">
+                                        <span className="text-slate-400 font-medium">Request Reference:</span>
+                                        <span className="font-mono font-bold text-slate-700">#{successData.id}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* WhatsApp Call to Action */}
+                            <div className="bg-emerald-50/70 border border-emerald-200/70 rounded-2xl p-4 mb-4 text-center">
+                                <p className="text-xs font-bold text-emerald-900 mb-2.5 flex items-center justify-center gap-1">
+                                    <span>⚡</span> तुरंत अप्रूवल के लिए स्क्रीनशॉट व्हाट्सएप पर भेजें:
+                                </p>
+                                <a
+                                    href={getWhatsAppUrl(successData)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-sm rounded-xl shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    <svg viewBox="0 0 32 32" className="w-5 h-5 fill-white flex-shrink-0">
+                                        <path d="M16.004 3C9.376 3 4 8.373 4 15c0 2.34.653 4.527 1.787 6.393L4 29l7.79-1.75A11.94 11.94 0 0016.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.9c-1.98 0-3.833-.55-5.417-1.505l-.389-.23-4.62 1.038 1.06-4.502-.253-.402A9.86 9.86 0 016.1 15c0-5.467 4.443-9.9 9.904-9.9 5.462 0 9.904 4.433 9.904 9.9s-4.442 9.9-9.904 9.9zm5.44-7.41c-.298-.15-1.763-.87-2.037-.97-.273-.1-.472-.15-.67.15-.198.298-.767.97-.94 1.17-.174.198-.348.223-.646.075-.298-.15-1.258-.464-2.396-1.48-.886-.79-1.484-1.767-1.658-2.065-.174-.298-.019-.46.131-.61.135-.134.298-.348.447-.522.15-.174.199-.298.298-.497.1-.198.05-.372-.025-.522-.075-.15-.67-1.615-.917-2.212-.242-.582-.487-.503-.67-.512l-.57-.01c-.198 0-.522.075-.795.373-.273.298-1.04 1.017-1.04 2.48 0 1.464 1.065 2.878 1.213 3.076.15.199 2.096 3.2 5.078 4.488.71.306 1.263.489 1.694.626.712.227 1.36.195 1.873.118.571-.085 1.763-.72 2.012-1.416.248-.696.248-1.293.174-1.417-.075-.124-.273-.198-.571-.348z"/>
+                                    </svg>
+                                    <span>Send Screenshot on WhatsApp</span>
+                                </a>
+                            </div>
+
+                            {/* Dismiss Button */}
+                            <button
+                                type="button"
+                                onClick={() => setSuccessData(null)}
+                                className="w-full py-2.5 px-4 text-xs font-bold text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+                            >
+                                Done / Close
+                            </button>
                         </div>
                     </div>
                 )}

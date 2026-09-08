@@ -58,23 +58,103 @@ class AuthController extends Controller
         ])->onlyInput('login');
     }
 
+    public function sendOtp(Request $request)
+    {
+        $data = $request->validate([
+            'name'     => 'required|string|max:255',
+            'phone'    => 'required|string|max:20|unique:users,phone',
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:4',
+        ], [
+            'phone.unique' => 'This mobile number is already registered.',
+            'email.unique' => 'This email address is already registered.',
+        ]);
+
+        $email = strtolower(trim($data['email']));
+        $cacheKey = 'reg_otp_' . md5($email);
+        $cooldownKey = 'reg_otp_cooldown_' . md5($email);
+
+        // Check 60-second cooldown
+        if (\Illuminate\Support\Facades\Cache::store('file')->has($cooldownKey)) {
+            $remaining = (int) \Illuminate\Support\Facades\Cache::store('file')->get($cooldownKey) - time();
+            if ($remaining > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Please wait {$remaining} seconds before requesting a new OTP.",
+                    'cooldown' => $remaining,
+                ], 429);
+            }
+        }
+
+        // Generate 6-digit OTP
+        $otp = (string) random_int(100000, 999999);
+
+        // Store OTP in File Cache for 10 minutes (600 seconds)
+        \Illuminate\Support\Facades\Cache::store('file')->put($cacheKey, [
+            'otp'        => $otp,
+            'email'      => $email,
+            'created_at' => time(),
+        ], 600);
+
+        // Set 60-second cooldown
+        \Illuminate\Support\Facades\Cache::store('file')->put($cooldownKey, time() + 60, 60);
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($email)
+                ->send(new \App\Mail\RegistrationOtpMail($otp, $data['name']));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send registration OTP email: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to deliver OTP email. Please check your email address or try again.',
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Verification code sent to {$email}.",
+            'cooldown' => 60,
+        ]);
+    }
+
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:users,phone',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'name'     => 'required|string|max:255',
+            'phone'    => 'required|string|max:20|unique:users,phone',
+            'email'    => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:4',
+            'otp'      => 'required|string|size:6',
+        ], [
+            'phone.unique' => 'This mobile number is already registered.',
+            'email.unique' => 'This email address is already registered.',
+            'otp.required' => 'Please enter the 6-digit OTP sent to your email.',
+            'otp.size'     => 'The OTP must be exactly 6 digits.',
         ]);
 
+        $email = strtolower(trim($data['email']));
+        $cacheKey = 'reg_otp_' . md5($email);
+        $cached = \Illuminate\Support\Facades\Cache::store('file')->get($cacheKey);
+
+        if (!$cached || !isset($cached['otp']) || $cached['otp'] !== trim($data['otp'])) {
+            return back()->withErrors([
+                'otp' => 'Invalid or expired OTP. Please check your email or request a new code.',
+            ])->onlyInput('name', 'phone', 'email');
+        }
+
+        // OTP is valid - remove from cache
+        \Illuminate\Support\Facades\Cache::store('file')->forget($cacheKey);
+        \Illuminate\Support\Facades\Cache::store('file')->forget('reg_otp_cooldown_' . md5($email));
+
         $user = \App\Models\User::create([
-            'name'             => $data['name'],
-            'email'            => $data['email'],
-            'phone'            => $data['phone'],
-            'password'         => \Illuminate\Support\Facades\Hash::make($data['password']),
-            'raw_password'     => $data['password'],
-            'type'             => 'user',
-            'last_activity_at' => now(), // 7-din ka inactivity clock yahan se shuru hoga
+            'name'              => $data['name'],
+            'email'             => $data['email'],
+            'phone'             => $data['phone'],
+            'password'          => \Illuminate\Support\Facades\Hash::make($data['password']),
+            'raw_password'      => $data['password'],
+            'type'              => 'user',
+            'email_verified_at' => now(),
+            'last_activity_at'  => now(),
         ]);
 
         // Trigger booted method or sync manually just in case

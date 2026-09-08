@@ -20,9 +20,11 @@ class AadharToFamilyIdController extends Controller
         $url = "https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum=" . $aadhar;
 
         try {
-            $response = Http::withHeaders([
-                'X-Requested-With' => 'XMLHttpRequest'
-            ])->post($url);
+            $response = Http::connectTimeout(5)
+                ->timeout(15)
+                ->withHeaders([
+                    'X-Requested-With' => 'XMLHttpRequest'
+                ])->post($url);
 
             if ($response->successful()) {
                 $data = $response->json();

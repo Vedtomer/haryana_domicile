@@ -1,11 +1,15 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 
-const WHATSAPP_NUMBER = '380630323112';
+const DEFAULT_WHATSAPP_NUMBER = '380630323112';
 
 export default function WhatsAppButton() {
+    const { whatsappNumber } = usePage().props;
+    const number = (whatsappNumber || DEFAULT_WHATSAPP_NUMBER).replace(/[^0-9]/g, '');
+
     return (
         <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            href={`https://wa.me/${number}`}
             target="_blank"
             rel="noopener noreferrer"
             title="Chat with us on WhatsApp"

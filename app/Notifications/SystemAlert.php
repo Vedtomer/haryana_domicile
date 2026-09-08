@@ -66,12 +66,15 @@ class SystemAlert extends Notification
             }
 
             // Run the API call AFTER the HTTP response is sent to the user's browser.
-            // This prevents 504 Gateway Timeouts if CallMeBot is slow.
+            // Flush and close FastCGI connection immediately so Nginx/gateway never waits.
             app()->terminating(function () use ($phone, $message, $apiKey) {
+                if (function_exists('fastcgi_finish_request')) {
+                    fastcgi_finish_request();
+                }
                 try {
                     \Illuminate\Support\Facades\Log::info("Sending CallMeBot request...");
-                    $response = \Illuminate\Support\Facades\Http::connectTimeout(5)
-                        ->timeout(10)
+                    $response = \Illuminate\Support\Facades\Http::connectTimeout(3)
+                        ->timeout(5)
                         ->withOptions(['verify' => false])
                         ->get('https://api.callmebot.com/whatsapp.php', [
                             'phone' => $phone,

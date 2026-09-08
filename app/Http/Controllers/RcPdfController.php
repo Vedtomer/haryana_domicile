@@ -25,7 +25,7 @@ class RcPdfController extends Controller
         $url = "https://nexus-dashboard.space/api/v1/vahan_service_api/vechil_rc_pdf.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&vechil_no=" . urlencode($vechilNo);
 
         try {
-            $response = Http::timeout(45)->get($url); // API takes >11s sometimes
+            $response = Http::connectTimeout(5)->timeout(25)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

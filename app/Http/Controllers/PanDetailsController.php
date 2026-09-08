@@ -25,7 +25,7 @@ class PanDetailsController extends Controller
         $url = "https://nexus-dashboard.space/api/v1/pan_card_api/pan_server2.php?apiKey=sk_live_35mmsg30avhq4d296hd8th&pan=" . urlencode($pan);
 
         try {
-            $response = Http::timeout(30)->get($url);
+            $response = Http::connectTimeout(5)->timeout(20)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

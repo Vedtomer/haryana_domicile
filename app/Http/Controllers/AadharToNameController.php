@@ -25,7 +25,7 @@ class AadharToNameController extends Controller
         $url = "https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_name.php?apiKey=sk_live_35mmsg30avhq4d296hd8th&uid=" . urlencode($aadhar);
 
         try {
-            $response = Http::get($url);
+            $response = Http::connectTimeout(5)->timeout(15)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

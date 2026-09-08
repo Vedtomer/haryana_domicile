@@ -4,8 +4,9 @@ import AdminLayout from '../../../Layouts/AdminLayout';
 
 export default function Edit({ settings }) {
     const { data, setData, put, processing, errors } = useForm({
-        upi_id:   settings.upi_id   || '',
-        upi_name: settings.upi_name || '',
+        upi_id:          settings.upi_id          || '',
+        upi_name:        settings.upi_name        || '',
+        whatsapp_number: settings.whatsapp_number || '',
     });
 
     // Live QR preview
@@ -27,7 +28,7 @@ export default function Edit({ settings }) {
                 <div className="mb-8">
                     <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">QR & Payment Settings</h2>
                     <p className="mt-1 text-sm text-slate-500">
-                        Configure the UPI ID that users will scan to buy coins. Changes reflect immediately on the Buy Coins page.
+                        Configure the UPI ID and WhatsApp support number. Users will send payment screenshots to this WhatsApp number.
                     </p>
                 </div>
 
@@ -64,8 +65,23 @@ export default function Edit({ settings }) {
                             {errors.upi_name && <p className="text-xs text-red-500 mt-1">{errors.upi_name}</p>}
                         </div>
 
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">
+                                WhatsApp Support Number <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={data.whatsapp_number}
+                                onChange={e => setData('whatsapp_number', e.target.value)}
+                                placeholder="e.g. 919876543210 or 380630323112"
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                            />
+                            <p className="text-[11px] text-slate-400 mt-1">Country code included without '+' or spaces (e.g., 919876543210)</p>
+                            {errors.whatsapp_number && <p className="text-xs text-red-500 mt-1">{errors.whatsapp_number}</p>}
+                        </div>
+
                         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-700">
-                            <strong>Note:</strong> The QR code is generated dynamically from your UPI ID. Users will see the updated QR immediately after saving.
+                            <strong>Note:</strong> Users will see the updated QR code and can send payment screenshots directly to this WhatsApp number.
                         </div>
 
                         <button

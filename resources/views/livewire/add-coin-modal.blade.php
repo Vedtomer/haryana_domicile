@@ -30,6 +30,52 @@
             </div>
 
             {{-- Body --}}
+            @if($isSuccess)
+            <div style="padding:20px 16px 18px; text-align:center;">
+                <div style="width:52px; height:52px; border-radius:50%; background:#dcfce7; border:3px solid #bbf7d0; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:#16a34a; font-size:22px;">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <span style="display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#15803d; background:#f0fdf4; border:1px solid #bbf7d0; padding:2px 8px; border-radius:999px; margin-bottom:6px;">
+                    Request Submitted
+                </span>
+                <h4 style="font-size:18px; font-weight:800; color:#0f172a; margin:0 0 4px;">Payment Successful!</h4>
+                <p style="font-size:11px; color:#64748b; margin:0 0 14px;">आपकी कॉइन रिक्वेस्ट दर्ज कर ली गई है।</p>
+
+                <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:10px 14px; margin-bottom:14px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
+                        <span style="color:#64748b; font-weight:600;">Amount Paid:</span>
+                        <span style="color:#0f172a; font-weight:800;">₹{{ number_format($submittedAmount) }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
+                        <span style="color:#64748b; font-weight:600;">Coins:</span>
+                        <span style="color:#16a34a; font-weight:800;">🪙 {{ number_format($submittedCoins) }} Coins</span>
+                    </div>
+                    @if($requestId)
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; border-top:1px solid #f1f5f9; padding-top:6px;">
+                        <span style="color:#94a3b8;">Request ID:</span>
+                        <span style="font-family:monospace; font-weight:700; color:#334155;">#{{ $requestId }}</span>
+                    </div>
+                    @endif
+                </div>
+
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:10px 12px; margin-bottom:12px;">
+                    <p style="font-size:11px; font-weight:700; color:#166534; margin:0 0 8px;">
+                        ⚡ तुरंत अप्रूवल के लिए स्क्रीनशॉट व्हाट्सएप पर भेजें:
+                    </p>
+                    <a href="{{ $this->getWhatsAppUrl() }}" target="_blank" rel="noopener noreferrer"
+                        style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px 12px; background:#25D366; color:white; font-size:12px; font-weight:800; border-radius:10px; text-decoration:none; box-shadow:0 4px 12px rgba(37,211,102,0.25); transition:all 0.15s;">
+                        <i class="fa-brands fa-whatsapp" style="font-size:16px;"></i>
+                        <span>Send Screenshot on WhatsApp</span>
+                    </a>
+                </div>
+
+                <button type="button" wire:click="closeModal"
+                    style="width:100%; padding:8px; color:#64748b; font-weight:700; font-size:11px; border-radius:10px; border:1px solid #e2e8f0; background:#ffffff; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em; transition:background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
+                    Done / Close
+                </button>
+            </div>
+            @else
             <form wire:submit.prevent="submitRequest" style="padding:14px 16px 16px;">
 
                 {{-- Package Select --}}
@@ -93,6 +139,7 @@
                 </div>
 
             </form>
+            @endif
         </div>
     </div>
     @endif

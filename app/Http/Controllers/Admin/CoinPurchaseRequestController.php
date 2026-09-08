@@ -59,11 +59,12 @@ class CoinPurchaseRequestController extends Controller
         }
 
         return Inertia::render('Admin/CoinPurchaseRequests/Create', [
-            'packages'   => $packages,
-            'myRequests' => $myRequests,
-            'userCoins'  => auth()->user()->coins,
-            'upiId'      => Setting::get('upi_id',   'cspjaankari@upi'),
-            'upiName'    => Setting::get('upi_name', 'CSP Jaankari'),
+            'packages'       => $packages,
+            'myRequests'     => $myRequests,
+            'userCoins'      => auth()->user()->coins,
+            'upiId'          => Setting::get('upi_id',   'cspjaankari@upi'),
+            'upiName'        => Setting::get('upi_name', 'CSP Jaankari'),
+            'whatsappNumber' => Setting::get('whatsapp_number', '380630323112'),
         ]);
     }
 
@@ -101,7 +102,13 @@ class CoinPurchaseRequestController extends Controller
         auth()->user()->touchActivity();
 
         return redirect()->route('admin.coin-requests.create')
-            ->with('success', '✅ Your coin request has been submitted! We will review and approve it shortly.');
+            ->with('success', '✅ Your coin request has been submitted! We will review and approve it shortly.')
+            ->with('submitted_request', [
+                'id'                 => $coinRequest->id,
+                'package_amount'     => $coinRequest->package_amount,
+                'coins_requested'    => $coinRequest->coins_requested,
+                'payment_screenshot' => asset('storage/' . $path),
+            ]);
     }
 
     public function update(Request $request, CoinPurchaseRequest $coinRequest)
