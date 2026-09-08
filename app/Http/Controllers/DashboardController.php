@@ -73,7 +73,7 @@ class DashboardController extends Controller
         $requests = ServiceRequest::where('user_id', $user->id);
 
         return [
-            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests'],
+            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '#'],
             ['label' => 'History & My Requests', 'value' => (clone $requests)->count(), 'tone' => 'dark-blue', 'url' => '/admin/service-requests'],
             ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending'],
             ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed'],
@@ -87,10 +87,8 @@ class DashboardController extends Controller
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-amber', 'url' => '/admin/user-permissions'],
             ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending'],
             ['label' => 'Add Service', 'value' => 'New Service', 'tone' => 'dark-green', 'url' => '/admin/services/create'],
-            ['label' => 'Pending Coin Requests', 'value' => CoinPurchaseRequest::pending()->count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
             ['label' => 'Manage Service', 'value' => Service::count(), 'tone' => 'dark-green', 'url' => '/admin/services'],
             ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests'],
-            ['label' => 'Coin Requests', 'value' => CoinPurchaseRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/coin-requests'],
             ['label' => 'Reactivation Requests', 'value' => \App\Models\ReactivationRequest::where('status', 'pending')->count() . ' Pending', 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests'],
         ];
     }
