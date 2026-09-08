@@ -16,9 +16,24 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const isNoticeActive = Date.now() <= EXPIRY_TIMESTAMP;
 
+    // Modal popup state for deleted accounts notice
+    const [showNoticeModal, setShowNoticeModal] = useState(false);
+    const [modalAnimating, setModalAnimating] = useState(false);
+
     useEffect(() => {
         setMounted(true);
-    }, []);
+        if (isNoticeActive) {
+            // Auto open popup modal when user lands on Login page
+            setShowNoticeModal(true);
+            const timer = setTimeout(() => setModalAnimating(true), 60);
+            return () => clearTimeout(timer);
+        }
+    }, [isNoticeActive]);
+
+    const closeNoticeModal = () => {
+        setModalAnimating(false);
+        setTimeout(() => setShowNoticeModal(false), 250);
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -28,6 +43,95 @@ export default function Login() {
     return (
         <FrontendLayout>
             <Head title="Login - CSP Jaankari" />
+
+            {/* Critical Alert Modal Popup (Active for 10 Days) */}
+            {isNoticeActive && showNoticeModal && (
+                <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+                    {/* Dark Backdrop with Blur */}
+                    <div 
+                        className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ease-out ${
+                            modalAnimating ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        onClick={closeNoticeModal}
+                    />
+
+                    {/* Modal Dialog Card */}
+                    <div 
+                        className={`relative w-full max-w-lg bg-white rounded-3xl shadow-[0_25px_70px_rgba(220,38,38,0.45)] border-4 border-red-600 overflow-hidden transform transition-all duration-300 ease-out z-10 ${
+                            modalAnimating ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-4'
+                        }`}
+                    >
+                        {/* Top Red Header Strip */}
+                        <div className="bg-gradient-to-r from-red-700 via-red-600 to-rose-700 p-5 sm:p-6 text-white text-center relative shadow-md">
+                            {/* Close 'X' Button in Header */}
+                            <button
+                                onClick={closeNoticeModal}
+                                className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/25 hover:bg-black/45 text-white flex items-center justify-center transition-colors focus:outline-none"
+                                title="बंद करें (Close)"
+                                type="button"
+                            >
+                                <span className="material-symbols-outlined text-xl">close</span>
+                            </button>
+
+                            {/* Animated Warning Icon */}
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/40 shadow-inner mb-2.5">
+                                <span className="material-symbols-outlined text-4xl text-white animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                    warning
+                                </span>
+                            </div>
+
+                            <div>
+                                <span className="inline-block bg-white text-red-700 text-xs font-black uppercase px-3 py-1 rounded-full shadow tracking-wider mb-1">
+                                    🚨 जरूरी सूचना / IMPORTANT NOTICE
+                                </span>
+                                <p className="text-xs text-red-100 font-semibold">10 दिन तक वैध (Notice Active for 10 Days)</p>
+                            </div>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 sm:p-7 text-center">
+                            <h2 className="text-xl sm:text-2xl font-black text-red-600 leading-snug mb-3">
+                                जिस भी यूज़र की ID में Email नहीं थी, वह डिलीट कर दी गई है!
+                            </h2>
+
+                            <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-5 text-gray-800 text-sm sm:text-base leading-relaxed text-left">
+                                <p className="font-bold text-red-900 mb-1 flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-red-600 text-lg">info</span>
+                                    खाता क्यों हटाया गया?
+                                </p>
+                                <p className="text-gray-700 text-sm">
+                                    सिक्योरिटी और Email OTP सत्यापन के नए नियम के तहत, जिन खातों में वैध ईमेल आईडी नहीं थी, उन्हें सिस्टम से हमेशा के लिए हटा दिया गया है।
+                                </p>
+                                <p className="mt-2 text-red-700 font-bold text-sm sm:text-base">
+                                    👉 कृपया अपनी वैध व चालू Email ID के साथ नया रजिस्ट्रेशन करें।
+                                </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                                <Link
+                                    href="/register"
+                                    className="flex-1 py-3.5 px-5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-extrabold text-base rounded-xl shadow-lg shadow-red-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                        person_add
+                                    </span>
+                                    नया रजिस्ट्रेशन करें (Register Now)
+                                </Link>
+
+                                <button
+                                    type="button"
+                                    onClick={closeNoticeModal}
+                                    className="py-3.5 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm sm:text-base rounded-xl transition-all border border-gray-300"
+                                >
+                                    ठीक है, समझ गया (Close)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="relative py-10 md:py-16 flex items-center justify-center px-4 md:px-8 font-body-md overflow-hidden" style={{ background: 'linear-gradient(180deg, #050a14 0%, #0d1227 100%)' }}>
                 {/* Particles Background Layer */}
                 <FooterParticles style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, opacity: 0.8 }} />
@@ -85,16 +189,24 @@ export default function Login() {
                                                 कृपया अपनी वैध Email ID के साथ नया रजिस्ट्रेशन करें।
                                             </p>
 
-                                            <div className="mt-3.5">
+                                            <div className="mt-3.5 flex flex-col sm:flex-row gap-2">
                                                 <Link
                                                     href="/register"
-                                                    className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white text-red-700 hover:bg-red-50 active:scale-[0.98] font-bold text-sm sm:text-base rounded-xl shadow-md transition-all"
+                                                    className="inline-flex items-center justify-center gap-2 flex-1 py-2.5 px-3 bg-white text-red-700 hover:bg-red-50 active:scale-[0.98] font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all text-center"
                                                 >
-                                                    <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                    <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                                                         person_add
                                                     </span>
-                                                    नया रजिस्ट्रेशन करें (New Registration)
+                                                    नया रजिस्ट्रेशन करें
                                                 </Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setShowNoticeModal(true); setTimeout(() => setModalAnimating(true), 20); }}
+                                                    className="inline-flex items-center justify-center gap-1 py-2.5 px-3 bg-red-800/60 hover:bg-red-800 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all border border-red-300/40 text-center"
+                                                >
+                                                    <span className="material-symbols-outlined text-base">open_in_new</span>
+                                                    पूरी सूचना देखें
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
