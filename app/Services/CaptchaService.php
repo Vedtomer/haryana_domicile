@@ -5,12 +5,12 @@ namespace App\Services;
 class CaptchaService
 {
     /**
-     * Unambiguous alphanumeric characters (excluding 0, O, 1, I, l).
+     * Numeric characters only (0-9).
      */
-    protected static string $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    protected static string $characters = '0123456789';
 
     /**
-     * Generate a random alphanumeric captcha code.
+     * Generate a random numeric captcha code (digits only).
      */
     public static function generateCode(int $length = 5): string
     {

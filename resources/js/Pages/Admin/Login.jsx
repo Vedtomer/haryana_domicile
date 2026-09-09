@@ -257,11 +257,13 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                                 id="captcha" 
                                                 name="captcha"
                                                 value={data.captcha}
-                                                onChange={(e) => setData('captcha', e.target.value.toUpperCase())}
+                                                onChange={(e) => setData('captcha', e.target.value.replace(/\D/g, ''))}
                                                 className="w-full bg-transparent border-none py-2.5 px-3 text-base font-mono font-bold tracking-widest text-slate-800 focus:ring-0 focus:outline-none rounded-lg" 
-                                                placeholder="Enter code" 
+                                                placeholder="5-digit code" 
                                                 type="text"
-                                                maxLength={6}
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                maxLength={5}
                                                 autoComplete="off"
                                                 required
                                             />
