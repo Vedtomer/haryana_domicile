@@ -15,8 +15,7 @@ Route::get('/migrate-db', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
-    \App\Models\User::whereNull('email_verified_at')->update(['email_verified_at' => now()]);
-    return 'Database migrated and seeded successfully! All existing users verified. Please go back to your dashboard.';
+    return 'Database migrated and seeded successfully! Please go back to your dashboard.';
 });
 
 Route::get('/force-add-service', function () {
@@ -184,13 +183,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'show'])->name('reactivate.show');
 Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'store'])->name('reactivate.store');
 
-    Route::middleware(['auth', 'verified.custom'])->group(function () {
-        // Email Verification Routes
+    // Email Verification Routes (accessible when logged in, before email is verified)
+    Route::middleware(['auth'])->group(function () {
         Route::get('/email/verify', [\App\Http\Controllers\EmailVerificationController::class, 'show'])->name('email.verify');
         Route::post('/email/send-otp', [\App\Http\Controllers\EmailVerificationController::class, 'sendOtp'])->name('email.send-otp')->middleware('throttle:6,1');
         Route::post('/email/verify', [\App\Http\Controllers\EmailVerificationController::class, 'verify'])->name('email.verify.post');
         Route::post('/email/update', [\App\Http\Controllers\EmailVerificationController::class, 'updateEmail'])->name('email.update')->middleware('throttle:6,1');
+    });
 
+    Route::middleware(['auth', 'verified.custom'])->group(function () {
         // 2FA Routes
         Route::get('/2fa/challenge', [\App\Http\Controllers\TwoFactorController::class, 'showChallenge'])->name('2fa.challenge');
         Route::post('/2fa/challenge', [\App\Http\Controllers\TwoFactorController::class, 'verifyChallenge'])->name('2fa.verify');

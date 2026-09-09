@@ -18,6 +18,20 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
         otp: '',
     });
 
+    const autoSentRef = React.useRef(false);
+
+    // Auto-send OTP on mount if not in cooldown
+    useEffect(() => {
+        if (!autoSentRef.current) {
+            autoSentRef.current = true;
+            if (initialCooldown <= 0) {
+                handleSendOtp();
+            } else {
+                setOtpSentMessage(`Verification code has been sent to ${currentEmail}.`);
+            }
+        }
+    }, []);
+
     // Countdown Timer
     useEffect(() => {
         if (cooldown <= 0) return;
@@ -34,8 +48,9 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
     }, [cooldown]);
 
     // Send OTP Handler
-    const handleSendOtp = async () => {
-        if (cooldown > 0 || sendingOtp) return;
+    const handleSendOtp = async (overrideEmail = null) => {
+        const targetEmail = overrideEmail || currentEmail;
+        if (sendingOtp) return;
         setGeneralError('');
         setOtpSentMessage('');
         setSendingOtp(true);
@@ -43,7 +58,7 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
         try {
             const res = await axios.post('/email/send-otp');
             if (res.data.success) {
-                setOtpSentMessage(res.data.message || `Verification OTP sent to ${currentEmail}`);
+                setOtpSentMessage(res.data.message || `Verification OTP sent to ${targetEmail}`);
                 setCooldown(res.data.cooldown || 60);
             }
         } catch (err) {
@@ -53,7 +68,7 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
                     setCooldown(err.response.data.cooldown);
                 }
             } else {
-                setGeneralError(err.response?.data?.message || 'Failed to deliver OTP email. Please try again.');
+                setGeneralError(err.response?.data?.message || 'Failed to deliver OTP email. Please try again or update your email address below.');
             }
         } finally {
             setSendingOtp(false);
@@ -96,7 +111,7 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
     // Verify OTP Handler
     const handleVerify = (e) => {
         e.preventDefault();
-        clearErrors('otp');
+        clearErrors();
         setGeneralError('');
 
         if (!data.otp || data.otp.length !== 6) {
@@ -104,7 +119,14 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
             return;
         }
 
-        post('/email/verify');
+        post('/email/verify', {
+            preserveScroll: true,
+            onError: (errs) => {
+                if (errs.otp) {
+                    setError('otp', errs.otp);
+                }
+            },
+        });
     };
 
     return (
@@ -132,19 +154,33 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
                             </p>
                         </div>
 
+                        {/* Sending OTP Indicator */}
+                        {sendingOtp && (
+                            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs flex items-center gap-2">
+                                <svg className="animate-spin h-4 w-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                <span>Sending 6-digit OTP code to <strong>{currentEmail}</strong>...</span>
+                            </div>
+                        )}
+
                         {/* Error Alert */}
                         {generalError && (
                             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-start gap-2">
-                                <span className="text-base leading-none">⚠️</span>
+                                <span className="text-base leading-none shrink-0">⚠️</span>
                                 <span>{generalError}</span>
                             </div>
                         )}
 
                         {/* Success Message Alert */}
-                        {otpSentMessage && (
+                        {otpSentMessage && !sendingOtp && (
                             <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-start gap-2">
-                                <span className="text-base leading-none">✅</span>
-                                <span>{otpSentMessage}</span>
+                                <span className="text-base leading-none shrink-0">✅</span>
+                                <div>
+                                    <p className="font-semibold">{otpSentMessage}</p>
+                                    <p className="text-[11px] text-emerald-600 mt-0.5">Please check your Inbox as well as Spam / Junk folder.</p>
+                                </div>
                             </div>
                         )}
 
@@ -227,7 +263,10 @@ export default function VerifyEmail({ user, cooldown: initialCooldown = 0 }) {
                                     />
                                 </div>
                                 {errors.otp && (
-                                    <p className="text-red-500 text-xs mt-1 font-medium">{errors.otp}</p>
+                                    <div className="mt-2 p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs font-semibold flex items-center gap-2">
+                                        <span className="shrink-0">⚠️</span>
+                                        <span>{errors.otp}</span>
+                                    </div>
                                 )}
                             </div>
 

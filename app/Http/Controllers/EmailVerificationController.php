@@ -150,6 +150,10 @@ class EmailVerificationController extends Controller
         ]);
 
         $user = $request->user();
+        if ($user->email_verified_at) {
+            return redirect('/dashboard');
+        }
+
         $email = strtolower(trim($user->email));
         $cacheKey = 'reg_otp_' . md5($email);
         
@@ -157,7 +161,7 @@ class EmailVerificationController extends Controller
             ?? Cache::get($cacheKey) 
             ?? $request->session()->get($cacheKey);
 
-        if (!$cached || !isset($cached['otp']) || trim($cached['otp']) !== trim($request->otp)) {
+        if (!$cached || !isset($cached['otp']) || trim((string) $cached['otp']) !== trim((string) $request->otp)) {
             return back()->withErrors([
                 'otp' => 'Invalid or expired OTP code. Please request a new code.',
             ]);
