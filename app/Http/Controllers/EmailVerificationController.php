@@ -21,7 +21,7 @@ class EmailVerificationController extends Controller
 
         // If already verified, redirect to dashboard
         if ($user->email_verified_at) {
-            return redirect()->intended('/dashboard');
+            return redirect('/dashboard');
         }
 
         $email = strtolower(trim($user->email));
@@ -76,12 +76,16 @@ class EmailVerificationController extends Controller
 
         $otp = (string) random_int(100000, 999999);
 
-        // Store in file cache for 10 minutes
-        Cache::store('file')->put($cacheKey, [
+        $payload = [
             'otp'        => $otp,
             'email'      => $email,
             'created_at' => time(),
-        ], 600);
+        ];
+
+        // Store in file cache and session for 10 minutes
+        Cache::store('file')->put($cacheKey, $payload, 600);
+        Cache::put($cacheKey, $payload, 600);
+        $request->session()->put($cacheKey, $payload);
 
         Cache::store('file')->put($cooldownKey, time() + 60, 60);
 
@@ -148,23 +152,28 @@ class EmailVerificationController extends Controller
         $user = $request->user();
         $email = strtolower(trim($user->email));
         $cacheKey = 'reg_otp_' . md5($email);
-        $cached = Cache::store('file')->get($cacheKey);
+        
+        $cached = Cache::store('file')->get($cacheKey) 
+            ?? Cache::get($cacheKey) 
+            ?? $request->session()->get($cacheKey);
 
-        if (!$cached || !isset($cached['otp']) || $cached['otp'] !== trim($request->otp)) {
+        if (!$cached || !isset($cached['otp']) || trim($cached['otp']) !== trim($request->otp)) {
             return back()->withErrors([
                 'otp' => 'Invalid or expired OTP code. Please request a new code.',
             ]);
         }
 
-        // Clean up cache
+        // Clean up cache and session
         Cache::store('file')->forget($cacheKey);
+        Cache::forget($cacheKey);
+        $request->session()->forget($cacheKey);
         Cache::store('file')->forget('reg_otp_cooldown_' . md5($email));
 
         // Mark as verified
         $user->email_verified_at = now();
         $user->save();
 
-        return redirect()->intended('/dashboard')
+        return redirect('/dashboard')
             ->with('success', '✅ Your email address has been verified successfully!');
     }
 

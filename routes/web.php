@@ -15,7 +15,8 @@ Route::get('/migrate-db', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
-    return 'Database migrated and seeded successfully! Please go back to your dashboard.';
+    \App\Models\User::whereNull('email_verified_at')->update(['email_verified_at' => now()]);
+    return 'Database migrated and seeded successfully! All existing users verified. Please go back to your dashboard.';
 });
 
 Route::get('/force-add-service', function () {

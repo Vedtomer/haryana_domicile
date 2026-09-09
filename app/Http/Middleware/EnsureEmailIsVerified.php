@@ -29,9 +29,9 @@ class EnsureEmailIsVerified
         // Check if user is regular user and their email is not verified
         if ($user->type === 'user' && !$user->email_verified_at) {
             // Whitelisted routes while in verification state
-            if ($request->routeIs('email.verify') || 
-                $request->routeIs('email.send-otp') || 
-                $request->routeIs('email.update') || 
+            if ($request->routeIs('email.*') || 
+                $request->is('email/*') || 
+                $request->is('email') ||
                 $request->routeIs('logout')) {
                 return $next($request);
             }
