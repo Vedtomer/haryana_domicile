@@ -2,15 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CaptchaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        return Inertia::render('Admin/Login');
+        $code = CaptchaService::generateCode(5);
+        $request->session()->put('login_captcha', strtolower($code));
+        $captchaSvg = CaptchaService::generateSvg($code);
+
+        return Inertia::render('Admin/Login', [
+            'captchaSvg' => $captchaSvg,
+        ]);
+    }
+
+    public function refreshCaptcha(Request $request)
+    {
+        $code = CaptchaService::generateCode(5);
+        $request->session()->put('login_captcha', strtolower($code));
+        $captchaSvg = CaptchaService::generateSvg($code);
+
+        return response()->json([
+            'success' => true,
+            'svg'     => $captchaSvg,
+        ]);
     }
 
     public function showRegister()
@@ -21,9 +40,29 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'login' => 'required|string',
+            'login'    => 'required|string',
             'password' => 'required|string',
+            'captcha'  => 'required|string',
+        ], [
+            'login.required'    => 'Please enter your email or mobile number.',
+            'password.required' => 'Please enter your password.',
+            'captcha.required'  => 'Please enter the security captcha code.',
         ]);
+
+        $sessionCaptcha = strtolower($request->session()->get('login_captcha', ''));
+        $userCaptcha    = strtolower(trim($request->captcha));
+
+        if (empty($sessionCaptcha) || $sessionCaptcha !== $userCaptcha) {
+            $code = CaptchaService::generateCode(5);
+            $request->session()->put('login_captcha', strtolower($code));
+
+            return back()->withErrors([
+                'captcha' => 'Invalid captcha code. Please enter the code shown in the image.',
+            ])->onlyInput('login');
+        }
+
+        // Clear captcha immediately after matching
+        $request->session()->forget('login_captcha');
 
         $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
@@ -52,6 +91,10 @@ class AuthController extends Controller
             Auth::logoutOtherDevices($request->password);
             return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
         }
+
+        // Credentials wrong: generate fresh captcha for next attempt
+        $code = CaptchaService::generateCode(5);
+        $request->session()->put('login_captcha', strtolower($code));
 
         return back()->withErrors([
             'login' => 'The provided credentials do not match our records.',

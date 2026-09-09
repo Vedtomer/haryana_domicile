@@ -2,26 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { useForm, Head, Link } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
 import FooterParticles from '../../Components/FooterParticles';
+import axios from 'axios';
 
 // Notice active for 10 days: Sep 8, 2026 -> Sep 18, 2026 23:59:59 IST
 const EXPIRY_TIMESTAMP = new Date('2026-09-18T23:59:59+05:30').getTime();
 
-export default function Login() {
+export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
     const { data, setData, post, processing, errors } = useForm({
         login: '',
         password: '',
+        captcha: '',
     });
 
     const [mounted, setMounted] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [captchaSvg, setCaptchaSvg] = useState(initialCaptchaSvg);
+    const [refreshingCaptcha, setRefreshingCaptcha] = useState(false);
     const isNoticeActive = Date.now() <= EXPIRY_TIMESTAMP;
 
     // Modal popup state for deleted accounts notice (open by default on visit)
     const [showNoticeModal, setShowNoticeModal] = useState(isNoticeActive);
     const [modalAnimating, setModalAnimating] = useState(false);
 
+    const handleRefreshCaptcha = async () => {
+        if (refreshingCaptcha) return;
+        setRefreshingCaptcha(true);
+        try {
+            const res = await axios.get('/captcha/refresh');
+            if (res.data?.svg) {
+                setCaptchaSvg(res.data.svg);
+                setData('captcha', '');
+            }
+        } catch (err) {
+            console.error('Failed to refresh captcha', err);
+        } finally {
+            setRefreshingCaptcha(false);
+        }
+    };
+
     useEffect(() => {
         setMounted(true);
+        if (!captchaSvg) {
+            handleRefreshCaptcha();
+        }
         if (isNoticeActive) {
             const timer = setTimeout(() => setModalAnimating(true), 50);
             return () => clearTimeout(timer);
@@ -35,7 +58,11 @@ export default function Login() {
 
     const submit = (e) => {
         e.preventDefault();
-        post('/login');
+        post('/login', {
+            onError: () => {
+                handleRefreshCaptcha();
+            },
+        });
     };
 
     return (
@@ -201,6 +228,84 @@ export default function Login() {
                                         </button>
                                     </div>
                                     {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                </div>
+
+                                {/* Security Captcha */}
+                                <div className="flex flex-col gap-base">
+                                    <div className="flex justify-between items-center">
+                                        <label className="font-label-md text-label-md text-on-surface font-semibold" htmlFor="captcha">
+                                            Security Captcha
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={handleRefreshCaptcha}
+                                            disabled={refreshingCaptcha}
+                                            className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 focus:outline-none disabled:opacity-50"
+                                            title="Click to reload captcha"
+                                        >
+                                            <span className={`material-symbols-outlined text-sm ${refreshingCaptcha ? 'animate-spin' : ''}`}>
+                                                sync
+                                            </span>
+                                            <span>New Code</span>
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        {/* Input Box */}
+                                        <div className="relative flex-1 flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200 focus-within:border-blue-500 focus-within:bg-white">
+                                            <input 
+                                                id="captcha" 
+                                                name="captcha"
+                                                value={data.captcha}
+                                                onChange={(e) => setData('captcha', e.target.value.toUpperCase())}
+                                                className="w-full bg-transparent border-none py-2.5 px-3 text-base font-mono font-bold tracking-widest text-slate-800 focus:ring-0 focus:outline-none rounded-lg" 
+                                                placeholder="Enter code" 
+                                                type="text"
+                                                maxLength={6}
+                                                autoComplete="off"
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Captcha SVG Preview */}
+                                        <div 
+                                            onClick={handleRefreshCaptcha}
+                                            className="cursor-pointer border-2 border-slate-200 hover:border-blue-400 rounded-lg overflow-hidden shrink-0 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] select-none bg-slate-50"
+                                            title="Click to reload captcha"
+                                            style={{ width: '135px', height: '44px' }}
+                                        >
+                                            {captchaSvg ? (
+                                                <div 
+                                                    className="w-full h-full flex items-center justify-center pointer-events-none"
+                                                    dangerouslySetInnerHTML={{ __html: captchaSvg }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
+                                                    Loading...
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Refresh Button */}
+                                        <button
+                                            type="button"
+                                            onClick={handleRefreshCaptcha}
+                                            disabled={refreshingCaptcha}
+                                            className="w-10 h-10 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 flex items-center justify-center transition-colors border border-slate-200 shrink-0 disabled:opacity-50"
+                                            title="Reload captcha code"
+                                        >
+                                            <span className={`material-symbols-outlined text-lg ${refreshingCaptcha ? 'animate-spin' : ''}`}>
+                                                sync
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    {errors.captcha && (
+                                        <p className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+                                            <span>⚠️</span>
+                                            <span>{errors.captcha}</span>
+                                        </p>
+                                    )}
                                 </div>
                                 
                                 <button 
