@@ -71,8 +71,10 @@ class DashboardController extends Controller
     private function userStats(User $user): array
     {
         $requests = ServiceRequest::where('user_id', $user->id);
+        $totalServices = Service::active()->visibleTo($user)->count();
 
         return [
+            ['label' => 'Total Services', 'value' => $totalServices, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '#', 'icon' => 'monetization_on'],
             ['label' => 'History & My Requests', 'value' => (clone $requests)->count(), 'tone' => 'dark-blue', 'url' => '/admin/service-requests', 'icon' => 'history'],
             ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],

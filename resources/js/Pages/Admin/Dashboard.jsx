@@ -16,6 +16,7 @@ const TONES = {
 const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-amber']);
 
 const ICON_MAP = {
+    'Total Services': 'home_repair_service',
     'Manage Users': 'group',
     'User Permissions': 'admin_panel_settings',
     'Pending Requests': 'hourglass_top',
@@ -33,11 +34,11 @@ const ICON_MAP = {
 function StatCard({ label, value, tone, url, icon }) {
     const isDark = DARK_TONES.has(tone);
     const resolvedIcon = icon || ICON_MAP[label] || 'analytics';
+    const isAnchor = url && url.startsWith('#');
 
-    return (
-        <Link
-            href={url}
-            className={`relative overflow-hidden block p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 group ${
+    const cardBody = (
+        <div
+            className={`relative overflow-hidden block p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 group cursor-pointer ${
                 isDark ? 'hover:shadow-2xl hover:shadow-black/40' : 'hover:shadow-lg'
             } ${TONES[tone] ?? TONES.blue}`}
         >
@@ -74,6 +75,28 @@ function StatCard({ label, value, tone, url, icon }) {
                     </span>
                 </div>
             </div>
+        </div>
+    );
+
+    if (isAnchor) {
+        return (
+            <a
+                href={url}
+                onClick={(e) => {
+                    if (url === '#services') {
+                        e.preventDefault();
+                        document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }}
+            >
+                {cardBody}
+            </a>
+        );
+    }
+
+    return (
+        <Link href={url}>
+            {cardBody}
         </Link>
     );
 }
@@ -184,13 +207,13 @@ export default function Dashboard({ services, stats, isAdmin }) {
         >
             <Head title="Dashboard" />
 
-            <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'md:grid-cols-3 lg:grid-cols-4' : 'md:grid-cols-4'}`}>
+            <div className={`grid grid-cols-2 gap-4 mb-8 ${isAdmin ? 'md:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-3 lg:grid-cols-5'}`}>
                 {stats.map((stat) => (
                     <StatCard key={stat.label} {...stat} />
                 ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+            <div id="services" className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 scroll-mt-6">
                 <h2 className="text-lg font-bold text-gray-800">Services</h2>
                 <div className="w-full sm:w-64 relative">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
