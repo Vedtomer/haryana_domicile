@@ -230,11 +230,17 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=eshram',
             'create' => '/utilities/pvc-card-maker?card=eshram',
         ],
-        'driving_licence_pvc' => [
-            'label' => 'Driving Licence PVC Card',
+        'make_driving_licence_card' => [
+            'label' => 'Make Driving Licence (Cards)',
             'model' => null,
-            'index' => '/utilities/pvc-card-maker?card=driving_licence',
-            'create' => '/utilities/pvc-card-maker?card=driving_licence',
+            'index' => '/utilities/make-driving-licence-card',
+            'create' => '/utilities/make-driving-licence-card',
+        ],
+        'driving_licence_pvc' => [
+            'label' => 'Make Driving Licence (Cards)',
+            'model' => null,
+            'index' => '/utilities/make-driving-licence-card',
+            'create' => '/utilities/make-driving-licence-card',
         ],
         'healthid_pvc' => [
             'label' => 'ABHA Health ID PVC Card',

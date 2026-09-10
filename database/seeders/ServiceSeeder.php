@@ -291,13 +291,13 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'Driving Licence PVC Card',
-                'slug' => 'driving-licence-pvc',
-                'description' => 'Generate Print-Ready PVC Front & Back Card from Driving Licence PDF.',
+                'name' => 'Make Driving Licence (Cards)',
+                'slug' => 'make-driving-licence-card',
+                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Driving Licence Number and Date of Birth.',
                 'icon' => '🚗',
                 'coin_cost' => 20,
                 'kind' => Service::KIND_MODULE,
-                'module_key' => 'driving_licence_pvc',
+                'module_key' => 'make_driving_licence_card',
                 'sort_order' => 23,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
@@ -350,12 +350,17 @@ class ServiceSeeder extends Seeder
 
         foreach ($services as $service) {
             $existing = Service::where('slug', $service['slug'])->first();
+            if (!$existing && $service['slug'] === 'make-driving-licence-card') {
+                $existing = Service::where('slug', 'driving-licence-pvc')->first();
+            }
+
             if (!$existing) {
                 Service::create($service);
             } else {
                 // Update fields to ensure new modules and features are active
                 $existing->update([
                     'name' => $service['name'],
+                    'slug' => $service['slug'],
                     'kind' => $service['kind'],
                     'module_key' => $service['module_key'],
                     'is_active' => $service['is_active'],

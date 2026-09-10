@@ -20,7 +20,7 @@ class PvcCardMakerController extends Controller
         'pan_uti'          => 'pan-uti-pvc',
         'pan_incometax'    => 'pan-instant-pvc',
         'eshram'           => 'eshram-pvc-card',
-        'driving_licence'  => 'driving-licence-pvc',
+        'driving_licence'  => 'make-driving-licence-card',
         'healthid'         => 'healthid-pvc',
         'pmvishwakarma'    => 'pmvishwakarma-pvc',
         'aapar'            => 'aapar-pvc',
@@ -32,6 +32,10 @@ class PvcCardMakerController extends Controller
         $isAdmin = $this->isStaff();
 
         $selectedCard = $request->query('card', 'aadhaar');
+        if ($selectedCard === 'driving_licence' || $selectedCard === 'driving-licence-pvc') {
+            return redirect()->route('utilities.make-driving-licence-card');
+        }
+
         $cards = IdCardStoreService::ENDPOINTS;
 
         $dbServices = Service::whereIn('slug', array_values(self::CARD_SLUG_MAP))->get()->keyBy('slug');

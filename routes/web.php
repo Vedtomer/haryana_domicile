@@ -295,13 +295,13 @@ Route::get('/force-add-pvc-services', function () {
             'unlock_cost' => 0,
         ],
         [
-            'name' => 'Driving Licence PVC Card',
-            'slug' => 'driving-licence-pvc',
-            'description' => 'Generate Print-Ready PVC Front & Back Card from Driving Licence PDF.',
+            'name' => 'Make Driving Licence (Cards)',
+            'slug' => 'make-driving-licence-card',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Driving Licence Number and Date of Birth.',
             'icon' => '🚗',
             'coin_cost' => 20,
             'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'driving_licence_pvc',
+            'module_key' => 'make_driving_licence_card',
             'sort_order' => 23,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
@@ -616,6 +616,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'index'])->name('utilities.pvc-card-maker');
     Route::post('/utilities/pvc-card-maker/generate', [\App\Http\Controllers\PvcCardMakerController::class, 'generate'])->name('utilities.pvc-card-maker.generate');
     Route::post('/utilities/pvc-card-maker/save-api-key', [\App\Http\Controllers\PvcCardMakerController::class, 'saveApiKey'])->name('utilities.pvc-card-maker.save-api-key');
+
+    // Make Driving Licence (Cards)
+    Route::get('/utilities/make-driving-licence-card', [\App\Http\Controllers\DrivingLicenceCardController::class, 'index'])->name('utilities.make-driving-licence-card');
+    Route::post('/utilities/make-driving-licence-card/generate', [\App\Http\Controllers\DrivingLicenceCardController::class, 'generate'])->name('utilities.make-driving-licence-card.generate');
+    Route::get('/utilities/driving-licence-card', function () {
+        return redirect()->route('utilities.make-driving-licence-card');
+    });
 
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');

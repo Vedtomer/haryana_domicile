@@ -75,12 +75,12 @@ class IdCardStoreService
             'description' => 'Generate PVC Card from e-Shram Card PDF',
         ],
         'driving_licence' => [
-            'name' => 'Driving Licence Card',
+            'name' => 'Make Driving Licence (Cards)',
             'endpoint' => '/card/make_driving_licence',
             'accepts_password' => false,
             'icon' => 'directions_car',
             'coin_cost' => 20,
-            'description' => 'Generate PVC Card from Driving Licence PDF',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Driving Licence Number and Date of Birth.',
         ],
         'healthid' => [
             'name' => 'ABHA Health ID',
@@ -257,6 +257,99 @@ class IdCardStoreService
         } catch (\Exception $e) {
             Log::error('IDCardStore API Exception', [
                 'cardKey' => $cardKey,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Connection failed with IDCard Store API: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Generate Driving Licence PVC card from DL details.
+     */
+    public function generateDrivingLicenceCard(string $dl, string $dob, string $relation = 'DL No', string $background = 'false', string $cardType = '1'): array
+    {
+        if (!$this->isConfigured()) {
+            return [
+                'success' => false,
+                'message' => 'IDCard.Store API Key is not configured. Please set IDCARD_STORE_API_KEY in your .env file or admin settings.'
+            ];
+        }
+
+        $url = $this->baseUrl . '/card/make_driving_licence';
+
+        // Format DOB to DD-MM-YYYY
+        $cleanDob = trim($dob);
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $cleanDob, $m)) {
+            $cleanDob = "{$m[3]}-{$m[2]}-{$m[1]}";
+        } elseif (preg_match('/^(\d{2})[-/](\d{2})[-/](\d{4})$/', $cleanDob, $m)) {
+            $cleanDob = "{$m[1]}-{$m[2]}-{$m[3]}";
+        }
+
+        $cleanDl = strtoupper(trim($dl));
+        $cleanRelation = in_array($relation, ['DL No', 'LL No'], true) ? $relation : 'DL No';
+        $cleanBg = ($background === 'true' || $background === '1') ? 'true' : 'false';
+        $cleanCardType = ($cardType === '2') ? '2' : '1';
+
+        try {
+            $response = Http::timeout(60)
+                ->connectTimeout(10)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'User-Agent'    => 'CSPJaankari/1.0',
+                ])
+                ->asMultipart()
+                ->post($url, [
+                    ['name' => 'relation',   'contents' => $cleanRelation],
+                    ['name' => 'dl',         'contents' => $cleanDl],
+                    ['name' => 'dob',        'contents' => $cleanDob],
+                    ['name' => 'background', 'contents' => $cleanBg],
+                    ['name' => 'card_type',  'contents' => $cleanCardType],
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return $this->formatSuccessResponse($data, self::ENDPOINTS['driving_licence']);
+            }
+
+            $status = $response->status();
+            $body = $response->json() ?? [];
+            $errorMsg = $body['message'] ?? $body['error'] ?? $body['detail'] ?? null;
+
+            if (is_array($errorMsg)) {
+                $messages = [];
+                foreach ($errorMsg as $err) {
+                    if (isset($err['msg'])) {
+                        $messages[] = $err['msg'];
+                    }
+                }
+                $errorMsg = implode(', ', $messages);
+            }
+
+            if ($errorMsg === 'DL Not found') {
+                $errorMsg = 'Driving Licence details not found. Kripya apna DL/LL Number aur Date of Birth verify karein.';
+            } elseif ($errorMsg === 'Insufficient funds. Please recharge your account.') {
+                $errorMsg = 'idcard.store Wallet Balance Low: Aapke idcard.store account mein balance khatam hai. Kripya idcard.store par wallet recharge karein.';
+            }
+
+            Log::warning('Driving Licence API Failed', [
+                'status' => $status,
+                'dl' => $cleanDl,
+                'dob' => $cleanDob,
+                'response' => $response->body(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $errorMsg ?: "Failed to generate Driving Licence card (Error {$status}).",
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Driving Licence API Exception', [
+                'dl' => $cleanDl,
                 'error' => $e->getMessage()
             ]);
 
