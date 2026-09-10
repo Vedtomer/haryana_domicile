@@ -123,38 +123,32 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1.5 text-xs font-semibold text-slate-500">
-                            <Link href="/dashboard" className="inline-flex items-center gap-1 hover:text-indigo-600 transition-colors">
-                                <span className="material-symbols-outlined text-sm">arrow_back</span>
-                                Back to All Services
-                            </Link>
-                            <span className="text-slate-300 dark:text-slate-700">•</span>
-                            <span className="text-indigo-600 dark:text-indigo-400 font-bold">PVC Service</span>
-                        </div>
-                        <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-2xl sm:text-3xl">
-                                {currentCard.icon || 'badge'}
-                            </span>
-                            {currentCard.name}
-                        </h1>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-                            {currentCard.description}
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-3.5 py-1.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-amber-800 dark:text-amber-300 text-sm font-semibold shadow-sm">
-                            <span className="material-symbols-outlined text-base text-amber-500">monetization_on</span>
-                            <span>Wallet: {auth.user?.coins ?? userCoins} Coins</span>
-                        </div>
-                    </div>
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
+                        {currentCard.name}
+                    </h1>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                        {currentCard.description}
+                    </p>
                 </div>
             }
         >
             <Head title={currentCard.name} />
 
-            <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-6">
+            <div className="max-w-6xl mx-auto space-y-4">
+                <div className="flex items-center justify-between">
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-base">arrow_back</span>
+                        Back to All Services
+                    </Link>
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-bold shadow-sm">
+                        <span className="material-symbols-outlined text-sm text-amber-500">monetization_on</span>
+                        <span>Wallet: {auth.user?.coins ?? userCoins} Coins</span>
+                    </div>
+                </div>
 
                 {/* Active Card Form & Upload Box */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
