@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import Toast from '../Components/Toast';
-import ImportantNoticeBanner from '../Components/ImportantNoticeBanner';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
@@ -50,7 +49,6 @@ export default function AdminLayout({ header, children }) {
     return (
         <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
             <Toast />
-            <ImportantNoticeBanner />
             
             {/* Sidebar — hidden on the dashboard itself, and hidden for regular users */}
             {showSidebar && (
