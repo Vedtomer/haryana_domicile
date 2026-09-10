@@ -11,9 +11,10 @@ const TONES = {
     'dark-green': 'bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-950 border-emerald-950 text-white shadow-lg shadow-emerald-950/50',
     'dark-purple': 'bg-gradient-to-br from-slate-800 via-purple-900 to-slate-950 border-purple-950 text-white shadow-lg shadow-purple-950/50',
     'dark-amber': 'bg-gradient-to-br from-slate-800 via-amber-900 to-slate-950 border-amber-950 text-white shadow-lg shadow-amber-950/50',
+    'dark-indigo': 'bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-indigo-900/60 text-white shadow-lg shadow-indigo-950/50 ring-1 ring-indigo-500/30',
 };
 
-const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-amber']);
+const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-amber', 'dark-indigo']);
 
 const ICON_MAP = {
     'Total Services': 'home_repair_service',
@@ -26,22 +27,24 @@ const ICON_MAP = {
     'Service Requests': 'assignment',
     'Reactivation Requests': 'how_to_reg',
     'My Coin Balance': 'monetization_on',
+    'Coin Requests': 'monetization_on',
     'History & My Requests': 'history',
     'Pending': 'pending_actions',
     'Completed': 'check_circle',
     'Portal License Keys': 'vpn_key',
+    'Manage License Keys': 'vpn_key',
     '6M Portal License': 'vpn_key',
 };
 
 
-function StatCard({ label, value, tone, url, icon }) {
+function StatCard({ label, value, tone, url, icon, subtext, actionText }) {
     const isDark = DARK_TONES.has(tone);
     const resolvedIcon = icon || ICON_MAP[label] || 'analytics';
     const isAnchor = url && url.startsWith('#');
 
     const cardBody = (
         <div
-            className={`relative overflow-hidden block p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 group cursor-pointer ${
+            className={`relative overflow-hidden flex flex-col justify-between p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 group cursor-pointer h-full ${
                 isDark ? 'hover:shadow-2xl hover:shadow-black/40' : 'hover:shadow-lg'
             } ${TONES[tone] ?? TONES.blue}`}
         >
@@ -60,6 +63,11 @@ function StatCard({ label, value, tone, url, icon }) {
                     <p className="text-2xl sm:text-3xl font-extrabold mt-1.5 tracking-tight truncate">
                         {value}
                     </p>
+                    {subtext && (
+                        <p className={`text-[11px] sm:text-xs font-medium mt-1 truncate ${isDark ? 'text-indigo-200/90' : 'opacity-75'}`}>
+                            {subtext}
+                        </p>
+                    )}
                 </div>
 
                 {/* Prominent Logo / Icon Badge */}
@@ -78,6 +86,15 @@ function StatCard({ label, value, tone, url, icon }) {
                     </span>
                 </div>
             </div>
+
+            {actionText && (
+                <div className="relative z-10 mt-3 pt-2.5 border-t border-white/15 flex items-center justify-between text-xs font-semibold text-indigo-200 group-hover:text-white transition-colors">
+                    <span>{actionText}</span>
+                    <span className="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-1">
+                        arrow_forward
+                    </span>
+                </div>
+            )}
         </div>
     );
 
