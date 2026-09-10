@@ -8,6 +8,7 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
     const [selectedCardKey, setSelectedCardKey] = useState(defaultCard || 'haryana_familyid');
     const [file, setFile] = useState(null);
     const [password, setPassword] = useState('');
+    const [phoneOption, setPhoneOption] = useState('false');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
@@ -82,6 +83,9 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
         formData.append('file', file);
         if (password.trim()) {
             formData.append('password', password.trim());
+        }
+        if (currentCard.accepts_phone) {
+            formData.append('phone', phoneOption);
         }
 
         try {
@@ -280,6 +284,44 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
                                     </div>
                                     <p className="text-[11px] text-slate-400 mt-1">
                                         Required if your Aadhaar / PAN PDF is password-locked.
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Phone / Mobile Number Option (e.g. for Aadhaar Card) */}
+                            {currentCard.accepts_phone && (
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                        Card Par Mobile Number Dalna Hai? (Phone Number)
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPhoneOption('false')}
+                                            className={`px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                phoneOption === 'false'
+                                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                                                    : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                                            }`}
+                                        >
+                                            <span className="material-symbols-outlined text-base">close</span>
+                                            No (Nahi)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPhoneOption('true')}
+                                            className={`px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                phoneOption === 'true'
+                                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                                                    : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                                            }`}
+                                        >
+                                            <span className="material-symbols-outlined text-base">check</span>
+                                            Yes (Haan)
+                                        </button>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1">
+                                        PVC Card par mobile number print karne ke liye 'Yes' chunein.
                                     </p>
                                 </div>
                             )}

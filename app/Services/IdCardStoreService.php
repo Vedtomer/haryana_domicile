@@ -21,6 +21,7 @@ class IdCardStoreService
             'name' => 'Aadhaar PVC Card',
             'endpoint' => '/card/make_aadhaar',
             'accepts_password' => true,
+            'accepts_phone' => true,
             'icon' => 'fingerprint',
             'coin_cost' => 20,
             'description' => 'Generate PVC Card from e-Aadhaar PDF with password support',
@@ -153,12 +154,14 @@ class IdCardStoreService
             $postFields['password'] = $extraParams['password'];
         }
         if ($cardKey === 'aadhaar') {
-            $postFields['phone'] = !empty($extraParams['phone']) ? 'true' : 'false';
+            $isPhone = !empty($extraParams['phone']) && in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);
+            $postFields['phone'] = $isPhone ? 'true' : 'false';
             $postFields['new_design'] = !empty($extraParams['new_design']) ? 'true' : 'false';
         } elseif ($cardKey === 'driving_licence') {
             $postFields['relation'] = $extraParams['relation'] ?? 'DL No';
         } elseif (isset($extraParams['phone'])) {
-            $postFields['phone'] = $extraParams['phone'] ? 'true' : 'false';
+            $isPhone = in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);
+            $postFields['phone'] = $isPhone ? 'true' : 'false';
         }
 
         try {

@@ -31,6 +31,7 @@ class PvcCardMakerController extends Controller
                 'description'      => $card['description'],
                 'icon'             => $card['icon'],
                 'accepts_password' => $card['accepts_password'],
+                'accepts_phone'    => $card['accepts_phone'] ?? false,
                 'coin_cost'        => $defaultCost,
             ];
         }
@@ -72,6 +73,7 @@ class PvcCardMakerController extends Controller
             'card_type' => 'required|string',
             'file'      => 'required|file|mimes:pdf|max:15360',
             'password'  => 'nullable|string|max:100',
+            'phone'     => 'nullable|string|max:10',
         ]);
 
         $cardType = $request->input('card_type');
@@ -99,6 +101,9 @@ class PvcCardMakerController extends Controller
         $extraParams = [];
         if ($request->filled('password')) {
             $extraParams['password'] = $request->input('password');
+        }
+        if ($request->has('phone')) {
+            $extraParams['phone'] = $request->input('phone');
         }
 
         $result = $idCardStoreService->generateCard($cardType, $file, $extraParams);
