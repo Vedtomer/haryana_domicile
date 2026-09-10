@@ -40,4 +40,9 @@ return [
         'api_key' => env('CALLMEBOT_API_KEY'),
     ],
 
+    'nexus' => [
+        'api_key' => env('NEXUS_API_KEY', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'),
+        'api_key_vahan' => env('NEXUS_API_KEY_VAHAN', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'),
+    ],
+
 ];

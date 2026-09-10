@@ -26,7 +26,8 @@ class AadharToPanController extends Controller
         }
 
         $aadhar = $request->input('aadhar');
-        $url = "https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php?apiKey=sk_live_35mmsg30avhq4d296hd8th&uidNumber=" . $aadhar;
+        $apiKey = config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386');
+        $url = "https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php?apiKey=" . urlencode($apiKey) . "&uidNumber=" . urlencode($aadhar);
 
         try {
             $response = Http::connectTimeout(5)->timeout(15)->get($url);
@@ -76,13 +77,26 @@ class AadharToPanController extends Controller
                         'message' => $data['message']
                     ]);
                 }
+            } else {
+                $errorData = $response->json();
+                if (isset($errorData['message'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Nexus API: ' . $errorData['message'] . ' (Server maintenance ya API balance check karein).'
+                    ]);
+                }
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'PAN details not found or service unavailable.'
+                'message' => 'PAN details not found or service unavailable at the moment.'
             ]);
             
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Third-party API server se connect hone me timeout aa raha hai. Kripya thodi der baad prayas karein.'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
