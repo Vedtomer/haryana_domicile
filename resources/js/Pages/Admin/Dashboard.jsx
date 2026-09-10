@@ -3,10 +3,10 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 
 const TONES = {
-    blue: 'bg-blue-50 border-blue-100 text-blue-700',
-    green: 'bg-green-50 border-green-100 text-green-700',
-    purple: 'bg-purple-50 border-purple-100 text-purple-700',
-    amber: 'bg-amber-50 border-amber-100 text-amber-700',
+    blue: 'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/60 text-blue-700 dark:text-blue-300',
+    green: 'bg-green-50 dark:bg-green-950/40 border-green-100 dark:border-green-900/60 text-green-700 dark:text-green-300',
+    purple: 'bg-purple-50 dark:bg-purple-950/40 border-purple-100 dark:border-purple-900/60 text-purple-700 dark:text-purple-300',
+    amber: 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/60 text-amber-700 dark:text-amber-300',
     'dark-blue': 'bg-gradient-to-br from-slate-800 via-blue-900 to-slate-950 border-blue-950 text-white shadow-lg shadow-blue-950/50',
     'dark-green': 'bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-950 border-emerald-950 text-white shadow-lg shadow-emerald-950/50',
     'dark-purple': 'bg-gradient-to-br from-slate-800 via-purple-900 to-slate-950 border-purple-950 text-white shadow-lg shadow-purple-950/50',
@@ -70,7 +70,7 @@ function StatCard({ label, value, tone, url, icon }) {
                     className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transition-all duration-300 group-hover:scale-110 ${
                         isDark
                             ? 'bg-white/15 border border-white/20 text-white backdrop-blur-sm shadow-inner'
-                            : 'bg-white/80 border border-current/10 text-current shadow-sm'
+                            : 'bg-white/80 dark:bg-slate-800/80 border border-current/10 text-current shadow-sm'
                     }`}
                 >
                     <span
@@ -112,16 +112,16 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
     const isLicenseBlocked = !isAdmin && !hasLicense;
 
     const cardContent = (
-        <div className={`group relative flex flex-col h-56 p-5 bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${
+        <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm transition-all duration-200 ${
             isLockedPremium 
-                ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100' 
+                ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100 dark:hover:shadow-amber-950/30' 
                 : isLicenseBlocked
-                ? 'cursor-pointer hover:border-red-400 hover:shadow-red-100'
-                : 'hover:shadow-lg hover:border-blue-300 hover:-translate-y-1'
+                ? 'cursor-pointer hover:border-red-400 hover:shadow-red-100 dark:hover:shadow-red-950/30'
+                : 'hover:shadow-lg hover:border-blue-300 dark:hover:border-indigo-500 hover:-translate-y-1'
         }`}>
             <div className="flex items-start justify-between gap-3">
                 {service.logo_url ? (
-                    <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+                    <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-slate-700 flex-shrink-0" />
                 ) : (
                     <span className="text-3xl leading-none">{service.icon}</span>
                 )}
@@ -132,43 +132,43 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                         PREMIUM
                     </span>
                 ) : isLicenseBlocked ? (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700 flex items-center gap-1">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
                         <span className="material-symbols-outlined text-[13px]">lock</span>
                         LICENSE
                     </span>
                 ) : service.is_free ? (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
                         FREE
                     </span>
                 ) : (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 whitespace-nowrap">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
                         🪙 {service.coin_cost}
                     </span>
                 )}
             </div>
 
-            <h3 className="mt-3 font-bold text-gray-800 group-hover:text-blue-700 transition-colors line-clamp-2">
+            <h3 className="mt-3 font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
                 {service.name}
             </h3>
 
             {service.description && (
-                <p className="mt-1 text-sm text-gray-500 line-clamp-2">{service.description}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400 line-clamp-2">{service.description}</p>
             )}
 
-            <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-                <span className="text-sm text-gray-500">
-                    <span className="font-bold text-gray-800 text-base">{service.count}</span> total
+            <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-slate-400">
+                    <span className="font-bold text-gray-800 dark:text-white text-base">{service.count}</span> total
                 </span>
                 {isLockedPremium ? (
-                    <span className="text-xs font-bold text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Unlock →
                     </span>
                 ) : isLicenseBlocked ? (
-                    <span className="text-xs font-bold text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         License Required →
                     </span>
                 ) : (
-                    <span className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs font-semibold text-blue-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Open →
                     </span>
                 )}
@@ -258,127 +258,127 @@ export default function Dashboard({ services, stats, isAdmin }) {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
-                                            Portal License Inactive (6 Months)
-                                        </h3>
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-red-600 text-white uppercase tracking-wider shadow-sm">
-                                            Required
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-slate-700 font-medium mt-1 max-w-2xl leading-relaxed">
-                                        Portal ki sabhi services use karne ke liye <strong>6-Month License (50 Coins)</strong> active hona zaroori hai. Aap 50 coins se direct activate kar sakte hain ya license key enter kar sakte hain.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'direct' } }));
-                                    }}
-                                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">bolt</span>
-                                    Activate Now (50 Coins)
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'key' } }));
-                                    }}
-                                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-3 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm rounded-2xl border border-slate-300 shadow-sm transition-all cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">vpn_key</span>
-                                    Enter Key
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                                         <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                                             Portal License Inactive (6 Months)
+                                         </h3>
+                                         <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-red-600 text-white uppercase tracking-wider shadow-sm">
+                                             Required
+                                         </span>
+                                     </div>
+                                     <p className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 max-w-2xl leading-relaxed">
+                                         Portal ki sabhi services use karne ke liye <strong>6-Month License (50 Coins)</strong> active hona zaroori hai. Aap 50 coins se direct activate kar sakte hain ya license key enter kar sakte hain.
+                                     </p>
+                                 </div>
+                             </div>
+                             <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
+                                 <button
+                                     type="button"
+                                     onClick={() => {
+                                         window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'direct' } }));
+                                     }}
+                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all cursor-pointer"
+                                 >
+                                     <span className="material-symbols-outlined text-[18px]">bolt</span>
+                                     Activate Now (50 Coins)
+                                 </button>
+                                 <button
+                                     type="button"
+                                     onClick={() => {
+                                         window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'key' } }));
+                                     }}
+                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-sm rounded-2xl border border-slate-300 dark:border-slate-700 shadow-sm transition-all cursor-pointer"
+                                 >
+                                     <span className="material-symbols-outlined text-[18px]">vpn_key</span>
+                                     Enter Key
+                                 </button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             )}
 
-            {/* Services Header */}
-            <div id="services" className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 scroll-mt-6">
-                <h2 className="text-lg font-bold text-gray-800">Services</h2>
-                <div className="w-full sm:w-64 relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input
-                        type="text"
-                        placeholder="Search services..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
-                    />
-                </div>
-            </div>
+             {/* Services Header */}
+             <div id="services" className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 scroll-mt-6">
+                 <h2 className="text-lg font-bold text-gray-800 dark:text-white">Services</h2>
+                 <div className="w-full sm:w-64 relative">
+                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500">search</span>
+                     <input
+                         type="text"
+                         placeholder="Search services..."
+                         value={searchQuery}
+                         onChange={(e) => setSearchQuery(e.target.value)}
+                         className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
+                     />
+                 </div>
+             </div>
 
-            {/* Services Grid */}
-            {filteredServices.length === 0 ? (
-                <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-500">
-                    {searchQuery ? `No services found matching "${searchQuery}"` : 'No services are active yet.'}
-                    {!searchQuery && isAdmin && ' Use "Add Service" to create the first one.'}
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                    {filteredServices.map((service) => (
-                        <ServiceCard 
-                            key={service.id} 
-                            service={service} 
-                            onUnlockClick={setUnlockingService}
-                            onRequireLicenseClick={handleRequireLicenseClick}
-                            hasLicense={hasLicense}
-                            isAdmin={isAdmin}
-                        />
-                    ))}
-                </div>
-            )}
+             {/* Services Grid */}
+             {filteredServices.length === 0 ? (
+                 <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-10 text-center text-gray-500 dark:text-slate-400">
+                     {searchQuery ? `No services found matching "${searchQuery}"` : 'No services are active yet.'}
+                     {!searchQuery && isAdmin && ' Use "Add Service" to create the first one.'}
+                 </div>
+             ) : (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+                     {filteredServices.map((service) => (
+                         <ServiceCard 
+                             key={service.id} 
+                             service={service} 
+                             onUnlockClick={setUnlockingService}
+                             onRequireLicenseClick={handleRequireLicenseClick}
+                             hasLicense={hasLicense}
+                             isAdmin={isAdmin}
+                         />
+                     ))}
+                 </div>
+             )}
 
-            {/* Premium Unlock Modal */}
-            {unlockingService && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="bg-gradient-to-br from-amber-400 to-yellow-500 p-6 text-center text-white relative">
-                            <button 
-                                onClick={() => setUnlockingService(null)}
-                                className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
-                            >
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
-                            
-                            <div className="flex justify-center mb-3">
-                                {unlockingService.logo_url ? (
-                                    <img src={unlockingService.logo_url} alt="" className="w-20 h-20 rounded-full object-cover border-4 border-white/30 shadow-lg bg-white" />
-                                ) : (
-                                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/30 shadow-lg">
-                                        <span className="text-4xl leading-none">{unlockingService.icon || '📦'}</span>
-                                    </div>
-                                )}
-                            </div>
+             {/* Premium Unlock Modal */}
+             {unlockingService && (
+                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-transparent dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+                         <div className="bg-gradient-to-br from-amber-400 to-yellow-500 p-6 text-center text-white relative">
+                             <button 
+                                 onClick={() => setUnlockingService(null)}
+                                 className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+                             >
+                                 <span className="material-symbols-outlined">close</span>
+                             </button>
+                             
+                             <div className="flex justify-center mb-3">
+                                 {unlockingService.logo_url ? (
+                                     <img src={unlockingService.logo_url} alt="" className="w-20 h-20 rounded-full object-cover border-4 border-white/30 shadow-lg bg-white" />
+                                 ) : (
+                                     <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/30 shadow-lg">
+                                         <span className="text-4xl leading-none">{unlockingService.icon || '📦'}</span>
+                                     </div>
+                                 )}
+                             </div>
 
-                            <h3 className="text-xl font-black tracking-tight drop-shadow-sm px-4">{unlockingService.name}</h3>
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white text-amber-600 mt-2 shadow-sm uppercase tracking-wider">
-                                <span className="material-symbols-outlined text-[14px]">lock</span>
-                                Premium
-                            </span>
-                        </div>
-                        <div className="p-6 text-center">
-                            <p className="text-slate-600 font-medium mb-6">
-                                Unlock <strong className="text-slate-900">{unlockingService.name}</strong> for lifetime access. You only pay once!
-                            </p>
-                            
-                            <div className="flex items-center justify-center gap-3 mb-6">
-                                <span className="text-3xl font-black text-amber-500">{unlockingService.unlock_cost}</span>
-                                <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Coins</span>
-                            </div>
+                             <h3 className="text-xl font-black tracking-tight drop-shadow-sm px-4">{unlockingService.name}</h3>
+                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white text-amber-600 mt-2 shadow-sm uppercase tracking-wider">
+                                 <span className="material-symbols-outlined text-[14px]">lock</span>
+                                 Premium
+                             </span>
+                         </div>
+                         <div className="p-6 text-center">
+                             <p className="text-slate-600 dark:text-slate-300 font-medium mb-6">
+                                 Unlock <strong className="text-slate-900 dark:text-white">{unlockingService.name}</strong> for lifetime access. You only pay once!
+                             </p>
+                             
+                             <div className="flex items-center justify-center gap-3 mb-6">
+                                 <span className="text-3xl font-black text-amber-500">{unlockingService.unlock_cost}</span>
+                                 <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Coins</span>
+                             </div>
 
-                            {auth.user.coins >= unlockingService.unlock_cost ? (
-                                <button
-                                    onClick={handleUnlock}
-                                    disabled={isUnlocking}
-                                    className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
-                                >
-                                    {isUnlocking ? 'Unlocking...' : 'Unlock Now'}
-                                </button>
+                             {auth.user.coins >= unlockingService.unlock_cost ? (
+                                 <button
+                                     onClick={handleUnlock}
+                                     disabled={isUnlocking}
+                                     className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 dark:bg-amber-500 dark:hover:bg-amber-600 dark:text-slate-950 text-white font-bold rounded-xl shadow-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 cursor-pointer"
+                                 >
+                                     {isUnlocking ? 'Unlocking...' : 'Unlock Now'}
+                                 </button>
                             ) : (
                                 <div>
                                     <p className="text-sm text-red-500 font-semibold mb-3 flex items-center justify-center gap-1">

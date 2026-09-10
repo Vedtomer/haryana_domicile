@@ -29,7 +29,7 @@ export default function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setOpen(!open)}
-                className="relative p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                className="relative p-2 text-gray-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 aria-label="Notifications"
             >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,16 +46,16 @@ export default function NotificationBell() {
                 <>
                     <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
-                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                            <span className="font-bold text-gray-800">Notifications</span>
+                    <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-gray-100 dark:border-slate-800 z-50 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-800">
+                            <span className="font-bold text-gray-800 dark:text-white">Notifications</span>
                             {unread > 0 && (
                                 <button
                                     onClick={() => {
                                         router.post('/admin/notifications/read-all', {}, { preserveScroll: true });
                                         setOpen(false);
                                     }}
-                                    className="text-xs font-semibold text-blue-600 hover:underline"
+                                    className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                                 >
                                     Mark all read
                                 </button>
@@ -64,23 +64,23 @@ export default function NotificationBell() {
 
                         <div className="max-h-96 overflow-y-auto">
                             {recent.length === 0 && (
-                                <p className="px-4 py-8 text-center text-sm text-gray-400">No notifications yet.</p>
+                                <p className="px-4 py-8 text-center text-sm text-gray-400 dark:text-slate-500">No notifications yet.</p>
                             )}
 
                             {recent.map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => openNotification(item)}
-                                    className={`w-full text-left px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors ${
-                                        item.read ? '' : 'bg-blue-50/50'
+                                    className={`w-full text-left px-4 py-3 border-b border-gray-50 dark:border-slate-800/80 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors ${
+                                        item.read ? '' : 'bg-blue-50/50 dark:bg-blue-950/30'
                                     }`}
                                 >
                                     <div className="flex items-start gap-2">
                                         <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${LEVEL_DOT[item.level] ?? LEVEL_DOT.info}`} />
                                         <div className="min-w-0">
-                                            <p className="text-sm font-semibold text-gray-800">{item.title}</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">{item.body}</p>
-                                            <p className="text-[11px] text-gray-400 mt-1">{item.ago}</p>
+                                            <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">{item.title}</p>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{item.body}</p>
+                                            <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1">{item.ago}</p>
                                         </div>
                                     </div>
                                 </button>
@@ -90,7 +90,7 @@ export default function NotificationBell() {
                         <Link
                             href="/admin/notifications"
                             onClick={() => setOpen(false)}
-                            className="block px-4 py-3 text-center text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+                            className="block px-4 py-3 text-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors"
                         >
                             View all
                         </Link>

@@ -89,7 +89,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
         <>
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-transparent dark:border-slate-800">
                         {/* Header */}
                         <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-5 sm:p-6 text-white relative">
                             <button
@@ -130,12 +130,12 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                         </div>
 
                         {/* Navigation Tabs */}
-                        <div className="flex border-b border-gray-100 bg-gray-50/70 p-1">
+                        <div className="flex border-b border-gray-100 dark:border-slate-800 bg-gray-50/70 dark:bg-slate-950/70 p-1">
                             <button
                                 type="button"
                                 onClick={() => setTab('direct')}
                                 className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                                    tab === 'direct' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'
+                                    tab === 'direct' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
                                 }`}
                             >
                                 {hasActiveLicense ? '🛡️ Status' : '⚡ Direct (50 Coins)'}
@@ -144,7 +144,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                 type="button"
                                 onClick={() => setTab('key')}
                                 className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                                    tab === 'key' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'
+                                    tab === 'key' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
                                 }`}
                             >
                                 🔑 Enter Key
@@ -153,7 +153,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                 type="button"
                                 onClick={() => setTab('gift')}
                                 className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                                    tab === 'gift' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'
+                                    tab === 'gift' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
                                 }`}
                             >
                                 🎁 Gift Key
@@ -167,50 +167,50 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                 <div className="text-center space-y-4">
                                     {hasActiveLicense ? (
                                         <>
-                                            <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+                                            <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
                                                 <span className="material-symbols-outlined text-3xl">verified</span>
                                             </div>
                                             <div>
-                                                <h4 className="text-base font-black text-gray-800">License Currently Active</h4>
-                                                <p className="text-xs text-gray-500 mt-1">
+                                                <h4 className="text-base font-black text-gray-800 dark:text-white">License Currently Active</h4>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                                                     Aapka 6-Month Portal License <strong>{auth?.user?.license_expires_at}</strong> tak valid hai.
                                                 </p>
                                             </div>
 
-                                            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center justify-between">
+                                            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
                                                 <div className="text-left">
-                                                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Days Remaining</p>
-                                                    <p className="text-xl font-black text-emerald-700">{auth?.user?.license_days_left} Days</p>
+                                                    <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Days Remaining</p>
+                                                    <p className="text-xl font-black text-emerald-700 dark:text-emerald-300">{auth?.user?.license_days_left} Days</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</p>
+                                                    <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Status</p>
                                                     <span className="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-600 text-white">
                                                         ACTIVE
                                                     </span>
                                                 </div>
                                             </div>
 
-                                            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-left flex items-start gap-2">
-                                                <span className="material-symbols-outlined text-amber-600 text-base mt-0.5">info</span>
-                                                <p className="text-[11px] text-amber-800 leading-snug font-medium">
+                                            <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800/60 text-left flex items-start gap-2">
+                                                <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-base mt-0.5">info</span>
+                                                <p className="text-[11px] text-amber-800 dark:text-amber-200 leading-snug font-medium">
                                                     <strong>1 User = 1 Active License:</strong> Naya license ya nayi key aap tabhi activate kar sakte hain jab purana license expire ho jaye.
                                                 </p>
                                             </div>
                                         </>
                                     ) : (
                                         <>
-                                            <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                                            <p className="text-sm text-gray-600 dark:text-slate-300 font-medium leading-relaxed">
                                                 Aapke wallet se <strong>50 Coins</strong> deduct honge aur portal services turant <strong>6 mahine (180 din)</strong> ke liye activate ho jayenge.
                                             </p>
 
-                                            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200/80 flex items-center justify-between">
+                                            <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200/80 dark:border-amber-800/60 flex items-center justify-between">
                                                 <div className="text-left">
-                                                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Your Balance</p>
-                                                    <p className="text-lg font-black text-amber-600">🪙 {userCoins} Coins</p>
+                                                    <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Your Balance</p>
+                                                    <p className="text-lg font-black text-amber-600 dark:text-amber-400">🪙 {userCoins} Coins</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Cost</p>
-                                                    <p className="text-lg font-black text-gray-800">50 Coins</p>
+                                                    <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Cost</p>
+                                                    <p className="text-lg font-black text-gray-800 dark:text-white">50 Coins</p>
                                                 </div>
                                             </div>
 
@@ -226,7 +226,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                                 </button>
                                             ) : (
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-red-600 font-bold flex items-center justify-center gap-1">
+                                                    <p className="text-xs text-red-600 dark:text-red-400 font-bold flex items-center justify-center gap-1">
                                                         <span className="material-symbols-outlined text-[15px]">error</span>
                                                         50 coins required (Need {50 - userCoins} more coins)
                                                     </p>
@@ -249,17 +249,17 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                 <>
                                     {hasActiveLicense ? (
                                         <div className="text-center space-y-4">
-                                            <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto shadow-inner">
+                                            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
                                                 <span className="material-symbols-outlined text-3xl">lock_clock</span>
                                             </div>
                                             <div>
-                                                <h4 className="text-base font-black text-gray-800">Key Activation Locked</h4>
-                                                <p className="text-xs text-gray-500 mt-1">
+                                                <h4 className="text-base font-black text-gray-800 dark:text-white">Key Activation Locked</h4>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                                                     Aapka portal license pehle se active hai ({auth?.user?.license_days_left} din baaki hain).
                                                 </p>
                                             </div>
-                                            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 text-left">
-                                                <p className="text-xs text-amber-900 leading-relaxed font-medium">
+                                            <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-800/60 text-left">
+                                                <p className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed font-medium">
                                                     ⚠️ Jab tak aapka purana license ({auth?.user?.license_expires_at}) expire nahi hota, tab tak nayi key activate nahi ki ja sakti.
                                                 </p>
                                             </div>
@@ -267,7 +267,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                     ) : (
                                         <form onSubmit={handleRedeemKey} className="space-y-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                                <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                                     License Key Code
                                                 </label>
                                                 <input
@@ -275,11 +275,11 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                                     placeholder="LIC-ABCD-1234-EFGH"
                                                     value={licenseKeyInput}
                                                     onChange={(e) => setLicenseKeyInput(e.target.value.toUpperCase())}
-                                                    className="w-full px-4 py-3 border border-gray-300 rounded-2xl text-center font-mono font-bold tracking-wider text-base focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none uppercase"
+                                                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 dark:bg-slate-950 dark:text-white rounded-2xl text-center font-mono font-bold tracking-wider text-base focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none uppercase"
                                                     required
                                                     autoFocus
                                                 />
-                                                <p className="text-[11px] text-gray-400 mt-1.5 text-center">
+                                                <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1.5 text-center">
                                                     Admin se mili 16-character license key enter karein.
                                                 </p>
                                             </div>
@@ -287,7 +287,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                             <button
                                                 type="submit"
                                                 disabled={isRedeemingKey || !licenseKeyInput.trim()}
-                                                className="w-full py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                                                className="w-full py-3 px-5 bg-slate-900 hover:bg-slate-800 dark:bg-amber-500 dark:hover:bg-amber-600 dark:text-slate-950 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                                             >
                                                 <span className="material-symbols-outlined text-[18px]">check_circle</span>
                                                 {isRedeemingKey ? 'Verifying Key...' : 'Activate With Key'}
@@ -300,18 +300,18 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                             {/* Tab 3: Buy Gift Key */}
                             {tab === 'gift' && (
                                 <div className="text-center space-y-4">
-                                    <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                                    <p className="text-sm text-gray-600 dark:text-slate-300 font-medium leading-relaxed">
                                         Aap <strong>50 Coins</strong> dekar ek unused License Key buy kar sakte hain aur kisi bhi user ya shopkeeper ko share kar sakte hain.
                                     </p>
 
-                                    <div className="p-3.5 bg-blue-50 rounded-2xl border border-blue-200/80 flex items-center justify-between">
+                                    <div className="p-3.5 bg-blue-50 dark:bg-blue-950/30 rounded-2xl border border-blue-200/80 dark:border-blue-800/60 flex items-center justify-between">
                                         <div className="text-left">
-                                            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Your Balance</p>
-                                            <p className="text-lg font-black text-blue-600">🪙 {userCoins} Coins</p>
+                                            <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Your Balance</p>
+                                            <p className="text-lg font-black text-blue-600 dark:text-blue-400">🪙 {userCoins} Coins</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Cost</p>
-                                            <p className="text-lg font-black text-gray-800">50 Coins</p>
+                                            <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Cost</p>
+                                            <p className="text-lg font-black text-gray-800 dark:text-white">50 Coins</p>
                                         </div>
                                     </div>
 
@@ -338,8 +338,8 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                             )}
 
                             {/* Single Desktop Lock Guarantee Info */}
-                            <div className="mt-5 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 rounded-2xl flex items-start gap-2.5 text-left">
-                                <span className="material-symbols-outlined text-slate-500 text-lg mt-0.5 flex-shrink-0">desktop_windows</span>
+                            <div className="mt-5 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 rounded-2xl flex items-start gap-2.5 text-left">
+                                <span className="material-symbols-outlined text-slate-500 dark:text-slate-400 text-lg mt-0.5 flex-shrink-0">desktop_windows</span>
                                 <div>
                                     <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
                                         Single Desktop / PC Lock Active
@@ -357,18 +357,18 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
             {/* Generated Gift Key Modal */}
             {showKeyModal && flash?.generated_key && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center">
+                        <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 shadow-sm">
                             <span className="material-symbols-outlined text-3xl">key</span>
                         </div>
 
-                        <h3 className="text-xl font-black text-gray-900">License Key Ready!</h3>
-                        <p className="text-xs text-gray-500 mt-1 mb-4">
+                        <h3 className="text-xl font-black text-gray-900 dark:text-white">License Key Ready!</h3>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 mb-4">
                             Yeh 6-Month Portal License Key hai. Isse kisi bhi account par activate kiya ja sakta hai.
                         </p>
 
-                        <div className="p-3.5 bg-slate-50 border-2 border-dashed border-gray-300 rounded-2xl mb-4">
-                            <p className="font-mono text-lg font-black tracking-wider text-slate-900 select-all">
+                        <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-2xl mb-4">
+                            <p className="font-mono text-lg font-black tracking-wider text-slate-900 dark:text-white select-all">
                                 {flash.generated_key}
                             </p>
                         </div>
@@ -387,7 +387,7 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                         <button
                             type="button"
                             onClick={() => setShowKeyModal(false)}
-                            className="w-full py-2 text-xs text-gray-500 hover:text-gray-800 font-semibold cursor-pointer"
+                            className="w-full py-2 text-xs text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-white font-semibold cursor-pointer"
                         >
                             Close
                         </button>

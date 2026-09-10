@@ -51,3 +51,132 @@
   'GRAD' 0,
   'opsz' 24
 }
+
+/* Global Dark Mode Transformations */
+html.dark {
+    color-scheme: dark;
+    background-color: #030712 !important;
+    color: #f8fafc;
+}
+
+html.dark body {
+    background-color: #030712 !important;
+    color: #f8fafc;
+}
+
+html.dark #app {
+    background-color: #030712;
+}
+
+/* Transform all default white background panels/cards/boxes into dark surfaces */
+html.dark .bg-white:not([data-keep-white]):not([class*="dark:bg-"]) {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+/* Semi-transparent white backgrounds */
+html.dark [class*="bg-white/"]:not([data-keep-white]):not([class*="dark:bg-"]) {
+    background-color: rgba(15, 23, 42, 0.75) !important;
+    border-color: rgba(30, 41, 59, 0.75) !important;
+}
+
+/* Light grays become deep dark backgrounds */
+html.dark .bg-gray-50:not([class*="dark:bg-"]),
+html.dark .bg-slate-50:not([class*="dark:bg-"]),
+html.dark .bg-gray-100:not([class*="dark:bg-"]),
+html.dark .bg-slate-100:not([class*="dark:bg-"]),
+html.dark .bg-gray-200:not([class*="dark:bg-"]),
+html.dark .bg-slate-200:not([class*="dark:bg-"]) {
+    background-color: #0b1324 !important;
+    border-color: #1e293b !important;
+}
+
+/* Hover states for light surfaces */
+html.dark .hover\:bg-gray-50:hover,
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-gray-100:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-slate-50\/80:hover {
+    background-color: #1e293b !important;
+}
+
+/* Tables in dark mode */
+html.dark table {
+    color: #f8fafc;
+}
+html.dark thead,
+html.dark thead tr,
+html.dark thead th {
+    background-color: #0b1324 !important;
+    color: #94a3b8 !important;
+    border-color: #1e293b !important;
+}
+html.dark tbody tr {
+    background-color: #0f172a;
+    border-color: #1e293b !important;
+}
+html.dark tbody tr:hover {
+    background-color: #1e293b !important;
+}
+html.dark td {
+    border-color: #1e293b !important;
+}
+
+/* Default light text colors become light on dark surfaces */
+html.dark .text-gray-900:not([class*="dark:text-"]),
+html.dark .text-slate-900:not([class*="dark:text-"]),
+html.dark .text-gray-800:not([class*="dark:text-"]),
+html.dark .text-slate-800:not([class*="dark:text-"]) {
+    color: #f8fafc !important;
+}
+
+html.dark .text-gray-700:not([class*="dark:text-"]),
+html.dark .text-slate-700:not([class*="dark:text-"]) {
+    color: #e2e8f0 !important;
+}
+
+html.dark .text-gray-600:not([class*="dark:text-"]),
+html.dark .text-slate-600:not([class*="dark:text-"]) {
+    color: #cbd5e1 !important;
+}
+
+html.dark .text-gray-500:not([class*="dark:text-"]),
+html.dark .text-slate-500:not([class*="dark:text-"]) {
+    color: #94a3b8 !important;
+}
+
+/* Default borders become dark slate borders */
+html.dark .border-gray-200:not([class*="dark:border-"]),
+html.dark .border-gray-100:not([class*="dark:border-"]),
+html.dark .border-slate-200:not([class*="dark:border-"]),
+html.dark .border-slate-100:not([class*="dark:border-"]),
+html.dark .border-slate-300:not([class*="dark:border-"]),
+html.dark .border-gray-300:not([class*="dark:border-"]) {
+    border-color: #1e293b !important;
+}
+
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #1e293b !important;
+}
+
+/* Form inputs & selects without explicit dark styles */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="dark:bg-"]),
+html.dark select:not([class*="dark:bg-"]),
+html.dark textarea:not([class*="dark:bg-"]) {
+    background-color: #0b1324 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #64748b !important;
+}
+
+/* Glass panel in dark mode */
+html.dark .glass-panel {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(30, 41, 59, 0.8);
+}

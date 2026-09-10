@@ -67,7 +67,7 @@ export default function AdminLayout({ header, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#060b13] flex font-sans text-slate-800 dark:text-slate-100">
             <Toast />
             
             {/* Sidebar — hidden on the dashboard itself, and hidden for regular users */}
@@ -198,65 +198,65 @@ export default function AdminLayout({ header, children }) {
 
                                     {/* Small Gift Key Button */}
                                     <button
-                                        type="button"
-                                        onClick={() => openLicense('gift')}
-                                        className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
-                                        title="Buy Gift Key for someone else (50 Coins)"
-                                    >
-                                        <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
-                                        <span>Gift Key</span>
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => openLicense('direct')}
-                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 animate-pulse transition-all shadow-sm cursor-pointer"
-                                    title="Active 6-Month License Required (50 Coins)"
-                                >
-                                    <span className="material-symbols-outlined text-[15px]">lock</span>
-                                    <span>Activate License</span>
-                                </button>
-                            )}
+                                         type="button"
+                                         onClick={() => openLicense('gift')}
+                                         className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
+                                         title="Buy Gift Key for someone else (50 Coins)"
+                                     >
+                                         <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
+                                         <span>Gift Key</span>
+                                     </button>
+                                 </div>
+                             ) : (
+                                 <button
+                                     type="button"
+                                     onClick={() => openLicense('direct')}
+                                     className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 animate-pulse transition-all shadow-sm cursor-pointer"
+                                     title="Active 6-Month License Required (50 Coins)"
+                                 >
+                                     <span className="material-symbols-outlined text-[15px]">lock</span>
+                                     <span>Activate License</span>
+                                 </button>
+                             )}
 
-                            <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl">
-                                🪙 {auth.user.coins}
-                            </span>
-                            <Link
-                                href="/admin/coin-requests"
-                                className="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span className="hidden sm:inline">Buy Coins</span>
-                            </Link>
-                        </>
-                    )}
+                             <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
+                                 🪙 {auth.user.coins}
+                             </span>
+                             <Link
+                                 href="/admin/coin-requests"
+                                 className="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                             >
+                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                 <span className="hidden sm:inline">Buy Coins</span>
+                             </Link>
+                         </>
+                     )}
 
-                    {isAdmin && (
-                        <Link
-                            href="/admin/license-keys"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
-                            title="Manage Portal License Keys & Desktop Locks"
-                        >
-                            <span className="material-symbols-outlined text-[15px]">vpn_key</span>
-                            <span className="hidden sm:inline">License Keys</span>
-                        </Link>
-                    )}
+                     {isAdmin && (
+                         <Link
+                             href="/admin/license-keys"
+                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
+                             title="Manage Portal License Keys & Desktop Locks"
+                         >
+                             <span className="material-symbols-outlined text-[15px]">vpn_key</span>
+                             <span className="hidden sm:inline">License Keys</span>
+                         </Link>
+                     )}
 
-                    <NotificationBell />
+                     <NotificationBell />
 
-                    <div className="relative">
-                        <button
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
-                        >
-                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm hover:scale-105 transition-transform duration-200">
-                                <span className="material-symbols-outlined text-2xl">person</span>
-                            </div>
-                        </button>
+                     <div className="relative">
+                         <button
+                             onClick={() => setDropdownOpen(!dropdownOpen)}
+                             className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                         >
+                             <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm hover:scale-105 transition-transform duration-200">
+                                 <span className="material-symbols-outlined text-2xl">person</span>
+                             </div>
+                         </button>
 
-                        {/* Dropdown Menu */}
-                        <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg py-2 border border-gray-100 dark:border-slate-700 z-50 transform origin-top-right transition-all duration-200 ease-out ${dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}`}>
+                         {/* Dropdown Menu */}
+                         <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-lg py-2 border border-gray-100 dark:border-slate-800 z-50 transform origin-top-right transition-all duration-200 ease-out ${dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}`}>
                             <Link
                                 href="/admin/profile"
                                 className="block px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
