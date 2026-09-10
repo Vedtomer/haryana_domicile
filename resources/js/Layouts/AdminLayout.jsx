@@ -7,7 +7,6 @@ import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
 import LicenseModal from '../Components/LicenseModal';
 import UserChatWidget from '../Components/UserChatWidget';
-import UserVideoCallListener from '../Components/UserVideoCallListener';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
@@ -364,7 +363,6 @@ export default function AdminLayout({ header, children }) {
 
             <WhatsAppButton />
             <UserChatWidget user={auth?.user} />
-            <UserVideoCallListener user={auth?.user} />
         </div>
     );
 }

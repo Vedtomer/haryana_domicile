@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import AdminChatModal from '../../../Components/AdminChatModal';
-import AdminVideoCallModal from '../../../Components/AdminVideoCallModal';
 
 export default function Index({ users }) {
     const [addingCoinsTo, setAddingCoinsTo] = useState(null); // stores full user object
     const [chatUser, setChatUser] = useState(null); // user currently being chatted with
-    const [videoUser, setVideoUser] = useState(null); // user currently being video called
     const [amount, setAmount] = useState('');
     const [coinType, setCoinType] = useState('trial'); // 'trial' or 'paid'
 
@@ -165,25 +163,6 @@ export default function Index({ users }) {
                                                 )}
                                             </button>
 
-                                            {/* Live Camera / Video Call Button */}
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    if (!user.is_online) {
-                                                        if (!confirm(`${user.name || 'User'} is currently OFFLINE.\nDo you still want to send a Live Camera Check request?`)) {
-                                                            return;
-                                                        }
-                                                    }
-                                                    setVideoUser(user);
-                                                }}
-                                                title={`Live Camera Check / Video Call with ${user.name || 'User'}`}
-                                                className="p-2 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                                </svg>
-                                            </button>
-
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"
@@ -321,15 +300,6 @@ export default function Index({ users }) {
                 user={chatUser}
                 onClose={() => {
                     setChatUser(null);
-                    router.reload({ only: ['users'], preserveScroll: true });
-                }}
-            />
-
-            {/* Admin Live Video Call / Camera Check Modal */}
-            <AdminVideoCallModal
-                user={videoUser}
-                onClose={() => {
-                    setVideoUser(null);
                     router.reload({ only: ['users'], preserveScroll: true });
                 }}
             />

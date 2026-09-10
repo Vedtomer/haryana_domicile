@@ -6,7 +6,6 @@ import FrontendHeader from '../Components/FrontendHeader';
 import FrontendFooter from '../Components/FrontendFooter';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import UserChatWidget from '../Components/UserChatWidget';
-import UserVideoCallListener from '../Components/UserVideoCallListener';
 
 export default function FrontendLayout({ children }) {
     const { auth } = usePage().props;
@@ -30,7 +29,6 @@ export default function FrontendLayout({ children }) {
             <FrontendFooter />
             <WhatsAppButton />
             {auth?.user && <UserChatWidget user={auth.user} />}
-            {auth?.user && <UserVideoCallListener user={auth.user} />}
         </div>
     );
 }
