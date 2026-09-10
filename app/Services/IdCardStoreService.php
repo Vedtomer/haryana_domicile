@@ -12,7 +12,7 @@ class IdCardStoreService
         'haryana_familyid' => [
             'name' => 'Haryana Family ID',
             'endpoint' => '/card/hr/make_familyid',
-            'accepts_password' => true,
+            'accepts_password' => false,
             'icon' => 'badge',
             'coin_cost' => 20,
             'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF',
