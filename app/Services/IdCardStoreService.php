@@ -152,7 +152,12 @@ class IdCardStoreService
         if (!empty($extraParams['password'])) {
             $postFields['password'] = $extraParams['password'];
         }
-        if (isset($extraParams['phone'])) {
+        if ($cardKey === 'aadhaar') {
+            $postFields['phone'] = !empty($extraParams['phone']) ? 'true' : 'false';
+            $postFields['new_design'] = !empty($extraParams['new_design']) ? 'true' : 'false';
+        } elseif ($cardKey === 'driving_licence') {
+            $postFields['relation'] = $extraParams['relation'] ?? 'DL No';
+        } elseif (isset($extraParams['phone'])) {
             $postFields['phone'] = $extraParams['phone'] ? 'true' : 'false';
         }
 
@@ -166,7 +171,7 @@ class IdCardStoreService
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
                 ])
-                ->attach('file', $fileContent, $fileName)
+                ->attach('file', $fileContent, $fileName, ['Content-Type' => 'application/pdf'])
                 ->post($url, $postFields);
 
             if ($response->successful()) {
@@ -181,9 +186,24 @@ class IdCardStoreService
             if (!$errorMsg && isset($body['detail'])) {
                 if (is_string($body['detail'])) {
                     $errorMsg = $body['detail'];
-                } elseif (is_array($body['detail']) && isset($body['detail'][0]['msg'])) {
-                    $errorMsg = $body['detail'][0]['msg'];
+                } elseif (is_array($body['detail'])) {
+                    $messages = [];
+                    foreach ($body['detail'] as $err) {
+                        if (isset($err['loc']) && isset($err['msg'])) {
+                            $field = end($err['loc']);
+                            $messages[] = "$field: " . $err['msg'];
+                        } elseif (isset($err['msg'])) {
+                            $messages[] = $err['msg'];
+                        }
+                    }
+                    $errorMsg = !empty($messages) ? implode(', ', $messages) : json_encode($body['detail']);
                 }
+            }
+
+            if ($errorMsg === 'Insufficient funds. Please recharge your account.') {
+                $errorMsg = 'idcard.store Wallet Balance Low: Aapke idcard.store account mein balance khatam hai. Kripya idcard.store par jakar wallet recharge karein.';
+            } elseif ($errorMsg === 'Invalid card') {
+                $errorMsg = "Uploaded PDF sahi format mein nahi hai ya is card type se match nahi karta. Kripya original {$config['name']} PDF upload karein.";
             }
 
             if ($status === 401) {
