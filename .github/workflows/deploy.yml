@@ -23,8 +23,8 @@ jobs:
       - name: Deploy to production server
         run: |
           ssh -i ~/.ssh/deploy_key -p "${{ secrets.DEPLOY_PORT }}" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" '
-            set -e
-            # Shared host: bare `php` on PATH is 8.2, incompatible with composer.lock.
+
+            set -ex
             PHP=/opt/alt/php85/usr/bin/php
             cd "${{ secrets.DEPLOY_PATH }}"
             git fetch origin main
@@ -35,4 +35,15 @@ jobs:
             $PHP artisan db:seed --class=ServiceSeeder --force
             $PHP artisan optimize:clear
             $PHP artisan optimize
-          '
+          ' 2>&1 | tee deploy.log
+
+      - name: Publish Deployment Log
+        if: always()
+        run: |
+          if [ -f deploy.log ]; then
+            echo "### Deployment Log" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat deploy.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
