@@ -73,7 +73,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
     const logoInputRef = useRef(null);
     const [logoPreview, setLogoPreview] = useState(service?.logo_url ?? null);
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const initialValues = {
         name: service?.name ?? '',
         description: service?.description ?? '',
         icon: service?.icon ?? '📄',
@@ -85,7 +85,13 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
         user_ids: service?.user_ids ?? [],
         sort_order: service?.sort_order ?? 0,
         fields: service?.fields ?? [],
-    });
+    };
+
+    if (method === 'put') {
+        initialValues._method = 'put';
+    }
+
+    const { data, setData, post, processing, errors } = useForm(initialValues);
 
     const toggleUser = (id) =>
         setData('user_ids', data.user_ids.includes(id)
@@ -107,7 +113,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
 
     const submit = (e) => {
         e.preventDefault();
-        (method === 'put' ? put : post)(submitUrl, { forceFormData: true });
+        post(submitUrl, { forceFormData: true });
     };
 
     const addField = () =>
