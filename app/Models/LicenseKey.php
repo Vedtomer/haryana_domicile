@@ -24,6 +24,10 @@ class LicenseKey extends Model
         'activated_by',
         'activated_at',
         'expires_at',
+        'device_id',
+        'device_name',
+        'device_ip',
+        'bound_at',
         'notes',
     ];
 
@@ -32,6 +36,7 @@ class LicenseKey extends Model
         'duration_months' => 'integer',
         'activated_at' => 'datetime',
         'expires_at' => 'datetime',
+        'bound_at' => 'datetime',
     ];
 
     /**
@@ -50,19 +55,29 @@ class LicenseKey extends Model
     }
 
     /**
-     * Activate this license key for a specific user
+     * Activate this license key for a specific user and bind to desktop device
      */
-    public function activateFor(User $user): void
+    public function activateFor(User $user, ?string $deviceId = null, ?string $deviceName = null, ?string $deviceIp = null): void
     {
         $duration = $this->duration_months ?: 6;
-        $expiry = $user->activateLicense($duration);
+        $ip = $deviceIp ?: request()->ip();
+        $expiry = $user->activateLicense($duration, $deviceId, $deviceName, $ip);
 
-        $this->update([
-            'status' => self::STATUS_ACTIVE,
+        $data = [
+            'status'       => self::STATUS_ACTIVE,
             'activated_by' => $user->id,
             'activated_at' => now(),
-            'expires_at' => $expiry,
-        ]);
+            'expires_at'   => $expiry,
+        ];
+
+        if ($deviceId) {
+            $data['device_id']   = $deviceId;
+            $data['device_name'] = $deviceName ?: 'Desktop PC';
+            $data['device_ip']   = $ip;
+            $data['bound_at']    = now();
+        }
+
+        $this->update($data);
     }
 
     public function purchaser(): BelongsTo

@@ -18,6 +18,9 @@ class LicenseController extends Controller
         $user = $request->user();
         $cost = 50;
         $autoActivate = $request->boolean('auto_activate', true);
+        $deviceToken = $request->input('device_token') ?: $request->cookie('csp_device_token');
+        $deviceName = $request->input('device_name') ?: 'Desktop PC';
+        $ip = $request->ip();
 
         if (!$user->hasEnoughCoins($cost)) {
             return back()->with('error', "Insufficient coin balance. You need {$cost} coins to get a 6-Month Portal License. Please recharge coins.");
@@ -34,7 +37,7 @@ class LicenseController extends Controller
                 'portal_license'
             );
 
-            $expiry = $user->activateLicense(6);
+            $expiry = $user->activateLicense(6, $deviceToken, $deviceName, $ip);
 
             $license = LicenseKey::create([
                 'key'             => $key,
@@ -45,6 +48,10 @@ class LicenseController extends Controller
                 'activated_by'    => $user->id,
                 'activated_at'    => now(),
                 'expires_at'      => $expiry,
+                'device_id'       => $deviceToken,
+                'device_name'     => $deviceName,
+                'device_ip'       => $ip,
+                'bound_at'        => $deviceToken ? now() : null,
                 'notes'           => 'Direct Purchase & Auto-Activation',
             ]);
 
@@ -60,7 +67,6 @@ class LicenseController extends Controller
 
             $license = LicenseKey::create([
                 'key'             => $key,
-
                 'cost_coins'      => $cost,
                 'duration_months' => 6,
                 'status'          => LicenseKey::STATUS_UNUSED,
@@ -100,7 +106,21 @@ class LicenseController extends Controller
         }
 
         $user = $request->user();
-        $licenseKey->activateFor($user);
+        $deviceToken = $request->input('device_token') ?: $request->cookie('csp_device_token');
+        $deviceName = $request->input('device_name') ?: 'Desktop PC';
+        $ip = $request->ip();
+
+        // 1. If key was previously bound to another device, ensure it matches
+        if (!empty($licenseKey->device_id) && !empty($deviceToken) && $licenseKey->device_id !== $deviceToken) {
+            return back()->with('error', "🔒 Desktop Lock Alert: Yeh License Key kisi dusre PC/Desktop ({$licenseKey->device_name}) par pehle se registered hai.");
+        }
+
+        // 2. If user is already bound to a desktop, ensure they are redeeming from that same desktop
+        if (!empty($user->license_device_id) && !empty($deviceToken) && $user->license_device_id !== $deviceToken) {
+            return back()->with('error', "🔒 Desktop Lock Alert: Aapka account pehle se dusre Desktop ({$user->license_device_name}) par locked hai. Naya PC bind karne ke liye Admin se Desktop Reset karwayein.");
+        }
+
+        $licenseKey->activateFor($user, $deviceToken, $deviceName, $ip);
 
         return back()->with('success', "🎉 License Key verified! 6-Month Portal License is active until " . $user->license_expires_at->format('d M Y') . ".");
     }
@@ -258,6 +278,27 @@ class LicenseController extends Controller
     public function adminRevoke(Request $request, $id)
     {
         return $this->adminDeactivate($request, $id);
+    }
+
+    /**
+     * Admin: Reset Desktop Lock on a license key and associated user.
+     */
+    public function adminResetDevice(Request $request, $id)
+    {
+        $licenseKey = LicenseKey::with('activator')->findOrFail($id);
+
+        $licenseKey->update([
+            'device_id'   => null,
+            'device_name' => null,
+            'device_ip'   => null,
+            'bound_at'    => null,
+        ]);
+
+        if ($licenseKey->activator) {
+            $licenseKey->activator->resetDesktopLock();
+        }
+
+        return back()->with('success', "Desktop hardware lock for License {$licenseKey->key} has been reset. The user can now access and bind from a new desktop.");
     }
 
     /**

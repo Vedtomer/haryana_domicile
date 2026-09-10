@@ -46,6 +46,10 @@ class User extends Authenticatable implements FilamentUser
         'type',
         'is_active',
         'license_expires_at',
+        'license_device_id',
+        'license_device_name',
+        'license_device_ip',
+        'license_device_bound_at',
         'last_activity_at',
         'deactivated_reason',
     ];
@@ -68,11 +72,12 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
-            'email_verified_at'   => 'datetime',
-            'password'            => 'hashed',
-            'coins'               => 'integer',
-            'license_expires_at'  => 'datetime',
-            'last_activity_at'    => 'datetime',
+            'email_verified_at'       => 'datetime',
+            'password'                => 'hashed',
+            'coins'                   => 'integer',
+            'license_expires_at'      => 'datetime',
+            'license_device_bound_at' => 'datetime',
+            'last_activity_at'        => 'datetime',
         ];
     }
 
@@ -102,17 +107,40 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Activate or extend license for given number of months (default 6)
+     * and lock to specific desktop device if provided.
      */
-    public function activateLicense(int $months = 6): \Carbon\Carbon
+    public function activateLicense(int $months = 6, ?string $deviceId = null, ?string $deviceName = null, ?string $deviceIp = null): \Carbon\Carbon
     {
         $base = ($this->license_expires_at && $this->license_expires_at->isFuture())
             ? $this->license_expires_at->copy()
             : now();
 
         $newExpiry = $base->addMonths($months);
-        $this->update(['license_expires_at' => $newExpiry]);
+        $data = ['license_expires_at' => $newExpiry];
+
+        if ($deviceId) {
+            $data['license_device_id'] = $deviceId;
+            $data['license_device_name'] = $deviceName ?: ($this->license_device_name ?: 'Desktop PC');
+            $data['license_device_ip'] = $deviceIp ?: request()->ip();
+            $data['license_device_bound_at'] = now();
+        }
+
+        $this->update($data);
 
         return $newExpiry;
+    }
+
+    /**
+     * Reset the desktop hardware lock for this user
+     */
+    public function resetDesktopLock(): void
+    {
+        $this->update([
+            'license_device_id' => null,
+            'license_device_name' => null,
+            'license_device_ip' => null,
+            'license_device_bound_at' => null,
+        ]);
     }
 
     /**

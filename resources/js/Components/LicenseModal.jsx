@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePage, router, Link } from '@inertiajs/react';
+import { getOrCreateDeviceId, getDeviceName } from '../utils/device';
 
 export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', promptService = null }) {
     const { auth, flash } = usePage().props;
@@ -30,7 +31,11 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
 
     const handleDirectActivate = () => {
         setIsActivating(true);
-        router.post('/license/buy', { auto_activate: true }, {
+        router.post('/license/buy', {
+            auto_activate: true,
+            device_token: getOrCreateDeviceId(),
+            device_name: getDeviceName(),
+        }, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsActivating(false);
@@ -45,7 +50,11 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
         e.preventDefault();
         if (!licenseKeyInput.trim()) return;
         setIsRedeemingKey(true);
-        router.post('/license/activate', { key: licenseKeyInput }, {
+        router.post('/license/activate', {
+            key: licenseKeyInput,
+            device_token: getOrCreateDeviceId(),
+            device_name: getDeviceName(),
+        }, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsRedeemingKey(false);
@@ -284,6 +293,19 @@ export default function LicenseModal({ isOpen, onClose, initialTab = 'direct', p
                                     )}
                                 </div>
                             )}
+
+                            {/* Single Desktop Lock Guarantee Info */}
+                            <div className="mt-5 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 rounded-2xl flex items-start gap-2.5 text-left">
+                                <span className="material-symbols-outlined text-slate-500 text-lg mt-0.5 flex-shrink-0">desktop_windows</span>
+                                <div>
+                                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
+                                        Single Desktop / PC Lock Active
+                                    </p>
+                                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                                        Ek License Key strictly ek hi desktop/computer par work karegi. Kisi dusre PC par use nahi ki ja sakegi.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

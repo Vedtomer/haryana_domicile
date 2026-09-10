@@ -239,19 +239,17 @@ export default function AdminLayout({ header, children }) {
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <span className="hidden sm:inline">Buy Coins</span>
-                                <span className="sm:hidden">Buy</span>
                             </Link>
                         </>
                     )}
 
-
                     {isAdmin && (
                         <Link
                             href="/admin/license-keys"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition-all shadow-sm"
-                            title="Manage Portal License Keys"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
+                            title="Manage Portal License Keys & Desktop Locks"
                         >
-                            <span className="material-symbols-outlined text-[16px]">vpn_key</span>
+                            <span className="material-symbols-outlined text-[15px]">vpn_key</span>
                             <span className="hidden sm:inline">License Keys</span>
                         </Link>
                     )}

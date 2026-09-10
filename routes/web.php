@@ -694,6 +694,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('license-keys/{id}/activate', [\App\Http\Controllers\LicenseController::class, 'adminActivate'])->name('license-keys.activate')->middleware('admin');
         Route::post('license-keys/{id}/deactivate', [\App\Http\Controllers\LicenseController::class, 'adminDeactivate'])->name('license-keys.deactivate')->middleware('admin');
         Route::post('license-keys/{id}/revoke', [\App\Http\Controllers\LicenseController::class, 'adminDeactivate'])->name('license-keys.revoke')->middleware('admin');
+        Route::post('license-keys/{id}/reset-device', [\App\Http\Controllers\LicenseController::class, 'adminResetDevice'])->name('license-keys.reset-device')->middleware('admin');
         Route::delete('license-keys/{id}', [\App\Http\Controllers\LicenseController::class, 'adminDestroy'])->name('license-keys.destroy')->middleware('admin');
 
         // Service catalog — only admins can add services and set coin prices
