@@ -409,6 +409,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('/chat/messages', [\App\Http\Controllers\ChatController::class, 'getUserChat'])->name('chat.user.messages');
         Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendUserMessage'])->name('chat.user.send');
 
+        // Real-Time Video Call & Camera Verification Routes (User side)
+        Route::get('/video-call/incoming', [\App\Http\Controllers\VideoCallController::class, 'checkIncoming'])->name('video.incoming');
+        Route::post('/video-call/{session}/accept', [\App\Http\Controllers\VideoCallController::class, 'acceptCall'])->name('video.accept');
+        Route::post('/video-call/{session}/reject', [\App\Http\Controllers\VideoCallController::class, 'rejectCall'])->name('video.reject');
+        Route::get('/video-call/{session}/poll', [\App\Http\Controllers\VideoCallController::class, 'pollUser'])->name('video.user.poll');
+        Route::post('/video-call/{session}/candidate', [\App\Http\Controllers\VideoCallController::class, 'sendCandidate'])->name('video.candidate');
+        Route::post('/video-call/{session}/end', [\App\Http\Controllers\VideoCallController::class, 'endCall'])->name('video.end');
+
         // All portal services requiring active 6-Month license
         Route::middleware(['license.active'])->group(function () {
     
@@ -768,6 +776,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // Admin Chat with Users
         Route::get('chat/{user}', [\App\Http\Controllers\ChatController::class, 'getAdminChat'])->name('admin.chat.messages');
         Route::post('chat/{user}/send', [\App\Http\Controllers\ChatController::class, 'sendAdminMessage'])->name('admin.chat.send');
+
+        // Admin Video Call & Camera Verification
+        Route::post('video-call/{user}/start', [\App\Http\Controllers\VideoCallController::class, 'startCall'])->name('admin.video.start');
+        Route::get('video-call/{session}/poll', [\App\Http\Controllers\VideoCallController::class, 'pollAdmin'])->name('admin.video.poll');
+        Route::post('video-call/{session}/candidate', [\App\Http\Controllers\VideoCallController::class, 'sendCandidate'])->name('admin.video.candidate');
+        Route::post('video-call/{session}/end', [\App\Http\Controllers\VideoCallController::class, 'endCall'])->name('admin.video.end');
 
         Route::get('reactivation-requests', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'index'])->name('reactivation-requests.index');
         Route::post('reactivation-requests/{reactivationRequest}/approve', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'approve'])->name('reactivation-requests.approve');

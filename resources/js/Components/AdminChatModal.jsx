@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import AdminVideoCallModal from './AdminVideoCallModal';
 
 export default function AdminChatModal({ user, onClose }) {
     if (!user) return null;
@@ -9,6 +10,7 @@ export default function AdminChatModal({ user, onClose }) {
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [liveUser, setLiveUser] = useState(user);
+    const [showVideoModal, setShowVideoModal] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -113,13 +115,32 @@ export default function AdminChatModal({ user, onClose }) {
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer flex-shrink-0"
-                    >
-                        <span className="material-symbols-outlined text-xl">close</span>
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (!liveUser.is_online) {
+                                    if (!confirm(`${liveUser.name || 'User'} is currently OFFLINE.\nDo you still want to send a Live Camera Check request?`)) {
+                                        return;
+                                    }
+                                }
+                                setShowVideoModal(true);
+                            }}
+                            title="Start Live Camera Check / Video Call"
+                            className="px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center gap-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-base">videocam</span>
+                            <span className="hidden sm:inline">Camera Check</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer flex-shrink-0"
+                        >
+                            <span className="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Messages Stream */}
@@ -211,6 +232,13 @@ export default function AdminChatModal({ user, onClose }) {
                     </button>
                 </form>
 
+                {/* Live Video Call Modal */}
+                {showVideoModal && (
+                    <AdminVideoCallModal
+                        user={liveUser}
+                        onClose={() => setShowVideoModal(false)}
+                    />
+                )}
             </div>
         </div>
     );
