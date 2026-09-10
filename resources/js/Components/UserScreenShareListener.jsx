@@ -114,13 +114,80 @@ export default function UserScreenShareListener({ user }) {
         setIncomingSession(null);
     };
 
+    const attachStreamAndConnect = async (stream) => {
+        streamRef.current = stream;
+
+        // Handle when user stops sharing via browser's native floating bar
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+            videoTrack.onended = () => {
+                handleStopSharing();
+            };
+        }
+
+        const pc = new RTCPeerConnection(RTC_CONFIG);
+        pcRef.current = pc;
+
+        // Add stream tracks
+        stream.getTracks().forEach((track) => {
+            pc.addTrack(track, stream);
+        });
+
+        pc.onicecandidate = (event) => {
+            if (event.candidate) {
+                axios.post(`/screen-share/${incomingSession.id}/candidate`, {
+                    candidate: event.candidate.toJSON(),
+                }).catch(() => {});
+            }
+        };
+
+        if (incomingSession.offer) {
+            const offerDesc = new RTCSessionDescription(JSON.parse(incomingSession.offer));
+            await pc.setRemoteDescription(offerDesc);
+        }
+
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+
+        await axios.post(`/screen-share/${incomingSession.id}/accept`, {
+            answer: JSON.stringify(answer),
+        });
+
+        setActiveSession(incomingSession);
+        setIncomingSession(null);
+        setIsSharing(true);
+
+        startSessionPolling(incomingSession.id, pc);
+    };
+
     const handleAccept = async () => {
         if (!incomingSession) return;
         setErrorMsg(null);
 
+        // 1. Check for Secure Context (HTTPS)
+        const isSecure = window.isSecureContext || window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isSecure) {
+            setErrorMsg('https_required');
+            return;
+        }
+
+        // 2. Check for mobile browser
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const getDisplayMedia = navigator.mediaDevices?.getDisplayMedia?.bind(navigator.mediaDevices)
+            || navigator.getDisplayMedia?.bind(navigator);
+
+        if (!getDisplayMedia) {
+            if (isMobile) {
+                setErrorMsg('mobile_unsupported');
+            } else {
+                setErrorMsg('browser_unsupported');
+            }
+            return;
+        }
+
         try {
             // Trigger browser screen selector
-            const stream = await navigator.mediaDevices.getDisplayMedia({
+            const stream = await getDisplayMedia({
                 video: {
                     cursor: 'always',
                     displaySurface: 'monitor',
@@ -128,51 +195,35 @@ export default function UserScreenShareListener({ user }) {
                 audio: false,
             });
 
-            streamRef.current = stream;
-
-            // Handle when user stops sharing via browser's native floating bar
-            stream.getVideoTracks()[0].onended = () => {
-                handleStopSharing();
-            };
-
-            const pc = new RTCPeerConnection(RTC_CONFIG);
-            pcRef.current = pc;
-
-            // Add screen tracks
-            stream.getTracks().forEach((track) => {
-                pc.addTrack(track, stream);
-            });
-
-            pc.onicecandidate = (event) => {
-                if (event.candidate) {
-                    axios.post(`/screen-share/${incomingSession.id}/candidate`, {
-                        candidate: event.candidate.toJSON(),
-                    }).catch(() => {});
-                }
-            };
-
-            if (incomingSession.offer) {
-                const offerDesc = new RTCSessionDescription(JSON.parse(incomingSession.offer));
-                await pc.setRemoteDescription(offerDesc);
-            }
-
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            await axios.post(`/screen-share/${incomingSession.id}/accept`, {
-                answer: JSON.stringify(answer),
-            });
-
-            setActiveSession(incomingSession);
-            setIncomingSession(null);
-            setIsSharing(true);
-
-            startSessionPolling(incomingSession.id, pc);
+            await attachStreamAndConnect(stream);
         } catch (err) {
             console.error('Screen share prompt cancelled or denied:', err);
             if (err.name !== 'NotAllowedError') {
-                setErrorMsg('Could not share screen: ' + (err.message || 'Permission denied'));
+                setErrorMsg(err.message || 'Permission denied');
             }
+        }
+    };
+
+    // Mobile fallback: allow pointing rear camera at PC screen
+    const handleCameraFallback = async () => {
+        if (!incomingSession) return;
+        setErrorMsg(null);
+
+        try {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                setErrorMsg('Camera access is not supported on this browser.');
+                return;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'environment' } },
+                audio: false,
+            });
+
+            await attachStreamAndConnect(stream);
+        } catch (err) {
+            console.error('Camera fallback failed:', err);
+            setErrorMsg('Camera access denied or unavailable: ' + (err.message || 'Error'));
         }
     };
 
@@ -241,8 +292,50 @@ export default function UserScreenShareListener({ user }) {
                             </p>
                         </div>
 
-                        {errorMsg && (
-                            <div className="mb-3 p-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-xl text-red-600 dark:text-red-400 text-xs">
+                        {errorMsg === 'https_required' && (
+                            <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 rounded-2xl text-left">
+                                <p className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">lock</span>
+                                    HTTPS Secure Connection Required
+                                </p>
+                                <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1 leading-relaxed">
+                                    Google Chrome browser security ke kaaran bina HTTPS (https://) ke Screen Share block karta hai. Kripya neeche button par click karke HTTPS par switch karein:
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        window.location.href = window.location.href.replace(/^http:/i, 'https:');
+                                    }}
+                                    className="mt-2 w-full py-2 px-3 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition-all cursor-pointer flex items-center justify-center gap-1"
+                                >
+                                    <span className="material-symbols-outlined text-sm">refresh</span>
+                                    <span>Switch to HTTPS & Reload</span>
+                                </button>
+                            </div>
+                        )}
+
+                        {errorMsg === 'mobile_unsupported' && (
+                            <div className="mb-3 p-3 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-800 rounded-2xl text-left">
+                                <p className="text-xs font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">devices</span>
+                                    Mobile Screen Share Not Supported
+                                </p>
+                                <p className="text-[11px] text-indigo-700 dark:text-indigo-300 mt-1 leading-relaxed">
+                                    Mobile browsers screen recording allow nahi karte. Aap apne phone camera se PC screen dikha sakte hain:
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={handleCameraFallback}
+                                    className="mt-2 w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition-all cursor-pointer flex items-center justify-center gap-1"
+                                >
+                                    <span className="material-symbols-outlined text-sm">photo_camera</span>
+                                    <span>Show Screen via Camera</span>
+                                </button>
+                            </div>
+                        )}
+
+                        {errorMsg && errorMsg !== 'https_required' && errorMsg !== 'mobile_unsupported' && (
+                            <div className="mb-3 p-2.5 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-xl text-red-600 dark:text-red-400 text-xs text-left">
                                 {errorMsg}
                             </div>
                         )}
