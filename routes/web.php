@@ -359,6 +359,8 @@ Route::get('/force-add-pvc-services', function () {
         );
     }
 
+    \App\Models\Service::where('slug', 'aadhar-update')->delete();
+
     return 'PVC Card Maker services added successfully and made PUBLIC! Please check your dashboard.';
 });
 

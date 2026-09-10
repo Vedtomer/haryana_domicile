@@ -81,20 +81,6 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'Aadhar Update Form',
-                'slug' => 'aadhar-update',
-                'description' => 'Generate printable Aadhar update form filled with handwriting font.',
-                'icon' => '📝',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'aadhar_update',
-                'sort_order' => 7,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PRIVATE,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
                 'name' => 'Passport Photo Maker',
                 'slug' => 'passport-maker',
                 'description' => 'Create passport size photos with AI background removal and print-ready layouts.',
@@ -390,7 +376,8 @@ class ServiceSeeder extends Seeder
             'telegram-familyinfo',
             'telegram-pan',
             'telegram-ration',
-            'mobile-to-details' // the old one
+            'mobile-to-details', // the old one
+            'aadhar-update',
         ];
         Service::whereIn('slug', $oldSlugs)->delete();
     }
