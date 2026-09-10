@@ -29,8 +29,9 @@ class LicenseController extends Controller
             // Deduct 50 coins and activate directly on user account
             $user->deductCoins(
                 $cost,
-                CoinTransaction::TYPE_LICENSE_PURCHASE,
-                "Purchased & Activated 6-Month Portal License (Key: {$key})"
+                CoinTransaction::TYPE_SERVICE_DEDUCTION,
+                "Purchased & Activated 6-Month Portal License (Key: {$key})",
+                'portal_license'
             );
 
             $expiry = $user->activateLicense(6);
@@ -52,12 +53,14 @@ class LicenseController extends Controller
             // Deduct 50 coins and provide an unused transferable key
             $user->deductCoins(
                 $cost,
-                CoinTransaction::TYPE_LICENSE_PURCHASE,
-                "Purchased 6-Month Portal License Key: {$key}"
+                CoinTransaction::TYPE_SERVICE_DEDUCTION,
+                "Purchased 6-Month Portal License Key: {$key}",
+                'portal_license'
             );
 
             $license = LicenseKey::create([
                 'key'             => $key,
+
                 'cost_coins'      => $cost,
                 'duration_months' => 6,
                 'status'          => LicenseKey::STATUS_UNUSED,
