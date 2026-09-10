@@ -35,7 +35,7 @@ class PvcCardMakerController extends Controller
             ];
         }
 
-        $activeKey = \App\Models\Setting::get('idcard_store_api_key') ?: config('services.idcard_store.api_key', '');
+        $activeKey = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '71ebc340-7c80-4c8f-9613-250094ba27c3'));
 
         return Inertia::render('Utilities/PvcCardMaker', [
             'cards'         => $cardsData,
