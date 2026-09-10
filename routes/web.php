@@ -691,7 +691,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // License Key Management — admin only
         Route::get('license-keys', [\App\Http\Controllers\LicenseController::class, 'adminIndex'])->name('license-keys.index')->middleware('admin');
         Route::post('license-keys/generate', [\App\Http\Controllers\LicenseController::class, 'adminGenerate'])->name('license-keys.generate')->middleware('admin');
-        Route::post('license-keys/{id}/revoke', [\App\Http\Controllers\LicenseController::class, 'adminRevoke'])->name('license-keys.revoke')->middleware('admin');
+        Route::post('license-keys/{id}/activate', [\App\Http\Controllers\LicenseController::class, 'adminActivate'])->name('license-keys.activate')->middleware('admin');
+        Route::post('license-keys/{id}/deactivate', [\App\Http\Controllers\LicenseController::class, 'adminDeactivate'])->name('license-keys.deactivate')->middleware('admin');
+        Route::post('license-keys/{id}/revoke', [\App\Http\Controllers\LicenseController::class, 'adminDeactivate'])->name('license-keys.revoke')->middleware('admin');
+        Route::delete('license-keys/{id}', [\App\Http\Controllers\LicenseController::class, 'adminDestroy'])->name('license-keys.destroy')->middleware('admin');
 
         // Service catalog — only admins can add services and set coin prices
         Route::patch('services/{service}/toggle-active', [\App\Http\Controllers\Admin\ServiceController::class, 'toggleActive'])

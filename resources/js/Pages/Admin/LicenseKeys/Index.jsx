@@ -12,6 +12,12 @@ export default function Index({ keys, filters, stats }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [copiedKey, setCopiedKey] = useState(null);
 
+    // Modal state for activating an unused key for a user
+    const [showActivateModal, setShowActivateModal] = useState(false);
+    const [activateTargetKey, setActivateTargetKey] = useState(null);
+    const [activateUserQuery, setActivateUserQuery] = useState('');
+    const [isActivatingKey, setIsActivatingKey] = useState(false);
+
     const handleSearch = (e) => {
         e.preventDefault();
         router.get('/admin/license-keys', { search, status }, { preserveState: true });
@@ -40,9 +46,55 @@ export default function Index({ keys, filters, stats }) {
         });
     };
 
-    const handleRevoke = (id, keyString) => {
-        if (!confirm(`Are you sure you want to revoke key: ${keyString}?`)) return;
-        router.post(`/admin/license-keys/${id}/revoke`);
+    // 1. Activate handler
+    const handleActivateClick = (keyItem) => {
+        if (keyItem.activator || keyItem.purchaser) {
+            const userName = keyItem.activator?.name || keyItem.purchaser?.name || 'user';
+            if (!confirm(`Are you sure you want to ACTIVATE key ${keyItem.key} for ${userName}?`)) return;
+            router.post(`/admin/license-keys/${keyItem.id}/activate`, {}, {
+                preserveScroll: true,
+            });
+        } else {
+            // Unused key with no user: open modal to optionally input user email/phone
+            setActivateTargetKey(keyItem);
+            setActivateUserQuery('');
+            setShowActivateModal(true);
+        }
+    };
+
+    const confirmActivate = (e) => {
+        if (e) e.preventDefault();
+        if (!activateTargetKey) return;
+        setIsActivatingKey(true);
+        router.post(`/admin/license-keys/${activateTargetKey.id}/activate`, {
+            user_query: activateUserQuery,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowActivateModal(false);
+                setActivateTargetKey(null);
+                setActivateUserQuery('');
+                setIsActivatingKey(false);
+            },
+            onError: () => setIsActivatingKey(false),
+            onFinish: () => setIsActivatingKey(false),
+        });
+    };
+
+    // 2. Deactivate handler
+    const handleDeactivate = (id, keyString) => {
+        if (!confirm(`Are you sure you want to DEACTIVATE license key: ${keyString}?\nThis will also stop the user's portal access.`)) return;
+        router.post(`/admin/license-keys/${id}/deactivate`, {}, {
+            preserveScroll: true,
+        });
+    };
+
+    // 3. Delete handler
+    const handleDelete = (id, keyString) => {
+        if (!confirm(`⚠️ Are you sure you want to permanently DELETE key: ${keyString}?\nThis action CANNOT be undone!`)) return;
+        router.delete(`/admin/license-keys/${id}`, {
+            preserveScroll: true,
+        });
     };
 
     const copyToClipboard = (keyString) => {
@@ -54,11 +106,11 @@ export default function Index({ keys, filters, stats }) {
     const statusBadge = (s) => {
         switch (s) {
             case 'active':
-                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Active</span>;
+                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">Active</span>;
             case 'unused':
-                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Unused</span>;
+                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">Unused</span>;
             case 'revoked':
-                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Revoked</span>;
+                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">Deactivated</span>;
             default:
                 return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">{s}</span>;
         }
@@ -94,7 +146,7 @@ export default function Index({ keys, filters, stats }) {
                     <p className="text-2xl font-black text-blue-700 mt-1">{stats?.unused || 0}</p>
                 </div>
                 <div className="p-4 bg-white rounded-2xl border border-red-100 shadow-sm bg-red-50/30">
-                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">Revoked</p>
+                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">Deactivated</p>
                     <p className="text-2xl font-black text-red-700 mt-1">{stats?.revoked || 0}</p>
                 </div>
             </div>
@@ -112,22 +164,22 @@ export default function Index({ keys, filters, stats }) {
                             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                         />
                     </div>
-                    <button type="submit" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition-colors">
+                    <button type="submit" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition-colors cursor-pointer">
                         Search
                     </button>
                 </form>
 
                 <div className="flex items-center gap-2 flex-wrap">
                     <div className="flex bg-gray-100 p-1 rounded-xl text-xs font-semibold">
-                        {['', 'unused', 'active', 'revoked'].map((s) => (
+                        {['', 'active', 'unused', 'revoked'].map((s) => (
                             <button
                                 key={s}
                                 onClick={() => handleStatusFilter(s)}
-                                className={`px-3 py-1.5 rounded-lg capitalize transition-all ${
+                                className={`px-3 py-1.5 rounded-lg capitalize transition-all cursor-pointer ${
                                     status === s ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'
                                 }`}
                             >
-                                {s || 'All'}
+                                {s === 'revoked' ? 'Deactivated' : (s || 'All')}
                             </button>
                         ))}
                     </div>
@@ -221,16 +273,44 @@ export default function Index({ keys, filters, stats }) {
                                             )}
                                         </td>
                                         <td className="px-5 py-3.5 whitespace-nowrap text-right">
-                                            {k.status !== 'revoked' ? (
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                {/* Active Button */}
+                                                {k.status !== 'active' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleActivateClick(k)}
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg shadow-2xs hover:border-emerald-300 transition-all cursor-pointer"
+                                                        title="Active / Activate this key"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                                        <span>Active</span>
+                                                    </button>
+                                                )}
+
+                                                {/* Deactive Button */}
+                                                {k.status !== 'revoked' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeactivate(k.id, k.key)}
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg shadow-2xs hover:border-amber-300 transition-all cursor-pointer"
+                                                        title="Deactive / Deactivate this key"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[14px]">block</span>
+                                                        <span>Deactive</span>
+                                                    </button>
+                                                )}
+
+                                                {/* Delete Button */}
                                                 <button
-                                                    onClick={() => handleRevoke(k.id, k.key)}
-                                                    className="px-2.5 py-1 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                                    type="button"
+                                                    onClick={() => handleDelete(k.id, k.key)}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg shadow-2xs hover:border-red-300 transition-all cursor-pointer"
+                                                    title="Delete this key permanently"
                                                 >
-                                                    Revoke
+                                                    <span className="material-symbols-outlined text-[14px]">delete</span>
+                                                    <span>Delete</span>
                                                 </button>
-                                            ) : (
-                                                <span className="text-xs text-gray-400">Revoked</span>
-                                            )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -339,6 +419,58 @@ export default function Index({ keys, filters, stats }) {
                                     className="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow transition-colors disabled:opacity-50 text-sm"
                                 >
                                     {isGenerating ? 'Generating...' : `Generate ${quantity} Key(s)`}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Activate Unused Key Modal */}
+            {showActivateModal && activateTargetKey && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center overflow-hidden">
+                        <div className="w-13 h-13 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <span className="material-symbols-outlined text-2xl">check_circle</span>
+                        </div>
+                        <h3 className="text-lg font-black text-gray-900">Activate License Key</h3>
+                        <div className="p-2.5 bg-slate-50 border border-gray-200 rounded-xl mt-2">
+                            <p className="font-mono font-bold text-sm text-slate-800 tracking-wider">
+                                {activateTargetKey.key}
+                            </p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-3 text-left">
+                            Kis user ke liye activate karna chahte hain? User ki <strong>Email ya Phone</strong> number enter karein:
+                        </p>
+                        <form onSubmit={confirmActivate} className="mt-2 space-y-3">
+                            <input
+                                type="text"
+                                placeholder="User Email ya Phone (Optional)"
+                                value={activateUserQuery}
+                                onChange={(e) => setActivateUserQuery(e.target.value)}
+                                className="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                                autoFocus
+                            />
+                            <p className="text-[11px] text-gray-400 text-left">
+                                *Khali chhodne par key Active/Unused mark ho jayegi.
+                            </p>
+                            <div className="flex gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowActivateModal(false);
+                                        setActivateTargetKey(null);
+                                    }}
+                                    className="flex-1 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isActivatingKey}
+                                    className="flex-1 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                    {isActivatingKey ? 'Activating...' : 'Activate Key'}
                                 </button>
                             </div>
                         </form>

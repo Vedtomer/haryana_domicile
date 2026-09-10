@@ -124,8 +124,11 @@ class LicenseController extends Controller
             });
         }
 
-        if ($status && in_array($status, [LicenseKey::STATUS_UNUSED, LicenseKey::STATUS_ACTIVE, LicenseKey::STATUS_REVOKED])) {
-            $query->where('status', $status);
+        if ($status) {
+            $checkStatus = ($status === 'deactivated') ? LicenseKey::STATUS_REVOKED : $status;
+            if (in_array($checkStatus, [LicenseKey::STATUS_UNUSED, LicenseKey::STATUS_ACTIVE, LicenseKey::STATUS_REVOKED])) {
+                $query->where('status', $checkStatus);
+            }
         }
 
         $keys = $query->paginate(20)->withQueryString();
@@ -180,16 +183,100 @@ class LicenseController extends Controller
     }
 
     /**
-     * Admin: Revoke a license key.
+     * Admin: Activate or re-activate a license key.
      */
-    public function adminRevoke(Request $request, $id)
+    public function adminActivate(Request $request, $id)
     {
-        $licenseKey = LicenseKey::findOrFail($id);
+        $licenseKey = LicenseKey::with(['activator', 'purchaser'])->findOrFail($id);
+
+        $user = null;
+        if ($request->filled('user_id')) {
+            $user = User::find($request->input('user_id'));
+        } elseif ($request->filled('user_query')) {
+            $target = trim($request->input('user_query'));
+            $user = User::where('email', $target)->orWhere('phone', $target)->first();
+            if (!$user) {
+                return back()->with('error', "User not found with email/phone '{$target}'");
+            }
+        } elseif ($licenseKey->activator) {
+            $user = $licenseKey->activator;
+        } elseif ($licenseKey->purchaser) {
+            $user = $licenseKey->purchaser;
+        }
+
+        $months = (int) ($licenseKey->duration_months ?: 6);
+
+        if ($user) {
+            $newExpiry = now()->addMonths($months);
+
+            $licenseKey->update([
+                'status'       => LicenseKey::STATUS_ACTIVE,
+                'activated_by' => $user->id,
+                'activated_at' => $licenseKey->activated_at ?: now(),
+                'expires_at'   => $newExpiry,
+            ]);
+
+            $user->update([
+                'license_expires_at' => $newExpiry,
+            ]);
+
+            return back()->with('success', "License Key {$licenseKey->key} activated for {$user->name} until " . $newExpiry->format('d M Y') . ".");
+        } else {
+            // Key has no user attached: mark it unused and ready for redemption
+            $licenseKey->update([
+                'status' => LicenseKey::STATUS_UNUSED,
+            ]);
+
+            return back()->with('success', "License Key {$licenseKey->key} marked as Active/Unused and ready for use.");
+        }
+    }
+
+    /**
+     * Admin: Deactivate a license key.
+     */
+    public function adminDeactivate(Request $request, $id)
+    {
+        $licenseKey = LicenseKey::with('activator')->findOrFail($id);
 
         $licenseKey->update([
             'status' => LicenseKey::STATUS_REVOKED,
         ]);
 
-        return back()->with('success', "License Key {$licenseKey->key} has been revoked.");
+        // Revoke user's portal access if they were active with this key
+        if ($licenseKey->activator) {
+            $licenseKey->activator->update([
+                'license_expires_at' => now()->subSecond(),
+            ]);
+        }
+
+        return back()->with('success', "License Key {$licenseKey->key} has been deactivated.");
+    }
+
+    /**
+     * Admin: Revoke alias.
+     */
+    public function adminRevoke(Request $request, $id)
+    {
+        return $this->adminDeactivate($request, $id);
+    }
+
+    /**
+     * Admin: Delete a license key permanently.
+     */
+    public function adminDestroy(Request $request, $id)
+    {
+        $licenseKey = LicenseKey::with('activator')->findOrFail($id);
+        $keyString = $licenseKey->key;
+
+        // If it was currently active, deactivate the user's license
+        if ($licenseKey->status === LicenseKey::STATUS_ACTIVE && $licenseKey->activator) {
+            $licenseKey->activator->update([
+                'license_expires_at' => now()->subSecond(),
+            ]);
+        }
+
+        $licenseKey->delete();
+
+        return back()->with('success', "License Key {$keyString} has been deleted.");
     }
 }
