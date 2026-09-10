@@ -12,7 +12,7 @@ class IdCardStoreService
         'haryana_familyid' => [
             'name' => 'Haryana Family ID',
             'endpoint' => '/card/hr/make_familyid',
-            'accepts_password' => false,
+            'accepts_password' => true,
             'icon' => 'badge',
             'coin_cost' => 20,
             'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF',
@@ -166,7 +166,12 @@ class IdCardStoreService
 
         try {
             $fileContent = file_get_contents($file->getRealPath());
-            $fileName = $file->getClientOriginalName() ?: 'document.pdf';
+            $rawName = $file->getClientOriginalName() ?: 'document.pdf';
+            // Sanitize filename to prevent multipart encoding issues with non-ASCII / space characters
+            $safeFileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $rawName) ?: 'document.pdf';
+            if (!str_ends_with(strtolower($safeFileName), '.pdf')) {
+                $safeFileName .= '.pdf';
+            }
 
             $response = Http::timeout(60)
                 ->connectTimeout(10)
@@ -174,7 +179,7 @@ class IdCardStoreService
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
                 ])
-                ->attach('file', $fileContent, $fileName, ['Content-Type' => 'application/pdf'])
+                ->attach('file', $fileContent, $safeFileName, ['Content-Type' => 'application/pdf'])
                 ->post($url, $postFields);
 
             if ($response->successful()) {
@@ -185,6 +190,16 @@ class IdCardStoreService
             $status = $response->status();
             $body = $response->json() ?? [];
             $errorMsg = $body['message'] ?? $body['error'] ?? null;
+
+            // Log detailed response to assist debugging
+            Log::warning('IDCardStore API Request Failed', [
+                'cardKey'      => $cardKey,
+                'status'       => $status,
+                'url'          => $url,
+                'raw_fileName' => $rawName,
+                'safe_fileName'=> $safeFileName,
+                'response_body'=> $response->body(),
+            ]);
 
             if (!$errorMsg && isset($body['detail'])) {
                 if (is_string($body['detail'])) {
@@ -206,7 +221,11 @@ class IdCardStoreService
             if ($errorMsg === 'Insufficient funds. Please recharge your account.') {
                 $errorMsg = 'idcard.store Wallet Balance Low: Aapke idcard.store account mein balance khatam hai. Kripya idcard.store par jakar wallet recharge karein.';
             } elseif ($errorMsg === 'Invalid card') {
-                $errorMsg = "Uploaded PDF sahi format mein nahi hai ya is card type se match nahi karta. Kripya original {$config['name']} PDF upload karein.";
+                if ($cardKey === 'haryana_familyid') {
+                    $errorMsg = "Uploaded PDF sahi format mein nahi hai. Kripya dhyan dein: Scanner se scan ki hui copy, photo se bani PDF ya browser se 'Print to PDF' support nahi karti. Kripya meraParivar portal (meraparivar.haryana.gov.in) se directly download kiya gaya official 'Parivar Pehchan Patra (Signed PPP)' PDF upload karein.";
+                } else {
+                    $errorMsg = "Uploaded PDF sahi format mein nahi hai ya is card type se match nahi karta. Kripya original {$config['name']} digital PDF upload karein.";
+                }
             }
 
             if ($status === 401) {

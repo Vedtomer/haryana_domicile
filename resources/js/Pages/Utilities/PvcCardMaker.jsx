@@ -322,6 +322,21 @@ export default function PvcCardMaker({ cards, defaultCard, isStandalone: propIsS
                                 </div>
                             </div>
 
+                            {/* Card-Specific Upload Guidance */}
+                            {currentCard.key === 'haryana_familyid' && (
+                                <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl text-xs space-y-1.5 shadow-sm">
+                                    <p className="font-bold flex items-center gap-1.5 text-amber-900 dark:text-amber-200">
+                                        <span className="material-symbols-outlined text-base text-amber-600">info</span>
+                                        Family ID PDF Requirements:
+                                    </p>
+                                    <ul className="list-disc pl-4 space-y-1 text-[11px] text-amber-800 dark:text-amber-300">
+                                        <li>Kripya <strong>meraparivar.haryana.gov.in</strong> se download kiya hua official <strong>Parivar Pehchan Patra (Signed PPP)</strong> digital PDF hi upload karein.</li>
+                                        <li>Scanner se scan ki hui copy, mobile se li gayi photo, ya browser se 'Print to PDF' kiya hua page <strong>support nahi karta</strong>.</li>
+                                        <li>Aavedan slip ya edit receipt ke bajaye main Signed Family ID document upload karein.</li>
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* Password Field (Shown if card supports/accepts password) */}
                             {currentCard.accepts_password && (
                                 <div>
