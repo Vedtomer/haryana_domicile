@@ -14,33 +14,7 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
 
-    // API Key Admin Setup State
-    const [configured, setConfigured] = useState(initialConfigured);
-    const [apiKeyInput, setApiKeyInput] = useState(initialApiKey || '');
-    const [savingKey, setSavingKey] = useState(false);
-    const [keyMsg, setKeyMsg] = useState(null);
-    const [showKeyInput, setShowKeyInput] = useState(!initialConfigured && isAdmin);
-
-    const handleSaveApiKey = async (e) => {
-        e.preventDefault();
-        if (!apiKeyInput.trim()) return;
-        setSavingKey(true);
-        setKeyMsg(null);
-        try {
-            const res = await axios.post('/utilities/pvc-card-maker/save-api-key', { api_key: apiKeyInput.trim() });
-            if (res.data.success) {
-                setConfigured(true);
-                setKeyMsg({ type: 'success', text: 'API Key saved successfully! Live PVC card generation is now active.' });
-                setTimeout(() => setKeyMsg(null), 5000);
-            } else {
-                setKeyMsg({ type: 'error', text: res.data.message || 'Failed to save API key.' });
-            }
-        } catch (err) {
-            setKeyMsg({ type: 'error', text: err.response?.data?.message || 'Error saving key.' });
-        } finally {
-            setSavingKey(false);
-        }
-    };
+    const [configured] = useState(initialConfigured);
 
     const currentCard = cards.find(c => c.key === selectedCardKey) || cards[0];
 
@@ -167,103 +141,6 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
             <Head title="Smart PVC Card Maker" />
 
             <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-6">
-                
-                {/* Admin API Key Configuration Block */}
-                {isAdmin && (
-                    <div className="p-5 bg-gradient-to-br from-indigo-50/90 to-blue-50/70 dark:from-slate-900 dark:to-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-2xl shadow-sm">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                                    configured ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                                }`}>
-                                    <span className="material-symbols-outlined text-2xl">
-                                        {configured ? 'vpn_key' : 'key_off'}
-                                    </span>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                            IDCard.Store API Configuration
-                                        </h3>
-                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                                            configured ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
-                                        }`}>
-                                            {configured ? 'Active' : 'Key Missing'}
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                        {configured
-                                            ? 'API Key is active. You can change or update your API key anytime below.'
-                                            : 'Please enter your API Key from idcard.store below to enable live printing.'}
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setShowKeyInput(!showKeyInput)}
-                                className="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-200 dark:border-slate-700 text-xs font-bold transition-all shadow-sm flex items-center gap-1 self-start sm:self-auto"
-                            >
-                                <span className="material-symbols-outlined text-sm">{showKeyInput ? 'expand_less' : 'edit'}</span>
-                                {showKeyInput ? 'Hide Settings' : 'Change Key'}
-                            </button>
-                        </div>
-
-                        {/* Expandable Form to Save Key */}
-                        {showKeyInput && (
-                            <form onSubmit={handleSaveApiKey} className="mt-4 pt-4 border-t border-indigo-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3">
-                                <div className="flex-1 relative">
-                                    <input
-                                        type="text"
-                                        value={apiKeyInput}
-                                        onChange={(e) => setApiKeyInput(e.target.value)}
-                                        placeholder="Paste your idcard.store API Key here..."
-                                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={savingKey || !apiKeyInput.trim()}
-                                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow transition-all flex items-center justify-center gap-1.5"
-                                >
-                                    {savingKey ? (
-                                        <span>Saving...</span>
-                                    ) : (
-                                        <>
-                                            <span className="material-symbols-outlined text-base">save</span>
-                                            <span>Save Key</span>
-                                        </>
-                                    )}
-                                </button>
-                            </form>
-                        )}
-
-                        {keyMsg && (
-                            <div className={`mt-3 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                                keyMsg.type === 'success'
-                                    ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                    : 'bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300'
-                            }`}>
-                                <span className="material-symbols-outlined text-base">
-                                    {keyMsg.type === 'success' ? 'check_circle' : 'error'}
-                                </span>
-                                <span>{keyMsg.text}</span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Non-admin notice if not configured */}
-                {!isAdmin && !configured && (
-                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-2xl flex items-start gap-3.5 text-amber-900 dark:text-amber-200">
-                        <span className="material-symbols-outlined text-amber-600 mt-0.5 text-xl flex-shrink-0">info</span>
-                        <div className="text-sm">
-                            <p className="font-bold">Service Temporarily Unavailable</p>
-                            <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
-                                Card generator is currently being configured by the administrator. Please check back shortly.
-                            </p>
-                        </div>
-                    </div>
-                )}
 
                 {/* Card Type Selector Grid */}
                 <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
