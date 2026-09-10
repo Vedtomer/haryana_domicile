@@ -73,10 +73,14 @@ class DashboardController extends Controller
         $requests = ServiceRequest::where('user_id', $user->id);
         $totalServices = Service::active()->visibleTo($user)->count();
 
+        $licenseLabel = $user->hasActiveLicense() 
+            ? ($user->licenseDaysLeft() . ' Days Left') 
+            : 'Inactive (50 Coins)';
+
         return [
             ['label' => 'Total Services', 'value' => $totalServices, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
-            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '#', 'icon' => 'monetization_on'],
-            ['label' => 'History & My Requests', 'value' => (clone $requests)->count(), 'tone' => 'dark-blue', 'url' => '/admin/service-requests', 'icon' => 'history'],
+            ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
+            ['label' => '6M Portal License', 'value' => $licenseLabel, 'tone' => $user->hasActiveLicense() ? 'dark-green' : 'dark-amber', 'url' => '#license', 'icon' => 'vpn_key'],
             ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
             ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed', 'icon' => 'check_circle'],
         ];
@@ -84,14 +88,18 @@ class DashboardController extends Controller
 
     private function adminStats(): array
     {
+        $activeKeys = \App\Models\LicenseKey::where('status', \App\Models\LicenseKey::STATUS_ACTIVE)->count();
+        $totalKeys = \App\Models\LicenseKey::count();
+
         return [
             ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
-            ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-amber', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
+            ['label' => 'Portal License Keys', 'value' => "{$activeKeys} Active / {$totalKeys} Total", 'tone' => 'dark-amber', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
+            ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
             ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
-            ['label' => 'Add Service', 'value' => 'New Service', 'tone' => 'dark-green', 'url' => '/admin/services/create', 'icon' => 'add_circle'],
             ['label' => 'Manage Services', 'value' => Service::count(), 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests', 'icon' => 'assignment'],
             ['label' => 'Reactivation Requests', 'value' => \App\Models\ReactivationRequest::where('status', 'pending')->count() . ' Pending', 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests', 'icon' => 'how_to_reg'],
         ];
     }
+
 }

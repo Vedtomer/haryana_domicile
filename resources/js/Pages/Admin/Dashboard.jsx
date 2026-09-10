@@ -29,7 +29,10 @@ const ICON_MAP = {
     'History & My Requests': 'history',
     'Pending': 'pending_actions',
     'Completed': 'check_circle',
+    'Portal License Keys': 'vpn_key',
+    '6M Portal License': 'vpn_key',
 };
+
 
 function StatCard({ label, value, tone, url, icon }) {
     const isDark = DARK_TONES.has(tone);
@@ -309,9 +312,43 @@ export default function Dashboard({ services, stats, isAdmin }) {
                 ))}
             </div>
 
+            {/* Admin License Controls Banner */}
+            {isAdmin && (
+                <div className="mb-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 text-white rounded-3xl p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center flex-shrink-0 text-indigo-300 shadow-inner">
+                            <span className="material-symbols-outlined text-2xl">vpn_key</span>
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-base sm:text-lg font-black tracking-tight">
+                                    Portal License Key System (6 Months - 50 Coins)
+                                </h3>
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    LIVE
+                                </span>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-300 mt-0.5 font-medium">
+                                Regular users require 50 Coins / 6-Month key to use portal services. You can generate, manage, or revoke keys anytime.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Link
+                            href="/admin/license-keys"
+                            className="flex-1 sm:flex-initial px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">tune</span>
+                            Manage License Keys →
+                        </Link>
+                    </div>
+                </div>
+            )}
+
             {/* License Status Banner for Regular Users */}
             {!isAdmin && (
                 <div id="license" className="mb-6 scroll-mt-6">
+
                     {hasLicense ? (
                         <div className="bg-gradient-to-r from-emerald-500/10 via-green-500/5 to-teal-500/10 border border-emerald-300/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                             <div className="flex items-center gap-3.5">

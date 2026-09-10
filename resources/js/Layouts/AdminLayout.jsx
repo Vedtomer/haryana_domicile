@@ -197,6 +197,17 @@ export default function AdminLayout({ header, children }) {
                     )}
 
 
+                    {isAdmin && (
+                        <Link
+                            href="/admin/license-keys"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition-all shadow-sm"
+                            title="Manage Portal License Keys"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">vpn_key</span>
+                            <span className="hidden sm:inline">License Keys</span>
+                        </Link>
+                    )}
+
                     <NotificationBell />
 
                     <div className="relative">
@@ -225,14 +236,24 @@ export default function AdminLayout({ header, children }) {
                                 Coin Ledger
                             </Link>
                             {auth?.user?.type === 'admin' && (
-                                <Link
-                                    href="/admin/payment-settings"
-                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
-                                    QR Settings
-                                </Link>
+                                <>
+                                    <Link
+                                        href="/admin/license-keys"
+                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">vpn_key</span>
+                                        License Keys
+                                    </Link>
+                                    <Link
+                                        href="/admin/payment-settings"
+                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
+                                        QR Settings
+                                    </Link>
+                                </>
                             )}
+
                             {auth?.user?.type === 'admin' && (
                                 <Link
                                     href="/admin/pdf-coordinates"
