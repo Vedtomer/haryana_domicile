@@ -93,7 +93,7 @@ class DashboardController extends Controller
 
         return [
             ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
-            ['label' => 'Manage License Keys', 'value' => "{$activeKeys} Active", 'subtext' => "{$totalKeys} Total Keys (6M / 50 Coins)", 'actionText' => 'Manage License Keys', 'tone' => 'dark-indigo', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
+            ['label' => 'Manage License Keys', 'value' => "{$activeKeys} Active", 'tone' => 'dark-indigo', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
             ['label' => 'Manage Services', 'value' => Service::count(), 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
             ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
