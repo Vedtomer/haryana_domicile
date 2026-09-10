@@ -196,17 +196,6 @@ export default function AdminLayout({ header, children }) {
                                         <span>🛡️ <span className="hidden md:inline">6M License </span>({auth.user.license_days_left}d)</span>
                                     </button>
 
-                                    {/* Small Renew Button */}
-                                    <button
-                                        type="button"
-                                        onClick={() => openLicense('direct')}
-                                        className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 bg-white hover:bg-emerald-50 border border-emerald-300 rounded-xl shadow-2xs hover:border-emerald-400 transition-all cursor-pointer"
-                                        title="Renew 6-Month License (+180 Days for 50 Coins)"
-                                    >
-                                        <span className="material-symbols-outlined text-[14px]">autorenew</span>
-                                        <span>Renew</span>
-                                    </button>
-
                                     {/* Small Gift Key Button */}
                                     <button
                                         type="button"

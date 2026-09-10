@@ -26,6 +26,10 @@ class LicenseController extends Controller
             return back()->with('error', "Insufficient coin balance. You need {$cost} coins to get a 6-Month Portal License. Please recharge coins.");
         }
 
+        if ($autoActivate && $user->hasActiveLicense()) {
+            return back()->with('error', "Aapka portal license pehle se active hai (" . $user->license_expires_at->format('d M Y') . " tak, " . $user->licenseDaysLeft() . " din baaki). Purana license expire hone ke baad hi naya license activate ho sakta hai.");
+        }
+
         $key = LicenseKey::generateUniqueKey();
 
         if ($autoActivate) {
@@ -106,6 +110,12 @@ class LicenseController extends Controller
         }
 
         $user = $request->user();
+
+        // Prevent activation if user's current license is still active
+        if ($user->hasActiveLicense()) {
+            return back()->with('error', "Aapka Portal License pehle se active hai (" . $user->license_expires_at->format('d M Y') . " tak, " . $user->licenseDaysLeft() . " din baaki). Purana license expire hone ke baad hi aap nayi key activate kar sakte hain.");
+        }
+
         $deviceToken = $request->input('device_token') ?: $request->cookie('csp_device_token');
         $deviceName = $request->input('device_name') ?: 'Desktop PC';
         $ip = $request->ip();
