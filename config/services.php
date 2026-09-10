@@ -47,7 +47,7 @@ return [
 
     'idcard_store' => [
         'base_url' => env('IDCARD_STORE_BASE_URL', 'https://api.idcard.store'),
-        'api_key' => env('IDCARD_STORE_API_KEY', ''),
+        'api_key' => env('IDCARD_STORE_API_KEY', '71ebc340-7c80-4c8f-9613-250094ba27c3'),
         'cdn_url' => env('IDCARD_STORE_CDN_URL', 'https://idmaker.mfcdn.in/'),
     ],
 
