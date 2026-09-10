@@ -45,4 +45,10 @@ return [
         'api_key_vahan' => env('NEXUS_API_KEY_VAHAN', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'),
     ],
 
+    'idcard_store' => [
+        'base_url' => env('IDCARD_STORE_BASE_URL', 'https://api.idcard.store'),
+        'api_key' => env('IDCARD_STORE_API_KEY', ''),
+        'cdn_url' => env('IDCARD_STORE_CDN_URL', 'https://idmaker.mfcdn.in/'),
+    ],
+
 ];

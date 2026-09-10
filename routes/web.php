@@ -166,6 +166,104 @@ Route::get('/force-add-service', function () {
     return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
+Route::get('/force-add-pvc-services', function () {
+    $pvcServices = [
+        [
+            'name' => 'Smart PVC Card Maker',
+            'slug' => 'pvc-card-maker',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
+            'icon' => '🪪',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pvc_card_maker',
+            'sort_order' => 14,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Haryana Family ID PVC Card',
+            'slug' => 'haryana-familyid-pvc',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF.',
+            'icon' => '🆔',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'haryana_familyid_pvc',
+            'sort_order' => 15,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Ayushman Bharat PVC Card',
+            'slug' => 'ayushman-pvc',
+            'description' => 'Generate Print-Ready PVC Front & Back Card from Ayushman Golden Card PDF.',
+            'icon' => '🏥',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ayushman_pvc',
+            'sort_order' => 16,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Aadhaar PVC Card Maker',
+            'slug' => 'aadhaar-pvc-card',
+            'description' => 'Generate Print-Ready PVC Front & Back Card from e-Aadhaar PDF.',
+            'icon' => '🔍',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhaar_pvc',
+            'sort_order' => 17,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Voter (E-EPIC) PVC Card',
+            'slug' => 'voter-pvc-card',
+            'description' => 'Generate Print-Ready PVC Front & Back Card from Voter e-EPIC PDF.',
+            'icon' => '🗳️',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_pvc',
+            'sort_order' => 18,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'e-Shram PVC Card Maker',
+            'slug' => 'eshram-pvc-card',
+            'description' => 'Generate Print-Ready PVC Front & Back Card from e-Shram PDF.',
+            'icon' => '👷',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'eshram_pvc',
+            'sort_order' => 19,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+    ];
+
+    foreach ($pvcServices as $service) {
+        \App\Models\Service::updateOrCreate(
+            ['slug' => $service['slug']],
+            $service
+        );
+    }
+
+    return 'PVC Card Maker services added successfully and made PUBLIC! Please check your dashboard.';
+});
+
 use App\Http\Controllers\AuthController;
 
 Route::get('/admin', function () {
@@ -405,6 +503,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::get('/utilities/passport-maker', [\App\Http\Controllers\PassportMakerController::class, 'index'])->name('utilities.passport-maker');
     Route::post('/utilities/passport-maker/deduct-coins', [\App\Http\Controllers\PassportMakerController::class, 'deductCoins'])->name('utilities.passport-maker.deduct-coins');
+
+    // IDCard Store Smart PVC Card Maker
+    Route::get('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'index'])->name('utilities.pvc-card-maker');
+    Route::post('/utilities/pvc-card-maker/generate', [\App\Http\Controllers\PvcCardMakerController::class, 'generate'])->name('utilities.pvc-card-maker.generate');
 
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');

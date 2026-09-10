@@ -182,6 +182,42 @@ class Service extends Model
             'index' => '/utilities/rc-pdf-instant',
             'create' => '/utilities/rc-pdf-instant',
         ],
+        'pvc_card_maker' => [
+            'label' => 'Smart PVC Card Maker',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker',
+            'create' => '/utilities/pvc-card-maker',
+        ],
+        'haryana_familyid_pvc' => [
+            'label' => 'Haryana Family ID PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=haryana_familyid',
+            'create' => '/utilities/pvc-card-maker?card=haryana_familyid',
+        ],
+        'ayushman_pvc' => [
+            'label' => 'Ayushman Bharat PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=ayushman',
+            'create' => '/utilities/pvc-card-maker?card=ayushman',
+        ],
+        'aadhaar_pvc' => [
+            'label' => 'Aadhaar PVC Card Maker',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=aadhaar',
+            'create' => '/utilities/pvc-card-maker?card=aadhaar',
+        ],
+        'voter_pvc' => [
+            'label' => 'Voter (E-EPIC) PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=voter_epic',
+            'create' => '/utilities/pvc-card-maker?card=voter_epic',
+        ],
+        'eshram_pvc' => [
+            'label' => 'e-Shram PVC Card Maker',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=eshram',
+            'create' => '/utilities/pvc-card-maker?card=eshram',
+        ],
 
     ];
 
