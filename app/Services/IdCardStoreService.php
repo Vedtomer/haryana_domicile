@@ -178,6 +178,14 @@ class IdCardStoreService
             $body = $response->json() ?? [];
             $errorMsg = $body['message'] ?? $body['error'] ?? null;
 
+            if (!$errorMsg && isset($body['detail'])) {
+                if (is_string($body['detail'])) {
+                    $errorMsg = $body['detail'];
+                } elseif (is_array($body['detail']) && isset($body['detail'][0]['msg'])) {
+                    $errorMsg = $body['detail'][0]['msg'];
+                }
+            }
+
             if ($status === 401) {
                 return [
                     'success' => false,

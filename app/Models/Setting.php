@@ -13,7 +13,11 @@ class Setting extends Model
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        return static::where('key', $key)->value('value') ?? $default;
+        try {
+            return static::where('key', $key)->value('value') ?? $default;
+        } catch (\Throwable $e) {
+            return $default;
+        }
     }
 
     /**
@@ -21,6 +25,10 @@ class Setting extends Model
      */
     public static function set(string $key, mixed $value): void
     {
-        static::updateOrCreate(['key' => $key], ['value' => $value]);
+        try {
+            static::updateOrCreate(['key' => $key], ['value' => $value]);
+        } catch (\Throwable $e) {
+            // Ignore if DB connection fails
+        }
     }
 }
