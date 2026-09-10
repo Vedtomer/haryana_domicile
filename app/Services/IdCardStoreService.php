@@ -114,7 +114,7 @@ class IdCardStoreService
     public function __construct()
     {
         $this->baseUrl = rtrim(config('services.idcard_store.base_url', 'https://api.idcard.store'), '/');
-        $this->apiKey  = config('services.idcard_store.api_key', '');
+        $this->apiKey  = \App\Models\Setting::get('idcard_store_api_key') ?: config('services.idcard_store.api_key', '');
         $this->cdnUrl  = rtrim(config('services.idcard_store.cdn_url', 'https://idmaker.mfcdn.in/'), '/');
     }
 

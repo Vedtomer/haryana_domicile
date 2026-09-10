@@ -35,12 +35,34 @@ class PvcCardMakerController extends Controller
             ];
         }
 
+        $activeKey = \App\Models\Setting::get('idcard_store_api_key') ?: config('services.idcard_store.api_key', '');
+
         return Inertia::render('Utilities/PvcCardMaker', [
             'cards'         => $cardsData,
             'defaultCard'   => $selectedCard,
             'userCoins'     => $user->coins,
             'isAdmin'       => $isAdmin,
-            'isConfigured'  => !empty(config('services.idcard_store.api_key')),
+            'isConfigured'  => !empty($activeKey),
+            'apiKey'        => $isAdmin ? $activeKey : null,
+        ]);
+    }
+
+    public function saveApiKey(Request $request)
+    {
+        if (!$this->isStaff()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        $request->validate([
+            'api_key' => 'required|string|min:5'
+        ]);
+
+        $key = trim($request->input('api_key'));
+        \App\Models\Setting::set('idcard_store_api_key', $key);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'IDCard.Store API Key saved successfully!',
         ]);
     }
 
