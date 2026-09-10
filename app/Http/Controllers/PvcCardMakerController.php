@@ -11,28 +11,49 @@ use Inertia\Inertia;
 
 class PvcCardMakerController extends Controller
 {
+    public const CARD_SLUG_MAP = [
+        'haryana_familyid' => 'haryana-familyid-pvc',
+        'aadhaar'          => 'aadhaar-pvc-card',
+        'ayushman'         => 'ayushman-pvc',
+        'voter_epic'       => 'voter-pvc-card',
+        'pan_nsdl'         => 'pan-nsdl-pvc',
+        'pan_uti'          => 'pan-uti-pvc',
+        'pan_incometax'    => 'pan-instant-pvc',
+        'eshram'           => 'eshram-pvc-card',
+        'driving_licence'  => 'driving-licence-pvc',
+        'healthid'         => 'healthid-pvc',
+        'pmvishwakarma'    => 'pmvishwakarma-pvc',
+        'aapar'            => 'aapar-pvc',
+    ];
+
     public function index(Request $request)
     {
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $selectedCard = $request->query('card', 'haryana_familyid');
+        $selectedCard = $request->query('card', 'aadhaar');
         $cards = IdCardStoreService::ENDPOINTS;
 
-        // Fetch configured service cost from DB if exists
-        $dbService = Service::where('slug', 'pvc-card-maker')->first();
-        $defaultCost = $dbService ? $dbService->coin_cost : 20;
+        $dbServices = Service::whereIn('slug', array_values(self::CARD_SLUG_MAP))->get()->keyBy('slug');
+        $genericService = Service::where('slug', 'pvc-card-maker')->first();
+        $fallbackCost = $genericService ? $genericService->coin_cost : 20;
 
         $cardsData = [];
         foreach ($cards as $key => $card) {
+            $slug = self::CARD_SLUG_MAP[$key] ?? null;
+            $dbServ = $slug ? ($dbServices[$slug] ?? null) : null;
+            $cost = $dbServ ? $dbServ->coin_cost : $fallbackCost;
+            $name = $dbServ ? $dbServ->name : $card['name'];
+            $desc = $dbServ ? $dbServ->description : $card['description'];
+
             $cardsData[] = [
                 'key'              => $key,
-                'name'             => $card['name'],
-                'description'      => $card['description'],
+                'name'             => $name,
+                'description'      => $desc,
                 'icon'             => $card['icon'],
                 'accepts_password' => $card['accepts_password'],
                 'accepts_phone'    => $card['accepts_phone'] ?? false,
-                'coin_cost'        => $defaultCost,
+                'coin_cost'        => $cost,
             ];
         }
 
@@ -41,6 +62,7 @@ class PvcCardMakerController extends Controller
         return Inertia::render('Utilities/PvcCardMaker', [
             'cards'         => $cardsData,
             'defaultCard'   => $selectedCard,
+            'isStandalone'  => $request->has('card'),
             'userCoins'     => $user->coins,
             'isAdmin'       => $isAdmin,
             'isConfigured'  => !empty($activeKey),
@@ -87,7 +109,8 @@ class PvcCardMakerController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $dbService = Service::where('slug', 'pvc-card-maker')->first();
+        $slug = self::CARD_SLUG_MAP[$cardType] ?? 'pvc-card-maker';
+        $dbService = Service::where('slug', $slug)->first() ?: Service::where('slug', 'pvc-card-maker')->first();
         $coinCost = $dbService ? $dbService->coin_cost : 20;
 
         if (!$isAdmin && $user->coins < $coinCost) {
@@ -120,7 +143,7 @@ class PvcCardMakerController extends Controller
             $user->deductCoins(
                 $coinCost,
                 CoinTransaction::TYPE_SERVICE_DEDUCTION,
-                'PVC Card Maker (' . ($result['card_name'] ?? $cardType) . ')'
+                ($dbService ? $dbService->name : ($result['card_name'] ?? $cardType)) . ' Generation'
             );
         }
 
@@ -128,7 +151,7 @@ class PvcCardMakerController extends Controller
         ServiceRequest::create([
             'user_id'       => $user->id,
             'service_id'    => $dbService ? $dbService->id : null,
-            'service_name'  => 'PVC Card Maker: ' . ($result['card_name'] ?? $cardType),
+            'service_name'  => $dbService ? $dbService->name : ('PVC Card Maker: ' . ($result['card_name'] ?? $cardType)),
             'input_data'    => [
                 'card_type' => $cardType,
                 'file_name' => $file->getClientOriginalName(),

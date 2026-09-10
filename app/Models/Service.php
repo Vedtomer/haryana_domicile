@@ -194,17 +194,17 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=haryana_familyid',
             'create' => '/utilities/pvc-card-maker?card=haryana_familyid',
         ],
-        'ayushman_pvc' => [
-            'label' => 'Ayushman Bharat PVC Card',
-            'model' => null,
-            'index' => '/utilities/pvc-card-maker?card=ayushman',
-            'create' => '/utilities/pvc-card-maker?card=ayushman',
-        ],
         'aadhaar_pvc' => [
             'label' => 'Aadhaar PVC Card Maker',
             'model' => null,
             'index' => '/utilities/pvc-card-maker?card=aadhaar',
             'create' => '/utilities/pvc-card-maker?card=aadhaar',
+        ],
+        'ayushman_pvc' => [
+            'label' => 'Ayushman Bharat PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=ayushman',
+            'create' => '/utilities/pvc-card-maker?card=ayushman',
         ],
         'voter_pvc' => [
             'label' => 'Voter (E-EPIC) PVC Card',
@@ -212,11 +212,53 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=voter_epic',
             'create' => '/utilities/pvc-card-maker?card=voter_epic',
         ],
+        'pan_nsdl_pvc' => [
+            'label' => 'PAN Card (NSDL) PVC',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=pan_nsdl',
+            'create' => '/utilities/pvc-card-maker?card=pan_nsdl',
+        ],
+        'pan_uti_pvc' => [
+            'label' => 'PAN Card (UTIITSL) PVC',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=pan_uti',
+            'create' => '/utilities/pvc-card-maker?card=pan_uti',
+        ],
+        'pan_instant_pvc' => [
+            'label' => 'PAN Card (Instant e-Filing) PVC',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=pan_incometax',
+            'create' => '/utilities/pvc-card-maker?card=pan_incometax',
+        ],
         'eshram_pvc' => [
             'label' => 'e-Shram PVC Card Maker',
             'model' => null,
             'index' => '/utilities/pvc-card-maker?card=eshram',
             'create' => '/utilities/pvc-card-maker?card=eshram',
+        ],
+        'driving_licence_pvc' => [
+            'label' => 'Driving Licence PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=driving_licence',
+            'create' => '/utilities/pvc-card-maker?card=driving_licence',
+        ],
+        'healthid_pvc' => [
+            'label' => 'ABHA Health ID PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=healthid',
+            'create' => '/utilities/pvc-card-maker?card=healthid',
+        ],
+        'pmvishwakarma_pvc' => [
+            'label' => 'PM Vishwakarma PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=pmvishwakarma',
+            'create' => '/utilities/pvc-card-maker?card=pmvishwakarma',
+        ],
+        'aapar_pvc' => [
+            'label' => 'APAAR / Student ID PVC Card',
+            'model' => null,
+            'index' => '/utilities/pvc-card-maker?card=aapar',
+            'create' => '/utilities/pvc-card-maker?card=aapar',
         ],
 
     ];
