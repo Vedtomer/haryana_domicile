@@ -45,6 +45,7 @@ class User extends Authenticatable implements FilamentUser
         'coins',
         'type',
         'is_active',
+        'license_expires_at',
         'last_activity_at',
         'deactivated_reason',
     ];
@@ -70,8 +71,48 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at'   => 'datetime',
             'password'            => 'hashed',
             'coins'               => 'integer',
+            'license_expires_at'  => 'datetime',
             'last_activity_at'    => 'datetime',
         ];
+    }
+
+    /**
+     * Check if user has an active portal license (admin is always active)
+     */
+    public function hasActiveLicense(): bool
+    {
+        if ($this->isAdmin() || $this->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $this->license_expires_at !== null && $this->license_expires_at->isFuture();
+    }
+
+    /**
+     * Number of full days left in the license (0 if expired/none)
+     */
+    public function licenseDaysLeft(): int
+    {
+        if (!$this->license_expires_at || $this->license_expires_at->isPast()) {
+            return 0;
+        }
+
+        return (int) now()->diffInDays($this->license_expires_at, false);
+    }
+
+    /**
+     * Activate or extend license for given number of months (default 6)
+     */
+    public function activateLicense(int $months = 6): \Carbon\Carbon
+    {
+        $base = ($this->license_expires_at && $this->license_expires_at->isFuture())
+            ? $this->license_expires_at->copy()
+            : now();
+
+        $newExpiry = $base->addMonths($months);
+        $this->update(['license_expires_at' => $newExpiry]);
+
+        return $newExpiry;
     }
 
     /**
@@ -82,6 +123,7 @@ class User extends Authenticatable implements FilamentUser
     {
         $this->updateQuietly(['last_activity_at' => now()]);
     }
+
 
     /**
      * Returns true when account was deactivated specifically due to inactivity

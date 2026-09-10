@@ -11,6 +11,7 @@ class CoinTransaction extends Model
     const TYPE_PURCHASE = 'purchase';
     const TYPE_ADMIN_CREDIT = 'admin_credit';
     const TYPE_SERVICE_DEDUCTION = 'service_deduction';
+    const TYPE_LICENSE_PURCHASE = 'license_purchase';
     const TYPE_REFUND = 'refund';
 
     // Coin types

@@ -38,14 +38,20 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? array_merge($request->user()->toArray(), [
+                    'has_active_license' => $request->user()->hasActiveLicense(),
+                    'license_expires_at' => $request->user()->license_expires_at ? $request->user()->license_expires_at->format('d M Y') : null,
+                    'license_days_left' => $request->user()->licenseDaysLeft(),
+                ]) : null,
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
                 'login_voice' => $request->session()->get('login_voice'),
                 'submitted_request' => $request->session()->get('submitted_request'),
+                'generated_key' => $request->session()->get('generated_key'),
             ],
+
             'whatsappNumber' => fn () => \App\Models\Setting::get('whatsapp_number', '380630323112'),
             // Sidebar service links — kept in sync with what the admin has switched on,
             // and filtered by the same visibility rule the dashboard cards use.

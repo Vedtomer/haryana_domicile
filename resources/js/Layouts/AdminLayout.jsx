@@ -108,6 +108,12 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 Coin Requests
                             </NavItem>
+                            <NavItem href="/admin/license-keys" icon={
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+                            }>
+                                License Keys
+                            </NavItem>
+
                         </>
                     )}
                 </nav>
@@ -154,9 +160,29 @@ export default function AdminLayout({ header, children }) {
                     
 
 
-                    {/* Coin balance + Buy Coins — only for user type */}
+                    {/* Coin balance + Buy Coins + License Status — only for user type */}
                     {auth?.user?.type === 'user' && (
                         <>
+                            {auth?.user?.has_active_license ? (
+                                <Link
+                                    href="/dashboard#license"
+                                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-colors"
+                                    title={`License active until ${auth.user.license_expires_at}`}
+                                >
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span>🛡️ 6M License ({auth.user.license_days_left}d)</span>
+                                </Link>
+                            ) : (
+                                <Link
+                                    href="/dashboard#license"
+                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 animate-pulse transition-all shadow-sm"
+                                    title="Active 6-Month License Required (50 Coins)"
+                                >
+                                    <span className="material-symbols-outlined text-[15px]">lock</span>
+                                    <span>Activate License</span>
+                                </Link>
+                            )}
+
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl">
                                 🪙 {auth.user.coins}
                             </span>
@@ -169,6 +195,7 @@ export default function AdminLayout({ header, children }) {
                             </Link>
                         </>
                     )}
+
 
                     <NotificationBell />
 

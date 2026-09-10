@@ -19,7 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin'           => \App\Http\Middleware\EnsureAdmin::class,
             'verified.custom' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'license.active'  => \App\Http\Middleware\EnsureActiveLicense::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

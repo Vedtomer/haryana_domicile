@@ -398,8 +398,16 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/2fa/reset', [\App\Http\Controllers\TwoFactorController::class, 'resetSetup'])->name('2fa.reset');
 
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+
+        // License Purchase & Activation Routes
+        Route::post('/license/buy', [\App\Http\Controllers\LicenseController::class, 'buy'])->name('license.buy');
+        Route::post('/license/activate', [\App\Http\Controllers\LicenseController::class, 'activate'])->name('license.activate');
+
+        // All portal services requiring active 6-Month license
+        Route::middleware(['license.active'])->group(function () {
     
     Route::get('/utilities/electricity-bill', function () {
+
         return Inertia::render('Utilities/ElectricityBill');
     })->name('utilities.electricity-bill');
 
@@ -676,8 +684,15 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return back()->with('success', "Service {$service->name} unlocked successfully!");
     })->name('services.unlock');
 
+    }); // End of license.active middleware group
+
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function() {
+        // License Key Management — admin only
+        Route::get('license-keys', [\App\Http\Controllers\LicenseController::class, 'adminIndex'])->name('license-keys.index')->middleware('admin');
+        Route::post('license-keys/generate', [\App\Http\Controllers\LicenseController::class, 'adminGenerate'])->name('license-keys.generate')->middleware('admin');
+        Route::post('license-keys/{id}/revoke', [\App\Http\Controllers\LicenseController::class, 'adminRevoke'])->name('license-keys.revoke')->middleware('admin');
+
         // Service catalog — only admins can add services and set coin prices
         Route::patch('services/{service}/toggle-active', [\App\Http\Controllers\Admin\ServiceController::class, 'toggleActive'])
             ->name('services.toggle-active')->middleware('admin');
@@ -688,7 +703,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         // Service requests — users submit, admins process
         Route::resource('service-requests', \App\Http\Controllers\Admin\ServiceRequestController::class)
-            ->only(['index', 'create', 'store', 'show']);
+            ->only(['index', 'create', 'store', 'show'])->middleware('license.active');
         Route::patch('service-requests/{serviceRequest}', [\App\Http\Controllers\Admin\ServiceRequestController::class, 'update'])
             ->name('service-requests.update')->middleware('admin');
 
@@ -697,15 +712,16 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('notifications/read-all', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
         Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
 
-        Route::resource('marriage-forms', \App\Http\Controllers\Admin\MarriageFormController::class);
+        Route::resource('marriage-forms', \App\Http\Controllers\Admin\MarriageFormController::class)->middleware('license.active');
         Route::get('marriage-forms/{marriage_form}/print', [\App\Http\Controllers\Admin\MarriageFormController::class, 'print'])->name('marriage-forms.print');
 
-        Route::resource('marriage-affidavits', \App\Http\Controllers\Admin\MarriageAffidavitController::class);
+        Route::resource('marriage-affidavits', \App\Http\Controllers\Admin\MarriageAffidavitController::class)->middleware('license.active');
         Route::get('marriage-affidavits/{marriage_affidavit}/print', [\App\Http\Controllers\Admin\MarriageAffidavitController::class, 'print'])->name('marriage-affidavits.print');
 
-        Route::resource('birth-records', \App\Http\Controllers\Admin\BirthRecordController::class);
-        Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class);
+        Route::resource('birth-records', \App\Http\Controllers\Admin\BirthRecordController::class)->middleware('license.active');
+        Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class)->middleware('license.active');
         Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
+
         
         Route::get('aadhar-update/grid', function () {
         return response()->file(public_path('aadhar_update/grid.jpg'));
