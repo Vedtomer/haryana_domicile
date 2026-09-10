@@ -4,11 +4,31 @@ import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
+import LicenseModal from '../Components/LicenseModal';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [licenseModalOpen, setLicenseModalOpen] = useState(false);
+    const [licenseModalTab, setLicenseModalTab] = useState('direct');
+    const [licensePromptService, setLicensePromptService] = useState(null);
+
+    useEffect(() => {
+        const handleOpenLicense = (e) => {
+            setLicenseModalTab(e.detail?.tab || 'direct');
+            setLicensePromptService(e.detail?.service || null);
+            setLicenseModalOpen(true);
+        };
+        window.addEventListener('open-license-modal', handleOpenLicense);
+        return () => window.removeEventListener('open-license-modal', handleOpenLicense);
+    }, []);
+
+    const openLicense = (tab = 'direct') => {
+        setLicensePromptService(null);
+        setLicenseModalTab(tab);
+        setLicenseModalOpen(true);
+    };
 
     useEffect(() => {
         if (flash?.login_voice) {
@@ -164,34 +184,62 @@ export default function AdminLayout({ header, children }) {
                     {auth?.user?.type === 'user' && (
                         <>
                             {auth?.user?.has_active_license ? (
-                                <Link
-                                    href="/dashboard#license"
-                                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-colors"
-                                    title={`License active until ${auth.user.license_expires_at}`}
-                                >
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>🛡️ 6M License ({auth.user.license_days_left}d)</span>
-                                </Link>
+                                <div className="flex items-center gap-1.5">
+                                    {/* 180d Badge - Clickable to open modal */}
+                                    <button
+                                        type="button"
+                                        onClick={() => openLicense('direct')}
+                                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl hover:bg-emerald-100 transition-all cursor-pointer shadow-2xs"
+                                        title={`License active until ${auth.user.license_expires_at} (${auth.user.license_days_left} days left). Click for details.`}
+                                    >
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span>🛡️ <span className="hidden md:inline">6M License </span>({auth.user.license_days_left}d)</span>
+                                    </button>
+
+                                    {/* Small Renew Button */}
+                                    <button
+                                        type="button"
+                                        onClick={() => openLicense('direct')}
+                                        className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 bg-white hover:bg-emerald-50 border border-emerald-300 rounded-xl shadow-2xs hover:border-emerald-400 transition-all cursor-pointer"
+                                        title="Renew 6-Month License (+180 Days for 50 Coins)"
+                                    >
+                                        <span className="material-symbols-outlined text-[14px]">autorenew</span>
+                                        <span>Renew</span>
+                                    </button>
+
+                                    {/* Small Gift Key Button */}
+                                    <button
+                                        type="button"
+                                        onClick={() => openLicense('gift')}
+                                        className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
+                                        title="Buy Gift Key for someone else (50 Coins)"
+                                    >
+                                        <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
+                                        <span>Gift Key</span>
+                                    </button>
+                                </div>
                             ) : (
-                                <Link
-                                    href="/dashboard#license"
-                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 animate-pulse transition-all shadow-sm"
+                                <button
+                                    type="button"
+                                    onClick={() => openLicense('direct')}
+                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 animate-pulse transition-all shadow-sm cursor-pointer"
                                     title="Active 6-Month License Required (50 Coins)"
                                 >
                                     <span className="material-symbols-outlined text-[15px]">lock</span>
                                     <span>Activate License</span>
-                                </Link>
+                                </button>
                             )}
 
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl">
                                 🪙 {auth.user.coins}
                             </span>
                             <Link
                                 href="/admin/coin-requests"
-                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                                className="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                Buy Coins
+                                <span className="hidden sm:inline">Buy Coins</span>
+                                <span className="sm:hidden">Buy</span>
                             </Link>
                         </>
                     )}
@@ -305,6 +353,13 @@ export default function AdminLayout({ header, children }) {
             {dropdownOpen && (
                 <div className="fixed inset-0 z-0" onClick={() => setDropdownOpen(false)}></div>
             )}
+
+            <LicenseModal
+                isOpen={licenseModalOpen}
+                onClose={() => setLicenseModalOpen(false)}
+                initialTab={licenseModalTab}
+                promptService={licensePromptService}
+            />
 
             <WhatsAppButton />
         </div>
