@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
+import axios from 'axios';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import ThemeToggle from '../Components/ThemeToggle';
 import LicenseModal from '../Components/LicenseModal';
+import UserChatWidget from '../Components/UserChatWidget';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
@@ -13,6 +15,17 @@ export default function AdminLayout({ header, children }) {
     const [licenseModalOpen, setLicenseModalOpen] = useState(false);
     const [licenseModalTab, setLicenseModalTab] = useState('direct');
     const [licensePromptService, setLicensePromptService] = useState(null);
+
+    // Global Presence Heartbeat
+    useEffect(() => {
+        if (!auth?.user) return;
+        const sendPing = () => {
+            axios.post('/chat/heartbeat').catch(() => {});
+        };
+        sendPing();
+        const timer = setInterval(sendPing, 45000);
+        return () => clearInterval(timer);
+    }, [auth?.user?.id]);
 
     useEffect(() => {
         const handleOpenLicense = (e) => {
@@ -349,6 +362,7 @@ export default function AdminLayout({ header, children }) {
             />
 
             <WhatsAppButton />
+            <UserChatWidget user={auth?.user} />
         </div>
     );
 }

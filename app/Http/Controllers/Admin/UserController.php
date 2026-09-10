@@ -18,7 +18,13 @@ class UserController extends Controller
             abort(403);
         }
 
-        $query = User::with('roles')->latest();
+        $query = User::with('roles')
+            ->withCount([
+                'chatMessages as unread_messages_count' => function ($q) {
+                    $q->where('sender_type', 'user')->where('is_read', false);
+                }
+            ])
+            ->latest();
         
         if (auth()->user()->type === 'admin') {
             $query->where('type', 'user');

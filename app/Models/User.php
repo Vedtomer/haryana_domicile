@@ -51,6 +51,7 @@ class User extends Authenticatable implements FilamentUser
         'license_device_ip',
         'license_device_bound_at',
         'last_activity_at',
+        'last_seen_at',
         'deactivated_reason',
     ];
 
@@ -62,6 +63,11 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $appends = [
+        'is_online',
+        'last_seen_human',
     ];
 
     /**
@@ -78,7 +84,35 @@ class User extends Authenticatable implements FilamentUser
             'license_expires_at'      => 'datetime',
             'license_device_bound_at' => 'datetime',
             'last_activity_at'        => 'datetime',
+            'last_seen_at'            => 'datetime',
         ];
+    }
+
+    public function getIsOnlineAttribute(): bool
+    {
+        if (!$this->last_seen_at) {
+            return false;
+        }
+
+        return $this->last_seen_at->greaterThanOrEqualTo(now()->subSeconds(150));
+    }
+
+    public function getLastSeenHumanAttribute(): string
+    {
+        if (!$this->last_seen_at) {
+            return 'Never';
+        }
+
+        if ($this->is_online) {
+            return 'Online now';
+        }
+
+        return $this->last_seen_at->diffForHumans();
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(\App\Models\ChatMessage::class, 'user_id');
     }
 
     /**

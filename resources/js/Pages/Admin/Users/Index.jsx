@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
+import AdminChatModal from '../../../Components/AdminChatModal';
 
 export default function Index({ users }) {
     const [addingCoinsTo, setAddingCoinsTo] = useState(null); // stores full user object
+    const [chatUser, setChatUser] = useState(null); // user currently being chatted with
     const [amount, setAmount] = useState('');
     const [coinType, setCoinType] = useState('trial'); // 'trial' or 'paid'
+
+    // Periodically refresh presence and unread counts without full page reload
+    useEffect(() => {
+        const timer = setInterval(() => {
+            router.reload({ only: ['users'], preserveScroll: true });
+        }, 15000);
+        return () => clearInterval(timer);
+    }, []);
 
     const handleAddCoins = (e) => {
         e.preventDefault();
@@ -57,45 +67,70 @@ export default function Index({ users }) {
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
                     <table className="min-w-full divide-y divide-slate-100">
                         <thead>
-                            <tr className="bg-slate-50">
+                            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
+                                <th className="px-6 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Presence</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Coins</th>
                                 <th className="px-6 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
                                 <th className="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                             {users.data.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/60 transition-colors">
+                                <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                                {(user.name || user.email || user.phone || '?')[0].toUpperCase()}
+                                            <div className="relative">
+                                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
+                                                    {(user.name || user.email || user.phone || '?')[0].toUpperCase()}
+                                                </div>
+                                                <span
+                                                    className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 ${
+                                                        user.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'
+                                                    }`}
+                                                    title={user.is_online ? 'Online now' : `Last seen: ${user.last_seen_human}`}
+                                                />
                                             </div>
-                                            <span className="text-sm font-semibold text-slate-800">
+                                            <span className="text-sm font-semibold text-slate-800 dark:text-white">
                                                 {user.name || <span className="text-slate-400 italic">No Name</span>}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-slate-700">{user.email || '—'}</div>
+                                        <div className="text-sm text-slate-700 dark:text-slate-200">{user.email || '—'}</div>
                                         <div className="text-xs text-slate-400 mb-1">{user.phone || ''}</div>
                                         {user.raw_password && (
-                                            <div className="text-xs font-mono text-slate-600 bg-slate-200/60 rounded px-2 py-0.5 inline-flex items-center gap-1 border border-slate-300/50" title="User Password">
+                                            <div className="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-200/60 dark:bg-slate-800 rounded px-2 py-0.5 inline-flex items-center gap-1 border border-slate-300/50 dark:border-slate-700" title="User Password">
                                                 <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-4l5.618-5.618A6 6 0 0115 7h.01" /></svg>
                                                 {user.raw_password}
                                             </div>
                                         )}
                                     </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                        {user.is_online ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-2xs">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                Online
+                                            </span>
+                                        ) : (
+                                            <span
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                                                title={`Last activity: ${user.last_seen_human}`}
+                                            >
+                                                <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                                {user.last_seen_human || 'Offline'}
+                                            </span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-slate-600 font-medium">
+                                        <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                                             {new Date(user.created_at).toLocaleDateString()}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600">
+                                        <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600 dark:text-amber-400">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             {user.coins ?? 0}
                                         </span>
@@ -111,31 +146,48 @@ export default function Index({ users }) {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                         <div className="flex items-center justify-end gap-1">
+                                            {/* Chat with User Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => setChatUser(user)}
+                                                title={`Message ${user.name || 'User'}`}
+                                                className="relative p-2 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                </svg>
+                                                {user.unread_messages_count > 0 && (
+                                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white font-black text-[10px] rounded-full flex items-center justify-center animate-bounce shadow-sm">
+                                                        {user.unread_messages_count}
+                                                    </span>
+                                                )}
+                                            </button>
+
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"
-                                                className="p-2 rounded-lg text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                                                className="p-2 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-slate-800 hover:text-amber-600 transition-colors cursor-pointer"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             </button>
                                             <button
                                                 onClick={() => handleClearCoins(user)}
                                                 title="Clear Coins to 0"
-                                                className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                                                className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 transition-colors cursor-pointer"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                             </button>
                                             <Link
                                                 href={`/admin/users/${user.id}/edit`}
                                                 title="Edit User"
-                                                className="p-2 rounded-lg text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                                className="p-2 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(user)}
                                                 title="Delete User"
-                                                className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                                className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-slate-800 hover:text-red-600 transition-colors cursor-pointer"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                             </button>
@@ -242,6 +294,15 @@ export default function Index({ users }) {
                     </form>
                 </div>
             )}
+
+            {/* Direct Admin-User Chat Modal */}
+            <AdminChatModal
+                user={chatUser}
+                onClose={() => {
+                    setChatUser(null);
+                    router.reload({ only: ['users'], preserveScroll: true });
+                }}
+            />
         </AdminLayout>
     );
 }
