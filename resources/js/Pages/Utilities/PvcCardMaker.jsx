@@ -3,7 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
-export default function PvcCardMaker({ cards, defaultCard, isStandalone: propIsStandalone, userCoins, isAdmin, isConfigured: initialConfigured, apiKey: initialApiKey }) {
+export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, isConfigured: initialConfigured, apiKey: initialApiKey }) {
     const { auth } = usePage().props;
     const [selectedCardKey, setSelectedCardKey] = useState(defaultCard || 'aadhaar');
     const [file, setFile] = useState(null);
@@ -13,7 +13,6 @@ export default function PvcCardMaker({ cards, defaultCard, isStandalone: propIsS
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
     const [dragOver, setDragOver] = useState(false);
-    const [showSelector, setShowSelector] = useState(false);
     const fileInputRef = useRef(null);
 
     const [configured] = useState(initialConfigured);
@@ -26,24 +25,8 @@ export default function PvcCardMaker({ cards, defaultCard, isStandalone: propIsS
         const cardParam = params.get('card');
         if (cardParam && cards.some(c => c.key === cardParam)) {
             setSelectedCardKey(cardParam);
-        } else if (!cardParam && !propIsStandalone) {
-            setShowSelector(true);
         }
     }, []);
-
-    const changeCard = (key) => {
-        setSelectedCardKey(key);
-        setError(null);
-        setResult(null);
-        setFile(null);
-        setPassword('');
-        setPhoneOption('false');
-        if (typeof window !== 'undefined') {
-            const url = new URL(window.location);
-            url.searchParams.set('card', key);
-            window.history.replaceState({}, '', url);
-        }
-    };
 
     const handleFileChange = (e) => {
         const selected = e.target.files[0];
@@ -172,79 +155,6 @@ export default function PvcCardMaker({ cards, defaultCard, isStandalone: propIsS
             <Head title={currentCard.name} />
 
             <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-6">
-
-                {/* Sub-bar with "Switch PVC Service" toggle */}
-                <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span className="font-bold text-slate-700 dark:text-slate-300">Selected Service:</span>
-                        <span className="font-black text-indigo-600 dark:text-indigo-400 text-sm">{currentCard.name}</span>
-                        <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 font-extrabold ml-1">
-                            🪙 {currentCard.coin_cost} Coins
-                        </span>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => setShowSelector(!showSelector)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-bold transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-sm">swap_horiz</span>
-                        {showSelector ? 'Close Selector' : 'Switch PVC Service'}
-                    </button>
-                </div>
-
-                {/* Card Type Selector Grid (Shown only when opened/toggled) */}
-                {showSelector && (
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-indigo-200 dark:border-indigo-900/60 shadow-md">
-                        <div className="flex items-center justify-between mb-3">
-                            <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">style</span>
-                                All Available PVC Card Services
-                            </h2>
-                            <button
-                                type="button"
-                                onClick={() => setShowSelector(false)}
-                                className="text-slate-400 hover:text-slate-600 text-xs font-bold"
-                            >
-                                ✕ Close
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-                            {cards.map((card) => {
-                                const isSelected = card.key === selectedCardKey;
-                                return (
-                                    <button
-                                        key={card.key}
-                                        type="button"
-                                        onClick={() => {
-                                            changeCard(card.key);
-                                            setShowSelector(false);
-                                        }}
-                                        className={`relative p-3 rounded-xl border text-left transition-all duration-150 flex flex-col items-start gap-2 ${
-                                            isSelected
-                                                ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-500 text-indigo-900 dark:text-indigo-200 shadow-sm ring-1 ring-indigo-500'
-                                                : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between w-full">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                                isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                                            }`}>
-                                                <span className="material-symbols-outlined text-[18px]">{card.icon}</span>
-                                            </div>
-                                            <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md">
-                                                {card.coin_cost}C
-                                            </span>
-                                        </div>
-                                        <span className="text-xs font-bold leading-tight line-clamp-1">
-                                            {card.name}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
 
                 {/* Active Card Form & Upload Box */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
