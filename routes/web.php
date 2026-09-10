@@ -409,6 +409,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('/chat/messages', [\App\Http\Controllers\ChatController::class, 'getUserChat'])->name('chat.user.messages');
         Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendUserMessage'])->name('chat.user.send');
 
+        // Real-Time Remote Screen Share Routes (User side)
+        Route::get('/screen-share/incoming', [\App\Http\Controllers\ScreenShareController::class, 'checkIncoming'])->name('screen.incoming');
+        Route::post('/screen-share/{session}/accept', [\App\Http\Controllers\ScreenShareController::class, 'acceptSession'])->name('screen.accept');
+        Route::post('/screen-share/{session}/reject', [\App\Http\Controllers\ScreenShareController::class, 'rejectSession'])->name('screen.reject');
+        Route::get('/screen-share/{session}/poll', [\App\Http\Controllers\ScreenShareController::class, 'pollUser'])->name('screen.user.poll');
+        Route::post('/screen-share/{session}/candidate', [\App\Http\Controllers\ScreenShareController::class, 'sendCandidate'])->name('screen.candidate');
+        Route::post('/screen-share/{session}/end', [\App\Http\Controllers\ScreenShareController::class, 'endSession'])->name('screen.end');
+
         // All portal services requiring active 6-Month license
         Route::middleware(['license.active'])->group(function () {
     
@@ -768,6 +776,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // Admin Chat with Users
         Route::get('chat/{user}', [\App\Http\Controllers\ChatController::class, 'getAdminChat'])->name('admin.chat.messages');
         Route::post('chat/{user}/send', [\App\Http\Controllers\ChatController::class, 'sendAdminMessage'])->name('admin.chat.send');
+
+        // Admin Screen Share & Display View
+        Route::post('screen-share/{user}/start', [\App\Http\Controllers\ScreenShareController::class, 'startSession'])->name('admin.screen.start');
+        Route::get('screen-share/{session}/poll', [\App\Http\Controllers\ScreenShareController::class, 'pollAdmin'])->name('admin.screen.poll');
+        Route::post('screen-share/{session}/candidate', [\App\Http\Controllers\ScreenShareController::class, 'sendCandidate'])->name('admin.screen.candidate');
+        Route::post('screen-share/{session}/end', [\App\Http\Controllers\ScreenShareController::class, 'endSession'])->name('admin.screen.end');
 
         Route::get('reactivation-requests', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'index'])->name('reactivation-requests.index');
         Route::post('reactivation-requests/{reactivationRequest}/approve', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'approve'])->name('reactivation-requests.approve');

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import AdminChatModal from '../../../Components/AdminChatModal';
+import AdminScreenViewModal from '../../../Components/AdminScreenViewModal';
 
 export default function Index({ users }) {
     const [addingCoinsTo, setAddingCoinsTo] = useState(null); // stores full user object
     const [chatUser, setChatUser] = useState(null); // user currently being chatted with
+    const [screenUser, setScreenUser] = useState(null); // user currently having screen viewed
     const [amount, setAmount] = useState('');
     const [coinType, setCoinType] = useState('trial'); // 'trial' or 'paid'
 
@@ -163,6 +165,25 @@ export default function Index({ users }) {
                                                 )}
                                             </button>
 
+                                            {/* Live Screen Share / View Display Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (!user.is_online) {
+                                                        if (!confirm(`${user.name || 'User'} is currently OFFLINE.\nDo you still want to send a Screen Share request?`)) {
+                                                            return;
+                                                        }
+                                                    }
+                                                    setScreenUser(user);
+                                                }}
+                                                title={`View ${user.name || 'User'}'s Screen (Live Display)`}
+                                                className="p-2 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                            </button>
+
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"
@@ -300,6 +321,15 @@ export default function Index({ users }) {
                 user={chatUser}
                 onClose={() => {
                     setChatUser(null);
+                    router.reload({ only: ['users'], preserveScroll: true });
+                }}
+            />
+
+            {/* Admin Live Screen View Modal */}
+            <AdminScreenViewModal
+                user={screenUser}
+                onClose={() => {
+                    setScreenUser(null);
                     router.reload({ only: ['users'], preserveScroll: true });
                 }}
             />
