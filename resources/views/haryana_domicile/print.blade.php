@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Haryana Residence Form - Print</title>
+    <title>Residence Form - Print</title>
     <style>
         @font-face {
             font-family: 'Typist';

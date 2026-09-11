@@ -284,7 +284,7 @@
         <div class="glow-1"></div>
         <div class="glow-2"></div>
         <h1>Simplify Your Document <br><span>Workflows Instantly</span></h1>
-        <p>Access all essential digital services including Haryana Domicile, Birth Records, and advanced PDF conversions in one beautiful platform.</p>
+        <p>Access all essential digital services including Domicile Certificate, Birth Records, and advanced PDF conversions in one beautiful platform.</p>
     </div>
 
     <section class="services">
@@ -305,8 +305,8 @@
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                 </div>
-                <h3>Haryana Domicile</h3>
-                <p>Seamlessly view, manage, and print your Haryana domicile certificates right from the platform.</p>
+                <h3>Domicile Certificate</h3>
+                <p>Seamlessly view, manage, and print your domicile certificates right from the platform.</p>
             </div>
 
             <!-- Service 2 -->

@@ -96,7 +96,7 @@ export default function Home({ services = [] }) {
                         </h1>
                         
                         <p className="mt-3 max-w-2xl font-body-lg text-body-lg text-on-surface-variant mx-auto mb-8 leading-relaxed">
-                            Unified portal for PAN Cards, Aadhaar PVC, Driving Licence, Vehicle RC, Haryana Domicile, Marriage Registration, and utility services.
+                            Unified portal for PAN Cards, Aadhaar PVC, Driving Licence, Vehicle RC, Domicile Certificate, Marriage Registration, and utility services.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row justify-center gap-4">

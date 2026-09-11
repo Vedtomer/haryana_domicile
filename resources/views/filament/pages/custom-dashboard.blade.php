@@ -148,7 +148,7 @@
 
             $other_services = [
                 ['name' => 'AADHAR<br>UPDATE', 'icon' => 'fa-fingerprint', 'bg' => 'bg-emerald-100 border-emerald-200 hover:bg-emerald-200', 'icon_color' => 'text-emerald-700', 'url' => '/aadhar-card-address-form', 'count' => $counts['aadhar_update'] ?? 0, 'permission' => 'page_AadharCardAddressForm'],
-                ['name' => 'HARYANA<br>DOMICILE', 'icon' => 'fa-id-badge', 'bg' => 'bg-blue-100 border-blue-200 hover:bg-blue-200', 'icon_color' => 'text-blue-700', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0, 'permission' => 'view_any_haryana::domicile'],
+                ['name' => 'DOMICILE<br>CERTIFICATE', 'icon' => 'fa-id-badge', 'bg' => 'bg-blue-100 border-blue-200 hover:bg-blue-200', 'icon_color' => 'text-blue-700', 'url' => '/haryana-domiciles', 'count' => $counts['haryana_domicile'] ?? 0, 'permission' => 'view_any_haryana::domicile'],
                 ['name' => 'BIRTH<br>RECORDS', 'icon' => 'fa-file-circle-plus', 'bg' => 'bg-rose-100 border-rose-200 hover:bg-rose-200', 'icon_color' => 'text-rose-700', 'url' => '/birth-records', 'count' => $counts['birth_records'] ?? 0, 'permission' => 'view_any_birth::record'],
                 ['name' => 'PDF<br>CONVERTER', 'icon' => 'fa-file-pdf', 'bg' => 'bg-red-100 border-red-200 hover:bg-red-200', 'icon_color' => 'text-red-700', 'url' => '/pdf-converters', 'count' => $counts['pdf_converter'] ?? 0, 'permission' => 'view_any_pdf::converter'],
                 ['name' => 'PAN CARD', 'icon' => 'fa-address-card', 'bg' => 'bg-teal-100 border-teal-200 hover:bg-teal-200', 'icon_color' => 'text-teal-700', 'url' => '#', 'onclick' => 'showPanModal = true', 'permission' => 'view_any_pan::request'],

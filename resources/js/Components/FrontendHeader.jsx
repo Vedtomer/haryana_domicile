@@ -40,7 +40,7 @@ export default function FrontendHeader() {
                 color: '#bfdbfe',
                 letterSpacing: '0.01em',
             }}>
-                🌐 CSP Jaankari — Trusted Digital Services for Haryana Citizens
+                🌐 CSP Jaankari — Trusted Digital Citizen Services Portal
             </div>
 
             {/* Main nav row */}

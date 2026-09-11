@@ -29,14 +29,14 @@ export default function Create() {
 
     return (
         <AdminLayout>
-            <Head title="Create Haryana Domicile Form" />
+            <Head title="Create Domicile Form" />
 
             <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
                 <IconButton component={Link} href="/admin/haryana-domicile" sx={{ mr: 2 }}>
                     <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" fontWeight="bold" color="text.primary">
-                    Create Haryana Domicile Record
+                    Create Domicile Record
                 </Typography>
             </Box>
 

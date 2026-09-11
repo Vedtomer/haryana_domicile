@@ -12,14 +12,20 @@ Route::get('/', function () {
         ->ordered()
         ->get()
         ->map(function (\App\Models\Service $service) {
+            $name = trim(str_ireplace('Haryana ', '', $service->name));
+            if ($name === 'Domicile') {
+                $name = 'Domicile Certificate';
+            }
+            $description = str_ireplace('Haryana ', '', $service->description ?? '');
+
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
 
             return [
                 'id' => $service->id,
-                'name' => $service->name,
+                'name' => $name,
                 'slug' => $service->slug,
-                'description' => $service->description,
+                'description' => $description,
                 'icon' => $service->icon ?: '📄',
                 'logo_url' => $service->logoUrl(),
                 'coin_cost' => $service->coin_cost,
@@ -54,6 +60,21 @@ Route::get('/migrate-db', function () {
             $output .= "=== SERVICE SEEDER ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
         } catch (\Throwable $se2) {
             $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
+        }
+
+        // Clean up any remaining 'Haryana' mentions from services in database
+        try {
+            \App\Models\Service::where('name', 'like', '%Haryana%')->orWhere('description', 'like', '%Haryana%')->get()->each(function ($svc) {
+                $svc->name = trim(str_ireplace('Haryana ', '', $svc->name));
+                if ($svc->name === 'Domicile') {
+                    $svc->name = 'Domicile Certificate';
+                }
+                $svc->description = str_ireplace('Haryana ', '', $svc->description ?? '');
+                $svc->save();
+            });
+            $output .= "=== CLEANED UP HARYANA TEXT FROM SERVICES ===\n\n";
+        } catch (\Throwable $cleanEx) {
+            $output .= "Service Cleanup Notice: " . $cleanEx->getMessage() . "\n\n";
         }
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
@@ -229,7 +250,7 @@ Route::get('/force-add-pvc-services', function () {
         [
             'name' => 'Smart PVC Card Maker',
             'slug' => 'pvc-card-maker',
-            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
             'icon' => '🪪',
             'coin_cost' => 20,
             'kind' => \App\Models\Service::KIND_MODULE,
@@ -241,9 +262,9 @@ Route::get('/force-add-pvc-services', function () {
             'unlock_cost' => 0,
         ],
         [
-            'name' => 'Haryana Family ID PVC Card',
+            'name' => 'Family ID PVC Card',
             'slug' => 'haryana-familyid-pvc',
-            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF.',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Family ID PDF.',
             'icon' => '🆔',
             'coin_cost' => 20,
             'kind' => \App\Models\Service::KIND_MODULE,
