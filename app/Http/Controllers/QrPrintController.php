@@ -153,6 +153,40 @@ class QrPrintController extends Controller
         }
         $detectedPrinters = array_values($rawPrinters);
 
+        // Auto-assign B&W (Canon/Laser) and Color (Epson/Inkjet) if not yet chosen
+        $needUpdate = false;
+        $updates = [];
+        if (empty($shop->color_printer)) {
+            foreach ($detectedPrinters as $p) {
+                $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
+                    $updates['color_printer'] = $name;
+                    $needUpdate = true;
+                    break;
+                }
+            }
+        }
+        if (empty($shop->bw_printer)) {
+            foreach ($detectedPrinters as $p) {
+                $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono/i', $name)) {
+                    $updates['bw_printer'] = $name;
+                    $needUpdate = true;
+                    break;
+                }
+            }
+        }
+        $effColor = $updates['color_printer'] ?? $shop->color_printer;
+        $effBw = $updates['bw_printer'] ?? $shop->bw_printer;
+        if ($effColor && $effBw && $shop->printer_mode !== 'dual') {
+            $updates['printer_mode'] = 'dual';
+            $needUpdate = true;
+        }
+        if ($needUpdate) {
+            $shop->update($updates);
+            $shop->refresh();
+        }
+
         return Inertia::render('Admin/QrPrint/Index', [
             'shop' => [
                 'id' => $shop->id,

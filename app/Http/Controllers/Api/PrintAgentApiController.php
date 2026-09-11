@@ -42,6 +42,33 @@ class PrintAgentApiController extends Controller
             } else {
                 $updateData['detected_printers'] = [];
             }
+            // Auto-detect and route B&W and Color printers if not yet explicitly saved
+            $detectedList = $updateData['detected_printers'];
+            if (empty($shop->color_printer)) {
+                foreach ($detectedList as $p) {
+                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                    if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
+                        $updateData['color_printer'] = $name;
+                        break;
+                    }
+                }
+            }
+
+            if (empty($shop->bw_printer)) {
+                foreach ($detectedList as $p) {
+                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                    if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono/i', $name)) {
+                        $updateData['bw_printer'] = $name;
+                        break;
+                    }
+                }
+            }
+
+            $effectiveColor = $updateData['color_printer'] ?? $shop->color_printer;
+            $effectiveBw = $updateData['bw_printer'] ?? $shop->bw_printer;
+            if ($effectiveColor && $effectiveBw && $shop->printer_mode !== 'dual') {
+                $updateData['printer_mode'] = 'dual';
+            }
         }
 
         $shop->update($updateData);
@@ -93,11 +120,40 @@ class PrintAgentApiController extends Controller
             ])
             ->map(function ($job) use ($shop) {
                 $targetPrinter = null;
-                if ($job->color_type === 'color' && $shop->color_printer) {
-                    $targetPrinter = $shop->color_printer;
-                } elseif ($shop->bw_printer) {
-                    $targetPrinter = $shop->bw_printer;
+                $printers = is_array($shop->detected_printers) ? $shop->detected_printers : (json_decode($shop->detected_printers, true) ?: []);
+
+                if ($job->color_type === 'color') {
+                    if (!empty($shop->color_printer)) {
+                        $targetPrinter = $shop->color_printer;
+                    } else {
+                        // Find Epson/Color printer in detected printers
+                        foreach ($printers as $p) {
+                            $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                            if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
+                                $targetPrinter = $name;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if (!empty($shop->bw_printer)) {
+                        $targetPrinter = $shop->bw_printer;
+                    } else {
+                        // Find Canon/Laser printer in detected printers
+                        foreach ($printers as $p) {
+                            $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                            if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono/i', $name)) {
+                                $targetPrinter = $name;
+                                break;
+                            }
+                        }
+                    }
                 }
+
+                if (!$targetPrinter) {
+                    $targetPrinter = ($job->color_type === 'color') ? ($shop->color_printer ?: $shop->bw_printer) : ($shop->bw_printer ?: $shop->color_printer);
+                }
+
                 return array_merge($job->toArray(), [
                     'target_printer' => $targetPrinter,
                 ]);

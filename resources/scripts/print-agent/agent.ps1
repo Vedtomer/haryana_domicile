@@ -225,17 +225,34 @@ function Print-DocumentSilently {
         }
     }
 
-    # 2. Validate that target printer exists in system (fallback to default if renamed/missing)
-    if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-        try {
-            $escaped = $TargetPrinter.Replace("'", "''")
-            $installed = Get-CimInstance Win32_Printer -Filter "Name = '$escaped'" -ErrorAction SilentlyContinue
-            if (!$installed) {
-                Write-Log "Target printer '$TargetPrinter' not found in system! Falling back to default printer."
-                $TargetPrinter = ""
+    $allPrinters = Get-CimInstance Win32_Printer -ErrorAction SilentlyContinue
+
+    # 2. Heuristic auto-route: If still empty, route Color to Epson/Inkjet and B&W to Canon/Laser
+    if ([string]::IsNullOrWhiteSpace($TargetPrinter)) {
+        if ($ColorType -eq "color") {
+            $colorMatch = $allPrinters | Where-Object { $_.Name -match "Epson|Color|DeskJet|InkJet|Tank|Pixma|Photo|L31|L32|L80" } | Select-Object -First 1
+            if ($colorMatch) {
+                $TargetPrinter = $colorMatch.Name
+                Write-Log "Auto-routed Color job to detected color printer: '$TargetPrinter'"
             }
-        } catch {
-            Write-Log "Could not verify printer '$TargetPrinter': $_"
+        } else {
+            $bwMatch = $allPrinters | Where-Object { $_.Name -match "Canon|Laser|LBP|1020|M1005|Brother|Mono" } | Select-Object -First 1
+            if ($bwMatch) {
+                $TargetPrinter = $bwMatch.Name
+                Write-Log "Auto-routed B&W job to detected B&W printer: '$TargetPrinter'"
+            }
+        }
+    }
+
+    # 3. Match Target Printer with installed printers (fuzzy case-insensitive match)
+    if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+        $matched = $allPrinters | Where-Object { $_.Name -like "*$TargetPrinter*" -or $TargetPrinter -like "*$($_.Name)*" } | Select-Object -First 1
+        if ($matched) {
+            $TargetPrinter = $matched.Name
+            Write-Log "Resolved target printer: '$TargetPrinter'"
+        } else {
+            Write-Log "Target printer '$TargetPrinter' not found in system! Available: $(($allPrinters.Name) -join ', '). Falling back to default printer."
+            $TargetPrinter = ""
         }
     }
 
