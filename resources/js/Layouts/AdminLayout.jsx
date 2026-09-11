@@ -205,69 +205,39 @@ export default function AdminLayout({ header, children }) {
                     {auth?.user?.type === 'user' && (
                         <>
                             {auth?.user?.has_active_license ? (
-                                <div className="flex items-center gap-1.5">
-                                    {/* 180d Badge - Clickable to open modal */}
-                                    <button
-                                        type="button"
-                                        onClick={() => openLicense('direct')}
-                                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl hover:bg-emerald-100 transition-all cursor-pointer shadow-2xs"
-                                        title={`License active until ${auth.user.license_expires_at} (${auth.user.license_days_left} days left). Click for details.`}
-                                    >
-                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        <span>🛡️ <span className="hidden md:inline">6M License </span>({auth.user.license_days_left}d)</span>
-                                    </button>
+                                <button
+                                    type="button"
+                                    onClick={() => openLicense('gift')}
+                                    className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
+                                    title="Buy Gift Key for someone else (50 Coins)"
+                                >
+                                    <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
+                                    <span>Gift Key</span>
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => openLicense('direct')}
+                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 animate-pulse transition-all shadow-sm cursor-pointer"
+                                    title="Active 6-Month License Required (50 Coins)"
+                                >
+                                    <span className="material-symbols-outlined text-[15px]">lock</span>
+                                    <span>Activate License</span>
+                                </button>
+                            )}
 
-                                    {/* Small Gift Key Button */}
-                                    <button
-                                         type="button"
-                                         onClick={() => openLicense('gift')}
-                                         className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
-                                         title="Buy Gift Key for someone else (50 Coins)"
-                                     >
-                                         <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
-                                         <span>Gift Key</span>
-                                     </button>
-                                 </div>
-                             ) : (
-                                 <button
-                                     type="button"
-                                     onClick={() => openLicense('direct')}
-                                     className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 animate-pulse transition-all shadow-sm cursor-pointer"
-                                     title="Active 6-Month License Required (50 Coins)"
-                                 >
-                                     <span className="material-symbols-outlined text-[15px]">lock</span>
-                                     <span>Activate License</span>
-                                 </button>
-                             )}
-
-                             <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
-                                 🪙 {auth.user.coins}
-                             </span>
-                             <Link
-                                 href="/admin/coin-requests"
-                                 className="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                             >
-                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                 <span className="hidden sm:inline">Buy Coins</span>
-                             </Link>
-                             <Link
-                                 href="/admin/qr-to-print"
-                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all shadow-2xs"
-                                 title="QR to Print (Smart Counter)"
-                             >
-                                 <span className="text-base leading-none">🖨️</span>
-                                 <span className="hidden sm:inline">QR to Print</span>
-                             </Link>
-                             <Link
-                                 href="/admin/referrals"
-                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/80 rounded-xl hover:bg-amber-200/80 dark:hover:bg-amber-900/60 transition-all shadow-2xs"
-                                 title="Refer & Earn ₹10 per friend"
-                             >
-                                 <span className="text-base leading-none">🎁</span>
-                                 <span className="hidden md:inline">Refer &amp; Earn</span>
-                             </Link>
-                         </>
-                     )}
+                            <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
+                                🪙 {auth.user.coins}
+                            </span>
+                            <Link
+                                href="/admin/coin-requests"
+                                className="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span className="hidden sm:inline">Buy Coins</span>
+                            </Link>
+                        </>
+                    )}
 
                      {isAdmin && (
                          <Link
@@ -307,6 +277,24 @@ export default function AdminLayout({ header, children }) {
                                 <span className="w-4 h-4 flex items-center justify-center">🪙</span>
                                 Coin Ledger
                             </Link>
+                            {auth?.user?.type === 'user' && (
+                                <>
+                                    <Link
+                                        href="/admin/qr-to-print"
+                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <span className="w-4 h-4 flex items-center justify-center">🖨️</span>
+                                        QR to Print
+                                    </Link>
+                                    <Link
+                                        href="/admin/referrals"
+                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <span className="w-4 h-4 flex items-center justify-center">🎁</span>
+                                        Refer & Earn (₹10)
+                                    </Link>
+                                </>
+                            )}
                             {auth?.user?.type === 'admin' && (
                                 <>
                                     <Link

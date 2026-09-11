@@ -256,9 +256,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
 
-    // Count of new services
-    const newServicesCount = services.filter(s => Boolean(s.is_new)).length;
-
     const getCategoryCount = (catId) => {
         return services.filter(service => matchesCategory(service, catId)).length;
     };
@@ -305,29 +302,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
                                 : 'Pick a service below to get started.'}
                         </p>
                     </div>
-
-                    {/* New Service Highlight Badge in Upper Header */}
-                    {newServicesCount > 0 && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setActiveTab('new');
-                                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            title="Nayi services dekhne ke liye click karein"
-                            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-extrabold text-xs shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer group shrink-0"
-                        >
-                            <span className="flex h-2.5 w-2.5 relative">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-300 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-200"></span>
-                            </span>
-                            <span className="text-sm">🔥</span>
-                            <span>{newServicesCount} New Service{newServicesCount > 1 ? 's' : ''} Live!</span>
-                            <span className="bg-white/20 group-hover:bg-white/30 px-2 py-0.5 rounded-full text-[11px] font-bold">
-                                {activeTab === 'new' ? 'Showing New ✓' : 'Click to View →'}
-                            </span>
-                        </button>
-                    )}
                 </div>
             }
         >
