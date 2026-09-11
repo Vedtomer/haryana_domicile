@@ -246,27 +246,8 @@ const matchesCategory = (service, catId) => {
     return true;
 };
 
-export default function Dashboard({ services, stats, isAdmin, referralCode, referralLink }) {
+export default function Dashboard({ services, stats, isAdmin }) {
     const { auth, flash } = usePage().props;
-    const activeCode = referralCode || auth?.user?.referral_code || '';
-    const activeLink = referralLink || auth?.user?.referral_link || '';
-    const [copiedCode, setCopiedCode] = useState(false);
-    const [copiedLink, setCopiedLink] = useState(false);
-
-    const handleCopyCode = () => {
-        if (!activeCode) return;
-        navigator.clipboard.writeText(activeCode);
-        setCopiedCode(true);
-        setTimeout(() => setCopiedCode(false), 2000);
-    };
-
-    const handleCopyLink = () => {
-        if (!activeLink) return;
-        navigator.clipboard.writeText(activeLink);
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 2000);
-    };
-
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -409,92 +390,10 @@ export default function Dashboard({ services, stats, isAdmin, referralCode, refe
                  </div>
              )}
 
-            {/* Refer & Earn Promo Banner */}
-            <div className="mb-6">
-                <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-lg border border-blue-500/30">
-                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
-                        <div className="flex items-start sm:items-center gap-4">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/15 backdrop-blur-md text-white flex items-center justify-center text-2xl sm:text-3xl shrink-0 shadow-inner">
-                                🎁
-                            </div>
-                            <div>
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                                        Refer a Friend &amp; Earn ₹10!
-                                    </h3>
-                                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 uppercase tracking-wide">
-                                        Earn 10 Coins
-                                    </span>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-blue-100 border border-white/20">
-                                        🔒 1 Link = 1 User
-                                    </span>
-                                </div>
-                                <p className="text-xs sm:text-sm text-blue-100 font-medium mt-1 leading-relaxed max-w-2xl">
-                                    Jab bhi aapka refer kiya dost pehli baar apni ID me ₹200+ add karega, aapko turant <strong>10 Coins (₹10)</strong> milenge!
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Referral Code & Quick Action Box */}
-                        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto shrink-0">
-                            {activeCode && (
-                                <div className="flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/15 shadow-inner">
-                                    <span className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">Code:</span>
-                                    <span className="font-mono font-black text-amber-400 text-base sm:text-lg tracking-wider select-all">
-                                        {activeCode}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={handleCopyCode}
-                                        className="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center justify-center"
-                                        title="Copy Referral Code"
-                                    >
-                                        {copiedCode ? (
-                                            <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                                        ) : (
-                                            <span className="material-symbols-outlined text-sm">content_copy</span>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
-
-                            {activeLink && (
-                                <button
-                                    type="button"
-                                    onClick={handleCopyLink}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/20 text-white font-bold text-xs backdrop-blur-md transition-all cursor-pointer"
-                                    title="Copy Referral Link"
-                                >
-                                    <span className="material-symbols-outlined text-sm">
-                                        {copiedLink ? 'check_circle' : 'link'}
-                                    </span>
-                                    <span>{copiedLink ? 'Link Copied!' : 'Copy Link'}</span>
-                                </button>
-                            )}
-
-                            <Link
-                                href="/admin/referrals"
-                                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-blue-900 hover:bg-blue-50 font-black text-xs sm:text-sm rounded-xl shadow-md hover:-translate-y-0.5 transition-all"
-                            >
-                                <span>Dashboard</span>
-                                <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
              {/* Services Section Header & Categories */}
             <div id="services" className="space-y-3.5 mb-6 scroll-mt-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                        <h2 className="text-lg sm:text-xl font-black text-gray-800 dark:text-white tracking-tight">Services</h2>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80">
-                            {filteredServices.length} {filteredServices.length === 1 ? 'Service' : 'Services'}
-                        </span>
-                    </div>
-
-                    <div className="w-full sm:w-72 relative">
+                <div className="flex items-center justify-end">
+                    <div className="w-full sm:w-80 relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-[20px]">search</span>
                         <input
                             type="text"
@@ -505,7 +404,7 @@ export default function Dashboard({ services, stats, isAdmin, referralCode, refe
                             }
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl shadow-2xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
+                            className="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl shadow-2xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
                         />
                         {searchQuery && (
                             <button
