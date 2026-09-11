@@ -282,7 +282,12 @@ class QrPrintController extends Controller
             $zip->addFile($scriptsPath . '/Uninstall-Service.bat', 'Uninstall-Service.bat');
         }
 
-        // 5. config.json
+        // 5. SumatraPDF.exe (Bundled 100% offline print engine)
+        if (file_exists($scriptsPath . '/SumatraPDF.exe')) {
+            $zip->addFile($scriptsPath . '/SumatraPDF.exe', 'SumatraPDF.exe');
+        }
+
+        // 6. config.json
         $configContent = json_encode([
             'shop_code' => $shop->shop_code,
             'shop_name' => $shop->shop_name,

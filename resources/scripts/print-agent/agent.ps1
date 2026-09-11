@@ -40,6 +40,7 @@ $ServerUrl = "__SERVER_URL__"
 $AgentToken = "__AGENT_TOKEN__"
 $script:BwPrinter = ""
 $script:ColorPrinter = ""
+$script:LastPrintError = ""
 
 if (Test-Path $ConfigFile) {
     try {
@@ -56,28 +57,112 @@ Write-Log "Connecting to: $ServerUrl"
 # SumatraPDF Portable for 100% silent background PDF/image printing
 $SumatraExe = "$AppDir\SumatraPDF.exe"
 function Ensure-SumatraPDF {
-    if (Test-Path $SumatraExe) { return $true }
-    Write-Log "Downloading portable SumatraPDF for silent direct printing..."
-    $sumatraUrls = @(
-        "https://www.sumatrapdfreader.org/dl/SumatraPDF-3.5.2-64.exe",
-        "https://github.com/sumatrapdfreader/sumatrapdf/releases/download/v3.5.2/SumatraPDF-3.5.2-64.exe"
-    )
-    foreach ($url in $sumatraUrls) {
-        try {
-            Invoke-WebRequest -Uri $url -OutFile $SumatraExe -TimeoutSec 30 -UseBasicParsing -ErrorAction Stop
-            if (Test-Path $SumatraExe) {
-                Write-Log "SumatraPDF downloaded successfully."
-                return $true
-            }
-        } catch {
-            Write-Log "SumatraPDF download attempt failed: $_"
+    # 1. Check if already installed and valid (>1MB)
+    if (Test-Path $SumatraExe) {
+        $existing = Get-Item $SumatraExe -ErrorAction SilentlyContinue
+        if ($existing -and $existing.Length -gt 1000000) {
+            return $true
+        } else {
+            Write-Log "Existing SumatraPDF.exe is corrupt ($($existing.Length) bytes). Removing..."
+            Remove-Item -Path $SumatraExe -Force -ErrorAction SilentlyContinue
         }
     }
+
+    # 2. Check if pre-bundled in installer directory ($PSScriptRoot)
+    $bundled = "$PSScriptRoot\SumatraPDF.exe"
+    if (Test-Path $bundled) {
+        $bundledFile = Get-Item $bundled -ErrorAction SilentlyContinue
+        if ($bundledFile -and $bundledFile.Length -gt 1000000) {
+            Write-Log "Copying bundled SumatraPDF from $bundled to $SumatraExe..."
+            Copy-Item -Path $bundled -Destination $SumatraExe -Force -ErrorAction SilentlyContinue
+            if (Test-Path $SumatraExe) {
+                Write-Log "Bundled SumatraPDF successfully copied."
+                return $true
+            }
+        }
+    }
+
+    # 3. Fallback: Download official release if neither present
+    Write-Log "SumatraPDF not found locally. Downloading official package..."
+    $zipUrl = "https://files2.sumatrapdfreader.org/software/sumatrapdf/rel/3.6.1/SumatraPDF-3.6.1-64.zip"
+    $zipDest = "$AppDir\sumatra_temp.zip"
+    try {
+        Invoke-WebRequest -Uri $zipUrl -OutFile $zipDest -TimeoutSec 45 -UseBasicParsing -ErrorAction Stop
+        if (Test-Path $zipDest) {
+            Expand-Archive -Path $zipDest -DestinationPath $AppDir -Force
+            Remove-Item -Path $zipDest -Force -ErrorAction SilentlyContinue
+            if (Test-Path $SumatraExe) {
+                Write-Log "SumatraPDF downloaded and extracted successfully."
+                return $true
+            }
+        }
+    } catch {
+        Write-Log "ZIP download failed: $_. Trying standalone release URL..."
+        $directExeUrl = "https://github.com/sumatrapdfreader/sumatrapdf/releases/download/v3.5.2/SumatraPDF-3.5.2-64.exe"
+        try {
+            Invoke-WebRequest -Uri $directExeUrl -OutFile $SumatraExe -TimeoutSec 45 -UseBasicParsing -ErrorAction Stop
+            $dlFile = Get-Item $SumatraExe -ErrorAction SilentlyContinue
+            if ($dlFile -and $dlFile.Length -gt 1000000) {
+                Write-Log "Standalone SumatraPDF downloaded successfully."
+                return $true
+            } else {
+                Remove-Item -Path $SumatraExe -Force -ErrorAction SilentlyContinue
+            }
+        } catch {
+            Write-Log "Direct exe download failed: $_"
+        }
+    }
+
     return (Test-Path $SumatraExe)
 }
 
 # Ensure printer tool exists in background
 [void](Ensure-SumatraPDF)
+
+# Native Windows Image Printing Fallback (.NET)
+Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
+function Print-ImageNative {
+    param(
+        [string]$ImagePath,
+        [int]$Copies = 1,
+        [string]$TargetPrinter = "",
+        [bool]$Color = $false
+    )
+    try {
+        Write-Log "Dispatching native image print: $ImagePath to '$TargetPrinter'"
+        $doc = New-Object System.Drawing.Printing.PrintDocument
+        if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+            $doc.PrinterSettings.PrinterName = $TargetPrinter
+        }
+        $doc.PrinterSettings.Copies = [short]$Copies
+        $doc.PrinterSettings.DefaultPageSettings.Color = $Color
+
+        $image = [System.Drawing.Image]::FromFile($ImagePath)
+        $doc.add_PrintPage({
+            param($sender, $e)
+            $bounds = $e.MarginBounds
+            $ratioX = $bounds.Width / $image.Width
+            $ratioY = $bounds.Height / $image.Height
+            $ratio = [Math]::Min($ratioX, $ratioY)
+            $newW = [int]($image.Width * $ratio)
+            $newH = [int]($image.Height * $ratio)
+            $x = $bounds.Left + [int](($bounds.Width - $newW) / 2)
+            $y = $bounds.Top + [int](($bounds.Height - $newH) / 2)
+            $e.Graphics.DrawImage($image, $x, $y, $newW, $newH)
+            $e.HasMorePages = $false
+        })
+
+        $doc.Print()
+        $doc.Dispose()
+        $image.Dispose()
+        Write-Log "Native image print completed successfully."
+        return $true
+    } catch {
+        Write-Log "Native image print failed: $_"
+        $script:LastPrintError = "Native image print failed: $_"
+        return $false
+    }
+}
 
 function Get-DetailedPrinters {
     try {
@@ -106,7 +191,9 @@ function Print-DocumentSilently {
         [string]$TargetPrinter = ""
     )
 
-    # Determine printer if not specified by server
+    $script:LastPrintError = ""
+
+    # 1. Determine target printer if not specified by server
     if ([string]::IsNullOrWhiteSpace($TargetPrinter)) {
         if ($ColorType -eq "color" -and !([string]::IsNullOrWhiteSpace($script:ColorPrinter))) {
             $TargetPrinter = $script:ColorPrinter
@@ -115,8 +202,27 @@ function Print-DocumentSilently {
         }
     }
 
+    # 2. Validate that target printer exists in system (fallback to default if renamed/missing)
+    if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+        try {
+            $escaped = $TargetPrinter.Replace("'", "''")
+            $installed = Get-CimInstance Win32_Printer -Filter "Name = '$escaped'" -ErrorAction SilentlyContinue
+            if (!$installed) {
+                Write-Log "Target printer '$TargetPrinter' not found in system! Falling back to default printer."
+                $TargetPrinter = ""
+            }
+        } catch {
+            Write-Log "Could not verify printer '$TargetPrinter': $_"
+        }
+    }
+
+    $ext = [System.IO.Path]::GetExtension($FilePath).ToLower()
+    $isImage = $ext -in @('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp')
+
+    # 3. Print using SumatraPDF Portable
     try {
-        if (Test-Path $SumatraExe) {
+        $hasSumatra = (Test-Path $SumatraExe) -and ((Get-Item $SumatraExe).Length -gt 1000000)
+        if ($hasSumatra) {
             $printSettings = "$Copies" + "x"
             if ($ColorType -eq "bw") {
                 $printSettings += ",monochrome"
@@ -124,29 +230,64 @@ function Print-DocumentSilently {
                 $printSettings += ",color"
             }
 
-            $argList = ""
+            # Build argument array for Start-Process to avoid quote-stripping issues
+            $argsList = @()
             if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-                Write-Log "Printing via SumatraPDF to [$TargetPrinter]: $FilePath (settings: $printSettings)"
-                $argList = "-print-to `"$TargetPrinter`" -print-settings `"$printSettings`" -silent `"$FilePath`""
+                $argsList += "-print-to"
+                $argsList += $TargetPrinter
             } else {
-                Write-Log "Printing via SumatraPDF to [Default Printer]: $FilePath (settings: $printSettings)"
-                $argList = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
+                $argsList += "-print-to-default"
+            }
+            $argsList += "-print-settings"
+            $argsList += $printSettings
+            $argsList += "-silent"
+            $argsList += $FilePath
+
+            $destName = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) { $TargetPrinter } else { "Default Printer" }
+            Write-Log "Printing via SumatraPDF to [$destName]: $FilePath ($printSettings)"
+
+            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argsList -PassThru -WindowStyle Hidden
+            $finished = $p.WaitForExit(60000) # Wait up to 60 seconds
+            if (!$finished) {
+                Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+                throw "SumatraPDF timed out after 60 seconds."
             }
 
-            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argList -PassThru -WindowStyle Hidden
-            $p.WaitForExit(60000) # Wait up to 60 seconds
-            return $true
-        } else {
-            # Fallback to standard Windows print shell
-            Write-Log "SumatraPDF not found, printing via default shell verb: $FilePath"
-            for ($i = 0; $i -lt $Copies; $i++) {
-                $p = Start-Process -FilePath $FilePath -Verb Print -PassThru -WindowStyle Hidden
-                $p.WaitForExit(30000)
+            if ($p.ExitCode -eq 0) {
+                Write-Log "SumatraPDF completed successfully (exit code 0)."
+                return $true
+            } else {
+                Write-Log "SumatraPDF exited with code: $($p.ExitCode)"
+                if ($isImage) {
+                    Write-Log "SumatraPDF failed on image, attempting native .NET printing fallback..."
+                    return Print-ImageNative -ImagePath $FilePath -Copies $Copies -TargetPrinter $TargetPrinter -Color ($ColorType -eq "color")
+                }
+                $script:LastPrintError = "SumatraPDF exit code $($p.ExitCode)"
+                return $false
             }
-            return $true
         }
     } catch {
-        Write-Log "Printing error: $_"
+        Write-Log "SumatraPDF print exception: $_"
+        $script:LastPrintError = "$_"
+    }
+
+    # 4. Fallback for Images using native .NET
+    if ($isImage) {
+        Write-Log "Using native image printing for: $FilePath"
+        return Print-ImageNative -ImagePath $FilePath -Copies $Copies -TargetPrinter $TargetPrinter -Color ($ColorType -eq "color")
+    }
+
+    # 5. Ultimate Fallback to Windows Shell Verb Print
+    try {
+        Write-Log "Fallback: Printing via default Windows shell verb: $FilePath"
+        for ($i = 0; $i -lt $Copies; $i++) {
+            $p = Start-Process -FilePath $FilePath -Verb Print -PassThru -WindowStyle Hidden
+            $p.WaitForExit(30000)
+        }
+        return $true
+    } catch {
+        Write-Log "Shell print error: $_"
+        $script:LastPrintError = "Shell print error: $_"
         return $false
     }
 }
@@ -188,7 +329,7 @@ while ($true) {
             foreach ($job in $jobsResponse.jobs) {
                 Write-Log "Processing Job #$($job.job_code) - Filename: $($job.original_filename) ($($job.copies) copies, $($job.color_type), target: $($job.target_printer))"
                 
-                # Acknowledge downloading
+                # Acknowledge downloading / printing
                 try {
                     $ackPayload = @{
                         token = $AgentToken
@@ -237,17 +378,18 @@ while ($true) {
                     } | ConvertTo-Json
                     Invoke-RestMethod -Uri "$ServerUrl/api/print-agent/update-status" -Method Post -Body $donePayload -ContentType "application/json" -TimeoutSec 10 -ErrorAction SilentlyContinue | Out-Null
                 } else {
-                    Write-Log "Job #$($job.job_code) failed during printing."
+                    $errMsg = if (![string]::IsNullOrWhiteSpace($script:LastPrintError)) { $script:LastPrintError } else { "Printer error or document could not be dispatched." }
+                    Write-Log "Job #$($job.job_code) failed during printing: $errMsg"
                     $failPayload = @{
                         token = $AgentToken
                         job_code = $job.job_code
                         status = "failed"
-                        error = "Printer error or document could not be dispatched."
+                        error = $errMsg
                     } | ConvertTo-Json
                     Invoke-RestMethod -Uri "$ServerUrl/api/print-agent/update-status" -Method Post -Body $failPayload -ContentType "application/json" -TimeoutSec 10 -ErrorAction SilentlyContinue | Out-Null
                 }
 
-                # Clean up local file
+                # Clean up local file after a short delay
                 Start-Sleep -Seconds 3
                 Remove-Item -Path $localFilePath -Force -ErrorAction SilentlyContinue
             }

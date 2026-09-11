@@ -23,6 +23,7 @@ copy /y "%~dp0silent_starter.vbs" "%TARGET_DIR%\" >nul
 if exist "%~dp0config.json" copy /y "%~dp0config.json" "%TARGET_DIR%\" >nul
 copy /y "%~dp0Check-Status.bat" "%TARGET_DIR%\" >nul 2>&1
 copy /y "%~dp0Uninstall-Service.bat" "%TARGET_DIR%\" >nul 2>&1
+if exist "%~dp0SumatraPDF.exe" copy /y "%~dp0SumatraPDF.exe" "%TARGET_DIR%\" >nul
 
 :: Add to Windows Startup Registry (Auto-starts silently on computer restart)
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "CSPPrintService" /t REG_SZ /d "wscript.exe \"%TARGET_DIR%\silent_starter.vbs\"" /f >nul
