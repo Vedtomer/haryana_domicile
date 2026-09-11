@@ -42,46 +42,88 @@ class PrintAgentApiController extends Controller
             } else {
                 $updateData['detected_printers'] = [];
             }
-            // Auto-detect and route B&W and Color printers if not yet explicitly saved
-            $detectedList = $updateData['detected_printers'];
-            if (empty($shop->color_printer)) {
-                foreach ($detectedList as $p) {
-                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                    if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
-                        $updateData['color_printer'] = $name;
-                        break;
-                    }
-                }
-            }
-
-            if (empty($shop->bw_printer)) {
-                foreach ($detectedList as $p) {
-                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                    if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono/i', $name)) {
-                        $updateData['bw_printer'] = $name;
-                        break;
-                    }
-                }
-            }
-
-            $effectiveColor = $updateData['color_printer'] ?? $shop->color_printer;
-            $effectiveBw = $updateData['bw_printer'] ?? $shop->bw_printer;
-            if ($effectiveColor && $effectiveBw && $shop->printer_mode !== 'dual') {
-                $updateData['printer_mode'] = 'dual';
-            }
         }
 
         $shop->update($updateData);
+        $shop->refresh();
+
+        $routed = self::autoRouteShopPrinters($shop);
 
         return response()->json([
             'success' => true,
             'shop_code' => $shop->shop_code,
             'shop_name' => $shop->shop_name,
             'is_online' => true,
-            'bw_printer' => $effectiveBw,
-            'color_printer' => $effectiveColor,
-            'printer_mode' => $updateData['printer_mode'] ?? ($shop->printer_mode ?: 'single'),
+            'bw_printer' => $routed['bw_printer'],
+            'color_printer' => $routed['color_printer'],
+            'printer_mode' => $routed['printer_mode'],
         ]);
+    }
+
+    /**
+     * Auto-detect and route B&W (Canon/Laser) and Color (Epson/Inkjet) printers
+     */
+    public static function autoRouteShopPrinters(PrintShop $shop, array $detectedList = null): array
+    {
+        if ($detectedList === null) {
+            $raw = $shop->detected_printers;
+            $detectedList = is_array($raw) ? $raw : (json_decode($raw, true) ?: []);
+        }
+
+        $epsonName = null;
+        $canonName = null;
+
+        foreach ($detectedList as $p) {
+            $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+            if (!$name) continue;
+
+            if (!$epsonName && preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80|photo/i', $name)) {
+                $epsonName = $name;
+            }
+            if (!$canonName && preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf280|mf3010|laserjet/i', $name)) {
+                $canonName = $name;
+            }
+        }
+
+        $updates = [];
+
+        // Correct B&W printer:
+        if ($canonName) {
+            if (empty($shop->bw_printer) || preg_match('/epson|inkjet|deskjet|tank|pixma/i', $shop->bw_printer) || ($shop->bw_printer === $shop->color_printer && $shop->color_printer === $epsonName)) {
+                $updates['bw_printer'] = $canonName;
+            }
+        } elseif (empty($shop->bw_printer) && !empty($detectedList)) {
+            $first = is_array($detectedList[0]) ? ($detectedList[0]['name'] ?? '') : (string)$detectedList[0];
+            $updates['bw_printer'] = $first;
+        }
+
+        // Correct Color printer:
+        if ($epsonName) {
+            if (empty($shop->color_printer) || preg_match('/canon|laser|lbp|mono|mf280|mf3010/i', $shop->color_printer)) {
+                $updates['color_printer'] = $epsonName;
+            }
+        } elseif (empty($shop->color_printer) && !empty($detectedList)) {
+            $first = is_array($detectedList[0]) ? ($detectedList[0]['name'] ?? '') : (string)$detectedList[0];
+            $updates['color_printer'] = $first;
+        }
+
+        $finalBw = $updates['bw_printer'] ?? $shop->bw_printer;
+        $finalColor = $updates['color_printer'] ?? $shop->color_printer;
+
+        if ($finalBw && $finalColor && $finalBw !== $finalColor) {
+            $updates['printer_mode'] = 'dual';
+        }
+
+        if (!empty($updates)) {
+            $shop->update($updates);
+            $shop->refresh();
+        }
+
+        return [
+            'bw_printer' => $shop->bw_printer,
+            'color_printer' => $shop->color_printer,
+            'printer_mode' => $shop->printer_mode ?: 'single',
+        ];
     }
 
     /**
@@ -105,33 +147,8 @@ class PrintAgentApiController extends Controller
             'last_heartbeat_at' => now(),
         ]);
 
-        // Auto-assign B&W and Color printers if not yet chosen
-        if (empty($shop->color_printer) || empty($shop->bw_printer)) {
-            $rawList = is_array($shop->detected_printers) ? $shop->detected_printers : (json_decode($shop->detected_printers, true) ?: []);
-            $autoUpdates = [];
-            if (empty($shop->color_printer)) {
-                foreach ($rawList as $p) {
-                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                    if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
-                        $autoUpdates['color_printer'] = $name;
-                        break;
-                    }
-                }
-            }
-            if (empty($shop->bw_printer)) {
-                foreach ($rawList as $p) {
-                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                    if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf3010/i', $name)) {
-                        $autoUpdates['bw_printer'] = $name;
-                        break;
-                    }
-                }
-            }
-            if (!empty($autoUpdates)) {
-                $shop->update($autoUpdates);
-                $shop->refresh();
-            }
-        }
+        // Auto-assign / repair B&W and Color printers
+        self::autoRouteShopPrinters($shop);
 
         $jobs = PrintJob::where('print_shop_id', $shop->id)
             ->where('status', 'pending')

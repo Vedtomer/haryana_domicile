@@ -868,6 +868,9 @@ Route::get('/test-login', function() {
 
 Route::get('/debug-shop-printers', function() {
     $shop = \App\Models\PrintShop::where('shop_code', 'G2YACN')->first();
+    if ($shop) {
+        \App\Http\Controllers\Api\PrintAgentApiController::autoRouteShopPrinters($shop);
+    }
     $lastJobs = $shop ? \App\Models\PrintJob::where('print_shop_id', $shop->id)->orderBy('id', 'desc')->take(5)->get() : [];
     return response()->json([
         'shop' => $shop,

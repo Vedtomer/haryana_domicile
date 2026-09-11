@@ -206,6 +206,30 @@ function Get-DetailedPrinters {
     }
 }
 
+function Set-ActivePrinter {
+    param([string]$PrinterName)
+    if ([string]::IsNullOrWhiteSpace($PrinterName)) { return }
+    try {
+        # 1. Disable Windows automatic default printer management (which overrides manual switching)
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Windows" -Name "LegacyDefaultPrinterMode" -Value 1 -Force -ErrorAction SilentlyContinue
+
+        # 2. Native Win32 PrintUI Entry (direct system default printer switch)
+        Start-Process -FilePath "rundll32.exe" -ArgumentList "printui.dll,PrintUIEntry /y /n `"$PrinterName`"" -NoNewWindow -Wait -ErrorAction SilentlyContinue
+
+        # 3. CIM / WMI
+        $wmiPrinter = Get-CimInstance Win32_Printer -Filter "Name = '$PrinterName'" -ErrorAction SilentlyContinue
+        if ($wmiPrinter) {
+            Invoke-CimMethod -InputObject $wmiPrinter -MethodName "SetDefaultPrinter" -ErrorAction SilentlyContinue | Out-Null
+        }
+
+        # 4. COM WScript.Network
+        (New-Object -ComObject WScript.Network).SetDefaultPrinter($PrinterName)
+        Write-Log "Switched Windows default printer to: '$PrinterName'"
+    } catch {
+        Write-Log "Note switching default printer: $_"
+    }
+}
+
 function Print-DocumentSilently {
     param(
         [string]$FilePath,
@@ -215,6 +239,7 @@ function Print-DocumentSilently {
     )
 
     $script:LastPrintError = ""
+    $script:LastDispatchedPrinter = ""
 
     # 1. Inspect all physical local printers installed on Windows
     $allPrinters = Get-CimInstance Win32_Printer -ErrorAction SilentlyContinue
@@ -223,33 +248,38 @@ function Print-DocumentSilently {
     $localColorPrinter = ($allPrinters | Where-Object { $_.Name -match "Epson|Color|DeskJet|InkJet|Tank|Pixma|Photo|L31|L32|L80|L3150|L3250|L3110" } | Select-Object -First 1).Name
 
     # Find physical Canon/Laser/Monochrome printer
-    $localBwPrinter = ($allPrinters | Where-Object { $_.Name -match "Canon|Laser|LBP|1020|M1005|Brother|Mono|MF3010|LaserJet" } | Select-Object -First 1).Name
+    $localBwPrinter = ($allPrinters | Where-Object { $_.Name -match "Canon|Laser|LBP|1020|M1005|Brother|Mono|MF3010|MF280|LaserJet" } | Select-Object -First 1).Name
 
     Write-Log "Hardware Check - Local Color: '$localColorPrinter', Local B&W: '$localBwPrinter'"
 
     # 2. Strict Smart Routing based on ColorType requested by customer
     if ($ColorType -eq "color") {
-        # This is a COLOR print! Must go to Color/Epson printer
-        if (![string]::IsNullOrWhiteSpace($script:ColorPrinter) -and ($script:ColorPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010")) {
-            $TargetPrinter = $script:ColorPrinter
-        } elseif (![string]::IsNullOrWhiteSpace($localColorPrinter)) {
+        # This is a COLOR print! Must physically go to Color/Epson printer
+        if (![string]::IsNullOrWhiteSpace($localColorPrinter)) {
             $TargetPrinter = $localColorPrinter
-            Write-Log "Color Routing: Auto-selected local color printer '$TargetPrinter'"
-        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter) -and ($TargetPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010")) {
-            # Keep provided target printer
+            Write-Log "Color Routing: Selected local physical color printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($script:ColorPrinter) -and ($script:ColorPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010|MF280")) {
+            $TargetPrinter = $script:ColorPrinter
+            Write-Log "Color Routing: Selected assigned color printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter) -and ($TargetPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010|MF280")) {
+            Write-Log "Color Routing: Selected target color printer '$TargetPrinter'"
         } else {
-            Write-Log "Warning: No color printer found, using default."
+            Write-Log "Warning: No dedicated color printer found, using default."
             $TargetPrinter = ""
         }
     } else {
-        # This is a B&W print! Must go to B&W/Canon printer
-        if (![string]::IsNullOrWhiteSpace($script:BwPrinter)) {
-            $TargetPrinter = $script:BwPrinter
-        } elseif (![string]::IsNullOrWhiteSpace($localBwPrinter)) {
+        # This is a B&W print! Must physically go to B&W/Canon printer
+        if (![string]::IsNullOrWhiteSpace($localBwPrinter)) {
             $TargetPrinter = $localBwPrinter
-            Write-Log "B&W Routing: Auto-selected local B&W printer '$TargetPrinter'"
-        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-            # Keep provided target printer
+            Write-Log "B&W Routing: Selected local physical B&W printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($script:BwPrinter) -and ($script:BwPrinter -notmatch "Epson|DeskJet|InkJet|Tank|Pixma")) {
+            $TargetPrinter = $script:BwPrinter
+            Write-Log "B&W Routing: Selected assigned B&W printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter) -and ($TargetPrinter -notmatch "Epson|DeskJet|InkJet|Tank|Pixma")) {
+            Write-Log "B&W Routing: Selected target B&W printer '$TargetPrinter'"
+        } else {
+            Write-Log "Warning: No dedicated B&W printer found, using default."
+            $TargetPrinter = ""
         }
     }
 
@@ -258,17 +288,19 @@ function Print-DocumentSilently {
         $matched = $allPrinters | Where-Object { $_.Name -like "*$TargetPrinter*" -or $TargetPrinter -like "*$($_.Name)*" } | Select-Object -First 1
         if ($matched) {
             $TargetPrinter = $matched.Name
-            Write-Log "Resolved target printer: '$TargetPrinter'"
+            Write-Log "Resolved exact target printer: '$TargetPrinter'"
         } else {
-            Write-Log "Target printer '$TargetPrinter' not found in system! Available: $(($allPrinters.Name) -join ', '). Falling back to default printer."
-            $TargetPrinter = ""
+            Write-Log "Target printer '$TargetPrinter' not found in system! Available: $(($allPrinters.Name) -join ', ')."
         }
     }
+
+    $script:LastDispatchedPrinter = $TargetPrinter
+    $destName = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) { $TargetPrinter } else { "Default Printer" }
 
     $ext = [System.IO.Path]::GetExtension($FilePath).ToLower()
     $isImage = $ext -in @('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp')
 
-    # 3. Print using SumatraPDF Portable
+    # 4. Print using SumatraPDF Portable
     try {
         $hasSumatra = (Test-Path $SumatraExe) -and ((Get-Item $SumatraExe).Length -gt 1000000)
         if ($hasSumatra) {
@@ -279,26 +311,18 @@ function Print-DocumentSilently {
 
             # Set Windows Default Printer to target printer for 100% reliable hardware dispatch
             if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-                try {
-                    (New-Object -ComObject WScript.Network).SetDefaultPrinter($TargetPrinter)
-                    Write-Log "Active Windows Default Printer switched to: '$TargetPrinter'"
-                } catch {
-                    Write-Log "SetDefaultPrinter note: $_"
-                }
+                Set-ActivePrinter -PrinterName $TargetPrinter
             }
 
-            # Build argument string with double-quoted printer name
-            $argString = ""
-            if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-                $argString = "-print-to `"$TargetPrinter`" -print-settings `"$printSettings`" -silent `"$FilePath`""
+            # Build argument array so PowerShell quotes spaces properly
+            $sumatraArgs = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+                @("-print-to", $TargetPrinter, "-print-settings", $printSettings, "-silent", $FilePath)
             } else {
-                $argString = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
+                @("-print-to-default", "-print-settings", $printSettings, "-silent", $FilePath)
             }
 
-            $destName = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) { $TargetPrinter } else { "Default Printer" }
-            Write-Log "Printing via SumatraPDF to [$destName]: $argString"
-
-            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argString -PassThru -WindowStyle Hidden
+            Write-Log "Printing via SumatraPDF to [$destName] with array args: $($sumatraArgs -join ' ')"
+            $p = Start-Process -FilePath $SumatraExe -ArgumentList $sumatraArgs -PassThru -WindowStyle Hidden
             $finished = $p.WaitForExit(60000) # Wait up to 60 seconds
             if (!$finished) {
                 Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
@@ -306,23 +330,32 @@ function Print-DocumentSilently {
             }
 
             if ($p.ExitCode -eq 0) {
-                Write-Log "SumatraPDF completed successfully (exit code 0)."
+                Write-Log "SumatraPDF completed successfully (exit code 0) on printer: $destName"
                 return $true
             } else {
-                Write-Log "SumatraPDF exited with code: $($p.ExitCode)"
-                # Fallback to -print-to-default
-                $defArgString = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
-                $pDef = Start-Process -FilePath $SumatraExe -ArgumentList $defArgString -PassThru -WindowStyle Hidden
-                $finishedDef = $pDef.WaitForExit(60000)
-                if ($finishedDef -and $pDef.ExitCode -eq 0) {
-                    Write-Log "Fallback print to default printer completed successfully!"
+                Write-Log "SumatraPDF direct run exited with code: $($p.ExitCode). Trying via cmd.exe wrapper..."
+                # Second attempt: invoke via cmd.exe /c to guarantee exact Win32 quotes
+                $cmdToRun = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+                    "`"`"$SumatraExe`" -print-to `"$TargetPrinter`" -print-settings `"$printSettings`" -silent `"$FilePath`"`""
+                } else {
+                    "`"`"$SumatraExe`" -print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`"`""
+                }
+                $pCmd = Start-Process -FilePath "cmd.exe" -ArgumentList "/c $cmdToRun" -PassThru -WindowStyle Hidden
+                $finishedCmd = $pCmd.WaitForExit(60000)
+                if ($finishedCmd -and $pCmd.ExitCode -eq 0) {
+                    Write-Log "SumatraPDF via cmd.exe completed successfully (exit code 0) on printer: $destName"
                     return $true
                 }
+
+                Write-Log "SumatraPDF cmd wrapper exited with code: $($pCmd.ExitCode)"
+
+                # Fallback for Images using native .NET
                 if ($isImage) {
                     Write-Log "SumatraPDF failed on image, attempting native .NET printing fallback..."
                     return Print-ImageNative -ImagePath $FilePath -Copies $Copies -TargetPrinter $TargetPrinter -Color ($ColorType -eq "color")
                 }
-                $script:LastPrintError = "SumatraPDF exit code $($p.ExitCode)"
+
+                $script:LastPrintError = "SumatraPDF failed to print to $destName (exit code $($p.ExitCode))"
                 return $false
             }
         }
@@ -331,25 +364,14 @@ function Print-DocumentSilently {
         $script:LastPrintError = "$_"
     }
 
-    # 4. Fallback for Images using native .NET
+    # 5. Fallback for Images using native .NET
     if ($isImage) {
         Write-Log "Using native image printing for: $FilePath"
         return Print-ImageNative -ImagePath $FilePath -Copies $Copies -TargetPrinter $TargetPrinter -Color ($ColorType -eq "color")
     }
 
-    # 5. Ultimate Fallback to Windows Shell Verb Print
-    try {
-        Write-Log "Fallback: Printing via default Windows shell verb: $FilePath"
-        for ($i = 0; $i -lt $Copies; $i++) {
-            $p = Start-Process -FilePath $FilePath -Verb Print -PassThru -WindowStyle Hidden
-            $p.WaitForExit(30000)
-        }
-        return $true
-    } catch {
-        Write-Log "Shell print error: $_"
-        $script:LastPrintError = "Shell print error: $_"
-        return $false
-    }
+    $script:LastPrintError = "Printing failed: SumatraPDF engine not ready and document is not an image."
+    return $false
 }
 
 function Check-SelfUpdate {
@@ -467,9 +489,14 @@ while ($true) {
 
                 $printSuccess = Print-DocumentSilently -FilePath $localFilePath -Copies $copies -ColorType $colorType -TargetPrinter $targetPrinter
 
-                # Report Completion or Failure
                 if ($printSuccess) {
-                    $dispatchedPrinter = if (![string]::IsNullOrWhiteSpace($targetPrinter)) { $targetPrinter } else { "Default Printer" }
+                    $dispatchedPrinter = if (![string]::IsNullOrWhiteSpace($script:LastDispatchedPrinter)) {
+                        $script:LastDispatchedPrinter
+                    } elseif (![string]::IsNullOrWhiteSpace($targetPrinter)) {
+                        $targetPrinter
+                    } else {
+                        "Default Printer"
+                    }
                     Write-Log "Job #$($job.job_code) printed successfully on [$dispatchedPrinter]."
                     $donePayload = @{
                         token = $AgentToken
