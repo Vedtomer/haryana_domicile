@@ -181,56 +181,36 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-2">
-                    <span className="text-xl">🖨️</span>
-                    <h1 className="text-xl font-bold text-slate-800 dark:text-white">
-                        QR to Print (Smart Counter)
-                    </h1>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                    <div className="flex items-center gap-3">
+                        <span className="text-2xl">🖨️</span>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
+                                    {shop?.shop_name || 'QR to Print (Smart Counter)'}
+                                </h1>
+                                <span className="px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                    #{shop?.shop_code || '------'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Live Online Status Badge */}
+                    <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border font-bold text-xs shadow-2xs ${
+                        shop?.is_online 
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' 
+                        : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                    }`}>
+                        <span className={`w-2.5 h-2.5 rounded-full ${shop?.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+                        <span>{shop?.is_online ? 'Printer Service: Online (Connected)' : 'Printer Service: Offline'}</span>
+                    </div>
                 </div>
             }
         >
-            <Head title="QR to Print - Smart Counter" />
+            <Head title={`QR to Print - ${shop?.shop_name || 'Smart Counter'}`} />
 
             <div className="max-w-7xl mx-auto space-y-6 pb-12">
-                {/* 1. Header & Live Status Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-                                {shop?.shop_name || 'My Shop Print Point'}
-                            </h2>
-                            <span className="px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                                #{shop?.shop_code || '------'}
-                            </span>
-                        </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Direct QR Scan & Auto-Print for Customers • No WhatsApp or Bluetooth needed
-                        </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* Status Badge */}
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-semibold text-sm ${
-                            shop?.is_online 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' 
-                            : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
-                        }`}>
-                            <span className={`w-3 h-3 rounded-full ${shop?.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
-                            <span>{shop?.is_online ? 'Printer Service: Online (Connected)' : 'Printer Service: Offline'}</span>
-                        </div>
-
-                        {/* Standee Button */}
-                        <Link
-                            href="/admin/qr-to-print/standee"
-                            target="_blank"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-sm rounded-xl shadow-md transition-all hover:scale-[1.02]"
-                        >
-                            <span>🖨️</span>
-                            <span>Print Counter Standee (A4)</span>
-                        </Link>
-                    </div>
-                </div>
-
                 {/* Monthly Subscription & Coins Plan Banner */}
                 {hidePlan ? (
                     <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3 flex items-center justify-between shadow-2xs">
@@ -456,7 +436,17 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                                 Aapke computer ke active/offline printers yahan detect honge. Black & White aur Color print ke liye alag alag printer set karein.
                             </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            {/* Service Status Badge */}
+                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-bold text-xs ${
+                                shop?.is_online 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' 
+                                : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                            }`}>
+                                <span className={`w-2 h-2 rounded-full ${shop?.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+                                <span>{shop?.is_online ? 'PC Online (Connected)' : 'PC Offline'}</span>
+                            </div>
+
                             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                                 {detectedPrinters.length} Printer{detectedPrinters.length === 1 ? '' : 's'} Detected
                             </span>
@@ -739,11 +729,19 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                                 Share this link or place the QR standee on your cyber cafe counter.
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 w-full md:w-auto">
+                        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                            <Link
+                                href="/admin/qr-to-print/standee"
+                                target="_blank"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all hover:scale-105 shrink-0"
+                            >
+                                <span>🖨️</span>
+                                <span>Print Counter Standee (A4)</span>
+                            </Link>
                             <button
                                 type="button"
                                 onClick={handleCopyLink}
-                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-all cursor-pointer"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-all cursor-pointer shrink-0"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                                 <span>{copied ? 'Copied!' : 'Copy Customer Link'}</span>
@@ -751,7 +749,7 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                             <button
                                 type="button"
                                 onClick={() => setEditingSettings(!editingSettings)}
-                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 font-semibold text-xs rounded-xl transition-all cursor-pointer"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 font-semibold text-xs rounded-xl transition-all cursor-pointer shrink-0"
                             >
                                 <span>⚙️</span>
                                 <span>{editingSettings ? 'Close Settings' : 'Edit Rates & UPI'}</span>
