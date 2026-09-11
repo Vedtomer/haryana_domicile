@@ -346,6 +346,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'QR to Print (Smart Counter)',
+                'slug' => 'qr-to-print',
+                'description' => 'Direct QR Scan & Auto Print from Customer Mobile to Shop Printer.',
+                'icon' => '🖨️',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'qr_to_print',
+                'sort_order' => 27,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

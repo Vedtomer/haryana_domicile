@@ -20,6 +20,12 @@ class Service extends Model
      * coin cost / visibility of these but not their wiring.
      */
     const MODULES = [
+        'qr_to_print' => [
+            'label' => 'QR to Print (Smart Counter)',
+            'model' => null,
+            'index' => '/admin/qr-to-print',
+            'create' => '/admin/qr-to-print',
+        ],
         'marriage_form' => [
             'label' => 'Marriage Certificate',
             'model' => MarriageForm::class,

@@ -764,6 +764,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::resource('tenth-passbook', \App\Http\Controllers\Admin\TenthPassbookController::class);
         Route::get('tenth-passbook/{tenth_passbook}/print', [\App\Http\Controllers\Admin\TenthPassbookController::class, 'print'])->name('tenth-passbook.print'); 
 
+        // QR to Print (Smart Counter)
+        Route::get('qr-to-print', [\App\Http\Controllers\QrPrintController::class, 'index'])->name('qr-to-print.index');
+        Route::post('qr-to-print/settings', [\App\Http\Controllers\QrPrintController::class, 'updateSettings'])->name('qr-to-print.settings');
+        Route::get('qr-to-print/standee', [\App\Http\Controllers\QrPrintController::class, 'standee'])->name('qr-to-print.standee');
+        Route::get('qr-to-print/download-agent', [\App\Http\Controllers\QrPrintController::class, 'downloadAgentZip'])->name('qr-to-print.download-agent');
+        Route::post('qr-to-print/reprint/{id}', [\App\Http\Controllers\QrPrintController::class, 'reprintJob'])->name('qr-to-print.reprint');
+        Route::delete('qr-to-print/job/{id}', [\App\Http\Controllers\QrPrintController::class, 'deleteJob'])->name('qr-to-print.job.delete'); 
+
         Route::resource('airtel-passbook', \App\Http\Controllers\Admin\AirtelPassbookController::class);
         Route::get('airtel-passbook/{airtel_passbook}/print', [\App\Http\Controllers\Admin\AirtelPassbookController::class, 'print'])->name('airtel-passbook.print'); 
 
@@ -823,3 +831,17 @@ Route::get('/test-login', function() {
     auth()->loginUsingId(1);
     return redirect('/dashboard');
 });
+
+// Public Customer Mobile Portal for QR to Print
+Route::get('/p/{shop_code}', [\App\Http\Controllers\PublicPrintController::class, 'showUploadPage'])->name('public.qr-print.upload');
+Route::post('/p/{shop_code}/upload', [\App\Http\Controllers\PublicPrintController::class, 'uploadAndCreateJob'])->name('public.qr-print.submit');
+Route::get('/p/job/{job_code}/status', [\App\Http\Controllers\PublicPrintController::class, 'checkJobStatus'])->name('public.qr-print.status');
+
+// Silent Background Print Agent API
+Route::prefix('api/print-agent')->group(function () {
+    Route::post('/heartbeat', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'heartbeat']);
+    Route::get('/jobs', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'getPendingJobs']);
+    Route::get('/file/{job_code}', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'downloadFile']);
+    Route::post('/update-status', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'updateJobStatus']);
+});
+

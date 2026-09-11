@@ -147,6 +147,12 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 License Keys
                             </NavItem>
+                            <NavItem href="/admin/qr-to-print" icon={
+                                <span className="text-lg">🖨️</span>
+                            }>
+                                QR to Print
+                            </NavItem>
+
 
                         </>
                     )}
@@ -283,6 +289,13 @@ export default function AdminLayout({ header, children }) {
                             >
                                 <span className="w-4 h-4 flex items-center justify-center">🪙</span>
                                 Coin Ledger
+                            </Link>
+                            <Link
+                                href="/admin/qr-to-print"
+                                className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                                <span className="w-4 h-4 flex items-center justify-center">🖨️</span>
+                                QR to Print
                             </Link>
                             {auth?.user?.type === 'admin' && (
                                 <>
