@@ -48,6 +48,11 @@
                 });
             }
 
+        @php
+            $isAdminUser = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->hasRole('super_admin'));
+        @endphp
+        @if(!$isAdminUser)
+        <script>
             // Anti-Inspect & Right Click Block
             document.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
@@ -57,19 +62,7 @@
             function triggerLogout() {
                 if (isLoggingOut) return;
                 isLoggingOut = true;
-                
-                let form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/logout';
-                
-                let csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                document.body.appendChild(form);
-                form.submit();
+                window.location.href = '/logout';
             }
 
             document.addEventListener('keydown', function(e) {
@@ -114,13 +107,10 @@
             import devtools from '/devtools-detect.js';
             window.addEventListener('devtoolschange', event => {
                 if (event.detail.isOpen) {
-                    if (typeof triggerLogout === 'function') {
-                        triggerLogout();
-                    } else {
-                        window.location.href = '/logout';
-                    }
+                    triggerLogout();
                 }
             });
         </script>
+        @endif
     </body>
 </html>

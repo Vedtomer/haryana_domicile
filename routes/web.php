@@ -376,7 +376,7 @@ Route::get('/captcha/refresh', [AuthController::class, 'refreshCaptcha'])->name(
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
 Route::post('/register/send-otp', [AuthController::class, 'sendOtp'])->name('register.send-otp')->middleware(['guest', 'throttle:6,1']);
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Reactivation — no auth required (user is logged out)
 Route::get('/reactivate', [\App\Http\Controllers\ReactivationController::class, 'show'])->name('reactivate.show');
