@@ -266,6 +266,12 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=aapar',
             'create' => '/utilities/pvc-card-maker?card=aapar',
         ],
+        'verify_ifsc_code' => [
+            'label' => 'Verify IFSC Code',
+            'model' => null,
+            'index' => '/utilities/verify-ifsc-code',
+            'create' => '/utilities/verify-ifsc-code',
+        ],
 
     ];
 

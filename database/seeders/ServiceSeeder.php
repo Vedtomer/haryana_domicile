@@ -360,6 +360,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Verify IFSC Code',
+                'slug' => 'verify-ifsc-code',
+                'description' => 'Verify IFSC code to get complete bank & branch details.',
+                'icon' => '🏦',
+                'coin_cost' => 9,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'verify_ifsc_code',
+                'sort_order' => 28,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

@@ -679,7 +679,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/vehicle-to-mobile/search', [\App\Http\Controllers\VehicleToMobileController::class, 'search'])->name('utilities.vehicle-to-mobile.search');
 
-
+    Route::get('/utilities/verify-ifsc-code', [\App\Http\Controllers\IfscVerificationController::class, 'index'])->name('utilities.verify-ifsc-code');
+    Route::post('/utilities/verify-ifsc-code/verify', [\App\Http\Controllers\IfscVerificationController::class, 'verify'])->name('utilities.verify-ifsc-code.verify');
 
     Route::get('/utilities/passport-maker', [\App\Http\Controllers\PassportMakerController::class, 'index'])->name('utilities.passport-maker');
     Route::post('/utilities/passport-maker/deduct-coins', [\App\Http\Controllers\PassportMakerController::class, 'deductCoins'])->name('utilities.passport-maker.deduct-coins');
