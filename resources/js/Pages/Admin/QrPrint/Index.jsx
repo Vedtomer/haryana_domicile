@@ -106,14 +106,6 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
         }
     };
 
-    const handleRestorePrinter = (printerName) => {
-        router.post('/admin/qr-to-print/restore-printer', {
-            printer_name: printerName
-        }, {
-            preserveScroll: true
-        });
-    };
-
     const handleReprint = (jobId) => {
         if (confirm('Do you want to re-send this document to printer queue?')) {
             router.post(`/admin/qr-to-print/reprint/${jobId}`, {}, { preserveScroll: true });
@@ -369,37 +361,6 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
                                         </div>
                                     );
                                 })}
-                            </div>
-                        )}
-
-                        {/* Hidden / Deleted Printers Section */}
-                        {shop?.deleted_printers && shop.deleted_printers.length > 0 && (
-                            <div className="mt-3.5 p-3.5 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-xl">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                        <span>🗑️ Deleted / Hidden Printers:</span>
-                                        <span className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-400">
-                                            {shop.deleted_printers.length}
-                                        </span>
-                                    </span>
-                                </div>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                                    Ye printers dashboard aur customer upload page se hata diye gaye hain. Wapis laane ke liye Restore par click karein.
-                                </p>
-                                <div className="mt-2.5 flex flex-wrap gap-2">
-                                    {shop.deleted_printers.map((delName, i) => (
-                                        <div key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 shadow-2xs">
-                                            <span className="line-through text-slate-400">{delName}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRestorePrinter(delName)}
-                                                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold cursor-pointer text-[11px] hover:underline"
-                                            >
-                                                <span>↺ Restore</span>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         )}
                     </div>
