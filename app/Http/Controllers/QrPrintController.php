@@ -68,6 +68,9 @@ class QrPrintController extends Controller
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'deleted_printers')) {
                         $table->longText('deleted_printers')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'subscription_expires_at')) {
+                        $table->timestamp('subscription_expires_at')->nullable();
+                    }
                 });
             } catch (\Throwable $e) {
                 // Ignore if columns already present
@@ -176,6 +179,17 @@ class QrPrintController extends Controller
                 'bw_printer' => $shop->bw_printer,
                 'color_printer' => $shop->color_printer,
                 'printer_mode' => $shop->printer_mode ?: 'single',
+                'subscription_active' => $shop->isSubscriptionActive(),
+                'subscription_expires_at' => $shop->subscription_expires_at ? $shop->subscription_expires_at->toIso8601String() : null,
+                'subscription_days_left' => $shop->subscriptionDaysLeft(),
+            ],
+            'subscription' => [
+                'is_active' => $shop->isSubscriptionActive(),
+                'expires_at' => $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M Y, h:i A') : null,
+                'days_left' => $shop->subscriptionDaysLeft(),
+                'cost_coins' => 49,
+                'duration_days' => 30,
+                'user_coins' => (int) ($request->user() ? $request->user()->coins : 0),
             ],
             'jobs' => $jobs ?: [],
             'stats' => $stats,
@@ -288,6 +302,42 @@ class QrPrintController extends Controller
         ]);
 
         return redirect()->back()->with('success', "Printer '{$printerName}' restored! Agent heartbeat will re-detect it.");
+    }
+
+    /**
+     * Activate or renew 1-month subscription for 49 coins
+     */
+    public function subscribe(Request $request)
+    {
+        $user = $request->user();
+        $shop = $this->getOrCreateShop();
+        $cost = 49;
+
+        if (!$user->hasEnoughCoins($cost)) {
+            return back()->with('error', "Insufficient coins! QR to Print service activate karne ke liye aapke wallet me kam se kam {$cost} coins hone chahiye. (Aapka balance: {$user->coins} Coins)");
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $shop, $cost) {
+            $user->deductCoins(
+                $cost,
+                \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION,
+                "QR to Print Service - 1 Month Plan (49 Coins)",
+                \App\Models\CoinTransaction::SERVICE_QR_TO_PRINT ?? 'qr_to_print',
+                $shop->id
+            );
+
+            $base = ($shop->subscription_expires_at && $shop->subscription_expires_at->isFuture())
+                ? $shop->subscription_expires_at->copy()
+                : now();
+
+            $shop->update([
+                'subscription_expires_at' => $base->addDays(30),
+            ]);
+        });
+
+        $days = (int) now()->diffInDays($shop->fresh()->subscription_expires_at, false);
+
+        return back()->with('success', "🎉 QR to Print Service successfully activate ho gayi hai! 49 Coins deduct hue. Ab ye {$days} din tak active rahegi.");
     }
 
     /**

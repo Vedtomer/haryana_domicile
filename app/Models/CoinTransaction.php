@@ -22,6 +22,7 @@ class CoinTransaction extends Model
     const SERVICE_BIRTH_RECORD = 'birth_record';
     const SERVICE_HARYANA_DOMICILE = 'haryana_domicile';
     const SERVICE_PDF_CONVERTER = 'pdf_converter';
+    const SERVICE_QR_TO_PRINT = 'qr_to_print';
 
     protected $fillable = [
         'user_id',

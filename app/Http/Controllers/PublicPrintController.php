@@ -40,6 +40,7 @@ class PublicPrintController extends Controller
                 'color_printer' => $shop->color_printer ?: 'EPSON L3150 Series',
                 'printer_mode' => $shop->printer_mode ?: 'dual',
                 'detected_printers' => array_values($detectedPrinters),
+                'subscription_active' => $shop->isSubscriptionActive(),
             ],
         ]);
     }
@@ -50,6 +51,13 @@ class PublicPrintController extends Controller
     public function uploadAndCreateJob(Request $request, $shopCode)
     {
         $shop = PrintShop::where('shop_code', $shopCode)->firstOrFail();
+
+        if (!$shop->isSubscriptionActive()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Printing service is temporarily paused at this counter (Subscription inactive/expired). Please contact counter staff.',
+            ], 403);
+        }
 
         $request->validate([
             'file' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:51200',

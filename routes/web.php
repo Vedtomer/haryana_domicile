@@ -803,6 +803,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('qr-to-print/printer-settings', [\App\Http\Controllers\QrPrintController::class, 'updatePrinterSettings'])->name('qr-to-print.printer-settings');
         Route::post('qr-to-print/delete-printer', [\App\Http\Controllers\QrPrintController::class, 'deletePrinter'])->name('qr-to-print.delete-printer');
         Route::post('qr-to-print/restore-printer', [\App\Http\Controllers\QrPrintController::class, 'restorePrinter'])->name('qr-to-print.restore-printer');
+        Route::post('qr-to-print/subscribe', [\App\Http\Controllers\QrPrintController::class, 'subscribe'])->name('qr-to-print.subscribe');
         Route::get('qr-to-print/standee', [\App\Http\Controllers\QrPrintController::class, 'standee'])->name('qr-to-print.standee');
         Route::get('qr-to-print/download-agent', [\App\Http\Controllers\QrPrintController::class, 'downloadAgentZip'])->name('qr-to-print.download-agent');
         Route::post('qr-to-print/reprint/{id}', [\App\Http\Controllers\QrPrintController::class, 'reprintJob'])->name('qr-to-print.reprint');

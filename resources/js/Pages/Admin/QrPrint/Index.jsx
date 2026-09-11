@@ -35,9 +35,10 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
+function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} }) {
     const [copied, setCopied] = useState(false);
     const [editingSettings, setEditingSettings] = useState(false);
+    const [subscribing, setSubscribing] = useState(false);
 
     // Form for Shop Pricing & Name Settings
     const { 
@@ -68,10 +69,25 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
     // Auto-refresh printer queue and status every 8 seconds
     useEffect(() => {
         const interval = setInterval(() => {
-            router.reload({ only: ['jobs', 'shop', 'stats'] });
+            router.reload({ only: ['jobs', 'shop', 'stats', 'subscription'] });
         }, 8000);
         return () => clearInterval(interval);
     }, []);
+
+    const handleSubscribe = () => {
+        const isRenew = subscription?.is_active;
+        const msg = isRenew
+            ? 'Kya aap 49 coins deduct karke QR to Print service ko agle 30 din ke liye extend karna chahte hain?'
+            : 'Kya aap 49 coins deduct karke QR to Print service ko 1 mahine (30 din) ke liye activate karna chahte hain?';
+
+        if (confirm(msg)) {
+            setSubscribing(true);
+            router.post('/admin/qr-to-print/subscribe', {}, {
+                preserveScroll: true,
+                onFinish: () => setSubscribing(false),
+            });
+        }
+    };
 
     const handleCopyLink = () => {
         if (navigator?.clipboard && shop?.upload_url) {
@@ -190,6 +206,92 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
                             <span>🖨️</span>
                             <span>Print Counter Standee (A4)</span>
                         </Link>
+                    </div>
+                </div>
+
+                {/* Monthly Subscription & Coins Plan Banner */}
+                <div className={`rounded-2xl p-5 sm:p-6 border transition-all ${
+                    subscription?.is_active 
+                        ? 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border-emerald-500/30 dark:border-emerald-500/20 shadow-sm'
+                        : 'bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-orange-500/15 border-2 border-amber-500/40 dark:border-amber-500/30 shadow-md'
+                }`}>
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex items-start sm:items-center gap-3.5">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${
+                                subscription?.is_active 
+                                    ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' 
+                                    : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                            }`}>
+                                {subscription?.is_active ? '👑' : '🔒'}
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h3 className="font-black text-base text-slate-900 dark:text-white">
+                                        QR to Print Service Plan (49 Coins / 30 Din)
+                                    </h3>
+                                    {subscription?.is_active ? (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                                            <span>✓</span> Active Plan
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse">
+                                            <span>!</span> Inactive / Expired
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-300">
+                                    {subscription?.is_active ? (
+                                        <>
+                                            Aapka 1-month plan active hai. Validity: <strong className="text-slate-900 dark:text-white font-mono">{subscription?.expires_at}</strong> ({subscription?.days_left} din baaki)
+                                        </>
+                                    ) : (
+                                        <>
+                                            Counter par direct QR print service chalane ke liye 1 mahine ka plan activate karein.
+                                        </>
+                                    )}
+                                    {' '}• Wallet Balance: <strong className="text-amber-600 dark:text-amber-400">🪙 {subscription?.user_coins ?? 0} Coins</strong>
+                                </p>
+                                {!subscription?.is_active && (
+                                    <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300/90">
+                                        ⚠️ Active plan ke bina customer QR scan karke prints submit nahi kar payenge.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                            {subscription?.is_active ? (
+                                <button
+                                    type="button"
+                                    onClick={handleSubscribe}
+                                    disabled={subscribing}
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
+                                >
+                                    <span>↺</span>
+                                    <span>{subscribing ? 'Renewing...' : 'Renew Plan (+30 Din / 49 Coins)'}</span>
+                                </button>
+                            ) : (
+                                (subscription?.user_coins ?? 0) >= 49 ? (
+                                    <button
+                                        type="button"
+                                        onClick={handleSubscribe}
+                                        disabled={subscribing}
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-lg shadow-orange-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                    >
+                                        <span>⚡</span>
+                                        <span>{subscribing ? 'Activating Plan...' : 'Activate Service (49 Coins / 30 Din)'}</span>
+                                    </button>
+                                ) : (
+                                    <Link
+                                        href="/admin/coin-purchase-requests/create"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all"
+                                    >
+                                        <span>🪙</span>
+                                        <span>Recharge Coins (Need {49 - (subscription?.user_coins ?? 0)} more)</span>
+                                    </Link>
+                                )
+                            )}
+                        </div>
                     </div>
                 </div>
 

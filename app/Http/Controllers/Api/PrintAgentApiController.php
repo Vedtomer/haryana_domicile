@@ -69,6 +69,7 @@ class PrintAgentApiController extends Controller
             'bw_printer' => $routed['bw_printer'],
             'color_printer' => $routed['color_printer'],
             'printer_mode' => $routed['printer_mode'],
+            'subscription_active' => $shop->isSubscriptionActive(),
         ]);
     }
 
@@ -161,6 +162,15 @@ class PrintAgentApiController extends Controller
 
         // Auto-assign / repair B&W and Color printers
         self::autoRouteShopPrinters($shop);
+
+        if (!$shop->isSubscriptionActive()) {
+            return response()->json([
+                'success' => true,
+                'jobs' => [],
+                'subscription_active' => false,
+                'message' => 'Subscription inactive or expired. Please recharge 49 coins on dashboard.',
+            ]);
+        }
 
         $jobs = PrintJob::where('print_shop_id', $shop->id)
             ->where('status', 'pending')

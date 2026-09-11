@@ -26,6 +26,7 @@ class PrintShop extends Model
         'color_printer',
         'printer_mode',
         'deleted_printers',
+        'subscription_expires_at',
     ];
 
     protected $casts = [
@@ -35,7 +36,22 @@ class PrintShop extends Model
         'last_heartbeat_at' => 'datetime',
         'detected_printers' => 'array',
         'deleted_printers' => 'array',
+        'subscription_expires_at' => 'datetime',
     ];
+
+    public function isSubscriptionActive(): bool
+    {
+        return $this->subscription_expires_at !== null && $this->subscription_expires_at->isFuture();
+    }
+
+    public function subscriptionDaysLeft(): int
+    {
+        if (!$this->subscription_expires_at || $this->subscription_expires_at->isPast()) {
+            return 0;
+        }
+
+        return (int) now()->diffInDays($this->subscription_expires_at, false);
+    }
 
     public function user(): BelongsTo
     {

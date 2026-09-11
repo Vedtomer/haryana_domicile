@@ -125,7 +125,12 @@ export default function PublicUpload({ shop = {} }) {
                             Counter Code: #{shop?.shop_code || '------'}
                         </p>
                     </div>
-                    {shop?.is_online ? (
+                    {shop?.subscription_active === false ? (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/60">
+                            <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                            <span>Service Inactive</span>
+                        </div>
+                    ) : shop?.is_online ? (
                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             <span>Printer Ready</span>
@@ -246,6 +251,16 @@ export default function PublicUpload({ shop = {} }) {
                 ) : (
                     /* 2. Upload Form */
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {shop?.subscription_active === false && (
+                            <div className="p-4 bg-amber-950/70 border border-amber-600/70 rounded-2xl text-amber-200 text-xs space-y-1 text-center shadow-lg">
+                                <span className="text-3xl block mb-1">⏸️</span>
+                                <h3 className="font-bold text-sm text-amber-100">Printing Service Temporarily Paused</h3>
+                                <p className="text-slate-300 text-xs">
+                                    Iss counter par print service filhaal inactive hai. Kripya counter staff / shopkeeper se sampark karein.
+                                </p>
+                            </div>
+                        )}
+
                         {/* File Upload Box */}
                         <div
                             onClick={() => fileInputRef.current?.click()}
@@ -491,18 +506,24 @@ export default function PublicUpload({ shop = {} }) {
 
                             <button
                                 type="submit"
-                                disabled={uploading || !file}
+                                disabled={uploading || !file || shop?.subscription_active === false}
                                 className={`w-full py-4 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 transition-all ${
-                                    uploading || !file 
+                                    uploading || !file || shop?.subscription_active === false
                                     ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
                                     : 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 hover:scale-[1.01] active:scale-[0.99] cursor-pointer'
                                 }`}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                <span>{uploading ? 'Sending to Printer...' : `Print to ${activeTargetPrinter}`}</span>
+                                <span>
+                                    {shop?.subscription_active === false 
+                                        ? 'Counter Inactive (Subscription Paused)' 
+                                        : (uploading ? 'Sending to Printer...' : `Print to ${activeTargetPrinter}`)}
+                                </span>
                             </button>
                             <p className="text-center text-[11px] text-slate-400 mt-2">
-                                Counter par direct <strong>{activeTargetPrinter}</strong> se print nikalne ke liye click karein
+                                {shop?.subscription_active === false 
+                                    ? 'Kripya counter operator se printing service activate karne ko kahein'
+                                    : <>Counter par direct <strong>{activeTargetPrinter}</strong> se print nikalne ke liye click karein</>}
                             </p>
                         </div>
                     </form>
