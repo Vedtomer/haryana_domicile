@@ -157,7 +157,7 @@ export default function AdminLayout({ header, children }) {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-10 relative">
+                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">
                         {showSidebar && (
@@ -259,7 +259,7 @@ export default function AdminLayout({ header, children }) {
 
                      <NotificationBell />
 
-                     <div className="relative">
+                     <div className="relative z-50">
                          <button
                              onClick={() => setDropdownOpen(!dropdownOpen)}
                              className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
@@ -352,7 +352,7 @@ export default function AdminLayout({ header, children }) {
             
             {/* Click outside listener overlay */}
             {dropdownOpen && (
-                <div className="fixed inset-0 z-0" onClick={() => setDropdownOpen(false)}></div>
+                <div className="fixed inset-0 z-20" onClick={() => setDropdownOpen(false)}></div>
             )}
 
             <LicenseModal
