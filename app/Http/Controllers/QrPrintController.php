@@ -136,6 +136,12 @@ class QrPrintController extends Controller
             $shop->update(['is_online' => $isOnline]);
         }
 
+        // Self-heal: Ensure 1-month plan is capped at 30 days max
+        if ($shop->subscription_expires_at && $shop->subscriptionDaysLeft() > 30) {
+            $shop->update(['subscription_expires_at' => now()->addDays(30)]);
+            $shop->refresh();
+        }
+
         $jobs = PrintJob::where('print_shop_id', $shop->id)
             ->orderBy('id', 'desc')
             ->take(50)

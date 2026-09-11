@@ -40,6 +40,28 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
     const [editingSettings, setEditingSettings] = useState(false);
     const [subscribing, setSubscribing] = useState(false);
 
+    // Section collapse states with localStorage persistence
+    const [hidePlan, setHidePlan] = useState(() => {
+        try { return localStorage.getItem('qr_hide_plan') === 'true'; } catch { return false; }
+    });
+    const [hideAgentBanner, setHideAgentBanner] = useState(() => {
+        try { return localStorage.getItem('qr_hide_agent_banner') === 'true'; } catch { return false; }
+    });
+    const [hidePrinterSettings, setHidePrinterSettings] = useState(() => {
+        try { return localStorage.getItem('qr_hide_printer_settings') === 'true'; } catch { return false; }
+    });
+    const [hideCustomerLink, setHideCustomerLink] = useState(() => {
+        try { return localStorage.getItem('qr_hide_customer_link') === 'true'; } catch { return false; }
+    });
+
+    const toggleHide = (key, setter) => {
+        setter(prev => {
+            const next = !prev;
+            try { localStorage.setItem(key, String(next)); } catch {}
+            return next;
+        });
+    };
+
     // Form for Shop Pricing & Name Settings
     const { 
         data: shopData, 
@@ -210,144 +232,215 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                 </div>
 
                 {/* Monthly Subscription & Coins Plan Banner */}
-                <div className={`rounded-2xl p-5 sm:p-6 border transition-all ${
-                    subscription?.is_active 
-                        ? 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border-emerald-500/30 dark:border-emerald-500/20 shadow-sm'
-                        : 'bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-orange-500/15 border-2 border-amber-500/40 dark:border-amber-500/30 shadow-md'
-                }`}>
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div className="flex items-start sm:items-center gap-3.5">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${
-                                subscription?.is_active 
-                                    ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' 
-                                    : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
-                            }`}>
-                                {subscription?.is_active ? '👑' : '🔒'}
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="font-black text-base text-slate-900 dark:text-white">
-                                        QR to Print Service Plan (49 Coins / 30 Din)
-                                    </h3>
-                                    {subscription?.is_active ? (
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                                            <span>✓</span> Active Plan
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse">
-                                            <span>!</span> Inactive / Expired
-                                        </span>
-                                    )}
-                                </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-300">
-                                    {subscription?.is_active ? (
-                                        <>
-                                            Aapka 1-month plan active hai. Validity: <strong className="text-slate-900 dark:text-white font-mono">{subscription?.expires_at}</strong> ({subscription?.days_left} din baaki)
-                                        </>
-                                    ) : (
-                                        <>
-                                            Counter par direct QR print service chalane ke liye 1 mahine ka plan activate karein.
-                                        </>
-                                    )}
-                                    {' '}• Wallet Balance: <strong className="text-amber-600 dark:text-amber-400">🪙 {subscription?.user_coins ?? 0} Coins</strong>
-                                </p>
-                                {!subscription?.is_active && (
-                                    <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300/90">
-                                        ⚠️ Active plan ke bina customer QR scan karke prints submit nahi kar payenge.
-                                    </p>
+                {hidePlan ? (
+                    <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3 flex items-center justify-between shadow-2xs">
+                        <div className="flex items-center gap-3">
+                            <span className="text-lg">{subscription?.is_active ? '👑' : '🔒'}</span>
+                            <div className="text-xs flex flex-wrap items-center gap-2">
+                                <span className="font-bold text-slate-800 dark:text-white">QR to Print Plan (49 Coins):</span>
+                                {subscription?.is_active ? (
+                                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
+                                        ✓ Active ({subscription?.days_left} Din Baaki - {subscription?.expires_at})
+                                    </span>
+                                ) : (
+                                    <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold animate-pulse">
+                                        ! Inactive / Expired
+                                    </span>
                                 )}
+                                <span className="text-slate-400">• Wallet: 🪙 {subscription?.user_coins ?? 0} Coins</span>
                             </div>
                         </div>
-
-                        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
-                            {subscription?.is_active ? (
-                                <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs font-bold shadow-2xs">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>Plan Active ({subscription?.days_left} Din Baaki)</span>
+                        <button
+                            type="button"
+                            onClick={() => toggleHide('qr_hide_plan', setHidePlan)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 transition-all cursor-pointer"
+                        >
+                            <span>Show Plan</span>
+                            <span>▾</span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className={`relative rounded-2xl p-5 sm:p-6 border transition-all ${
+                        subscription?.is_active 
+                            ? 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border-emerald-500/30 dark:border-emerald-500/20 shadow-sm'
+                            : 'bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-orange-500/15 border-2 border-amber-500/40 dark:border-amber-500/30 shadow-md'
+                    }`}>
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                            <div className="flex items-start sm:items-center gap-3.5">
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${
+                                    subscription?.is_active 
+                                        ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' 
+                                        : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                                }`}>
+                                    {subscription?.is_active ? '👑' : '🔒'}
                                 </div>
-                            ) : (
-                                (subscription?.user_coins ?? 0) >= 49 ? (
-                                    <button
-                                        type="button"
-                                        onClick={handleSubscribe}
-                                        disabled={subscribing}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-lg shadow-orange-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                                    >
-                                        <span>⚡</span>
-                                        <span>{subscribing ? 'Activating Plan...' : 'Activate Service (49 Coins / 30 Din)'}</span>
-                                    </button>
+                                <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h3 className="font-black text-base text-slate-900 dark:text-white">
+                                            QR to Print Service Plan (49 Coins / 30 Din)
+                                        </h3>
+                                        {subscription?.is_active ? (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                                                <span>✓</span> Active Plan
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse">
+                                                <span>!</span> Inactive / Expired
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                                        {subscription?.is_active ? (
+                                            <>
+                                                Aapka 1-month plan active hai. Validity: <strong className="text-slate-900 dark:text-white font-mono">{subscription?.expires_at}</strong> ({subscription?.days_left} din baaki)
+                                            </>
+                                        ) : (
+                                            <>
+                                                Counter par direct QR print service chalane ke liye 1 mahine ka plan activate karein.
+                                            </>
+                                        )}
+                                        {' '}• Wallet Balance: <strong className="text-amber-600 dark:text-amber-400">🪙 {subscription?.user_coins ?? 0} Coins</strong>
+                                    </p>
+                                    {!subscription?.is_active && (
+                                        <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300/90">
+                                            ⚠️ Active plan ke bina customer QR scan karke prints submit nahi kar payenge.
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                                {subscription?.is_active ? (
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs font-bold shadow-2xs">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span>Plan Active ({subscription?.days_left} Din Baaki)</span>
+                                    </div>
                                 ) : (
-                                    <Link
-                                        href="/admin/coin-purchase-requests/create"
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all"
-                                    >
-                                        <span>🪙</span>
-                                        <span>Recharge Coins (Need {49 - (subscription?.user_coins ?? 0)} more)</span>
-                                    </Link>
-                                )
-                            )}
+                                    (subscription?.user_coins ?? 0) >= 49 ? (
+                                        <button
+                                            type="button"
+                                            onClick={handleSubscribe}
+                                            disabled={subscribing}
+                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-lg shadow-orange-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                        >
+                                            <span>⚡</span>
+                                            <span>{subscribing ? 'Activating Plan...' : 'Activate Service (49 Coins / 30 Din)'}</span>
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href="/admin/coin-purchase-requests/create"
+                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            <span>🪙</span>
+                                            <span>Recharge Coins (Need {49 - (subscription?.user_coins ?? 0)} more)</span>
+                                        </Link>
+                                    )
+                                )}
+
+                                {/* Hide Corner Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => toggleHide('qr_hide_plan', setHidePlan)}
+                                    title="Plan card ko hide karein"
+                                    className="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer flex items-center gap-1 text-xs font-semibold"
+                                >
+                                    <span>Hide</span>
+                                    <span>▴</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* 2. Download Silent Agent Banner */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-700/40">
-                    <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                        <div className="space-y-3 max-w-2xl">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                                <span>⚡</span> 1-CLICK SILENT WINDOWS BACKGROUND SERVICE
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                                Ek Baar Install Karein — Chupke Se Background Me Chalta Rahega!
-                            </h3>
-                            <p className="text-slate-300 text-sm leading-relaxed">
-                                Ab koi CMD ya black window khuli rakhne ki jarurat nahi hai. 
-                                Niche diye button se ZIP download karke <strong className="text-yellow-300">Install-Print-Service.bat</strong> chalayein. 
-                                Service 100% background me install ho jayegi aur computer restart hone par bhi automatic start hogi.
-                            </p>
-                            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300 pt-1">
-                                <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> 0% Screen Window</span>
-                                <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> Auto-Starts on PC Boot</span>
-                                <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> High-Speed Silent Printing</span>
-                            </div>
+                {hideAgentBanner ? (
+                    <div className="bg-slate-900 border border-slate-800 rounded-2xl px-5 py-3 flex items-center justify-between text-white text-xs shadow-sm">
+                        <div className="flex items-center gap-2 font-semibold">
+                            <span>⚡</span>
+                            <span>Windows Silent Print Background Service</span>
+                            <span className="text-emerald-400 font-normal hidden sm:inline">(Installed / Running in Background)</span>
                         </div>
-
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
-                            <a
-                                href="/admin/qr-to-print/download-agent"
-                                className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-base rounded-2xl shadow-xl shadow-emerald-950/40 hover:scale-105 active:scale-95 transition-all text-center"
+                        <button
+                            type="button"
+                            onClick={() => toggleHide('qr_hide_agent_banner', setHideAgentBanner)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all cursor-pointer"
+                        >
+                            <span>Show Installer</span>
+                            <span>▾</span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-700/40">
+                        {/* Hide Corner Button */}
+                        <div className="absolute top-4 right-4 z-20">
+                            <button
+                                type="button"
+                                onClick={() => toggleHide('qr_hide_agent_banner', setHideAgentBanner)}
+                                title="Installer banner ko hide karein"
+                                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
                             >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                <span>Download Print Service (.zip)</span>
-                            </a>
+                                <span>Hide</span>
+                                <span>▴</span>
+                            </button>
                         </div>
-                    </div>
 
-                    {/* Quick Steps Guide */}
-                    <div className="mt-6 pt-6 border-t border-slate-700/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
-                        <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
-                            <span className="w-6 h-6 rounded-full bg-blue-500/30 text-blue-300 font-bold flex items-center justify-center shrink-0">1</span>
-                            <div>
-                                <strong className="text-white block">Download & Extract</strong>
-                                ZIP file ko right-click karke "Extract All" karein.
+                        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                            <div className="space-y-3 max-w-2xl">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                                    <span>⚡</span> 1-CLICK SILENT WINDOWS BACKGROUND SERVICE
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                                    Ek Baar Install Karein — Chupke Se Background Me Chalta Rahega!
+                                </h3>
+                                <p className="text-slate-300 text-sm leading-relaxed">
+                                    Ab koi CMD ya black window khuli rakhne ki jarurat nahi hai. 
+                                    Niche diye button se ZIP download karke <strong className="text-yellow-300">Install-Print-Service.bat</strong> chalayein. 
+                                    Service 100% background me install ho jayegi aur computer restart hone par bhi automatic start hogi.
+                                </p>
+                                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300 pt-1">
+                                    <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> 0% Screen Window</span>
+                                    <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> Auto-Starts on PC Boot</span>
+                                    <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span> High-Speed Silent Printing</span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+                                <a
+                                    href="/admin/qr-to-print/download-agent"
+                                    className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-base rounded-2xl shadow-xl shadow-emerald-950/40 hover:scale-105 active:scale-95 transition-all text-center"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                    <span>Download Print Service (.zip)</span>
+                                </a>
                             </div>
                         </div>
-                        <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
-                            <span className="w-6 h-6 rounded-full bg-blue-500/30 text-blue-300 font-bold flex items-center justify-center shrink-0">2</span>
-                            <div>
-                                <strong className="text-white block">Run Installer Once</strong>
-                                Folder me <code className="text-yellow-300">Install-Print-Service.bat</code> par double-click karein.
+
+                        {/* Quick Steps Guide */}
+                        <div className="mt-6 pt-6 border-t border-slate-700/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                            <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
+                                <span className="w-6 h-6 rounded-full bg-blue-500/30 text-blue-300 font-bold flex items-center justify-center shrink-0">1</span>
+                                <div>
+                                    <strong className="text-white block">Download & Extract</strong>
+                                    ZIP file ko right-click karke "Extract All" karein.
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
-                            <span className="w-6 h-6 rounded-full bg-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center shrink-0">3</span>
-                            <div>
-                                <strong className="text-white block">Done! Window Band Karein</strong>
-                                Service background me chalu ho jayegi. Koi window khuli rakhne ki jarurat nahi.
+                            <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
+                                <span className="w-6 h-6 rounded-full bg-blue-500/30 text-blue-300 font-bold flex items-center justify-center shrink-0">2</span>
+                                <div>
+                                    <strong className="text-white block">Run Installer Once</strong>
+                                    Folder me <code className="text-yellow-300">Install-Print-Service.bat</code> par double-click karein.
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
+                                <span className="w-6 h-6 rounded-full bg-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center shrink-0">3</span>
+                                <div>
+                                    <strong className="text-white block">Done! Window Band Karein</strong>
+                                    Service background me chalu ho jayegi. Koi window khuli rakhne ki jarurat nahi.
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* 3. NEW: Printer Settings & Smart Routing Section */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
@@ -367,10 +460,21 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                                 {detectedPrinters.length} Printer{detectedPrinters.length === 1 ? '' : 's'} Detected
                             </span>
+                            <button
+                                type="button"
+                                onClick={() => toggleHide('qr_hide_printer_settings', setHidePrinterSettings)}
+                                title="Printer settings ko hide/show karein"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all cursor-pointer"
+                            >
+                                <span>{hidePrinterSettings ? 'Show' : 'Hide'}</span>
+                                <span>{hidePrinterSettings ? '▾' : '▴'}</span>
+                            </button>
                         </div>
                     </div>
 
-                    {/* Detected Printers Cards */}
+                    {!hidePrinterSettings && (
+                        <>
+                            {/* Detected Printers Cards */}
                     <div>
                         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
                             <span>📡</span>
@@ -573,6 +677,8 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                             </button>
                         </div>
                     </form>
+                    </>
+                )}
                 </div>
 
                 {/* 4. Stats Row */}
@@ -624,7 +730,7 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
 
                 {/* 5. Rates & Customer Upload Link Bar */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${!hideCustomerLink ? 'pb-4 border-b border-slate-100 dark:border-slate-800' : ''}`}>
                         <div>
                             <h3 className="font-bold text-slate-800 dark:text-white text-base">
                                 Customer Upload Link & Rates
@@ -650,116 +756,129 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
                                 <span>⚙️</span>
                                 <span>{editingSettings ? 'Close Settings' : 'Edit Rates & UPI'}</span>
                             </button>
+                            <button
+                                type="button"
+                                onClick={() => toggleHide('qr_hide_customer_link', setHideCustomerLink)}
+                                title="Customer link section ko hide/show karein"
+                                className="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition-all cursor-pointer shrink-0"
+                            >
+                                <span>{hideCustomerLink ? 'Show' : 'Hide'}</span>
+                                <span>{hideCustomerLink ? '▾' : '▴'}</span>
+                            </button>
                         </div>
                     </div>
 
-                    {/* Settings Form Accordion */}
-                    {editingSettings ? (
-                        <form onSubmit={handleSaveShopSettings} className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50">
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                    Shop Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={shopData.shop_name}
-                                    onChange={(e) => setShopData('shop_name', e.target.value)}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
-                                    required
-                                />
-                                {shopErrors.shop_name && <p className="text-xs text-red-500 mt-1">{shopErrors.shop_name}</p>}
-                            </div>
+                    {!hideCustomerLink && (
+                        <>
+                            {/* Settings Form Accordion */}
+                            {editingSettings ? (
+                                <form onSubmit={handleSaveShopSettings} className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                            Shop Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={shopData.shop_name}
+                                            onChange={(e) => setShopData('shop_name', e.target.value)}
+                                            className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                            required
+                                        />
+                                        {shopErrors.shop_name && <p className="text-xs text-red-500 mt-1">{shopErrors.shop_name}</p>}
+                                    </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                    Counter UPI ID (Optional)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={shopData.upi_id}
-                                    placeholder="e.g. 9876543210@paytm"
-                                    onChange={(e) => setShopData('upi_id', e.target.value)}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
-                                />
-                                {shopErrors.upi_id && <p className="text-xs text-red-500 mt-1">{shopErrors.upi_id}</p>}
-                            </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                            Counter UPI ID (Optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={shopData.upi_id}
+                                            placeholder="e.g. 9876543210@paytm"
+                                            onChange={(e) => setShopData('upi_id', e.target.value)}
+                                            className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                        />
+                                        {shopErrors.upi_id && <p className="text-xs text-red-500 mt-1">{shopErrors.upi_id}</p>}
+                                    </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                    B&W Print Rate (per page)
-                                </label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
-                                    <input
-                                        type="number"
-                                        step="0.5"
-                                        value={shopData.bw_rate}
-                                        onChange={(e) => setShopData('bw_rate', e.target.value)}
-                                        className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
-                                        required
-                                    />
-                                </div>
-                                {shopErrors.bw_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.bw_rate}</p>}
-                            </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                            B&W Print Rate (per page)
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                value={shopData.bw_rate}
+                                                onChange={(e) => setShopData('bw_rate', e.target.value)}
+                                                className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                                required
+                                            />
+                                        </div>
+                                        {shopErrors.bw_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.bw_rate}</p>}
+                                    </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                    Color Print Rate (per page)
-                                </label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
-                                    <input
-                                        type="number"
-                                        step="1"
-                                        value={shopData.color_rate}
-                                        onChange={(e) => setShopData('color_rate', e.target.value)}
-                                        className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
-                                        required
-                                    />
-                                </div>
-                                {shopErrors.color_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.color_rate}</p>}
-                            </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                            Color Print Rate (per page)
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                step="1"
+                                                value={shopData.color_rate}
+                                                onChange={(e) => setShopData('color_rate', e.target.value)}
+                                                className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                                required
+                                            />
+                                        </div>
+                                        {shopErrors.color_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.color_rate}</p>}
+                                    </div>
 
-                            <div className="sm:col-span-2 lg:col-span-4 flex justify-end gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setEditingSettings(false)}
-                                    className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={savingShop}
-                                    className="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm cursor-pointer"
-                                >
-                                    {savingShop ? 'Saving...' : 'Save Settings'}
-                                </button>
-                            </div>
-                        </form>
-                    ) : (
-                        <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
-                            <div>
-                                <span className="text-slate-400 text-xs block">Public Upload URL</span>
-                                <a href={shop?.upload_url || '#'} target="_blank" className="font-mono font-medium text-blue-600 dark:text-blue-400 underline">
-                                    {shop?.upload_url || 'N/A'}
-                                </a>
-                            </div>
-                            <div>
-                                <span className="text-slate-400 text-xs block">B&W Rate</span>
-                                <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page</span>
-                            </div>
-                            <div>
-                                <span className="text-slate-400 text-xs block">Color Rate</span>
-                                <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page</span>
-                            </div>
-                            {shop?.upi_id && (
-                                <div>
-                                    <span className="text-slate-400 text-xs block">UPI ID</span>
-                                    <span className="font-bold text-slate-800 dark:text-white">{shop.upi_id}</span>
+                                    <div className="sm:col-span-2 lg:col-span-4 flex justify-end gap-2 pt-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingSettings(false)}
+                                            className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg cursor-pointer"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={savingShop}
+                                            className="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm cursor-pointer"
+                                        >
+                                            {savingShop ? 'Saving...' : 'Save Settings'}
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Public Upload URL</span>
+                                        <a href={shop?.upload_url || '#'} target="_blank" className="font-mono font-medium text-blue-600 dark:text-blue-400 underline">
+                                            {shop?.upload_url || 'N/A'}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">B&W Rate</span>
+                                        <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Color Rate</span>
+                                        <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page</span>
+                                    </div>
+                                    {shop?.upi_id && (
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">UPI ID</span>
+                                            <span className="font-bold text-slate-800 dark:text-white">{shop.upi_id}</span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
 
