@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Schema::defaultStringLength(191);
+
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             if ($ability === 'page_CustomDashboard' && $user->type === 'user') {
                 return true;

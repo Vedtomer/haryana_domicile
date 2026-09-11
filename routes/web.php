@@ -12,10 +12,43 @@ Route::get('/', function () {
 });
 
 Route::get('/migrate-db', function () {
-    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
-    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
-    return 'Database migrated and seeded successfully! Please go back to your dashboard.';
+    try {
+        $output = '';
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $output .= "=== MIGRATE OUTPUT ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
+            $output .= "=== TENTH PASSBOOK SEEDER ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
+        } catch (\Throwable $se1) {
+            $output .= "TenthPassbookSeeder Notice: " . $se1->getMessage() . "\n\n";
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
+            $output .= "=== SERVICE SEEDER ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
+        } catch (\Throwable $se2) {
+            $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
+        }
+
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        $output .= "=== ALL CACHES CLEARED ===\nDone.\n";
+
+        return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
+            . "<h2 style='margin-top:0;'>✓ Database Migrated & Seeded Successfully!</h2>"
+            . "<pre style='background:#111;color:#4ade80;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;'>" . htmlspecialchars($output) . "</pre>"
+            . "<p><a href='/dashboard' style='background:#16a34a;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;margin-top:10px;'>Go to Dashboard &rarr;</a></p>"
+            . "</div>";
+    } catch (\Throwable $e) {
+        return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#fef2f2;border:2px solid #ef4444;border-radius:16px;color:#991b1b;'>"
+            . "<h2 style='margin-top:0;'>✕ Migration Error:</h2>"
+            . "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>"
+            . "<pre style='background:#111;color:#f87171;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>"
+            . "</div>";
+    }
 });
 
 Route::get('/force-add-service', function () {

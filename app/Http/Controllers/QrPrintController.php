@@ -19,6 +19,15 @@ class QrPrintController extends Controller
     private function getOrCreateShop()
     {
         $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        // Auto-migrate if print_shops table does not exist yet
+        if (!\Illuminate\Support\Facades\Schema::hasTable('print_shops')) {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        }
+
         $shop = PrintShop::where('user_id', $user->id)->first();
 
         if (!$shop) {
