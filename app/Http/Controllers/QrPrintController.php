@@ -28,6 +28,51 @@ class QrPrintController extends Controller
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         }
 
+        // Auto-add missing columns in print_shops if created previously without bw_rate, etc.
+        if (\Illuminate\Support\Facades\Schema::hasTable('print_shops')) {
+            \Illuminate\Support\Facades\Schema::table('print_shops', function ($table) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'bw_rate')) {
+                    $table->decimal('bw_rate', 8, 2)->default(2.00);
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'color_rate')) {
+                    $table->decimal('color_rate', 8, 2)->default(10.00);
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'upi_id')) {
+                    $table->string('upi_id', 191)->nullable();
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'is_online')) {
+                    $table->boolean('is_online')->default(false);
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'last_heartbeat_at')) {
+                    $table->timestamp('last_heartbeat_at')->nullable();
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'agent_token')) {
+                    $table->string('agent_token', 64)->nullable()->unique();
+                }
+            });
+        }
+
+        // Auto-add missing columns in print_jobs if needed
+        if (\Illuminate\Support\Facades\Schema::hasTable('print_jobs')) {
+            \Illuminate\Support\Facades\Schema::table('print_jobs', function ($table) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_jobs', 'color_type')) {
+                    $table->string('color_type', 32)->default('bw');
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_jobs', 'copies')) {
+                    $table->integer('copies')->default(1);
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_jobs', 'total_amount')) {
+                    $table->decimal('total_amount', 8, 2)->default(0.00);
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_jobs', 'payment_method')) {
+                    $table->string('payment_method', 32)->default('cash');
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_jobs', 'payment_status')) {
+                    $table->string('payment_status', 32)->default('paid');
+                }
+            });
+        }
+
         $shop = PrintShop::where('user_id', $user->id)->first();
 
         if (!$shop) {
