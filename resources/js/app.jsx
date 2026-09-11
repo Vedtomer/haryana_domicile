@@ -10,6 +10,13 @@ import { getOrCreateDeviceId } from './utils/device';
 initTheme();
 getOrCreateDeviceId();
 
+// Force fresh reload if page is restored from browser bfcache
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 createInertiaApp({
