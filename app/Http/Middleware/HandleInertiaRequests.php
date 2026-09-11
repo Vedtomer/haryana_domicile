@@ -60,6 +60,8 @@ class HandleInertiaRequests extends Middleware
                     'has_active_license' => $request->user()->hasActiveLicense(),
                     'license_expires_at' => $request->user()->license_expires_at ? $request->user()->license_expires_at->format('d M Y') : null,
                     'license_days_left' => $request->user()->licenseDaysLeft(),
+                    'referral_code' => $request->user()->getActiveReferralCode(),
+                    'referral_link' => $request->user()->referral_link,
                 ]) : null,
             ],
             'flash' => [

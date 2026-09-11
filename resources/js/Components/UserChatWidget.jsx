@@ -93,8 +93,8 @@ export default function UserChatWidget({ user }) {
 
     return (
         <>
-            {/* Floating Chat Trigger Button (Fixed at Bottom-Right, above WhatsApp or alongside) */}
-            <div className="fixed bottom-24 right-5 z-40 flex flex-col items-end">
+            {/* Floating Chat Trigger Button (Fixed at Bottom-Right, stacked above Referral & WhatsApp) */}
+            <div className="fixed bottom-42 right-6 z-40 flex flex-col items-end">
                 {/* Unread Alert Bubble */}
                 {unreadCount > 0 && !isOpen && (
                     <div

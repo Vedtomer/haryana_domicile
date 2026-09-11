@@ -5,6 +5,7 @@ import Toast from '../Components/Toast';
 import FrontendHeader from '../Components/FrontendHeader';
 import FrontendFooter from '../Components/FrontendFooter';
 import WhatsAppButton from '../Components/WhatsAppButton';
+import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
 
@@ -29,6 +30,7 @@ export default function FrontendLayout({ children }) {
             </main>
             <FrontendFooter />
             <WhatsAppButton />
+            <ReferralFloatingButton />
             {auth?.user && <UserChatWidget user={auth.user} />}
             {auth?.user && <UserScreenShareListener user={auth.user} />}
         </div>

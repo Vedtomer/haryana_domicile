@@ -9,6 +9,7 @@ import LicenseModal from '../Components/LicenseModal';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
 import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
+import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
@@ -306,13 +307,6 @@ export default function AdminLayout({ header, children }) {
                                 <span className="w-4 h-4 flex items-center justify-center">🪙</span>
                                 Coin Ledger
                             </Link>
-                            <Link
-                                href="/admin/referrals"
-                                className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                            >
-                                <span className="w-4 h-4 flex items-center justify-center">🎁</span>
-                                Refer &amp; Earn (₹10)
-                            </Link>
                             {auth?.user?.type === 'admin' && (
                                 <>
                                     <Link
@@ -392,6 +386,7 @@ export default function AdminLayout({ header, children }) {
             />
 
             <WhatsAppButton />
+            <ReferralFloatingButton />
             <UserChatWidget user={auth?.user} />
             <UserScreenShareListener user={auth?.user} />
         </div>
