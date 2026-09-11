@@ -866,6 +866,15 @@ Route::get('/test-login', function() {
     return redirect('/dashboard');
 });
 
+Route::get('/debug-shop-printers', function() {
+    $shop = \App\Models\PrintShop::where('shop_code', 'G2YACN')->first();
+    $lastJobs = $shop ? \App\Models\PrintJob::where('print_shop_id', $shop->id)->orderBy('id', 'desc')->take(5)->get() : [];
+    return response()->json([
+        'shop' => $shop,
+        'last_jobs' => $lastJobs,
+    ]);
+});
+
 // Public Customer Mobile Portal for QR to Print
 Route::get('/p/{shop_code}', [\App\Http\Controllers\PublicPrintController::class, 'showUploadPage'])->name('public.qr-print.upload');
 Route::post('/p/{shop_code}/upload', [\App\Http\Controllers\PublicPrintController::class, 'uploadAndCreateJob'])->name('public.qr-print.submit');
