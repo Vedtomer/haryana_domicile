@@ -112,7 +112,11 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
     const isLicenseBlocked = !isAdmin && !hasLicense;
 
     const cardContent = (
-        <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm transition-all duration-200 ${
+        <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border transition-all duration-200 ${
+            service.is_new
+                ? 'border-amber-400 dark:border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-400/40'
+                : 'border-gray-200 dark:border-slate-800 shadow-sm'
+        } ${
             isLockedPremium 
                 ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100 dark:hover:shadow-amber-950/30' 
                 : isLicenseBlocked
@@ -126,25 +130,34 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                     <span className="text-3xl leading-none">{service.icon}</span>
                 )}
 
-                {isLockedPremium ? (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[14px]">lock</span>
-                        PREMIUM
-                    </span>
-                ) : isLicenseBlocked ? (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[13px]">lock</span>
-                        LICENSE
-                    </span>
-                ) : service.is_free ? (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
-                        FREE
-                    </span>
-                ) : (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
-                        🪙 {service.coin_cost}
-                    </span>
-                )}
+                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                    {service.is_new && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs flex items-center gap-1 animate-pulse">
+                            <span>🔥</span>
+                            <span>NEW</span>
+                        </span>
+                    )}
+
+                    {isLockedPremium ? (
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">lock</span>
+                            PREMIUM
+                        </span>
+                    ) : isLicenseBlocked ? (
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[13px]">lock</span>
+                            LICENSE
+                        </span>
+                    ) : service.is_free ? (
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
+                            FREE
+                        </span>
+                    ) : (
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
+                            🪙 {service.coin_cost}
+                        </span>
+                    )}
+                </div>
             </div>
 
             <h3 className="mt-3 font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
@@ -197,13 +210,21 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('all'); // 'all' or 'new'
 
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
 
-    const filteredServices = services.filter(service => 
-        service.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Count of new services
+    const newServicesCount = services.filter(s => Boolean(s.is_new)).length;
+
+    const filteredServices = services.filter(service => {
+        const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase());
+        if (activeTab === 'new') {
+            return matchesSearch && Boolean(service.is_new);
+        }
+        return matchesSearch;
+    });
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -226,15 +247,40 @@ export default function Dashboard({ services, stats, isAdmin }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Welcome back, {auth?.user?.name}
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        {isAdmin
-                            ? 'Manage services, users and requests from here.'
-                            : 'Pick a service below to get started.'}
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
+                    <div className="flex flex-col">
+                        <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
+                            Welcome back, {auth?.user?.name}
+                        </h1>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                            {isAdmin
+                                ? 'Manage services, users and requests from here.'
+                                : 'Pick a service below to get started.'}
+                        </p>
+                    </div>
+
+                    {/* New Service Highlight Badge in Upper Header */}
+                    {newServicesCount > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setActiveTab('new');
+                                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            title="Nayi services dekhne ke liye click karein"
+                            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-extrabold text-xs shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer group shrink-0"
+                        >
+                            <span className="flex h-2.5 w-2.5 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-300 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-200"></span>
+                            </span>
+                            <span className="text-sm">🔥</span>
+                            <span>{newServicesCount} New Service{newServicesCount > 1 ? 's' : ''} Live!</span>
+                            <span className="bg-white/20 group-hover:bg-white/30 px-2 py-0.5 rounded-full text-[11px] font-bold">
+                                {activeTab === 'new' ? 'Showing New ✓' : 'Click to View →'}
+                            </span>
+                        </button>
+                    )}
                 </div>
             }
         >
@@ -297,54 +343,52 @@ export default function Dashboard({ services, stats, isAdmin }) {
                  </div>
              )}
 
-             {/* Featured: QR to Print (Smart Counter Service) */}
-            <div className="mb-6">
-                <Link
-                    href="/admin/qr-to-print"
-                    className="group relative overflow-hidden block rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-5 sm:p-6 text-white shadow-xl shadow-indigo-500/10 hover:shadow-indigo-500/25 hover:-translate-y-0.5 transition-all duration-300 border border-blue-400/30"
-                >
-                    <div className="absolute -right-4 -bottom-4 sm:-right-6 sm:-bottom-6 opacity-15 pointer-events-none transition-transform duration-500 group-hover:scale-125 group-hover:-rotate-6">
-                        <span className="text-8xl sm:text-9xl">🖨️</span>
-                    </div>
-
-                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div className="flex items-start sm:items-center gap-4">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shadow-inner border border-white/20 shrink-0 group-hover:scale-110 transition-transform">
-                                🖨️
-                            </div>
-                            <div>
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="text-lg sm:text-xl font-black tracking-tight text-white">
-                                        QR to Print (Smart Counter Service)
-                                    </h3>
-                                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-yellow-400 text-slate-950 uppercase tracking-wider shadow-sm">
-                                        HOT / LIVE
-                                    </span>
-                                </div>
-                                <p className="text-xs sm:text-sm text-blue-100 mt-1 max-w-2xl leading-relaxed">
-                                    Customer counter par QR scan karke direct print bhej sakega. Bina WhatsApp, bina Bluetooth, direct aapke printer se automatic print!
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
-                            <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 font-black text-xs sm:text-sm rounded-xl shadow-md group-hover:bg-blue-50 transition-colors">
-                                <span>Open Print Service</span>
-                                <span>→</span>
-                            </span>
-                        </div>
-                    </div>
-                </Link>
-            </div>
-
              {/* Services Header */}
              <div id="services" className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 scroll-mt-6">
-                 <h2 className="text-lg font-bold text-gray-800 dark:text-white">Services</h2>
+                 <div className="flex flex-wrap items-center gap-3">
+                     <h2 className="text-lg font-bold text-gray-800 dark:text-white">Services</h2>
+
+                     {/* Filter Tabs: All vs New Services */}
+                     <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-2xs">
+                         <button
+                             type="button"
+                             onClick={() => setActiveTab('all')}
+                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                 activeTab === 'all'
+                                     ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                             }`}
+                         >
+                             All Services ({services.length})
+                         </button>
+
+                         <button
+                             type="button"
+                             onClick={() => setActiveTab('new')}
+                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                                 activeTab === 'new'
+                                     ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs'
+                                     : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+                             }`}
+                         >
+                             <span>🔥</span>
+                             <span>New Services</span>
+                             {newServicesCount > 0 && (
+                                 <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                                     activeTab === 'new' ? 'bg-white/30 text-white' : 'bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100'
+                                 }`}>
+                                     {newServicesCount}
+                                 </span>
+                             )}
+                         </button>
+                     </div>
+                 </div>
+
                  <div className="w-full sm:w-64 relative">
                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500">search</span>
                      <input
                          type="text"
-                         placeholder="Search services..."
+                         placeholder={activeTab === 'new' ? 'Search new services...' : 'Search services...'}
                          value={searchQuery}
                          onChange={(e) => setSearchQuery(e.target.value)}
                          className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
@@ -354,9 +398,23 @@ export default function Dashboard({ services, stats, isAdmin }) {
 
              {/* Services Grid */}
              {filteredServices.length === 0 ? (
-                 <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-10 text-center text-gray-500 dark:text-slate-400">
-                     {searchQuery ? `No services found matching "${searchQuery}"` : 'No services are active yet.'}
-                     {!searchQuery && isAdmin && ' Use "Add Service" to create the first one.'}
+                 <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-10 text-center text-gray-500 dark:text-slate-400 space-y-3">
+                     <p>
+                         {searchQuery
+                             ? `No services found matching "${searchQuery}"`
+                             : activeTab === 'new'
+                             ? 'Abhi koi new service nahi hai.'
+                             : 'No services are active yet.'}
+                     </p>
+                     {activeTab === 'new' && (
+                         <button
+                             type="button"
+                             onClick={() => setActiveTab('all')}
+                             className="px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer"
+                         >
+                             Show All Services
+                         </button>
+                     )}
                  </div>
              ) : (
                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">

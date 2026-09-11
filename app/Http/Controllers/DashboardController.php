@@ -21,6 +21,9 @@ class DashboardController extends Controller
             ->ordered()
             ->get()
             ->map(function (Service $service) use ($user, $isAdmin) {
+            $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
+
             return [
                 'id' => $service->id,
                 'name' => $service->name,
@@ -35,6 +38,7 @@ class DashboardController extends Controller
                 'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
                 'url' => $service->targetUrl(),
                 'count' => $this->countFor($service, $user, $isAdmin),
+                'is_new' => (bool) $isNew,
             ];
         });
 
