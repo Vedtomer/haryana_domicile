@@ -56,13 +56,11 @@ class PublicPrintController extends Controller
         $colorType = $request->input('color_type', 'bw');
         $paymentMethod = $request->input('payment_method', 'cash');
 
-        // Store file in storage/app/public/print_jobs/{shopCode}
-        $storedPath = $file->store("public/print_jobs/{$shopCode}");
-        // relative to storage/app/
-        $relativeFilePath = str_replace('public/', 'public/', $storedPath);
+        // Store file explicitly on public disk: storage/app/public/print_jobs/{shopCode}
+        $storedPath = $file->store("print_jobs/{$shopCode}", 'public');
 
-        // Calculate pages
-        $fullPath = storage_path('app/' . $storedPath);
+        // Calculate pages using accurate disk path
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($storedPath);
         $totalPages = 1;
         if ($extension === 'pdf') {
             $totalPages = $this->getPdfPageCount($fullPath);

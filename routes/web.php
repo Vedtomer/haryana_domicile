@@ -877,5 +877,6 @@ Route::prefix('api/print-agent')->group(function () {
     Route::get('/jobs', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'getPendingJobs']);
     Route::get('/file/{job_code}', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'downloadFile']);
     Route::post('/update-status', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'updateJobStatus']);
+    Route::get('/engine', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'downloadEngine']);
 });
 

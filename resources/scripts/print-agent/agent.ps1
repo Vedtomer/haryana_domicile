@@ -82,8 +82,24 @@ function Ensure-SumatraPDF {
         }
     }
 
-    # 3. Fallback: Download official release if neither present
-    Write-Log "SumatraPDF not found locally. Downloading official package..."
+    # 3. Direct Server Download (Our own verified CDN/endpoint)
+    Write-Log "SumatraPDF not found locally. Downloading directly from server..."
+    $serverEngineUrl = "$ServerUrl/api/print-agent/engine"
+    try {
+        Invoke-WebRequest -Uri $serverEngineUrl -OutFile $SumatraExe -TimeoutSec 60 -UseBasicParsing -ErrorAction Stop
+        $sFile = Get-Item $SumatraExe -ErrorAction SilentlyContinue
+        if ($sFile -and $sFile.Length -gt 1000000) {
+            Write-Log "SumatraPDF downloaded directly from server successfully ($($sFile.Length) bytes)."
+            return $true
+        } else {
+            Remove-Item -Path $SumatraExe -Force -ErrorAction SilentlyContinue
+        }
+    } catch {
+        Write-Log "Server engine download failed: $_. Trying external mirrors..."
+    }
+
+    # 4. Fallback: Download official release if server failed
+    Write-Log "Downloading official package from mirrors..."
     $zipUrl = "https://files2.sumatrapdfreader.org/software/sumatrapdf/rel/3.6.1/SumatraPDF-3.6.1-64.zip"
     $zipDest = "$AppDir\sumatra_temp.zip"
     try {

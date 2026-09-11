@@ -130,18 +130,45 @@ class PrintAgentApiController extends Controller
             ->where('print_shop_id', $shop->id)
             ->firstOrFail();
 
-        $path = storage_path('app/' . $job->file_path);
-        if (!file_exists($path)) {
-            // Also check public disk storage
-            $publicPath = storage_path('app/public/' . $job->file_path);
-            if (file_exists($publicPath)) {
-                $path = $publicPath;
-            } else {
-                abort(404, 'File not found on server');
+        $candidates = [
+            Storage::disk('public')->path($job->file_path),
+            Storage::disk('local')->path($job->file_path),
+            Storage::path($job->file_path),
+            storage_path('app/' . $job->file_path),
+            storage_path('app/public/' . $job->file_path),
+            storage_path('app/private/' . $job->file_path),
+            storage_path('app/private/public/' . $job->file_path),
+            storage_path('app/public/print_jobs/' . $shop->shop_code . '/' . basename($job->file_path)),
+            storage_path('app/private/public/print_jobs/' . $shop->shop_code . '/' . basename($job->file_path)),
+            storage_path('app/private/print_jobs/' . $shop->shop_code . '/' . basename($job->file_path)),
+        ];
+
+        $path = null;
+        foreach ($candidates as $candidate) {
+            if (!empty($candidate) && file_exists($candidate)) {
+                $path = $candidate;
+                break;
             }
         }
 
+        if (!$path) {
+            \Log::error("PrintAgent downloadFile: Job #{$jobCode} file not found on disk. Checked: " . implode(', ', $candidates));
+            abort(404, 'File not found on server');
+        }
+
         return response()->download($path, $job->original_filename);
+    }
+
+    /**
+     * Download SumatraPDF Engine for Agent
+     */
+    public function downloadEngine(Request $request)
+    {
+        $enginePath = resource_path('scripts/print-agent/SumatraPDF.exe');
+        if (file_exists($enginePath)) {
+            return response()->download($enginePath, 'SumatraPDF.exe');
+        }
+        abort(404, 'Engine binary not found on server');
     }
 
     /**
