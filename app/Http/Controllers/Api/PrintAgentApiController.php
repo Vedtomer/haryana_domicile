@@ -31,17 +31,29 @@ class PrintAgentApiController extends Controller
             'last_heartbeat_at' => now(),
         ];
 
-        // Store detected printers list if sent by agent
+        // Store detected printers list if sent by agent, excluding any deleted/hidden printers
         if ($request->has('printers')) {
             $printers = $request->input('printers');
             if (is_string($printers)) {
                 $decoded = json_decode($printers, true);
-                $updateData['detected_printers'] = is_array($decoded) ? array_values($decoded) : [];
+                $rawList = is_array($decoded) ? array_values($decoded) : [];
             } elseif (is_array($printers)) {
-                $updateData['detected_printers'] = array_values($printers);
+                $rawList = array_values($printers);
             } else {
-                $updateData['detected_printers'] = [];
+                $rawList = [];
             }
+
+            $deletedPrinters = is_array($shop->deleted_printers) ? $shop->deleted_printers : (json_decode($shop->deleted_printers, true) ?: []);
+
+            $filteredList = [];
+            foreach ($rawList as $p) {
+                $pName = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                if (!in_array($pName, $deletedPrinters)) {
+                    $filteredList[] = $p;
+                }
+            }
+
+            $updateData['detected_printers'] = $filteredList;
         }
 
         $shop->update($updateData);

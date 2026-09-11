@@ -65,6 +65,9 @@ class QrPrintController extends Controller
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'printer_mode')) {
                         $table->string('printer_mode', 32)->default('single');
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'deleted_printers')) {
+                        $table->longText('deleted_printers')->nullable();
+                    }
                 });
             } catch (\Throwable $e) {
                 // Ignore if columns already present
@@ -169,6 +172,7 @@ class QrPrintController extends Controller
                 'agent_token' => $shop->agent_token,
                 'upload_url' => url('/p/' . $shop->shop_code),
                 'detected_printers' => $detectedPrinters,
+                'deleted_printers' => is_array($shop->deleted_printers) ? array_values($shop->deleted_printers) : (json_decode($shop->deleted_printers, true) ?: []),
                 'bw_printer' => $shop->bw_printer,
                 'color_printer' => $shop->color_printer,
                 'printer_mode' => $shop->printer_mode ?: 'single',
@@ -213,6 +217,77 @@ class QrPrintController extends Controller
         $shop->update($validated);
 
         return redirect()->back()->with('success', 'Printer configuration saved successfully!');
+    }
+
+    /**
+     * Delete / Hide a Printer from the shop
+     */
+    public function deletePrinter(Request $request)
+    {
+        $shop = $this->getOrCreateShop();
+
+        $request->validate([
+            'printer_name' => 'required|string|max:191',
+        ]);
+
+        $printerName = $request->input('printer_name');
+
+        // 1. Add to deleted_printers
+        $deleted = is_array($shop->deleted_printers) ? $shop->deleted_printers : (json_decode($shop->deleted_printers, true) ?: []);
+        if (!in_array($printerName, $deleted)) {
+            $deleted[] = $printerName;
+        }
+
+        // 2. Remove from detected_printers
+        $detected = is_array($shop->detected_printers) ? $shop->detected_printers : (json_decode($shop->detected_printers, true) ?: []);
+        $updatedDetected = array_values(array_filter($detected, function ($p) use ($printerName) {
+            $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+            return $name !== $printerName;
+        }));
+
+        $updates = [
+            'deleted_printers' => array_values($deleted),
+            'detected_printers' => $updatedDetected,
+        ];
+
+        // 3. Clear from assigned bw or color printer if it was selected
+        if ($shop->bw_printer === $printerName) {
+            $updates['bw_printer'] = null;
+        }
+        if ($shop->color_printer === $printerName) {
+            $updates['color_printer'] = null;
+        }
+
+        $shop->update($updates);
+        $shop->refresh();
+
+        // Re-route remaining printers
+        \App\Http\Controllers\Api\PrintAgentApiController::autoRouteShopPrinters($shop, $updatedDetected);
+
+        return redirect()->back()->with('success', "Printer '{$printerName}' deleted successfully!");
+    }
+
+    /**
+     * Restore a previously deleted printer
+     */
+    public function restorePrinter(Request $request)
+    {
+        $shop = $this->getOrCreateShop();
+
+        $request->validate([
+            'printer_name' => 'required|string|max:191',
+        ]);
+
+        $printerName = $request->input('printer_name');
+
+        $deleted = is_array($shop->deleted_printers) ? $shop->deleted_printers : (json_decode($shop->deleted_printers, true) ?: []);
+        $deleted = array_values(array_diff($deleted, [$printerName]));
+
+        $shop->update([
+            'deleted_printers' => $deleted,
+        ]);
+
+        return redirect()->back()->with('success', "Printer '{$printerName}' restored! Agent heartbeat will re-detect it.");
     }
 
     /**

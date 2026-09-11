@@ -25,6 +25,7 @@ class PrintShop extends Model
         'bw_printer',
         'color_printer',
         'printer_mode',
+        'deleted_printers',
     ];
 
     protected $casts = [
@@ -33,6 +34,7 @@ class PrintShop extends Model
         'is_online' => 'boolean',
         'last_heartbeat_at' => 'datetime',
         'detected_printers' => 'array',
+        'deleted_printers' => 'array',
     ];
 
     public function user(): BelongsTo
