@@ -417,7 +417,7 @@ class ServiceSeeder extends Seeder
             }
         }
 
-        // Clean up old Telegram services that are no longer used
+        // Clean up old services that are no longer used
         $oldSlugs = [
             'telegram-num',
             'telegram-aadhar',
@@ -426,7 +426,8 @@ class ServiceSeeder extends Seeder
             'telegram-ration',
             'mobile-to-details', // the old one
             'aadhar-update',
+            'tenth-passbook',
         ];
-        Service::whereIn('slug', $oldSlugs)->delete();
+        Service::whereIn('slug', $oldSlugs)->orWhere('module_key', 'tenth_passbook')->delete();
     }
 }

@@ -134,12 +134,6 @@ class Service extends Model
             'index' => '/utilities/passport-apply',
             'create' => '/utilities/passport-apply',
         ],
-        'tenth_passbook' => [
-            'label' => '10th Passbook Editor',
-            'model' => TenthPassbook::class,
-            'index' => '/admin/tenth-passbook',
-            'create' => '/admin/tenth-passbook/create',
-        ],
         'airtel_passbook' => [
             'label' => 'Airtel Passbook',
             'model' => AirtelPassbook::class,

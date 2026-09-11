@@ -190,6 +190,7 @@ export default function Index({ services }) {
                             <thead className="bg-slate-50 text-slate-600 uppercase text-[11px] font-black tracking-wider border-b border-slate-200">
                                 <tr>
                                     <th className="px-5 py-3.5">Service Details</th>
+                                    <th className="px-5 py-3.5">Sort Order</th>
                                     <th className="px-5 py-3.5">Type</th>
                                     <th className="px-5 py-3.5">Coin Cost</th>
                                     <th className="px-5 py-3.5">Total Requests</th>
@@ -216,6 +217,11 @@ export default function Index({ services }) {
                                                     )}
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td className="px-5 py-4 whitespace-nowrap">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-black bg-blue-50 text-blue-700 border border-blue-200" title="Sort Order sequence on Dashboard and Home">
+                                                #{service.sort_order ?? 0}
+                                            </span>
                                         </td>
                                         <td className="px-5 py-4 whitespace-nowrap">
                                             <span
