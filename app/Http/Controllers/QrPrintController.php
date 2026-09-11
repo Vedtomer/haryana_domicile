@@ -274,9 +274,12 @@ class QrPrintController extends Controller
             $zip->addFromString('agent.ps1', $ps1Content);
         }
 
-        // 4. Check-Status.bat & Uninstall-Service.bat
+        // 4. Check-Status.bat, Run-Console-Debug.bat & Uninstall-Service.bat
         if (file_exists($scriptsPath . '/Check-Status.bat')) {
             $zip->addFile($scriptsPath . '/Check-Status.bat', 'Check-Status.bat');
+        }
+        if (file_exists($scriptsPath . '/Run-Console-Debug.bat')) {
+            $zip->addFile($scriptsPath . '/Run-Console-Debug.bat', 'Run-Console-Debug.bat');
         }
         if (file_exists($scriptsPath . '/Uninstall-Service.bat')) {
             $zip->addFile($scriptsPath . '/Uninstall-Service.bat', 'Uninstall-Service.bat');

@@ -4,7 +4,14 @@
 # Features: Multi-printer detection, B&W vs Color smart routing, 100% silent
 # ==============================================================================
 
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
+try {
+    # 3072 = TLS 1.2, 768 = TLS 1.1, 192 = TLS 1.0 (Compatible with all Windows 7/8/10/11 PowerShell versions)
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+} catch {
+    try {
+        [System.Net.ServicePointManager]::SecurityProtocol = 3072
+    } catch {}
+}
 
 $AppDir = "$env:LOCALAPPDATA\CSPPrintService"
 if (!(Test-Path $AppDir)) {
@@ -411,7 +418,7 @@ while ($true) {
             }
         }
     } catch {
-        # Silent backoff on connection errors
+        Write-Log "Polling notice: $_"
     }
 
     Start-Sleep -Seconds 5
