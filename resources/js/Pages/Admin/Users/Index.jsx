@@ -81,18 +81,13 @@ export default function Index({ users }) {
                             {users.data.map((user) => (
                                 <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-3">
-                                            <div className="relative">
-                                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
-                                                    {(user.name || user.email || user.phone || '?')[0].toUpperCase()}
-                                                </div>
-                                                <span
-                                                    className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 ${
-                                                        user.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'
-                                                    }`}
-                                                    title={user.is_online ? 'Online now' : `Last seen: ${user.last_seen_human}`}
-                                                />
-                                            </div>
+                                        <div className="flex items-center gap-2.5">
+                                            <span
+                                                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                                                    user.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'
+                                                }`}
+                                                title={user.is_online ? 'Online now' : `Last seen: ${user.last_seen_human}`}
+                                            />
                                             <span className="text-sm font-semibold text-slate-800 dark:text-white">
                                                 {user.name || <span className="text-slate-400 italic">No Name</span>}
                                             </span>

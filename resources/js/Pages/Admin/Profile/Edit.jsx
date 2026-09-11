@@ -43,13 +43,10 @@ export default function Edit({ user, ledger, ledgerSummary }) {
             
             <div className="max-w-3xl mx-auto relative">
                 <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden">
-                    <div className="px-6 py-8 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 flex items-center gap-6">
-                        <div className="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
-                            {user.name.charAt(0).toUpperCase()}
-                        </div>
+                    <div className="px-6 py-6 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
-                            <p className="text-gray-500 dark:text-slate-400">{user.email}</p>
+                            <p className="text-gray-500 dark:text-slate-400 text-sm mt-0.5">{user.email}</p>
                             <span className="inline-block mt-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold rounded-full uppercase tracking-wider">
                                 {user.type.replace('_', ' ')}
                             </span>

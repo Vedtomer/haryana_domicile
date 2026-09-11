@@ -269,11 +269,11 @@ export default function AdminLayout({ header, children }) {
                      <div className="relative z-50">
                          <button
                              onClick={() => setDropdownOpen(!dropdownOpen)}
-                             className="flex items-center gap-2 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition-all cursor-pointer"
+                             title="Profile Menu"
                          >
-                             <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm hover:scale-105 transition-transform duration-200">
-                                 <span className="material-symbols-outlined text-2xl">person</span>
-                             </div>
+                             <span>{auth?.user?.name || 'Profile'}</span>
+                             <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
                          </button>
 
                          {/* Dropdown Menu */}
