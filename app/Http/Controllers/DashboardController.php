@@ -51,6 +51,14 @@ class DashboardController extends Controller
      */
     private function countFor(Service $service, User $user, bool $isAdmin): int
     {
+        if ($service->module_key === 'qr_to_print') {
+            if ($isAdmin) {
+                return \App\Models\PrintJob::count();
+            }
+            $shop = \App\Models\PrintShop::where('user_id', $user->id)->first();
+            return $shop ? \App\Models\PrintJob::where('print_shop_id', $shop->id)->count() : 0;
+        }
+
         if ($service->isModule()) {
             $model = $service->moduleModel();
             if (!$model) {

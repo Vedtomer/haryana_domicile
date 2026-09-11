@@ -297,6 +297,46 @@ export default function Dashboard({ services, stats, isAdmin }) {
                  </div>
              )}
 
+             {/* Featured: QR to Print (Smart Counter Service) */}
+            <div className="mb-6">
+                <Link
+                    href="/admin/qr-to-print"
+                    className="group relative overflow-hidden block rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-5 sm:p-6 text-white shadow-xl shadow-indigo-500/10 hover:shadow-indigo-500/25 hover:-translate-y-0.5 transition-all duration-300 border border-blue-400/30"
+                >
+                    <div className="absolute -right-4 -bottom-4 sm:-right-6 sm:-bottom-6 opacity-15 pointer-events-none transition-transform duration-500 group-hover:scale-125 group-hover:-rotate-6">
+                        <span className="text-8xl sm:text-9xl">🖨️</span>
+                    </div>
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex items-start sm:items-center gap-4">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shadow-inner border border-white/20 shrink-0 group-hover:scale-110 transition-transform">
+                                🖨️
+                            </div>
+                            <div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h3 className="text-lg sm:text-xl font-black tracking-tight text-white">
+                                        QR to Print (Smart Counter Service)
+                                    </h3>
+                                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-yellow-400 text-slate-950 uppercase tracking-wider shadow-sm">
+                                        HOT / LIVE
+                                    </span>
+                                </div>
+                                <p className="text-xs sm:text-sm text-blue-100 mt-1 max-w-2xl leading-relaxed">
+                                    Customer counter par QR scan karke direct print bhej sakega. Bina WhatsApp, bina Bluetooth, direct aapke printer se automatic print!
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
+                            <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 font-black text-xs sm:text-sm rounded-xl shadow-md group-hover:bg-blue-50 transition-colors">
+                                <span>Open Print Service</span>
+                                <span>→</span>
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+
              {/* Services Header */}
              <div id="services" className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 scroll-mt-6">
                  <h2 className="text-lg font-bold text-gray-800 dark:text-white">Services</h2>
