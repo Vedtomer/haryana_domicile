@@ -35,9 +35,9 @@ class ServiceSeeder extends Seeder
                 'sort_order' => 2,
             ],
             [
-                'name' => 'Domicile Certificate',
+                'name' => 'Haryana Domicile',
                 'slug' => 'haryana-domicile',
-                'description' => 'Generate a domicile certificate.',
+                'description' => 'Generate a Haryana domicile certificate.',
                 'icon' => '📜',
                 'coin_cost' => 10,
                 'kind' => Service::KIND_MODULE,
@@ -57,7 +57,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Electricity Bill',
                 'slug' => 'electricity-bill',
-                'description' => 'View and instantly download your electricity bill.',
+                'description' => 'View and instantly download your Haryana electricity bill.',
                 'icon' => '⚡',
                 'coin_cost' => 0,
                 'kind' => Service::KIND_MODULE,
@@ -167,7 +167,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Smart PVC Card Maker',
                 'slug' => 'pvc-card-maker',
-                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
+                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
                 'icon' => '🪪',
                 'coin_cost' => 20,
                 'kind' => Service::KIND_MODULE,
@@ -179,9 +179,9 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'Family ID PVC Card',
+                'name' => 'Haryana Family ID PVC Card',
                 'slug' => 'haryana-familyid-pvc',
-                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Family ID PDF.',
+                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF.',
                 'icon' => '🆔',
                 'coin_cost' => 20,
                 'kind' => Service::KIND_MODULE,

@@ -30,14 +30,14 @@ export default function Edit({ record }) {
 
     return (
         <AdminLayout>
-            <Head title="Edit Domicile Form" />
+            <Head title="Edit Haryana Domicile Form" />
 
             <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
                 <IconButton component={Link} href="/admin/haryana-domicile" sx={{ mr: 2 }}>
                     <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" fontWeight="bold" color="text.primary">
-                    Edit Domicile Record
+                    Edit Haryana Domicile Record
                 </Typography>
             </Box>
 

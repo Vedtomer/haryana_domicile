@@ -24,16 +24,10 @@ class DashboardController extends Controller
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
 
-            $name = trim(str_ireplace('Haryana ', '', $service->name));
-            if ($name === 'Domicile') {
-                $name = 'Domicile Certificate';
-            }
-            $description = str_ireplace('Haryana ', '', $service->description ?? '');
-
             return [
                 'id' => $service->id,
-                'name' => $name,
-                'description' => $description,
+                'name' => $service->name,
+                'description' => $service->description,
                 'icon' => $service->icon ?: '📄',
                 'logo_url' => $service->logoUrl(),
                 'coin_cost' => $service->coin_cost,

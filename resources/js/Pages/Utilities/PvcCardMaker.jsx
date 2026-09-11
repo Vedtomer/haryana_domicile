@@ -234,7 +234,7 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
                                         Family ID PDF Requirements:
                                     </p>
                                     <ul className="list-disc pl-4 space-y-1 text-[11px] text-amber-800 dark:text-amber-300">
-                                        <li>Kripya official portal se download kiya hua <strong>Parivar Pehchan Patra (Signed PPP)</strong> digital PDF hi upload karein.</li>
+                                        <li>Kripya <strong>meraparivar.haryana.gov.in</strong> se download kiya hua official <strong>Parivar Pehchan Patra (Signed PPP)</strong> digital PDF hi upload karein.</li>
                                         <li>Scanner se scan ki hui copy, mobile se li gayi photo, ya browser se 'Print to PDF' kiya hua page <strong>support nahi karta</strong>.</li>
                                         <li>Aavedan slip ya edit receipt ke bajaye main Signed Family ID document upload karein.</li>
                                     </ul>

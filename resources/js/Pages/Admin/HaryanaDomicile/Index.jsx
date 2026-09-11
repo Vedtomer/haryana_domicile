@@ -6,7 +6,7 @@ export default function Index({ records }) {
     return (
         <AdminLayout>
             <ResourceIndex
-                title="Domicile Certificate Records"
+                title="Haryana Domicile Records"
                 items={records}
                 columns={[
                     { label: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString() },
