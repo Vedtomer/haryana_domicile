@@ -147,13 +147,6 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 License Keys
                             </NavItem>
-                            <NavItem href="/admin/qr-to-print" icon={
-                                <span className="text-lg">🖨️</span>
-                            }>
-                                QR to Print
-                            </NavItem>
-
-
                         </>
                     )}
                 </nav>

@@ -212,7 +212,6 @@ export default function Index({ keys, filters, stats }) {
                                 <th className="px-5 py-3.5 font-bold">Duration</th>
                                 <th className="px-5 py-3.5 font-bold">Status</th>
                                 <th className="px-5 py-3.5 font-bold">Purchased By</th>
-                                <th className="px-5 py-3.5 font-bold">Activated By</th>
                                 <th className="px-5 py-3.5 font-bold">Valid Till</th>
                                 <th className="px-5 py-3.5 font-bold text-right">Actions</th>
                             </tr>
@@ -220,7 +219,7 @@ export default function Index({ keys, filters, stats }) {
                         <tbody className="divide-y divide-gray-100">
                             {keys.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" className="px-5 py-10 text-center text-gray-400 font-medium">
+                                    <td colSpan="6" className="px-5 py-10 text-center text-gray-400 font-medium">
                                         No license keys found. Click "Generate Keys" to create one.
                                     </td>
                                 </tr>
@@ -247,7 +246,7 @@ export default function Index({ keys, filters, stats }) {
                                         <td className="px-5 py-3.5 whitespace-nowrap font-semibold text-gray-700">
                                             {k.duration_months} Months
                                             {k.cost_coins > 0 && (
-                                                <span className="block text-[11px] text-amber-600 font-normal">🪙 {k.cost_coins} Coins</span>
+                                                 <span className="block text-[11px] text-amber-600 font-normal">🪙 {k.cost_coins} Coins</span>
                                             )}
                                         </td>
                                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -261,16 +260,6 @@ export default function Index({ keys, filters, stats }) {
                                                 </div>
                                             ) : (
                                                 <span className="text-xs text-gray-400 italic">System / Admin</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-3.5 whitespace-nowrap text-gray-600">
-                                            {k.activator ? (
-                                                <div>
-                                                    <p className="font-semibold text-gray-800">{k.activator.name}</p>
-                                                    <p className="text-xs text-gray-400">{k.activator.phone || k.activator.email}</p>
-                                                </div>
-                                            ) : (
-                                                <span className="text-xs text-gray-400">-</span>
                                             )}
                                         </td>
                                         <td className="px-5 py-3.5 whitespace-nowrap text-xs text-gray-600">
