@@ -14,6 +14,7 @@ export default function PublicUpload({ shop = {} }) {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [submittedJob, setSubmittedJob] = useState(null);
     const [jobStatus, setJobStatus] = useState(null);
+    const [printedPrinterName, setPrintedPrinterName] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
     const fileInputRef = useRef(null);
@@ -88,6 +89,9 @@ export default function PublicUpload({ shop = {} }) {
                 const res = await axios.get(`/p/job/${submittedJob.job_code}/status`);
                 if (res.data.success) {
                     setJobStatus(res.data.status);
+                    if (res.data.printer_name) {
+                        setPrintedPrinterName(res.data.printer_name);
+                    }
                 }
             } catch {}
         }, 3000);
@@ -169,7 +173,7 @@ export default function PublicUpload({ shop = {} }) {
                                 <span className="font-black text-emerald-400 text-sm">₹{submittedJob.total_amount}</span>
                             </div>
 
-                            <div className="pt-3 border-t border-slate-800">
+                            <div className="pt-3 border-t border-slate-800 space-y-2.5">
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs text-slate-300 font-semibold">Print Status:</span>
                                     {jobStatus === 'completed' && (
@@ -193,6 +197,23 @@ export default function PublicUpload({ shop = {} }) {
                                         </span>
                                     )}
                                 </div>
+
+                                {/* Printer Name Display under Status */}
+                                <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
+                                    <span className="text-slate-400 font-medium">Printer:</span>
+                                    <span className={`font-bold flex items-center gap-1.5 ${
+                                        (submittedJob?.color_type || colorType) === 'color' ? 'text-pink-400' : 'text-slate-200'
+                                    }`}>
+                                        <span>🖨️</span>
+                                        <span>
+                                            {printedPrinterName || (
+                                                (submittedJob?.color_type || colorType) === 'color' 
+                                                    ? (shop?.color_printer || 'Epson Color Printer') 
+                                                    : (shop?.bw_printer || 'Canon B&W Printer')
+                                            )}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -207,6 +228,7 @@ export default function PublicUpload({ shop = {} }) {
                             onClick={() => {
                                 setSubmittedJob(null);
                                 setJobStatus(null);
+                                setPrintedPrinterName(null);
                                 setFile(null);
                             }}
                             className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm rounded-xl transition-all"

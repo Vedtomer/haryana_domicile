@@ -112,6 +112,8 @@ class PublicPrintController extends Controller
             'success' => true,
             'job_code' => $job->job_code,
             'status' => $job->status,
+            'printer_name' => $job->printer_name,
+            'color_type' => $job->color_type,
             'printed_at' => $job->printed_at ? $job->printed_at->format('h:i A') : null,
             'error' => $job->error_message,
         ]);
