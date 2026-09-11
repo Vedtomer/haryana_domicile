@@ -20,10 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'logout',
             '/logout',
-            'api/print-agent/*',
-            '/api/print-agent/*',
-            'p/*/upload',
-            '/p/*/upload',
         ]);
 
         $middleware->web(append: [

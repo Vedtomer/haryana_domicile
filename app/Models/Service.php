@@ -260,12 +260,6 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=aapar',
             'create' => '/utilities/pvc-card-maker?card=aapar',
         ],
-        'qr_to_print' => [
-            'label' => 'QR to Print (Counter Cloud Printing)',
-            'model' => null,
-            'index' => '/admin/qr-to-print',
-            'create' => '/admin/qr-to-print',
-        ],
 
     ];
 

@@ -417,14 +417,6 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/screen-share/{session}/candidate', [\App\Http\Controllers\ScreenShareController::class, 'sendCandidate'])->name('screen.candidate');
         Route::post('/screen-share/{session}/end', [\App\Http\Controllers\ScreenShareController::class, 'endSession'])->name('screen.end');
 
-        // QR to Print — Counter Cloud Printing for Shop Owners
-        Route::get('/admin/qr-to-print', [\App\Http\Controllers\QrPrintController::class, 'index'])->name('qr-to-print.index');
-        Route::post('/admin/qr-to-print/settings', [\App\Http\Controllers\QrPrintController::class, 'updateSettings'])->name('qr-to-print.settings');
-        Route::get('/admin/qr-to-print/standee', [\App\Http\Controllers\QrPrintController::class, 'standee'])->name('qr-to-print.standee');
-        Route::get('/admin/qr-to-print/download-agent', [\App\Http\Controllers\QrPrintController::class, 'downloadAgent'])->name('qr-to-print.download-agent');
-        Route::post('/admin/qr-to-print/jobs/{id}/reprint', [\App\Http\Controllers\QrPrintController::class, 'reprintJob'])->name('qr-to-print.jobs.reprint');
-        Route::post('/admin/qr-to-print/jobs/{id}/cancel', [\App\Http\Controllers\QrPrintController::class, 'cancelJob'])->name('qr-to-print.jobs.cancel');
-
         // All portal services requiring active 6-Month license
         Route::middleware(['license.active'])->group(function () {
     
@@ -831,15 +823,3 @@ Route::get('/test-login', function() {
     auth()->loginUsingId(1);
     return redirect('/dashboard');
 });
-
-// Public Customer QR Print Routes (Mobile)
-Route::get('/p/{shop_code}', [\App\Http\Controllers\PublicPrintController::class, 'show'])->name('public-print.show');
-Route::post('/p/{shop_code}/upload', [\App\Http\Controllers\PublicPrintController::class, 'upload'])->name('public-print.upload');
-Route::get('/p/status/{job_code}', [\App\Http\Controllers\PublicPrintController::class, 'jobStatus'])->name('public-print.status');
-
-// Windows Print Agent API (Protected by agent_secret)
-Route::post('/api/print-agent/heartbeat', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'heartbeat'])->name('print-agent.heartbeat');
-Route::get('/api/print-agent/pending-jobs', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'pendingJobs'])->name('print-agent.pending-jobs');
-Route::get('/api/print-agent/download/{id}', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'download'])->name('print-agent.download');
-Route::post('/api/print-agent/status/{id}', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'updateStatus'])->name('print-agent.status');
-
