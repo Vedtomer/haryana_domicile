@@ -8,7 +8,32 @@ use App\Http\Controllers\HaryanaDomicileController;
 use App\Http\Controllers\PdfCoordinateController;
 
 Route::get('/', function () {
-    return Inertia::render('Frontend/Home');
+    $services = \App\Models\Service::active()
+        ->ordered()
+        ->get()
+        ->map(function (\App\Models\Service $service) {
+            $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
+
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'slug' => $service->slug,
+                'description' => $service->description,
+                'icon' => $service->icon ?: '📄',
+                'logo_url' => $service->logoUrl(),
+                'coin_cost' => $service->coin_cost,
+                'is_free' => $service->isFree(),
+                'kind' => $service->kind,
+                'is_premium' => (bool) $service->is_premium,
+                'is_new' => (bool) $isNew,
+                'url' => $service->targetUrl(),
+            ];
+        });
+
+    return Inertia::render('Frontend/Home', [
+        'services' => $services,
+    ]);
 });
 
 Route::get('/migrate-db', function () {
