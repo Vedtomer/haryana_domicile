@@ -128,6 +128,12 @@ class Service extends Model
             'index' => '/utilities/passport-maker',
             'create' => '/utilities/passport-maker',
         ],
+        'passport_apply' => [
+            'label' => 'Passport Apply',
+            'model' => null,
+            'index' => '/utilities/passport-apply',
+            'create' => '/utilities/passport-apply',
+        ],
         'tenth_passbook' => [
             'label' => '10th Passbook Editor',
             'model' => TenthPassbook::class,

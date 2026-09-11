@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import FooterParticles from './FooterParticles';
 import WaveCanvas from './WaveCanvas';
+import TopDisclaimerTicker from './TopDisclaimerTicker';
 
 const navLinks = [
     { label: 'HOME', href: '/' },
@@ -29,19 +30,8 @@ export default function FrontendHeader() {
                 pointerEvents: 'none',
             }} />
 
-            {/* Top announcement bar (optional — matches reference style) */}
-            <div style={{
-                position: 'relative',
-                background: '#071030',
-                borderBottom: '1px solid rgba(147,197,253,0.2)',
-                textAlign: 'center',
-                padding: '2px 16px',
-                fontSize: 11,
-                color: '#bfdbfe',
-                letterSpacing: '0.01em',
-            }}>
-                🌐 CSP Jaankari — Trusted Digital Citizen Services Portal
-            </div>
+            {/* Top disclaimer marquee ticker */}
+            <TopDisclaimerTicker />
 
             {/* Main nav row */}
             <div className="relative flex justify-center items-center px-6 py-1.5">

@@ -8,6 +8,7 @@ import ThemeToggle from '../Components/ThemeToggle';
 import LicenseModal from '../Components/LicenseModal';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
+import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
@@ -161,6 +162,7 @@ export default function AdminLayout({ header, children }) {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <TopDisclaimerTicker />
                 <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">

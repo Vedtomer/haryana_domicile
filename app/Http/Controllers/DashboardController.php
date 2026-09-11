@@ -22,7 +22,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function (Service $service) use ($user, $isAdmin) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
 
             return [
                 'id' => $service->id,
@@ -68,9 +68,13 @@ class DashboardController extends Controller
         if ($service->isModule()) {
             $model = $service->moduleModel();
             if (!$model) {
-                return 0;
+                $query = ServiceRequest::where(function ($q) use ($service) {
+                    $q->where('service_id', $service->id)
+                      ->orWhere('service_name', $service->name);
+                });
+            } else {
+                $query = $model::query();
             }
-            $query = $model::query();
         } else {
             $query = ServiceRequest::where('service_id', $service->id);
         }

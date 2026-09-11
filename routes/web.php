@@ -13,7 +13,7 @@ Route::get('/', function () {
         ->get()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
 
             return [
                 'id' => $service->id,
@@ -685,6 +685,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::get('/utilities/passport-maker', [\App\Http\Controllers\PassportMakerController::class, 'index'])->name('utilities.passport-maker');
     Route::post('/utilities/passport-maker/deduct-coins', [\App\Http\Controllers\PassportMakerController::class, 'deductCoins'])->name('utilities.passport-maker.deduct-coins');
+
+    // Passport Apply Service
+    Route::get('/utilities/passport-apply', [\App\Http\Controllers\PassportApplyController::class, 'index'])->name('utilities.passport-apply');
+    Route::post('/utilities/passport-apply', [\App\Http\Controllers\PassportApplyController::class, 'store'])->name('utilities.passport-apply.store');
+    Route::get('/utilities/passport-apply/pincode/{pincode}', [\App\Http\Controllers\PassportApplyController::class, 'pincodeLookup'])->name('utilities.passport-apply.pincode');
 
     // IDCard Store Smart PVC Card Maker
     Route::get('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'index'])->name('utilities.pvc-card-maker');
