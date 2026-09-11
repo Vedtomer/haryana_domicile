@@ -313,6 +313,12 @@ class QrPrintController extends Controller
         $shop = $this->getOrCreateShop();
         $cost = 49;
 
+        if ($shop->isSubscriptionActive()) {
+            $days = $shop->subscriptionDaysLeft();
+            $expiry = $shop->subscription_expires_at->format('d M Y');
+            return back()->with('error', "Aapka QR to Print plan pehle se active hai ({$expiry} tak, {$days} din baaki). Plan expire hone ke baad hi naya recharge hoga.");
+        }
+
         if (!$user->hasEnoughCoins($cost)) {
             return back()->with('error', "Insufficient coins! QR to Print service activate karne ke liye aapke wallet me kam se kam {$cost} coins hone chahiye. (Aapka balance: {$user->coins} Coins)");
         }
@@ -326,12 +332,8 @@ class QrPrintController extends Controller
                 $shop->id
             );
 
-            $base = ($shop->subscription_expires_at && $shop->subscription_expires_at->isFuture())
-                ? $shop->subscription_expires_at->copy()
-                : now();
-
             $shop->update([
-                'subscription_expires_at' => $base->addDays(30),
+                'subscription_expires_at' => now()->addDays(30),
             ]);
         });
 

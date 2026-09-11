@@ -75,12 +75,12 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
     }, []);
 
     const handleSubscribe = () => {
-        const isRenew = subscription?.is_active;
-        const msg = isRenew
-            ? 'Kya aap 49 coins deduct karke QR to Print service ko agle 30 din ke liye extend karna chahte hain?'
-            : 'Kya aap 49 coins deduct karke QR to Print service ko 1 mahine (30 din) ke liye activate karna chahte hain?';
+        if (subscription?.is_active) {
+            alert('Aapka QR to Print plan pehle se active hai. Plan expire hone ke baad hi naya recharge hoga.');
+            return;
+        }
 
-        if (confirm(msg)) {
+        if (confirm('Kya aap 49 coins deduct karke QR to Print service ko 1 mahine (30 din) ke liye activate karna chahte hain?')) {
             setSubscribing(true);
             router.post('/admin/qr-to-print/subscribe', {}, {
                 preserveScroll: true,
@@ -261,15 +261,10 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {}, subscription = {} 
 
                         <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                             {subscription?.is_active ? (
-                                <button
-                                    type="button"
-                                    onClick={handleSubscribe}
-                                    disabled={subscribing}
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
-                                >
-                                    <span>↺</span>
-                                    <span>{subscribing ? 'Renewing...' : 'Renew Plan (+30 Din / 49 Coins)'}</span>
-                                </button>
+                                <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs font-bold shadow-2xs">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span>Plan Active ({subscription?.days_left} Din Baaki)</span>
+                                </div>
                             ) : (
                                 (subscription?.user_coins ?? 0) >= 49 ? (
                                     <button
