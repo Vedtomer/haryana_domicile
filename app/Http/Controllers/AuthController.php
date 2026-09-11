@@ -105,12 +105,14 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name'     => 'required|string|max:255',
-            'phone'    => 'required|string|max:20|unique:users,phone',
-            'email'    => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:4',
+            'phone'         => 'required|string|max:20|unique:users,phone',
+            'email'         => 'required|string|email|max:255|unique:users,email',
+            'password'      => 'required|string|min:4',
+            'referral_code' => 'nullable|string|max:30|exists:users,referral_code',
         ], [
-            'phone.unique' => 'This mobile number is already registered.',
-            'email.unique' => 'This email address is already registered.',
+            'phone.unique'         => 'This mobile number is already registered.',
+            'email.unique'         => 'This email address is already registered.',
+            'referral_code.exists' => 'The entered referral code does not exist. Please check or leave it blank.',
         ]);
 
         $email = strtolower(trim($data['email']));
@@ -195,15 +197,17 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name'     => 'required|string|max:255',
-            'phone'    => 'required|string|max:20|unique:users,phone',
-            'email'    => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:4',
-            'otp'      => 'required|string|size:6',
+            'phone'         => 'required|string|max:20|unique:users,phone',
+            'email'         => 'required|string|email|max:255|unique:users,email',
+            'password'      => 'required|string|min:4',
+            'otp'           => 'required|string|size:6',
+            'referral_code' => 'nullable|string|max:30|exists:users,referral_code',
         ], [
-            'phone.unique' => 'This mobile number is already registered.',
-            'email.unique' => 'This email address is already registered.',
-            'otp.required' => 'Please enter the 6-digit OTP sent to your email.',
-            'otp.size'     => 'The OTP must be exactly 6 digits.',
+            'phone.unique'         => 'This mobile number is already registered.',
+            'email.unique'         => 'This email address is already registered.',
+            'otp.required'         => 'Please enter the 6-digit OTP sent to your email.',
+            'otp.size'             => 'The OTP must be exactly 6 digits.',
+            'referral_code.exists' => 'The entered referral code is invalid.',
         ]);
 
         $email = strtolower(trim($data['email']));
@@ -220,16 +224,32 @@ class AuthController extends Controller
         \Illuminate\Support\Facades\Cache::store('file')->forget($cacheKey);
         \Illuminate\Support\Facades\Cache::store('file')->forget('reg_otp_cooldown_' . md5($email));
 
+        $referrer = null;
+        if (!empty($data['referral_code'])) {
+            $referrer = \App\Models\User::where('referral_code', strtoupper(trim($data['referral_code'])))->first();
+        }
+
         $user = \App\Models\User::create([
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'phone'             => $data['phone'],
-            'password'          => \Illuminate\Support\Facades\Hash::make($data['password']),
-            'raw_password'      => $data['password'],
-            'type'              => 'user',
-            'email_verified_at' => now(),
-            'last_activity_at'  => now(),
+            'name'                 => $data['name'],
+            'email'                => $data['email'],
+            'phone'                => $data['phone'],
+            'password'             => \Illuminate\Support\Facades\Hash::make($data['password']),
+            'raw_password'         => $data['password'],
+            'type'                 => 'user',
+            'email_verified_at'    => now(),
+            'last_activity_at'     => now(),
+            'referred_by'          => $referrer?->id,
+            'referral_reward_paid' => false,
         ]);
+
+        if ($referrer) {
+            $referrer->notify(new \App\Notifications\SystemAlert(
+                '👤 New Friend Joined with Your Referral!',
+                "{$user->name} ne aapke referral link se register kiya hai. Jab wo pehli baar ₹200+ wallet recharge karenge, aapko ₹10 (10 Coins) milenge!",
+                '/admin/referrals',
+                'info'
+            ));
+        }
 
         // Trigger booted method or sync manually just in case
         $user->syncRoles(['public']);

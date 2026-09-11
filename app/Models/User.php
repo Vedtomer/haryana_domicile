@@ -19,6 +19,12 @@ class User extends Authenticatable implements FilamentUser
     
     protected static function booted(): void
     {
+        static::creating(function (User $user) {
+            if (empty($user->referral_code)) {
+                $user->referral_code = static::generateReferralCode();
+            }
+        });
+
         static::created(function (User $user) {
             if ($user->type === 'user') {
                 $user->assignRole('public');
@@ -53,6 +59,10 @@ class User extends Authenticatable implements FilamentUser
         'last_activity_at',
         'last_seen_at',
         'deactivated_reason',
+        'referral_code',
+        'referred_by',
+        'referral_reward_paid',
+        'referral_reward_paid_at',
     ];
 
     /**
@@ -68,6 +78,7 @@ class User extends Authenticatable implements FilamentUser
     protected $appends = [
         'is_online',
         'last_seen_human',
+        'referral_link',
     ];
 
     /**
@@ -85,6 +96,8 @@ class User extends Authenticatable implements FilamentUser
             'license_device_bound_at' => 'datetime',
             'last_activity_at'        => 'datetime',
             'last_seen_at'            => 'datetime',
+            'referral_reward_paid'    => 'boolean',
+            'referral_reward_paid_at' => 'datetime',
         ];
     }
 
@@ -343,5 +356,98 @@ class User extends Authenticatable implements FilamentUser
     public function coinPurchaseRequests()
     {
         return $this->hasMany(CoinPurchaseRequest::class);
+    }
+
+    /**
+     * The user who referred this user.
+     */
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /**
+     * Users who were referred by this user.
+     */
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    /**
+     * Generate a unique referral code.
+     */
+    public static function generateReferralCode(): string
+    {
+        do {
+            $code = 'CSP' . strtoupper(\Illuminate\Support\Str::random(5));
+        } while (static::where('referral_code', $code)->exists());
+
+        return $code;
+    }
+
+    /**
+     * Get user's referral link.
+     */
+    public function getReferralLinkAttribute(): string
+    {
+        $code = $this->referral_code;
+        if (empty($code)) {
+            $code = static::generateReferralCode();
+            $this->update(['referral_code' => $code]);
+        }
+        return url('/register?ref=' . $code);
+    }
+
+    /**
+     * Check if a referred user has added ₹200+ and credit the ₹10 referral bonus once.
+     */
+    public function checkAndTriggerReferralBonus(int $addedAmount = 0): void
+    {
+        // Must be referred by someone and bonus must not already be paid
+        if (!$this->referred_by || $this->referral_reward_paid) {
+            return;
+        }
+
+        // Calculate total approved recharge package amount for this user
+        $totalRecharged = \App\Models\CoinPurchaseRequest::where('user_id', $this->id)
+            ->where('status', 'approved')
+            ->sum('package_amount');
+
+        // Condition: When user adds ₹200+ (or package 199/200+, or cumulative reaches ₹200+)
+        if ($addedAmount >= 199 || $totalRecharged >= 199) {
+            $referrer = static::find($this->referred_by);
+            if ($referrer) {
+                // Atomic check to prevent race conditions
+                $affected = static::where('id', $this->id)
+                    ->where('referral_reward_paid', false)
+                    ->update([
+                        'referral_reward_paid' => true,
+                        'referral_reward_paid_at' => now(),
+                    ]);
+
+                if ($affected) {
+                    $this->referral_reward_paid = true;
+                    $this->referral_reward_paid_at = now();
+
+                    // 10 Coins (₹10) referral bonus to referrer
+                    $referrer->addCoins(
+                        10,
+                        CoinTransaction::TYPE_REFERRAL_BONUS,
+                        "Referral Bonus: {$this->name} added ₹200+ to wallet",
+                        null,
+                        CoinTransaction::COIN_TYPE_PAID
+                    );
+
+                    // Congratulate referrer with notification
+                    $referrer->notify(new \App\Notifications\SystemAlert(
+                        '🎉 Referral Bonus Credited (+10 Coins)!',
+                        "Aapke referral link se judne wale user '{$this->name}' ne ₹200+ add kiye. Aapke account me 10 Coins (₹10) credit ho gaye hain!",
+                        '/admin/referrals',
+                        'success'
+                    ));
+                }
+            }
+        }
     }
 }

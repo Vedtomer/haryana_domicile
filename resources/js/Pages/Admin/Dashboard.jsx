@@ -390,6 +390,41 @@ export default function Dashboard({ services, stats, isAdmin }) {
                  </div>
              )}
 
+            {/* Refer & Earn Promo Banner */}
+            <div className="mb-6">
+                <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-lg border border-blue-500/30">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/15 backdrop-blur-md text-white flex items-center justify-center text-2xl sm:text-3xl shrink-0 shadow-inner">
+                                🎁
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                                        Refer a Friend &amp; Earn ₹10!
+                                    </h3>
+                                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 uppercase tracking-wide">
+                                        Earn 10 Coins
+                                    </span>
+                                </div>
+                                <p className="text-xs sm:text-sm text-blue-100 font-medium mt-0.5 leading-relaxed">
+                                    Jab bhi aapka refer kiya dost pehli baar apni ID me ₹200+ add karega, aapko turant <strong>10 Coins (₹10)</strong> milenge!
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+                            <Link
+                                href="/admin/referrals"
+                                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-900 hover:bg-blue-50 font-black text-xs sm:text-sm rounded-xl shadow-md hover:-translate-y-0.5 transition-all"
+                            >
+                                <span>Referral Dashboard</span>
+                                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
              {/* Services Section Header & Categories */}
             <div id="services" className="space-y-3.5 mb-6 scroll-mt-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

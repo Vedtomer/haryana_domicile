@@ -147,6 +147,11 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 License Keys
                             </NavItem>
+                            <NavItem href="/admin/referrals" icon={
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
+                            }>
+                                Refer &amp; Earn
+                            </NavItem>
                         </>
                     )}
                 </nav>
@@ -250,6 +255,14 @@ export default function AdminLayout({ header, children }) {
                                  <span className="text-base leading-none">🖨️</span>
                                  <span className="hidden sm:inline">QR to Print</span>
                              </Link>
+                             <Link
+                                 href="/admin/referrals"
+                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/80 rounded-xl hover:bg-amber-200/80 dark:hover:bg-amber-900/60 transition-all shadow-2xs"
+                                 title="Refer & Earn ₹10 per friend"
+                             >
+                                 <span className="text-base leading-none">🎁</span>
+                                 <span className="hidden md:inline">Refer &amp; Earn</span>
+                             </Link>
                          </>
                      )}
 
@@ -290,6 +303,13 @@ export default function AdminLayout({ header, children }) {
                             >
                                 <span className="w-4 h-4 flex items-center justify-center">🪙</span>
                                 Coin Ledger
+                            </Link>
+                            <Link
+                                href="/admin/referrals"
+                                className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                                <span className="w-4 h-4 flex items-center justify-center">🎁</span>
+                                Refer &amp; Earn (₹10)
                             </Link>
                             {auth?.user?.type === 'admin' && (
                                 <>

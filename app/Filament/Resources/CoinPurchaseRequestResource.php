@@ -181,6 +181,7 @@ class CoinPurchaseRequestResource extends Resource
                                     CoinTransaction::TYPE_PURCHASE,
                                     "Coin Purchase - {$record->coins_requested} Coins"
                                 );
+                                $record->user->checkAndTriggerReferralBonus((int) $record->package_amount);
                             });
                             Notification::make()->title('Success')->body('Request approved and coins added.')->success()->send();
                         })

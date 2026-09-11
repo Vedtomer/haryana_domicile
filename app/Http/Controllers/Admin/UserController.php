@@ -159,6 +159,10 @@ class UserController extends Controller
             $data['coin_type']
         );
 
+        if ($data['coin_type'] === 'paid') {
+            $user->checkAndTriggerReferralBonus((int) $data['amount']);
+        }
+
         return back()->with('success', 'Coins added.');
     }
 

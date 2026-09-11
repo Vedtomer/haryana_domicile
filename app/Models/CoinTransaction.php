@@ -13,6 +13,7 @@ class CoinTransaction extends Model
     const TYPE_SERVICE_DEDUCTION = 'service_deduction';
     const TYPE_LICENSE_PURCHASE = 'license_purchase';
     const TYPE_REFUND = 'refund';
+    const TYPE_REFERRAL_BONUS = 'referral_bonus';
 
     // Coin types
     const COIN_TYPE_TRIAL = 'trial';

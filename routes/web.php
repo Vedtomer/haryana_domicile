@@ -456,6 +456,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/2fa/reset', [\App\Http\Controllers\TwoFactorController::class, 'resetSetup'])->name('2fa.reset');
 
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 
         // License Purchase & Activation Routes
         Route::post('/license/buy', [\App\Http\Controllers\LicenseController::class, 'buy'])->name('license.buy');
@@ -862,6 +863,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update');
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+        Route::get('referrals', [\App\Http\Controllers\ReferralController::class, 'index'])->name('referrals.index');
 
         // Payment / QR Settings — admin only
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');

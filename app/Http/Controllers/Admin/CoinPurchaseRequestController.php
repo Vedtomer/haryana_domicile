@@ -48,7 +48,7 @@ class CoinPurchaseRequestController extends Controller
             ['amount' => 20,  'base_coins' => 20,  'bonus_coins' => 1,   'bonus_pct' => 5,  'label' => 'Mini',     'popular' => false],
             ['amount' => 49,  'base_coins' => 49,  'bonus_coins' => 0,   'bonus_pct' => 0,  'label' => 'Starter',  'popular' => false],
             ['amount' => 99,  'base_coins' => 99,  'bonus_coins' => 6,   'bonus_pct' => 6,  'label' => 'Basic',    'popular' => false],
-            ['amount' => 199, 'base_coins' => 199, 'bonus_coins' => 20,  'bonus_pct' => 10, 'label' => 'Standard', 'popular' => true ],
+            ['amount' => 200, 'base_coins' => 200, 'bonus_coins' => 20,  'bonus_pct' => 10, 'label' => 'Standard', 'popular' => true ],
             ['amount' => 399, 'base_coins' => 399, 'bonus_coins' => 60,  'bonus_pct' => 15, 'label' => 'Pro',      'popular' => false],
             ['amount' => 799, 'base_coins' => 799, 'bonus_coins' => 160, 'bonus_pct' => 20, 'label' => 'Business', 'popular' => false],
         ];
@@ -139,6 +139,9 @@ class CoinPurchaseRequestController extends Controller
                     null,
                     CoinTransaction::COIN_TYPE_PAID   // Revenue: marked as paid
                 );
+
+                // Trigger referral reward check (₹10 credited to referrer on ₹200+ recharge)
+                $coinRequest->user->checkAndTriggerReferralBonus((int) $coinRequest->package_amount);
             });
 
             $coinRequest->user->notify(new SystemAlert(

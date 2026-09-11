@@ -11,6 +11,7 @@ export default function Register() {
         phone: '',
         password: '',
         otp: '',
+        referral_code: '',
     });
 
     const [mounted, setMounted] = useState(false);
@@ -24,6 +25,13 @@ export default function Register() {
 
     useEffect(() => {
         setMounted(true);
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const refCode = params.get('ref') || params.get('referral');
+            if (refCode) {
+                setData('referral_code', refCode.trim().toUpperCase());
+            }
+        }
     }, []);
 
     // Cooldown countdown timer for resend OTP
@@ -73,6 +81,7 @@ export default function Register() {
                 phone: data.phone,
                 email: data.email,
                 password: data.password,
+                referral_code: data.referral_code,
             });
 
             if (res.data.success) {
@@ -112,6 +121,7 @@ export default function Register() {
                 phone: data.phone,
                 email: data.email,
                 password: data.password,
+                referral_code: data.referral_code,
             });
 
             if (res.data.success) {
@@ -280,6 +290,33 @@ export default function Register() {
                                                     </button>
                                                 </div>
                                                 {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
+                                            </div>
+
+                                            {/* Referral Code (Optional) */}
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="font-label-md text-xs font-semibold text-on-surface flex items-center justify-between" htmlFor="referral_code">
+                                                    <span>Referral Code (Optional)</span>
+                                                    <span className="text-[11px] text-amber-600 font-semibold">🎁 Friend bonus</span>
+                                                </label>
+                                                <div className="relative flex items-center bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
+                                                    <input 
+                                                        id="referral_code" 
+                                                        name="referral_code"
+                                                        value={data.referral_code}
+                                                        onChange={(e) => setData('referral_code', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                                                        className="w-full bg-transparent border-none py-2.5 px-4 text-sm text-on-surface focus:ring-0 focus:outline-none rounded-lg font-mono uppercase tracking-wider placeholder:normal-case placeholder:font-sans" 
+                                                        placeholder="e.g. CSP1234 (Optional)" 
+                                                        type="text"
+                                                        maxLength={20}
+                                                    />
+                                                    {data.referral_code && (
+                                                        <span className="absolute right-3 text-emerald-600 flex items-center gap-1 text-xs font-bold pointer-events-none">
+                                                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                            <span>Applied</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {errors.referral_code && <p className="text-red-500 text-xs">{errors.referral_code}</p>}
                                             </div>
                                             
                                             {/* Terms Checkbox */}
