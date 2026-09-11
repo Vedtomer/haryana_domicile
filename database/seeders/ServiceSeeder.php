@@ -397,6 +397,7 @@ class ServiceSeeder extends Seeder
             }
 
             if (!$existing) {
+                $service['is_active'] = $service['is_active'] ?? true;
                 Service::create($service);
             } else {
                 // Update fields to ensure new modules and features are active
@@ -405,7 +406,7 @@ class ServiceSeeder extends Seeder
                     'slug' => $service['slug'],
                     'kind' => $service['kind'],
                     'module_key' => $service['module_key'],
-                    'is_active' => $service['is_active'],
+                    'is_active' => $service['is_active'] ?? true,
                     'visibility' => $service['visibility'] ?? Service::VISIBILITY_PUBLIC,
                     'is_premium' => $service['is_premium'] ?? false,
                     'unlock_cost' => $service['unlock_cost'] ?? 0,
