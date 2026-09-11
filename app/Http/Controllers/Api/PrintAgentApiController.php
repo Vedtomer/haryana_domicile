@@ -162,12 +162,15 @@ class PrintAgentApiController extends Controller
                 'total_pages',
                 'color_type',
                 'copies',
+                'printer_name',
             ])
             ->map(function ($job) use ($shop) {
                 $targetPrinter = null;
                 $printers = is_array($shop->detected_printers) ? $shop->detected_printers : (json_decode($shop->detected_printers, true) ?: []);
 
-                if ($job->color_type === 'color') {
+                if (!empty($job->printer_name)) {
+                    $targetPrinter = $job->printer_name;
+                } elseif ($job->color_type === 'color') {
                     if (!empty($shop->color_printer)) {
                         $targetPrinter = $shop->color_printer;
                     } else {
@@ -180,7 +183,6 @@ class PrintAgentApiController extends Controller
                             }
                         }
                     }
-                    // NEVER fallback to Canon / B&W printer for a color job!
                 } else {
                     if (!empty($shop->bw_printer)) {
                         $targetPrinter = $shop->bw_printer;
@@ -188,7 +190,7 @@ class PrintAgentApiController extends Controller
                         // Find Canon/Laser printer in detected printers
                         foreach ($printers as $p) {
                             $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                            if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf3010/i', $name)) {
+                            if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf280|mf3010/i', $name)) {
                                 $targetPrinter = $name;
                                 break;
                             }

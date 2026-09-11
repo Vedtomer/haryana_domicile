@@ -21,6 +21,13 @@ class PublicPrintController extends Controller
         // Consider online if heartbeat was within last 60 seconds
         $isOnline = $shop->last_heartbeat_at && $shop->last_heartbeat_at->diffInSeconds(now()) < 60;
 
+        // Auto route if needed to ensure bw_printer and color_printer are set
+        \App\Http\Controllers\Api\PrintAgentApiController::autoRouteShopPrinters($shop);
+
+        $detectedPrinters = is_array($shop->detected_printers)
+            ? $shop->detected_printers
+            : (json_decode($shop->detected_printers, true) ?: []);
+
         return Inertia::render('Public/QrPrint/PublicUpload', [
             'shop' => [
                 'shop_code' => $shop->shop_code,
@@ -29,6 +36,10 @@ class PublicPrintController extends Controller
                 'bw_rate' => (float)$shop->bw_rate,
                 'color_rate' => (float)$shop->color_rate,
                 'is_online' => (bool)$isOnline,
+                'bw_printer' => $shop->bw_printer ?: 'Canon MF280 Series UFR II',
+                'color_printer' => $shop->color_printer ?: 'EPSON L3150 Series',
+                'printer_mode' => $shop->printer_mode ?: 'dual',
+                'detected_printers' => array_values($detectedPrinters),
             ],
         ]);
     }
@@ -44,6 +55,7 @@ class PublicPrintController extends Controller
             'file' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:51200',
             'copies' => 'nullable|integer|min:1|max:100',
             'color_type' => 'nullable|in:bw,color',
+            'selected_printer' => 'nullable|string|max:191',
             'customer_name' => 'nullable|string|max:100',
             'customer_phone' => 'nullable|string|max:20',
             'payment_method' => 'nullable|in:cash,upi',
@@ -55,6 +67,12 @@ class PublicPrintController extends Controller
         $copies = max(1, (int)$request->input('copies', 1));
         $colorType = $request->input('color_type', 'bw');
         $paymentMethod = $request->input('payment_method', 'cash');
+
+        // Determine target printer
+        $selectedPrinter = $request->input('selected_printer');
+        if (empty($selectedPrinter)) {
+            $selectedPrinter = ($colorType === 'color') ? ($shop->color_printer ?: 'EPSON L3150 Series') : ($shop->bw_printer ?: 'Canon MF280 Series UFR II');
+        }
 
         // Store file explicitly on public disk: storage/app/public/print_jobs/{shopCode}
         $storedPath = $file->store("print_jobs/{$shopCode}", 'public');
@@ -87,6 +105,7 @@ class PublicPrintController extends Controller
             'payment_method' => $paymentMethod,
             'payment_status' => ($paymentMethod === 'upi') ? 'paid' : 'pending',
             'status' => 'pending',
+            'printer_name' => $selectedPrinter,
         ]);
 
         return response()->json([
@@ -95,6 +114,7 @@ class PublicPrintController extends Controller
             'total_pages' => $totalPages,
             'copies' => $copies,
             'color_type' => $colorType,
+            'printer_name' => $selectedPrinter,
             'total_amount' => $totalAmount,
             'status' => 'pending',
             'message' => 'Document uploaded successfully! Print request sent to shop printer.',

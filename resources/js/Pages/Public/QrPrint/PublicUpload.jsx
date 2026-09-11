@@ -3,9 +3,13 @@ import { Head } from '@inertiajs/react';
 import axios from 'axios';
 
 export default function PublicUpload({ shop = {} }) {
+    const defaultBwPrinter = shop?.bw_printer || 'Canon MF280 Series UFR II';
+    const defaultColorPrinter = shop?.color_printer || 'EPSON L3150 Series';
+
     const [file, setFile] = useState(null);
     const [copies, setCopies] = useState(1);
     const [colorType, setColorType] = useState('bw');
+    const [selectedPrinter, setSelectedPrinter] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -18,6 +22,9 @@ export default function PublicUpload({ shop = {} }) {
     const [errorMessage, setErrorMessage] = useState('');
 
     const fileInputRef = useRef(null);
+
+    // Currently chosen active target printer
+    const activeTargetPrinter = selectedPrinter || (colorType === 'color' ? defaultColorPrinter : defaultBwPrinter);
 
     // Calculate approximate cost (assuming 1 page for estimation before server parse)
     const ratePerPage = colorType === 'color' ? (shop?.color_rate ?? 10) : (shop?.bw_rate ?? 2);
@@ -51,6 +58,7 @@ export default function PublicUpload({ shop = {} }) {
         formData.append('file', file);
         formData.append('copies', copies);
         formData.append('color_type', colorType);
+        formData.append('selected_printer', activeTargetPrinter);
         formData.append('customer_name', customerName);
         formData.append('customer_phone', customerPhone);
         formData.append('payment_method', paymentMethod);
@@ -69,6 +77,9 @@ export default function PublicUpload({ shop = {} }) {
             if (res.data.success) {
                 setSubmittedJob(res.data);
                 setJobStatus(res.data.status);
+                if (res.data.printer_name) {
+                    setPrintedPrinterName(res.data.printer_name);
+                }
             } else {
                 setErrorMessage(res.data.message || 'Upload failed. Please try again.');
             }
@@ -206,11 +217,7 @@ export default function PublicUpload({ shop = {} }) {
                                     }`}>
                                         <span>🖨️</span>
                                         <span>
-                                            {printedPrinterName || (
-                                                (submittedJob?.color_type || colorType) === 'color' 
-                                                    ? (shop?.color_printer || 'Epson Color Printer') 
-                                                    : (shop?.bw_printer || 'Canon B&W Printer')
-                                            )}
+                                            {printedPrinterName || submittedJob?.printer_name || activeTargetPrinter}
                                         </span>
                                     </span>
                                 </div>
@@ -320,39 +327,123 @@ export default function PublicUpload({ shop = {} }) {
                                 </div>
                             </div>
 
-                            {/* Color Type Selector */}
+                            {/* Color Type Selector & Target Printer */}
                             <div>
-                                <span className="text-xs font-bold text-white block mb-2">Print Color</span>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-bold text-white block">Print Mode & Printer</span>
+                                    <span className="text-[10px] text-slate-400 font-medium">Kaunse printer se print nikalna hai</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2.5">
+                                    {/* Black & White Button */}
                                     <button
                                         type="button"
-                                        onClick={() => setColorType('bw')}
-                                        className={`p-3 rounded-xl border text-center transition-all ${
+                                        onClick={() => {
+                                            setColorType('bw');
+                                            setSelectedPrinter(defaultBwPrinter);
+                                        }}
+                                        className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between ${
                                             colorType === 'bw'
-                                            ? 'border-blue-500 bg-blue-600/20 text-white font-bold'
-                                            : 'border-slate-700 bg-slate-900/60 text-slate-400'
+                                            ? 'border-blue-500 bg-blue-600/20 shadow-lg shadow-blue-900/30 ring-1 ring-blue-500 text-white'
+                                            : 'border-slate-700/80 bg-slate-900/60 text-slate-400 hover:border-slate-600'
                                         }`}
                                     >
-                                        <span className="text-xs block">Black & White</span>
-                                        <span className="text-xs font-black text-slate-200 mt-0.5 block">
-                                            ₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page
-                                        </span>
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-black block text-white">🖤 Black & White</span>
+                                                {colorType === 'bw' && (
+                                                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                                                )}
+                                            </div>
+                                            <span className="text-sm font-black text-slate-200 mt-1 block">
+                                                ₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page
+                                            </span>
+                                        </div>
+
+                                        <div className="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-[11px] font-semibold text-blue-300">
+                                            <span className="text-xs">🖨️</span>
+                                            <span className="truncate font-mono text-[10.5px]" title={defaultBwPrinter}>
+                                                {defaultBwPrinter}
+                                            </span>
+                                        </div>
                                     </button>
 
+                                    {/* Color Button */}
                                     <button
                                         type="button"
-                                        onClick={() => setColorType('color')}
-                                        className={`p-3 rounded-xl border text-center transition-all ${
+                                        onClick={() => {
+                                            setColorType('color');
+                                            setSelectedPrinter(defaultColorPrinter);
+                                        }}
+                                        className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between ${
                                             colorType === 'color'
-                                            ? 'border-pink-500 bg-pink-600/20 text-white font-bold'
-                                            : 'border-slate-700 bg-slate-900/60 text-slate-400'
+                                            ? 'border-pink-500 bg-pink-600/20 shadow-lg shadow-pink-900/30 ring-1 ring-pink-500 text-white'
+                                            : 'border-slate-700/80 bg-slate-900/60 text-slate-400 hover:border-slate-600'
                                         }`}
                                     >
-                                        <span className="text-xs block">Color Print</span>
-                                        <span className="text-xs font-black text-pink-400 mt-0.5 block">
-                                            ₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page
-                                        </span>
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-black block text-white">🌈 Color Print</span>
+                                                {colorType === 'color' && (
+                                                    <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+                                                )}
+                                            </div>
+                                            <span className="text-sm font-black text-pink-400 mt-1 block">
+                                                ₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page
+                                            </span>
+                                        </div>
+
+                                        <div className="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-[11px] font-semibold text-pink-300">
+                                            <span className="text-xs">🖨️</span>
+                                            <span className="truncate font-mono text-[10.5px]" title={defaultColorPrinter}>
+                                                {defaultColorPrinter}
+                                            </span>
+                                        </div>
                                     </button>
+                                </div>
+
+                                {/* Active Printer Dispatch Banner */}
+                                <div className="mt-2.5 p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 space-y-1.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10.5px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1">
+                                            <span>🖨️ Selected Printer:</span>
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-full">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            Ready to Print
+                                        </span>
+                                    </div>
+
+                                    {shop?.detected_printers && shop.detected_printers.length > 1 ? (
+                                        <div>
+                                            <select
+                                                value={activeTargetPrinter}
+                                                onChange={(e) => setSelectedPrinter(e.target.value)}
+                                                className="w-full px-2.5 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-bold text-slate-100 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                                            >
+                                                {shop.detected_printers.map((p, i) => {
+                                                    const pName = typeof p === 'string' ? p : (p?.name || '');
+                                                    const isOff = typeof p === 'object' && p?.is_offline;
+                                                    return (
+                                                        <option key={i} value={pName}>
+                                                            {pName} {isOff ? '(Offline)' : '(Ready)'}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                            <span className="text-[10px] text-slate-400 mt-1 block">
+                                                Aap counter ke kisi bhi active printer ko select kar sakte hain.
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center justify-between text-xs font-bold text-slate-100 pt-0.5">
+                                            <span className="flex items-center gap-1.5 text-slate-200">
+                                                <span>🖨️</span> {activeTargetPrinter}
+                                            </span>
+                                            <span className="text-[10px] font-medium text-slate-400">
+                                                {colorType === 'color' ? 'Color Inkjet' : 'Monochrome Laser'}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -408,10 +499,10 @@ export default function PublicUpload({ shop = {} }) {
                                 }`}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                <span>{uploading ? 'Sending to Printer...' : 'Print Document Now'}</span>
+                                <span>{uploading ? 'Sending to Printer...' : `Print to ${activeTargetPrinter}`}</span>
                             </button>
                             <p className="text-center text-[11px] text-slate-400 mt-2">
-                                Counter par direct print nikalne ke liye click karein
+                                Counter par direct <strong>{activeTargetPrinter}</strong> se print nikalne ke liye click karein
                             </p>
                         </div>
                     </form>
