@@ -78,9 +78,9 @@ class PrintAgentApiController extends Controller
             'shop_code' => $shop->shop_code,
             'shop_name' => $shop->shop_name,
             'is_online' => true,
-            'bw_printer' => $shop->bw_printer,
-            'color_printer' => $shop->color_printer,
-            'printer_mode' => $shop->printer_mode ?: 'single',
+            'bw_printer' => $effectiveBw,
+            'color_printer' => $effectiveColor,
+            'printer_mode' => $updateData['printer_mode'] ?? ($shop->printer_mode ?: 'single'),
         ]);
     }
 
@@ -104,6 +104,34 @@ class PrintAgentApiController extends Controller
             'is_online' => true,
             'last_heartbeat_at' => now(),
         ]);
+
+        // Auto-assign B&W and Color printers if not yet chosen
+        if (empty($shop->color_printer) || empty($shop->bw_printer)) {
+            $rawList = is_array($shop->detected_printers) ? $shop->detected_printers : (json_decode($shop->detected_printers, true) ?: []);
+            $autoUpdates = [];
+            if (empty($shop->color_printer)) {
+                foreach ($rawList as $p) {
+                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                    if (preg_match('/epson|color|deskjet|inkjet|tank|pixma|l31|l32|l80/i', $name)) {
+                        $autoUpdates['color_printer'] = $name;
+                        break;
+                    }
+                }
+            }
+            if (empty($shop->bw_printer)) {
+                foreach ($rawList as $p) {
+                    $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
+                    if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf3010/i', $name)) {
+                        $autoUpdates['bw_printer'] = $name;
+                        break;
+                    }
+                }
+            }
+            if (!empty($autoUpdates)) {
+                $shop->update($autoUpdates);
+                $shop->refresh();
+            }
+        }
 
         $jobs = PrintJob::where('print_shop_id', $shop->id)
             ->where('status', 'pending')
@@ -135,6 +163,7 @@ class PrintAgentApiController extends Controller
                             }
                         }
                     }
+                    // NEVER fallback to Canon / B&W printer for a color job!
                 } else {
                     if (!empty($shop->bw_printer)) {
                         $targetPrinter = $shop->bw_printer;
@@ -142,16 +171,12 @@ class PrintAgentApiController extends Controller
                         // Find Canon/Laser printer in detected printers
                         foreach ($printers as $p) {
                             $name = is_array($p) ? ($p['name'] ?? '') : (string)$p;
-                            if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono/i', $name)) {
+                            if (preg_match('/canon|laser|lbp|brother|1020|m1005|mono|mf3010/i', $name)) {
                                 $targetPrinter = $name;
                                 break;
                             }
                         }
                     }
-                }
-
-                if (!$targetPrinter) {
-                    $targetPrinter = ($job->color_type === 'color') ? ($shop->color_printer ?: $shop->bw_printer) : ($shop->bw_printer ?: $shop->color_printer);
                 }
 
                 return array_merge($job->toArray(), [
@@ -255,6 +280,9 @@ class PrintAgentApiController extends Controller
         }
 
         $updateData = ['status' => $status];
+        if ($request->filled('printer_name')) {
+            $updateData['printer_name'] = $request->input('printer_name');
+        }
         if ($status === 'completed') {
             $updateData['printed_at'] = now();
             $updateData['error_message'] = null;
@@ -267,6 +295,31 @@ class PrintAgentApiController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Status updated successfully',
+        ]);
+    }
+
+    /**
+     * Return latest agent script for auto-update
+     */
+    public function getLatestScript(Request $request)
+    {
+        $scriptPath = resource_path('scripts/print-agent/agent.ps1');
+        if (!file_exists($scriptPath)) {
+            abort(404, 'Script not found');
+        }
+
+        $token = $request->query('token') ?: $request->input('token');
+        $script = file_get_contents($scriptPath);
+        $script = str_replace('__SERVER_URL__', url('/'), $script);
+        if ($token) {
+            $script = str_replace('__AGENT_TOKEN__', $token, $script);
+        }
+
+        return response($script, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 }

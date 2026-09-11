@@ -741,14 +741,28 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
                                                 </td>
                                                 <td className="px-5 py-4">
                                                     {job.status === 'completed' && (
-                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                                                            <span>✓</span> Printed
-                                                        </span>
+                                                        <div>
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                                                <span>✓</span> Printed
+                                                            </span>
+                                                            {job.printer_name && (
+                                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-mono mt-0.5 truncate max-w-[150px]" title={job.printer_name}>
+                                                                    🖨️ {job.printer_name}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                     {job.status === 'printing' && (
-                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 animate-pulse">
-                                                            <span>🖨️</span> Printing...
-                                                        </span>
+                                                        <div>
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 animate-pulse">
+                                                                <span>🖨️</span> Printing...
+                                                            </span>
+                                                            {job.printer_name && (
+                                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-mono mt-0.5 truncate max-w-[150px]" title={job.printer_name}>
+                                                                    🖨️ {job.printer_name}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                     {job.status === 'pending' && (
                                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
@@ -756,9 +770,16 @@ function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
                                                         </span>
                                                     )}
                                                     {job.status === 'failed' && (
-                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300" title={job.error_message || ''}>
-                                                            <span>✕</span> Failed
-                                                        </span>
+                                                        <div>
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300" title={job.error_message || ''}>
+                                                                <span>✕</span> Failed
+                                                            </span>
+                                                            {job.error_message && (
+                                                                <span className="text-[10px] text-red-500 block truncate max-w-[150px] mt-0.5" title={job.error_message}>
+                                                                    {job.error_message}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </td>
                                             <td className="px-5 py-4 text-right">

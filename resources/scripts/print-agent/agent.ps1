@@ -216,31 +216,40 @@ function Print-DocumentSilently {
 
     $script:LastPrintError = ""
 
-    # 1. Determine target printer if not specified by server
-    if ([string]::IsNullOrWhiteSpace($TargetPrinter)) {
-        if ($ColorType -eq "color" -and !([string]::IsNullOrWhiteSpace($script:ColorPrinter))) {
-            $TargetPrinter = $script:ColorPrinter
-        } elseif ($ColorType -eq "bw" -and !([string]::IsNullOrWhiteSpace($script:BwPrinter))) {
-            $TargetPrinter = $script:BwPrinter
-        }
-    }
-
+    # 1. Inspect all physical local printers installed on Windows
     $allPrinters = Get-CimInstance Win32_Printer -ErrorAction SilentlyContinue
 
-    # 2. Heuristic auto-route: If still empty, route Color to Epson/Inkjet and B&W to Canon/Laser
-    if ([string]::IsNullOrWhiteSpace($TargetPrinter)) {
-        if ($ColorType -eq "color") {
-            $colorMatch = $allPrinters | Where-Object { $_.Name -match "Epson|Color|DeskJet|InkJet|Tank|Pixma|Photo|L31|L32|L80" } | Select-Object -First 1
-            if ($colorMatch) {
-                $TargetPrinter = $colorMatch.Name
-                Write-Log "Auto-routed Color job to detected color printer: '$TargetPrinter'"
-            }
+    # Find physical Epson/Color printer
+    $localColorPrinter = ($allPrinters | Where-Object { $_.Name -match "Epson|Color|DeskJet|InkJet|Tank|Pixma|Photo|L31|L32|L80|L3150|L3250|L3110" } | Select-Object -First 1).Name
+
+    # Find physical Canon/Laser/Monochrome printer
+    $localBwPrinter = ($allPrinters | Where-Object { $_.Name -match "Canon|Laser|LBP|1020|M1005|Brother|Mono|MF3010|LaserJet" } | Select-Object -First 1).Name
+
+    Write-Log "Hardware Check - Local Color: '$localColorPrinter', Local B&W: '$localBwPrinter'"
+
+    # 2. Strict Smart Routing based on ColorType requested by customer
+    if ($ColorType -eq "color") {
+        # This is a COLOR print! Must go to Color/Epson printer
+        if (![string]::IsNullOrWhiteSpace($script:ColorPrinter) -and ($script:ColorPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010")) {
+            $TargetPrinter = $script:ColorPrinter
+        } elseif (![string]::IsNullOrWhiteSpace($localColorPrinter)) {
+            $TargetPrinter = $localColorPrinter
+            Write-Log "Color Routing: Auto-selected local color printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter) -and ($TargetPrinter -notmatch "Canon|Laser|LBP|1020|M1005|Mono|MF3010")) {
+            # Keep provided target printer
         } else {
-            $bwMatch = $allPrinters | Where-Object { $_.Name -match "Canon|Laser|LBP|1020|M1005|Brother|Mono" } | Select-Object -First 1
-            if ($bwMatch) {
-                $TargetPrinter = $bwMatch.Name
-                Write-Log "Auto-routed B&W job to detected B&W printer: '$TargetPrinter'"
-            }
+            Write-Log "Warning: No color printer found, using default."
+            $TargetPrinter = ""
+        }
+    } else {
+        # This is a B&W print! Must go to B&W/Canon printer
+        if (![string]::IsNullOrWhiteSpace($script:BwPrinter)) {
+            $TargetPrinter = $script:BwPrinter
+        } elseif (![string]::IsNullOrWhiteSpace($localBwPrinter)) {
+            $TargetPrinter = $localBwPrinter
+            Write-Log "B&W Routing: Auto-selected local B&W printer '$TargetPrinter'"
+        } elseif (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+            # Keep provided target printer
         }
     }
 
@@ -268,23 +277,28 @@ function Print-DocumentSilently {
                 $printSettings = "${Copies}x,fit"
             }
 
-            # Build argument array for Start-Process to avoid quote-stripping issues
-            $argsList = @()
+            # Set Windows Default Printer to target printer for 100% reliable hardware dispatch
             if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-                $argsList += "-print-to"
-                $argsList += $TargetPrinter
-            } else {
-                $argsList += "-print-to-default"
+                try {
+                    (New-Object -ComObject WScript.Network).SetDefaultPrinter($TargetPrinter)
+                    Write-Log "Active Windows Default Printer switched to: '$TargetPrinter'"
+                } catch {
+                    Write-Log "SetDefaultPrinter note: $_"
+                }
             }
-            $argsList += "-print-settings"
-            $argsList += $printSettings
-            $argsList += "-silent"
-            $argsList += $FilePath
+
+            # Build argument string with double-quoted printer name
+            $argString = ""
+            if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+                $argString = "-print-to `"$TargetPrinter`" -print-settings `"$printSettings`" -silent `"$FilePath`""
+            } else {
+                $argString = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
+            }
 
             $destName = if (![string]::IsNullOrWhiteSpace($TargetPrinter)) { $TargetPrinter } else { "Default Printer" }
-            Write-Log "Printing via SumatraPDF to [$destName]: $FilePath ($printSettings)"
+            Write-Log "Printing via SumatraPDF to [$destName]: $argString"
 
-            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argsList -PassThru -WindowStyle Hidden
+            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argString -PassThru -WindowStyle Hidden
             $finished = $p.WaitForExit(60000) # Wait up to 60 seconds
             if (!$finished) {
                 Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
@@ -296,16 +310,13 @@ function Print-DocumentSilently {
                 return $true
             } else {
                 Write-Log "SumatraPDF exited with code: $($p.ExitCode)"
-                # If specific printer failed, retry with Default Printer
-                if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
-                    Write-Log "Target printer '$TargetPrinter' failed. Retrying with Default Printer..."
-                    $defArgs = @("-print-to-default", "-print-settings", $printSettings, "-silent", $FilePath)
-                    $pDef = Start-Process -FilePath $SumatraExe -ArgumentList $defArgs -PassThru -WindowStyle Hidden
-                    $finishedDef = $pDef.WaitForExit(60000)
-                    if ($finishedDef -and $pDef.ExitCode -eq 0) {
-                        Write-Log "Fallback print to default printer completed successfully!"
-                        return $true
-                    }
+                # Fallback to -print-to-default
+                $defArgString = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
+                $pDef = Start-Process -FilePath $SumatraExe -ArgumentList $defArgString -PassThru -WindowStyle Hidden
+                $finishedDef = $pDef.WaitForExit(60000)
+                if ($finishedDef -and $pDef.ExitCode -eq 0) {
+                    Write-Log "Fallback print to default printer completed successfully!"
+                    return $true
                 }
                 if ($isImage) {
                     Write-Log "SumatraPDF failed on image, attempting native .NET printing fallback..."
@@ -341,11 +352,44 @@ function Print-DocumentSilently {
     }
 }
 
+function Check-SelfUpdate {
+    try {
+        $updateUrl = "$ServerUrl/api/print-agent/script?token=$AgentToken"
+        $latestScript = Invoke-RestMethod -Uri $updateUrl -Method Get -TimeoutSec 10 -ErrorAction Stop
+        if ($latestScript -is [string] -and $latestScript.Length -gt 2000 -and $latestScript.Contains("Print-DocumentSilently")) {
+            $localScriptPath = "$AppDir\agent.ps1"
+            if (Test-Path $localScriptPath) {
+                $currentScript = Get-Content -Path $localScriptPath -Raw -Encoding UTF8
+                $normCurrent = $currentScript.Replace("`r","").Trim()
+                $normLatest = $latestScript.Replace("`r","").Trim()
+                if ($normCurrent -ne $normLatest) {
+                    Write-Log "=== AUTO-UPDATE: Newer agent.ps1 found on server. Installing update... ==="
+                    [System.IO.File]::WriteAllText($localScriptPath, $latestScript, [System.Text.Encoding]::UTF8)
+                    Write-Log "Update written successfully. Launching new background agent..."
+                    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File `"$localScriptPath`""
+                    Write-Log "Old agent process exiting now."
+                    Exit
+                }
+            }
+        }
+    } catch {
+        # Silently ignore update check errors
+    }
+}
+
 $lastHeartbeat = [DateTime]::MinValue
+$loopCount = 0
 
 # Continuous Background Polling Loop
 while ($true) {
     try {
+        $loopCount++
+
+        # Check for Self-Update every 6 iterations (~30 seconds)
+        if ($loopCount % 6 -eq 1) {
+            Check-SelfUpdate
+        }
+
         # 1. Periodic Heartbeat & Status Reporting (every 15 seconds)
         if (([DateTime]::UtcNow - $lastHeartbeat).TotalSeconds -ge 15) {
             $printers = Get-DetailedPrinters
@@ -425,11 +469,13 @@ while ($true) {
 
                 # Report Completion or Failure
                 if ($printSuccess) {
-                    Write-Log "Job #$($job.job_code) printed successfully."
+                    $dispatchedPrinter = if (![string]::IsNullOrWhiteSpace($targetPrinter)) { $targetPrinter } else { "Default Printer" }
+                    Write-Log "Job #$($job.job_code) printed successfully on [$dispatchedPrinter]."
                     $donePayload = @{
                         token = $AgentToken
                         job_code = $job.job_code
                         status = "completed"
+                        printer_name = $dispatchedPrinter
                     } | ConvertTo-Json
                     Invoke-RestMethod -Uri "$ServerUrl/api/print-agent/update-status" -Method Post -Body $donePayload -ContentType "application/json" -TimeoutSec 10 -ErrorAction SilentlyContinue | Out-Null
                 } else {
