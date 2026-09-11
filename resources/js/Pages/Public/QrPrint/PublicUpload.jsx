@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 
-export default function PublicUpload({ shop }) {
+export default function PublicUpload({ shop = {} }) {
     const [file, setFile] = useState(null);
     const [copies, setCopies] = useState(1);
     const [colorType, setColorType] = useState('bw');
@@ -19,8 +19,8 @@ export default function PublicUpload({ shop }) {
     const fileInputRef = useRef(null);
 
     // Calculate approximate cost (assuming 1 page for estimation before server parse)
-    const ratePerPage = colorType === 'color' ? shop.color_rate : shop.bw_rate;
-    const estimatedCost = (ratePerPage * copies).toFixed(2);
+    const ratePerPage = colorType === 'color' ? (shop?.color_rate ?? 10) : (shop?.bw_rate ?? 2);
+    const estimatedCost = (parseFloat(ratePerPage || 0) * (parseInt(copies) || 1)).toFixed(2);
 
     const handleFileChange = (e) => {
         const selected = e.target.files?.[0];
@@ -55,7 +55,7 @@ export default function PublicUpload({ shop }) {
         formData.append('payment_method', paymentMethod);
 
         try {
-            const res = await axios.post(`/p/${shop.shop_code}/upload`, formData, {
+            const res = await axios.post(`/p/${shop?.shop_code || ''}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -97,17 +97,17 @@ export default function PublicUpload({ shop }) {
 
     return (
         <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between font-sans">
-            <Head title={`Print Document - ${shop.shop_name}`} />
+            <Head title={`Print Document - ${shop?.shop_name || 'Print Point'}`} />
 
             {/* Header */}
             <header className="bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 sticky top-0 z-30">
                 <div className="max-w-md mx-auto flex items-center justify-between">
                     <div>
                         <h1 className="font-black text-base text-white truncate">
-                            {shop.shop_name}
+                            {shop?.shop_name || 'Print Point'}
                         </h1>
                         <p className="text-[11px] text-slate-400 font-mono">
-                            Counter Code: #{shop.shop_code}
+                            Counter Code: #{shop?.shop_code || '------'}
                         </p>
                     </div>
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
@@ -306,7 +306,7 @@ export default function PublicUpload({ shop }) {
                                     >
                                         <span className="text-xs block">Black & White</span>
                                         <span className="text-xs font-black text-slate-200 mt-0.5 block">
-                                            ₹{parseFloat(shop.bw_rate).toFixed(0)}/page
+                                            ₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page
                                         </span>
                                     </button>
 
@@ -321,7 +321,7 @@ export default function PublicUpload({ shop }) {
                                     >
                                         <span className="text-xs block">Color Print</span>
                                         <span className="text-xs font-black text-pink-400 mt-0.5 block">
-                                            ₹{parseFloat(shop.color_rate).toFixed(0)}/page
+                                            ₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page
                                         </span>
                                     </button>
                                 </div>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 
-export default function Standee({ shop }) {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=450x450&data=${encodeURIComponent(shop.upload_url)}&margin=10`;
+export default function Standee({ shop = {} }) {
+    const uploadUrl = shop?.upload_url || '';
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=450x450&data=${encodeURIComponent(uploadUrl)}&margin=10`;
 
     const handlePrint = () => {
         window.print();
@@ -10,7 +11,7 @@ export default function Standee({ shop }) {
 
     return (
         <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-start p-4 sm:p-8 print:p-0 print:bg-white">
-            <Head title={`Counter Standee - ${shop.shop_name}`} />
+            <Head title={`Counter Standee - ${shop?.shop_name || 'Print Point'}`} />
 
             {/* Print Action Bar (Hidden on print) */}
             <div className="w-full max-w-xl mb-6 flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm print:hidden">
@@ -44,7 +45,7 @@ export default function Standee({ shop }) {
                     </p>
                     <div className="mt-4 pt-3 border-t border-white/20">
                         <span className="text-xl sm:text-2xl font-bold tracking-wide text-yellow-300">
-                            {shop.shop_name}
+                            {shop?.shop_name || 'Print Point'}
                         </span>
                     </div>
                 </div>
@@ -61,7 +62,7 @@ export default function Standee({ shop }) {
 
                     <div className="mt-4 flex items-center justify-center gap-2">
                         <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-300">
-                            Shop Code: #{shop.shop_code}
+                            Shop Code: #{shop?.shop_code || '------'}
                         </span>
                     </div>
                 </div>
@@ -92,7 +93,7 @@ export default function Standee({ shop }) {
                             Black & White
                         </span>
                         <span className="text-2xl font-black text-white">
-                            ₹{parseFloat(shop.bw_rate).toFixed(0)} <span className="text-xs font-normal text-slate-400">/page</span>
+                            ₹{parseFloat(shop?.bw_rate || 2).toFixed(0)} <span className="text-xs font-normal text-slate-400">/page</span>
                         </span>
                     </div>
                     <div className="h-10 w-px bg-slate-700"></div>
@@ -101,7 +102,7 @@ export default function Standee({ shop }) {
                             Color Print
                         </span>
                         <span className="text-2xl font-black text-pink-400">
-                            ₹{parseFloat(shop.color_rate).toFixed(0)} <span className="text-xs font-normal text-slate-400">/page</span>
+                            ₹{parseFloat(shop?.color_rate || 10).toFixed(0)} <span className="text-xs font-normal text-slate-400">/page</span>
                         </span>
                     </div>
                 </div>

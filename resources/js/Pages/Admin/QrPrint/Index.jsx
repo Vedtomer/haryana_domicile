@@ -2,7 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    componentDidCatch(error, errorInfo) {
+        console.error("QrPrint Component Crash Error:", error, errorInfo);
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="max-w-2xl mx-auto my-12 p-6 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-800 rounded-2xl shadow-sm text-center">
+                    <span className="text-4xl mb-3 block">⚠️</span>
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white">Display Issue Detected</h3>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-2 font-mono break-all">
+                        {String(this.state.error?.message || this.state.error || 'Unknown rendering error')}
+                    </p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow transition-all cursor-pointer"
+                    >
+                        Refresh Page
+                    </button>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+function QrPrintDashboard({ shop = {}, jobs = [], stats = {} }) {
     const [copied, setCopied] = useState(false);
     const [editingSettings, setEditingSettings] = useState(false);
 
@@ -14,10 +47,10 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
         processing: savingShop, 
         errors: shopErrors 
     } = useForm({
-        shop_name: shop.shop_name || '',
-        upi_id: shop.upi_id || '',
-        bw_rate: shop.bw_rate || 2.00,
-        color_rate: shop.color_rate || 10.00,
+        shop_name: shop?.shop_name || '',
+        upi_id: shop?.upi_id || '',
+        bw_rate: shop?.bw_rate ?? 2.00,
+        color_rate: shop?.color_rate ?? 10.00,
     });
 
     // Form for Printer Routing Settings
@@ -27,9 +60,9 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
         post: postPrinterSettings, 
         processing: savingPrinters 
     } = useForm({
-        printer_mode: shop.printer_mode || 'single',
-        bw_printer: shop.bw_printer || '',
-        color_printer: shop.color_printer || '',
+        printer_mode: shop?.printer_mode || 'single',
+        bw_printer: shop?.bw_printer || '',
+        color_printer: shop?.color_printer || '',
     });
 
     // Auto-refresh printer queue and status every 8 seconds
@@ -41,7 +74,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
     }, []);
 
     const handleCopyLink = () => {
-        if (navigator.clipboard) {
+        if (navigator?.clipboard && shop?.upload_url) {
             navigator.clipboard.writeText(shop.upload_url);
             setCopied(true);
             setTimeout(() => setCopied(false), 3000);
@@ -75,7 +108,27 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
         }
     };
 
-    const detectedPrinters = shop.detected_printers || [];
+    // Safely parse detected_printers into an array
+    const parsePrinters = (raw) => {
+        if (!raw) return [];
+        let val = raw;
+        if (typeof val === 'string') {
+            try {
+                val = JSON.parse(val);
+            } catch (e) {
+                return [];
+            }
+        }
+        if (Array.isArray(val)) {
+            return val.filter(Boolean);
+        }
+        if (typeof val === 'object' && val !== null) {
+            return Object.values(val).filter(Boolean);
+        }
+        return [];
+    };
+
+    const detectedPrinters = parsePrinters(shop?.detected_printers);
 
     return (
         <AdminLayout
@@ -96,10 +149,10 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                     <div>
                         <div className="flex items-center gap-3">
                             <h2 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-                                {shop.shop_name}
+                                {shop?.shop_name || 'My Shop Print Point'}
                             </h2>
                             <span className="px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                                #{shop.shop_code}
+                                #{shop?.shop_code || '------'}
                             </span>
                         </div>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -110,12 +163,12 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                     <div className="flex flex-wrap items-center gap-3">
                         {/* Status Badge */}
                         <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-semibold text-sm ${
-                            shop.is_online 
+                            shop?.is_online 
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' 
                             : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
                         }`}>
-                            <span className={`w-3 h-3 rounded-full ${shop.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
-                            <span>{shop.is_online ? 'Printer Service: Online (Connected)' : 'Printer Service: Offline'}</span>
+                            <span className={`w-3 h-3 rounded-full ${shop?.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+                            <span>{shop?.is_online ? 'Printer Service: Online (Connected)' : 'Printer Service: Offline'}</span>
                         </div>
 
                         {/* Standee Button */}
@@ -230,12 +283,13 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {detectedPrinters.map((pr, idx) => {
-                                    const pName = typeof pr === 'string' ? pr : pr.name;
-                                    const isDefault = typeof pr === 'object' ? pr.is_default : false;
-                                    const isOffline = typeof pr === 'object' ? pr.is_offline : false;
-                                    const status = typeof pr === 'object' ? (pr.status || (isOffline ? 'Offline' : 'Ready')) : 'Ready';
-                                    const isAssignedBw = shop.bw_printer === pName || (!shop.bw_printer && isDefault);
-                                    const isAssignedColor = shop.color_printer === pName || (!shop.color_printer && isDefault);
+                                    if (!pr) return null;
+                                    const pName = typeof pr === 'string' ? pr : (pr?.name || `Printer ${idx + 1}`);
+                                    const isDefault = typeof pr === 'object' && pr !== null ? Boolean(pr.is_default) : false;
+                                    const isOffline = typeof pr === 'object' && pr !== null ? Boolean(pr.is_offline) : false;
+                                    const status = typeof pr === 'object' && pr !== null ? (pr.status || (isOffline ? 'Offline' : 'Ready')) : 'Ready';
+                                    const isAssignedBw = (shop?.bw_printer && shop.bw_printer === pName) || (!shop?.bw_printer && isDefault);
+                                    const isAssignedColor = (shop?.color_printer && shop.color_printer === pName) || (!shop?.color_printer && isDefault);
 
                                     return (
                                         <div
@@ -304,7 +358,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                 <button
                                     type="button"
                                     onClick={() => setPrinterData('printer_mode', 'single')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                         printerData.printer_mode === 'single'
                                         ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
                                         : 'text-slate-600 dark:text-slate-300'
@@ -315,7 +369,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                 <button
                                     type="button"
                                     onClick={() => setPrinterData('printer_mode', 'dual')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                         printerData.printer_mode === 'dual'
                                         ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
                                         : 'text-slate-600 dark:text-slate-300'
@@ -339,8 +393,9 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                 >
                                     <option value="">Auto (Use Windows Default Printer)</option>
                                     {detectedPrinters.map((pr, i) => {
-                                        const name = typeof pr === 'string' ? pr : pr.name;
-                                        const isOffline = typeof pr === 'object' ? pr.is_offline : false;
+                                        if (!pr) return null;
+                                        const name = typeof pr === 'string' ? pr : (pr?.name || `Printer ${i + 1}`);
+                                        const isOffline = typeof pr === 'object' && pr !== null ? Boolean(pr.is_offline) : false;
                                         return (
                                             <option key={i} value={name}>
                                                 {name} {isOffline ? '(Offline)' : '(Ready)'}
@@ -349,7 +404,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                     })}
                                 </select>
                                 <span className="text-[11px] text-slate-400 mt-1 block">
-                                    B&W prints directly iss printer par aayenge (Rate: ₹{shop.bw_rate}/page)
+                                    B&W prints directly iss printer par aayenge (Rate: ₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page)
                                 </span>
                             </div>
 
@@ -365,8 +420,9 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                     >
                                         <option value="">Auto (Use Windows Default Printer)</option>
                                         {detectedPrinters.map((pr, i) => {
-                                            const name = typeof pr === 'string' ? pr : pr.name;
-                                            const isOffline = typeof pr === 'object' ? pr.is_offline : false;
+                                            if (!pr) return null;
+                                            const name = typeof pr === 'string' ? pr : (pr?.name || `Printer ${i + 1}`);
+                                            const isOffline = typeof pr === 'object' && pr !== null ? Boolean(pr.is_offline) : false;
                                             return (
                                                 <option key={i} value={name}>
                                                     {name} {isOffline ? '(Offline)' : '(Ready)'}
@@ -375,7 +431,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                         })}
                                     </select>
                                     <span className="text-[11px] text-slate-400 mt-1 block">
-                                        Color prints directly iss printer par aayenge (Rate: ₹{shop.color_rate}/page)
+                                        Color prints directly iss printer par aayenge (Rate: ₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page)
                                     </span>
                                 </div>
                             ) : (
@@ -390,7 +446,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <button
                                 type="submit"
                                 disabled={savingPrinters}
-                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all"
+                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
                             >
                                 {savingPrinters ? 'Saving Configuration...' : 'Save Printer Settings'}
                             </button>
@@ -406,7 +462,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <span className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-lg">📄</span>
                         </div>
                         <p className="text-3xl font-black text-slate-800 dark:text-white mt-2">
-                            {stats.total_jobs_today || 0}
+                            {stats?.total_jobs_today ?? 0}
                         </p>
                         <p className="text-xs text-slate-400 mt-1">Total prints received today</p>
                     </div>
@@ -417,7 +473,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 text-lg">✅</span>
                         </div>
                         <p className="text-3xl font-black text-slate-800 dark:text-white mt-2">
-                            {stats.completed_today || 0}
+                            {stats?.completed_today ?? 0}
                         </p>
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Successfully dispatched</p>
                     </div>
@@ -428,7 +484,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <span className="p-2 rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 text-lg">💰</span>
                         </div>
                         <p className="text-3xl font-black text-slate-800 dark:text-white mt-2">
-                            ₹{(stats.revenue_today || 0).toFixed(2)}
+                            ₹{parseFloat(stats?.revenue_today || 0).toFixed(2)}
                         </p>
                         <p className="text-xs text-slate-400 mt-1">From printed jobs today</p>
                     </div>
@@ -439,7 +495,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <span className="p-2 rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 text-lg">⏳</span>
                         </div>
                         <p className="text-3xl font-black text-slate-800 dark:text-white mt-2">
-                            {stats.pending_count || 0}
+                            {stats?.pending_count ?? 0}
                         </p>
                         <p className="text-xs text-slate-400 mt-1">Jobs waiting in queue</p>
                     </div>
@@ -564,19 +620,19 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                         <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
                             <div>
                                 <span className="text-slate-400 text-xs block">Public Upload URL</span>
-                                <a href={shop.upload_url} target="_blank" className="font-mono font-medium text-blue-600 dark:text-blue-400 underline">
-                                    {shop.upload_url}
+                                <a href={shop?.upload_url || '#'} target="_blank" className="font-mono font-medium text-blue-600 dark:text-blue-400 underline">
+                                    {shop?.upload_url || 'N/A'}
                                 </a>
                             </div>
                             <div>
                                 <span className="text-slate-400 text-xs block">B&W Rate</span>
-                                <span className="font-bold text-slate-800 dark:text-white">₹{shop.bw_rate}/page</span>
+                                <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.bw_rate || 2).toFixed(0)}/page</span>
                             </div>
                             <div>
                                 <span className="text-slate-400 text-xs block">Color Rate</span>
-                                <span className="font-bold text-slate-800 dark:text-white">₹{shop.color_rate}/page</span>
+                                <span className="font-bold text-slate-800 dark:text-white">₹{parseFloat(shop?.color_rate || 10).toFixed(0)}/page</span>
                             </div>
-                            {shop.upi_id && (
+                            {shop?.upi_id && (
                                 <div>
                                     <span className="text-slate-400 text-xs block">UPI ID</span>
                                     <span className="font-bold text-slate-800 dark:text-white">{shop.upi_id}</span>
@@ -615,7 +671,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
-                                {jobs.length === 0 ? (
+                                {!jobs || jobs.length === 0 ? (
                                     <tr>
                                         <td colSpan="8" className="px-5 py-12 text-center text-slate-400">
                                             <div className="flex flex-col items-center justify-center gap-2">
@@ -628,81 +684,83 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                         </td>
                                     </tr>
                                 ) : (
-                                    jobs.map((job) => (
-                                        <tr key={job.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                            <td className="px-5 py-4">
-                                                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                    #{job.job_code}
-                                                </span>
-                                                <span className="block text-[11px] text-slate-400 font-normal">
-                                                    {new Date(job.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <div className="text-slate-800 dark:text-slate-200">
-                                                    {job.customer_name || 'Customer'}
-                                                </div>
-                                                {job.customer_phone && (
-                                                    <span className="text-xs text-slate-400 block font-mono">
-                                                        {job.customer_phone}
+                                    jobs.map((job) => {
+                                        if (!job) return null;
+                                        return (
+                                            <tr key={job.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                                <td className="px-5 py-4">
+                                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                                                        #{job.job_code || job.id}
                                                     </span>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4 max-w-xs truncate" title={job.original_filename}>
-                                                <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 truncate">
-                                                    <span>📄</span>
-                                                    <span className="truncate">{job.original_filename}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <span className="text-slate-800 dark:text-slate-200 font-semibold">
-                                                    {job.total_pages} {job.total_pages === 1 ? 'page' : 'pages'}
-                                                </span>
-                                                <span className="text-xs text-slate-400 block">
-                                                    × {job.copies} {job.copies === 1 ? 'copy' : 'copies'}
-                                                </span>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                {job.color_type === 'color' ? (
-                                                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
-                                                        Color
+                                                    <span className="block text-[11px] text-slate-400 font-normal">
+                                                        {job.created_at ? new Date(job.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                                                     </span>
-                                                ) : (
-                                                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                                        B&W
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <div className="text-slate-800 dark:text-slate-200">
+                                                        {job.customer_name || 'Customer'}
+                                                    </div>
+                                                    {job.customer_phone && (
+                                                        <span className="text-xs text-slate-400 block font-mono">
+                                                            {job.customer_phone}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4 max-w-xs truncate" title={job.original_filename || ''}>
+                                                    <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 truncate">
+                                                        <span>📄</span>
+                                                        <span className="truncate">{job.original_filename || 'Document'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <span className="text-slate-800 dark:text-slate-200 font-semibold">
+                                                        {job.total_pages || 1} {(job.total_pages || 1) === 1 ? 'page' : 'pages'}
                                                     </span>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <div className="font-bold text-slate-800 dark:text-white">
-                                                    ₹{parseFloat(job.total_amount).toFixed(2)}
-                                                </div>
-                                                <span className="text-[11px] text-slate-400 uppercase font-semibold">
-                                                    {job.payment_method}
-                                                </span>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                {job.status === 'completed' && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                                                        <span>✓</span> Printed
+                                                    <span className="text-xs text-slate-400 block">
+                                                        × {job.copies || 1} {(job.copies || 1) === 1 ? 'copy' : 'copies'}
                                                     </span>
-                                                )}
-                                                {job.status === 'printing' && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 animate-pulse">
-                                                        <span>🖨️</span> Printing...
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    {job.color_type === 'color' ? (
+                                                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
+                                                            Color
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                                            B&W
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <div className="font-bold text-slate-800 dark:text-white">
+                                                        ₹{parseFloat(job.total_amount || 0).toFixed(2)}
+                                                    </div>
+                                                    <span className="text-[11px] text-slate-400 uppercase font-semibold">
+                                                        {job.payment_method || 'cash'}
                                                     </span>
-                                                )}
-                                                {job.status === 'pending' && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
-                                                        <span>⏳</span> In Queue
-                                                    </span>
-                                                )}
-                                                {job.status === 'failed' && (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300" title={job.error_message}>
-                                                        <span>✕</span> Failed
-                                                    </span>
-                                                )}
-                                            </td>
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    {job.status === 'completed' && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                                            <span>✓</span> Printed
+                                                        </span>
+                                                    )}
+                                                    {job.status === 'printing' && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 animate-pulse">
+                                                            <span>🖨️</span> Printing...
+                                                        </span>
+                                                    )}
+                                                    {job.status === 'pending' && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                                                            <span>⏳</span> In Queue
+                                                        </span>
+                                                    )}
+                                                    {job.status === 'failed' && (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300" title={job.error_message || ''}>
+                                                            <span>✕</span> Failed
+                                                        </span>
+                                                    )}
+                                                </td>
                                             <td className="px-5 py-4 text-right">
                                                 <div className="inline-flex items-center gap-2">
                                                     <button
@@ -722,9 +780,10 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                     </button>
                                                 </div>
-                                            </td>
+                                             </td>
                                         </tr>
-                                    ))
+                                    );
+                                })
                                 )}
                             </tbody>
                         </table>
@@ -732,5 +791,13 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                 </div>
             </div>
         </AdminLayout>
+    );
+}
+
+export default function QrPrintIndex(props) {
+    return (
+        <ErrorBoundary>
+            <QrPrintDashboard {...props} />
+        </ErrorBoundary>
     );
 }

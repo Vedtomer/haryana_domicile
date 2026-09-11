@@ -51,20 +51,24 @@ class QrPrintController extends Controller
                 $table->timestamps();
             });
         } else {
-            \Illuminate\Support\Facades\Schema::table('print_shops', function ($table) {
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'detected_printers')) {
-                    $table->json('detected_printers')->nullable();
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'bw_printer')) {
-                    $table->string('bw_printer', 191)->nullable();
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'color_printer')) {
-                    $table->string('color_printer', 191)->nullable();
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'printer_mode')) {
-                    $table->string('printer_mode', 32)->default('single');
-                }
-            });
+            try {
+                \Illuminate\Support\Facades\Schema::table('print_shops', function ($table) {
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'detected_printers')) {
+                        $table->longText('detected_printers')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'bw_printer')) {
+                        $table->string('bw_printer', 191)->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'color_printer')) {
+                        $table->string('color_printer', 191)->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'printer_mode')) {
+                        $table->string('printer_mode', 32)->default('single');
+                    }
+                });
+            } catch (\Throwable $e) {
+                // Ignore if columns already present
+            }
         }
 
         if (!\Illuminate\Support\Facades\Schema::hasTable('print_jobs')) {
@@ -139,6 +143,16 @@ class QrPrintController extends Controller
             'pending_count' => PrintJob::where('print_shop_id', $shop->id)->where('status', 'pending')->count(),
         ];
 
+        // Format detected_printers to always be a clean zero-indexed array list
+        $rawPrinters = $shop->detected_printers;
+        if (is_string($rawPrinters)) {
+            $decoded = json_decode($rawPrinters, true);
+            $rawPrinters = is_array($decoded) ? $decoded : [];
+        } elseif (!is_array($rawPrinters)) {
+            $rawPrinters = [];
+        }
+        $detectedPrinters = array_values($rawPrinters);
+
         return Inertia::render('Admin/QrPrint/Index', [
             'shop' => [
                 'id' => $shop->id,
@@ -151,12 +165,12 @@ class QrPrintController extends Controller
                 'last_heartbeat_at' => $shop->last_heartbeat_at ? $shop->last_heartbeat_at->diffForHumans() : null,
                 'agent_token' => $shop->agent_token,
                 'upload_url' => url('/p/' . $shop->shop_code),
-                'detected_printers' => $shop->detected_printers ?: [],
+                'detected_printers' => $detectedPrinters,
                 'bw_printer' => $shop->bw_printer,
                 'color_printer' => $shop->color_printer,
                 'printer_mode' => $shop->printer_mode ?: 'single',
             ],
-            'jobs' => $jobs,
+            'jobs' => $jobs ?: [],
             'stats' => $stats,
         ]);
     }

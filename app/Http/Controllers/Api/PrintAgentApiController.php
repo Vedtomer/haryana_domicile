@@ -36,9 +36,11 @@ class PrintAgentApiController extends Controller
             $printers = $request->input('printers');
             if (is_string($printers)) {
                 $decoded = json_decode($printers, true);
-                $updateData['detected_printers'] = $decoded ?: $printers;
+                $updateData['detected_printers'] = is_array($decoded) ? array_values($decoded) : [];
+            } elseif (is_array($printers)) {
+                $updateData['detected_printers'] = array_values($printers);
             } else {
-                $updateData['detected_printers'] = $printers;
+                $updateData['detected_printers'] = [];
             }
         }
 
