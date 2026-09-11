@@ -246,11 +246,9 @@ function Print-DocumentSilently {
     try {
         $hasSumatra = (Test-Path $SumatraExe) -and ((Get-Item $SumatraExe).Length -gt 1000000)
         if ($hasSumatra) {
-            $printSettings = "$Copies" + "x"
-            if ($ColorType -eq "bw") {
-                $printSettings += ",monochrome"
-            } else {
-                $printSettings += ",color"
+            $printSettings = "fit"
+            if ($Copies -gt 1) {
+                $printSettings = "${Copies}x,fit"
             }
 
             # Build argument array for Start-Process to avoid quote-stripping issues
@@ -281,6 +279,17 @@ function Print-DocumentSilently {
                 return $true
             } else {
                 Write-Log "SumatraPDF exited with code: $($p.ExitCode)"
+                # If specific printer failed, retry with Default Printer
+                if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+                    Write-Log "Target printer '$TargetPrinter' failed. Retrying with Default Printer..."
+                    $defArgs = @("-print-to-default", "-print-settings", $printSettings, "-silent", $FilePath)
+                    $pDef = Start-Process -FilePath $SumatraExe -ArgumentList $defArgs -PassThru -WindowStyle Hidden
+                    $finishedDef = $pDef.WaitForExit(60000)
+                    if ($finishedDef -and $pDef.ExitCode -eq 0) {
+                        Write-Log "Fallback print to default printer completed successfully!"
+                        return $true
+                    }
+                }
                 if ($isImage) {
                     Write-Log "SumatraPDF failed on image, attempting native .NET printing fallback..."
                     return Print-ImageNative -ImagePath $FilePath -Copies $Copies -TargetPrinter $TargetPrinter -Color ($ColorType -eq "color")
@@ -346,10 +355,15 @@ while ($true) {
         if ($jobsResponse.bw_printer) { $script:BwPrinter = $jobsResponse.bw_printer }
         if ($jobsResponse.color_printer) { $script:ColorPrinter = $jobsResponse.color_printer }
 
-        if ($jobsResponse.success -and $jobsResponse.jobs -and $jobsResponse.jobs.Count -gt 0) {
-            Write-Log "Found $($jobsResponse.jobs.Count) pending job(s)."
+        $jobsList = @()
+        if ($jobsResponse.success -and $jobsResponse.jobs) {
+            $jobsList = @($jobsResponse.jobs)
+        }
 
-            foreach ($job in $jobsResponse.jobs) {
+        if ($jobsList.Count -gt 0) {
+            Write-Log "Found $($jobsList.Count) pending job(s)."
+
+            foreach ($job in $jobsList) {
                 Write-Log "Processing Job #$($job.job_code) - Filename: $($job.original_filename) ($($job.copies) copies, $($job.color_type), target: $($job.target_printer))"
                 
                 # Acknowledge downloading / printing
@@ -362,10 +376,11 @@ while ($true) {
                     Invoke-RestMethod -Uri "$ServerUrl/api/print-agent/update-status" -Method Post -Body $ackPayload -ContentType "application/json" -TimeoutSec 10 -ErrorAction SilentlyContinue | Out-Null
                 } catch {}
 
-                # Download File
+                # Download File with safe ASCII path
                 $cleanName = [System.IO.Path]::GetFileName($job.original_filename)
-                if ([string]::IsNullOrWhiteSpace($cleanName)) { $cleanName = "document.pdf" }
-                $localFilePath = "$TempDir\$($job.job_code)_$cleanName"
+                $ext = [System.IO.Path]::GetExtension($cleanName)
+                if ([string]::IsNullOrWhiteSpace($ext)) { $ext = ".pdf" }
+                $localFilePath = "$TempDir\$($job.job_code)$ext"
                 
                 $downloadUrl = "$ServerUrl/api/print-agent/file/$($job.job_code)?token=$AgentToken"
                 try {

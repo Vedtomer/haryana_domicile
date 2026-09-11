@@ -110,10 +110,17 @@ export default function PublicUpload({ shop = {} }) {
                             Counter Code: #{shop?.shop_code || '------'}
                         </p>
                     </div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Printer Ready</span>
-                    </div>
+                    {shop?.is_online ? (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Printer Ready</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/60">
+                            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <span>Counter Offline</span>
+                        </div>
+                    )}
                 </div>
             </header>
 
