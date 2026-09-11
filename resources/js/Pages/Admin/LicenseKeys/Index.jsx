@@ -140,7 +140,7 @@ export default function Index({ keys, filters, stats }) {
             <Head title="License Keys - Admin" />
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Keys</p>
                     <p className="text-2xl font-black text-gray-800 mt-1">{stats?.total || 0}</p>
@@ -148,14 +148,6 @@ export default function Index({ keys, filters, stats }) {
                 <div className="p-4 bg-white rounded-2xl border border-emerald-100 shadow-sm bg-emerald-50/30">
                     <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Active Keys</p>
                     <p className="text-2xl font-black text-emerald-700 mt-1">{stats?.active || 0}</p>
-                </div>
-                <div className="p-4 bg-white rounded-2xl border border-blue-100 shadow-sm bg-blue-50/30">
-                    <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Unused Keys</p>
-                    <p className="text-2xl font-black text-blue-700 mt-1">{stats?.unused || 0}</p>
-                </div>
-                <div className="p-4 bg-white rounded-2xl border border-red-100 shadow-sm bg-red-50/30">
-                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">Deactivated</p>
-                    <p className="text-2xl font-black text-red-700 mt-1">{stats?.revoked || 0}</p>
                 </div>
             </div>
 
@@ -179,7 +171,7 @@ export default function Index({ keys, filters, stats }) {
 
                 <div className="flex items-center gap-2 flex-wrap">
                     <div className="flex bg-gray-100 p-1 rounded-xl text-xs font-semibold">
-                        {['', 'active', 'unused', 'revoked'].map((s) => (
+                        {['', 'active'].map((s) => (
                             <button
                                 key={s}
                                 onClick={() => handleStatusFilter(s)}
@@ -187,7 +179,7 @@ export default function Index({ keys, filters, stats }) {
                                     status === s ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'
                                 }`}
                             >
-                                {s === 'revoked' ? 'Deactivated' : (s || 'All')}
+                                {s === 'active' ? 'Active Keys' : 'All Keys'}
                             </button>
                         ))}
                     </div>
