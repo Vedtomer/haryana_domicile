@@ -11,6 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // If legacy table from previous broken attempt exists (with agent_secret), drop it
+        if (Schema::hasTable('print_shops') && Schema::hasColumn('print_shops', 'agent_secret')) {
+            Schema::disableForeignKeyConstraints();
+            Schema::dropIfExists('print_jobs');
+            Schema::dropIfExists('print_shops');
+            Schema::enableForeignKeyConstraints();
+        }
+
         if (!Schema::hasTable('print_shops')) {
             Schema::create('print_shops', function (Blueprint $table) {
                 $table->id();
@@ -24,33 +32,6 @@ return new class extends Migration
                 $table->timestamp('last_heartbeat_at')->nullable();
                 $table->string('agent_token', 64)->unique();
                 $table->timestamps();
-            });
-        } else {
-            Schema::table('print_shops', function (Blueprint $table) {
-                if (!Schema::hasColumn('print_shops', 'shop_code')) {
-                    $table->string('shop_code', 32)->nullable()->unique();
-                }
-                if (!Schema::hasColumn('print_shops', 'shop_name')) {
-                    $table->string('shop_name', 191)->default('My Shop');
-                }
-                if (!Schema::hasColumn('print_shops', 'upi_id')) {
-                    $table->string('upi_id', 191)->nullable();
-                }
-                if (!Schema::hasColumn('print_shops', 'bw_rate')) {
-                    $table->decimal('bw_rate', 8, 2)->default(2.00);
-                }
-                if (!Schema::hasColumn('print_shops', 'color_rate')) {
-                    $table->decimal('color_rate', 8, 2)->default(10.00);
-                }
-                if (!Schema::hasColumn('print_shops', 'is_online')) {
-                    $table->boolean('is_online')->default(false);
-                }
-                if (!Schema::hasColumn('print_shops', 'last_heartbeat_at')) {
-                    $table->timestamp('last_heartbeat_at')->nullable();
-                }
-                if (!Schema::hasColumn('print_shops', 'agent_token')) {
-                    $table->string('agent_token', 64)->nullable()->unique();
-                }
             });
         }
 
@@ -75,57 +56,6 @@ return new class extends Migration
                 $table->text('error_message')->nullable();
                 $table->timestamp('printed_at')->nullable();
                 $table->timestamps();
-            });
-        } else {
-            Schema::table('print_jobs', function (Blueprint $table) {
-                if (!Schema::hasColumn('print_jobs', 'job_code')) {
-                    $table->string('job_code', 32)->nullable()->unique();
-                }
-                if (!Schema::hasColumn('print_jobs', 'customer_name')) {
-                    $table->string('customer_name', 191)->nullable();
-                }
-                if (!Schema::hasColumn('print_jobs', 'customer_phone')) {
-                    $table->string('customer_phone', 32)->nullable();
-                }
-                if (!Schema::hasColumn('print_jobs', 'original_filename')) {
-                    $table->string('original_filename', 255)->default('');
-                }
-                if (!Schema::hasColumn('print_jobs', 'file_path')) {
-                    $table->string('file_path', 255)->default('');
-                }
-                if (!Schema::hasColumn('print_jobs', 'file_type')) {
-                    $table->string('file_type', 32)->default('pdf');
-                }
-                if (!Schema::hasColumn('print_jobs', 'total_pages')) {
-                    $table->integer('total_pages')->default(1);
-                }
-                if (!Schema::hasColumn('print_jobs', 'color_type')) {
-                    $table->string('color_type', 32)->default('bw');
-                }
-                if (!Schema::hasColumn('print_jobs', 'copies')) {
-                    $table->integer('copies')->default(1);
-                }
-                if (!Schema::hasColumn('print_jobs', 'total_amount')) {
-                    $table->decimal('total_amount', 8, 2)->default(0.00);
-                }
-                if (!Schema::hasColumn('print_jobs', 'payment_method')) {
-                    $table->string('payment_method', 32)->default('cash');
-                }
-                if (!Schema::hasColumn('print_jobs', 'payment_status')) {
-                    $table->string('payment_status', 32)->default('paid');
-                }
-                if (!Schema::hasColumn('print_jobs', 'status')) {
-                    $table->string('status', 32)->default('pending');
-                }
-                if (!Schema::hasColumn('print_jobs', 'printer_name')) {
-                    $table->string('printer_name', 191)->nullable();
-                }
-                if (!Schema::hasColumn('print_jobs', 'error_message')) {
-                    $table->text('error_message')->nullable();
-                }
-                if (!Schema::hasColumn('print_jobs', 'printed_at')) {
-                    $table->timestamp('printed_at')->nullable();
-                }
             });
         }
     }
