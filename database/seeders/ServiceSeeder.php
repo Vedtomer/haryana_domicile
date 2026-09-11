@@ -346,6 +346,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'QR to Print (Counter Cloud Printing)',
+                'slug' => 'qr-to-print',
+                'description' => 'Counter QR code for customers to upload documents/photos and print directly to your Windows printer.',
+                'icon' => '🖨️',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'qr_to_print',
+                'sort_order' => 27,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {
