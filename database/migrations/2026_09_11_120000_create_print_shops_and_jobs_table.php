@@ -31,7 +31,26 @@ return new class extends Migration
                 $table->boolean('is_online')->default(false);
                 $table->timestamp('last_heartbeat_at')->nullable();
                 $table->string('agent_token', 64)->unique();
+                $table->json('detected_printers')->nullable();
+                $table->string('bw_printer', 191)->nullable();
+                $table->string('color_printer', 191)->nullable();
+                $table->string('printer_mode', 32)->default('single'); // single, dual
                 $table->timestamps();
+            });
+        } else {
+            Schema::table('print_shops', function (Blueprint $table) {
+                if (!Schema::hasColumn('print_shops', 'detected_printers')) {
+                    $table->json('detected_printers')->nullable();
+                }
+                if (!Schema::hasColumn('print_shops', 'bw_printer')) {
+                    $table->string('bw_printer', 191)->nullable();
+                }
+                if (!Schema::hasColumn('print_shops', 'color_printer')) {
+                    $table->string('color_printer', 191)->nullable();
+                }
+                if (!Schema::hasColumn('print_shops', 'printer_mode')) {
+                    $table->string('printer_mode', 32)->default('single');
+                }
             });
         }
 

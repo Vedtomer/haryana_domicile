@@ -6,12 +6,30 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
     const [copied, setCopied] = useState(false);
     const [editingSettings, setEditingSettings] = useState(false);
 
-    // Form for Shop Settings
-    const { data, setData, post, processing, errors } = useForm({
+    // Form for Shop Pricing & Name Settings
+    const { 
+        data: shopData, 
+        setData: setShopData, 
+        post: postShopSettings, 
+        processing: savingShop, 
+        errors: shopErrors 
+    } = useForm({
         shop_name: shop.shop_name || '',
         upi_id: shop.upi_id || '',
         bw_rate: shop.bw_rate || 2.00,
         color_rate: shop.color_rate || 10.00,
+    });
+
+    // Form for Printer Routing Settings
+    const { 
+        data: printerData, 
+        setData: setPrinterData, 
+        post: postPrinterSettings, 
+        processing: savingPrinters 
+    } = useForm({
+        printer_mode: shop.printer_mode || 'single',
+        bw_printer: shop.bw_printer || '',
+        color_printer: shop.color_printer || '',
     });
 
     // Auto-refresh printer queue and status every 8 seconds
@@ -30,11 +48,18 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
         }
     };
 
-    const handleSaveSettings = (e) => {
+    const handleSaveShopSettings = (e) => {
         e.preventDefault();
-        post('/admin/qr-to-print/settings', {
+        postShopSettings('/admin/qr-to-print/settings', {
             preserveScroll: true,
             onSuccess: () => setEditingSettings(false),
+        });
+    };
+
+    const handleSavePrinterSettings = (e) => {
+        e.preventDefault();
+        postPrinterSettings('/admin/qr-to-print/printer-settings', {
+            preserveScroll: true,
         });
     };
 
@@ -49,6 +74,8 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
             router.delete(`/admin/qr-to-print/job/${jobId}`, { preserveScroll: true });
         }
     };
+
+    const detectedPrinters = shop.detected_printers || [];
 
     return (
         <AdminLayout
@@ -162,7 +189,216 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                     </div>
                 </div>
 
-                {/* 3. Stats & Quick Links Row */}
+                {/* 3. NEW: Printer Settings & Smart Routing Section */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xl">⚙️</span>
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                                    Printer Settings & Smart Routing (प्रिंटर सेटिंग्स व चयन)
+                                </h3>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                Aapke computer ke active/offline printers yahan detect honge. Black & White aur Color print ke liye alag alag printer set karein.
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                {detectedPrinters.length} Printer{detectedPrinters.length === 1 ? '' : 's'} Detected
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Detected Printers Cards */}
+                    <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                            <span>📡</span>
+                            <span>Computer se jude printers (Live Status):</span>
+                        </h4>
+
+                        {detectedPrinters.length === 0 ? (
+                            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl flex items-start gap-3">
+                                <span className="text-xl">ℹ️</span>
+                                <div className="text-xs text-amber-800 dark:text-amber-200 space-y-1">
+                                    <p className="font-bold">Abhi koi printer detect nahi hua hai.</p>
+                                    <p className="text-amber-700 dark:text-amber-300">
+                                        Jaise hi aap Windows background service (<code className="font-bold">Install-Print-Service.bat</code>) ko apne PC par chalu karenge, aapke PC se jude saare printers (HP, Epson, Canon, Brother) yahan apne aap live status ke sath dikhne lagenge.
+                                    </p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {detectedPrinters.map((pr, idx) => {
+                                    const pName = typeof pr === 'string' ? pr : pr.name;
+                                    const isDefault = typeof pr === 'object' ? pr.is_default : false;
+                                    const isOffline = typeof pr === 'object' ? pr.is_offline : false;
+                                    const status = typeof pr === 'object' ? (pr.status || (isOffline ? 'Offline' : 'Ready')) : 'Ready';
+                                    const isAssignedBw = shop.bw_printer === pName || (!shop.bw_printer && isDefault);
+                                    const isAssignedColor = shop.color_printer === pName || (!shop.color_printer && isDefault);
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className={`p-4 rounded-xl border transition-all ${
+                                                isOffline 
+                                                ? 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800 opacity-75' 
+                                                : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 shadow-2xs hover:border-blue-400'
+                                            }`}
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className="text-lg">🖨️</span>
+                                                    <h5 className="font-bold text-sm text-slate-800 dark:text-white truncate" title={pName}>
+                                                        {pName}
+                                                    </h5>
+                                                </div>
+                                                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                                    isOffline 
+                                                    ? 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300' 
+                                                    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                                }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`}></span>
+                                                    <span>{status}</span>
+                                                </span>
+                                            </div>
+
+                                            <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px]">
+                                                {isDefault && (
+                                                    <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-semibold">
+                                                        ⭐ Default
+                                                    </span>
+                                                )}
+                                                {isAssignedBw && (
+                                                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200 font-semibold">
+                                                        🖤 B&W Assigned
+                                                    </span>
+                                                )}
+                                                {isAssignedColor && (
+                                                    <span className="px-2 py-0.5 rounded-md bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 font-semibold">
+                                                        🌈 Color Assigned
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Printer Routing Form */}
+                    <form onSubmit={handleSavePrinterSettings} className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                                <h4 className="font-bold text-sm text-slate-800 dark:text-white">
+                                    Smart Printer Routing Mode
+                                </h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    B&W aur Color print ke liye alag alag printer choose karein ya ek hi printer use karein.
+                                </p>
+                            </div>
+
+                            {/* Mode Switch */}
+                            <div className="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 p-1 rounded-xl">
+                                <button
+                                    type="button"
+                                    onClick={() => setPrinterData('printer_mode', 'single')}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                        printerData.printer_mode === 'single'
+                                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                                        : 'text-slate-600 dark:text-slate-300'
+                                    }`}
+                                >
+                                    Single Printer (All-in-One)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPrinterData('printer_mode', 'dual')}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                        printerData.printer_mode === 'dual'
+                                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                                        : 'text-slate-600 dark:text-slate-300'
+                                    }`}
+                                >
+                                    Dual Printer (B&W + Color)
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Dropdowns */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-700/50">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    🖤 Black & White Prints Printer:
+                                </label>
+                                <select
+                                    value={printerData.bw_printer || ''}
+                                    onChange={(e) => setPrinterData('bw_printer', e.target.value)}
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                >
+                                    <option value="">Auto (Use Windows Default Printer)</option>
+                                    {detectedPrinters.map((pr, i) => {
+                                        const name = typeof pr === 'string' ? pr : pr.name;
+                                        const isOffline = typeof pr === 'object' ? pr.is_offline : false;
+                                        return (
+                                            <option key={i} value={name}>
+                                                {name} {isOffline ? '(Offline)' : '(Ready)'}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <span className="text-[11px] text-slate-400 mt-1 block">
+                                    B&W prints directly iss printer par aayenge (Rate: ₹{shop.bw_rate}/page)
+                                </span>
+                            </div>
+
+                            {printerData.printer_mode === 'dual' ? (
+                                <div>
+                                    <label className="block text-xs font-bold text-pink-600 dark:text-pink-400 mb-1">
+                                        🌈 Color Prints Printer:
+                                    </label>
+                                    <select
+                                        value={printerData.color_printer || ''}
+                                        onChange={(e) => setPrinterData('color_printer', e.target.value)}
+                                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
+                                    >
+                                        <option value="">Auto (Use Windows Default Printer)</option>
+                                        {detectedPrinters.map((pr, i) => {
+                                            const name = typeof pr === 'string' ? pr : pr.name;
+                                            const isOffline = typeof pr === 'object' ? pr.is_offline : false;
+                                            return (
+                                                <option key={i} value={name}>
+                                                    {name} {isOffline ? '(Offline)' : '(Ready)'}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    <span className="text-[11px] text-slate-400 mt-1 block">
+                                        Color prints directly iss printer par aayenge (Rate: ₹{shop.color_rate}/page)
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col justify-center text-xs text-slate-500 dark:text-slate-400 bg-white/50 dark:bg-slate-900/30 p-3 rounded-lg border border-slate-200 dark:border-slate-700/50">
+                                    <p className="font-semibold text-slate-700 dark:text-slate-300">Single Mode Active:</p>
+                                    <p className="text-[11px] mt-0.5">B&W aur Color dono prints upar chune hue printer par hi niklenge.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end pt-2">
+                            <button
+                                type="submit"
+                                disabled={savingPrinters}
+                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all"
+                            >
+                                {savingPrinters ? 'Saving Configuration...' : 'Save Printer Settings'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* 4. Stats Row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
                         <div className="flex items-center justify-between">
@@ -209,7 +445,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                     </div>
                 </div>
 
-                {/* 4. Rates & Customer Upload Link Bar */}
+                {/* 5. Rates & Customer Upload Link Bar */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div>
@@ -224,7 +460,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <button
                                 type="button"
                                 onClick={handleCopyLink}
-                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-all"
+                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-all cursor-pointer"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                                 <span>{copied ? 'Copied!' : 'Copy Customer Link'}</span>
@@ -232,29 +468,29 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                             <button
                                 type="button"
                                 onClick={() => setEditingSettings(!editingSettings)}
-                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 font-semibold text-xs rounded-xl transition-all"
+                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 font-semibold text-xs rounded-xl transition-all cursor-pointer"
                             >
                                 <span>⚙️</span>
-                                <span>{editingSettings ? 'Close Settings' : 'Edit Rates & Settings'}</span>
+                                <span>{editingSettings ? 'Close Settings' : 'Edit Rates & UPI'}</span>
                             </button>
                         </div>
                     </div>
 
                     {/* Settings Form Accordion */}
                     {editingSettings ? (
-                        <form onSubmit={handleSaveSettings} className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50">
+                        <form onSubmit={handleSaveShopSettings} className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50">
                             <div>
                                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                                     Shop Name
                                 </label>
                                 <input
                                     type="text"
-                                    value={data.shop_name}
-                                    onChange={(e) => setData('shop_name', e.target.value)}
+                                    value={shopData.shop_name}
+                                    onChange={(e) => setShopData('shop_name', e.target.value)}
                                     className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
                                     required
                                 />
-                                {errors.shop_name && <p className="text-xs text-red-500 mt-1">{errors.shop_name}</p>}
+                                {shopErrors.shop_name && <p className="text-xs text-red-500 mt-1">{shopErrors.shop_name}</p>}
                             </div>
 
                             <div>
@@ -263,12 +499,12 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                 </label>
                                 <input
                                     type="text"
-                                    value={data.upi_id}
+                                    value={shopData.upi_id}
                                     placeholder="e.g. 9876543210@paytm"
-                                    onChange={(e) => setData('upi_id', e.target.value)}
+                                    onChange={(e) => setShopData('upi_id', e.target.value)}
                                     className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
                                 />
-                                {errors.upi_id && <p className="text-xs text-red-500 mt-1">{errors.upi_id}</p>}
+                                {shopErrors.upi_id && <p className="text-xs text-red-500 mt-1">{shopErrors.upi_id}</p>}
                             </div>
 
                             <div>
@@ -280,13 +516,13 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                     <input
                                         type="number"
                                         step="0.5"
-                                        value={data.bw_rate}
-                                        onChange={(e) => setData('bw_rate', e.target.value)}
+                                        value={shopData.bw_rate}
+                                        onChange={(e) => setShopData('bw_rate', e.target.value)}
                                         className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
                                         required
                                     />
                                 </div>
-                                {errors.bw_rate && <p className="text-xs text-red-500 mt-1">{errors.bw_rate}</p>}
+                                {shopErrors.bw_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.bw_rate}</p>}
                             </div>
 
                             <div>
@@ -298,29 +534,29 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                     <input
                                         type="number"
                                         step="1"
-                                        value={data.color_rate}
-                                        onChange={(e) => setData('color_rate', e.target.value)}
+                                        value={shopData.color_rate}
+                                        onChange={(e) => setShopData('color_rate', e.target.value)}
                                         className="w-full pl-7 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-white"
                                         required
                                     />
                                 </div>
-                                {errors.color_rate && <p className="text-xs text-red-500 mt-1">{errors.color_rate}</p>}
+                                {shopErrors.color_rate && <p className="text-xs text-red-500 mt-1">{shopErrors.color_rate}</p>}
                             </div>
 
                             <div className="sm:col-span-2 lg:col-span-4 flex justify-end gap-2 pt-2">
                                 <button
                                     type="button"
                                     onClick={() => setEditingSettings(false)}
-                                    className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg"
+                                    className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={processing}
-                                    className="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
+                                    disabled={savingShop}
+                                    className="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm cursor-pointer"
                                 >
-                                    {processing ? 'Saving...' : 'Save Settings'}
+                                    {savingShop ? 'Saving...' : 'Save Settings'}
                                 </button>
                             </div>
                         </form>
@@ -350,7 +586,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                     )}
                 </div>
 
-                {/* 5. Live Print Queue Table */}
+                {/* 6. Live Print Queue Table */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
                     <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -473,7 +709,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                                         type="button"
                                                         onClick={() => handleReprint(job.id)}
                                                         title="Send to printer again"
-                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors"
+                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors cursor-pointer"
                                                     >
                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                                                     </button>
@@ -481,7 +717,7 @@ export default function QrPrintIndex({ shop, jobs = [], stats = {} }) {
                                                         type="button"
                                                         onClick={() => handleDelete(job.id)}
                                                         title="Delete record"
-                                                        className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors"
+                                                        className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer"
                                                     >
                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                     </button>

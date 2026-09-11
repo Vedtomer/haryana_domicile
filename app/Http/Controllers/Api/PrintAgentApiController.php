@@ -26,16 +26,32 @@ class PrintAgentApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid agent token'], 404);
         }
 
-        $shop->update([
+        $updateData = [
             'is_online' => true,
             'last_heartbeat_at' => now(),
-        ]);
+        ];
+
+        // Store detected printers list if sent by agent
+        if ($request->has('printers')) {
+            $printers = $request->input('printers');
+            if (is_string($printers)) {
+                $decoded = json_decode($printers, true);
+                $updateData['detected_printers'] = $decoded ?: $printers;
+            } else {
+                $updateData['detected_printers'] = $printers;
+            }
+        }
+
+        $shop->update($updateData);
 
         return response()->json([
             'success' => true,
             'shop_code' => $shop->shop_code,
             'shop_name' => $shop->shop_name,
             'is_online' => true,
+            'bw_printer' => $shop->bw_printer,
+            'color_printer' => $shop->color_printer,
+            'printer_mode' => $shop->printer_mode ?: 'single',
         ]);
     }
 
@@ -72,11 +88,24 @@ class PrintAgentApiController extends Controller
                 'total_pages',
                 'color_type',
                 'copies',
-            ]);
+            ])
+            ->map(function ($job) use ($shop) {
+                $targetPrinter = null;
+                if ($job->color_type === 'color' && $shop->color_printer) {
+                    $targetPrinter = $shop->color_printer;
+                } elseif ($shop->bw_printer) {
+                    $targetPrinter = $shop->bw_printer;
+                }
+                return array_merge($job->toArray(), [
+                    'target_printer' => $targetPrinter,
+                ]);
+            });
 
         return response()->json([
             'success' => true,
             'jobs' => $jobs,
+            'bw_printer' => $shop->bw_printer,
+            'color_printer' => $shop->color_printer,
         ]);
     }
 

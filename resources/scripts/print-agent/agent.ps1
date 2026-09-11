@@ -1,6 +1,7 @@
 # ==============================================================================
 # CSP Jaankari - Cloud Smart Counter Print Service Agent
 # Silent Background Worker (Runs hidden, auto-starts on Windows boot)
+# Features: Multi-printer detection, B&W vs Color smart routing, 100% silent
 # ==============================================================================
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
@@ -37,6 +38,8 @@ Write-Log "=== CSP Print Service Agent Started ==="
 # Load Configuration
 $ServerUrl = "__SERVER_URL__"
 $AgentToken = "__AGENT_TOKEN__"
+$script:BwPrinter = ""
+$script:ColorPrinter = ""
 
 if (Test-Path $ConfigFile) {
     try {
@@ -76,12 +79,22 @@ function Ensure-SumatraPDF {
 # Ensure printer tool exists in background
 [void](Ensure-SumatraPDF)
 
-function Get-PrintersList {
+function Get-DetailedPrinters {
     try {
-        $printers = Get-CimInstance Win32_Printer | Select-Object -ExpandProperty Name
-        return ($printers -join ",")
+        $printers = Get-CimInstance Win32_Printer | ForEach-Object {
+            $isOffline = [bool]($_.WorkOffline -or ($_.PrinterStatus -eq 7) -or ($_.PrinterState -band 1024))
+            $statusText = if ($isOffline) { "Offline" } elseif ($_.PrinterStatus -eq 4) { "Printing" } else { "Ready" }
+            @{
+                name = $_.Name
+                is_default = [bool]$_.Default
+                is_offline = $isOffline
+                status = $statusText
+                driver = $_.DriverName
+            }
+        }
+        return @($printers)
     } catch {
-        return "Default"
+        return @(@{ name = "Default"; is_default = $true; is_offline = $false; status = "Ready"; driver = "Generic" })
     }
 }
 
@@ -89,21 +102,38 @@ function Print-DocumentSilently {
     param(
         [string]$FilePath,
         [int]$Copies = 1,
-        [string]$ColorType = "bw"
+        [string]$ColorType = "bw",
+        [string]$TargetPrinter = ""
     )
+
+    # Determine printer if not specified by server
+    if ([string]::IsNullOrWhiteSpace($TargetPrinter)) {
+        if ($ColorType -eq "color" -and !([string]::IsNullOrWhiteSpace($script:ColorPrinter))) {
+            $TargetPrinter = $script:ColorPrinter
+        } elseif ($ColorType -eq "bw" -and !([string]::IsNullOrWhiteSpace($script:BwPrinter))) {
+            $TargetPrinter = $script:BwPrinter
+        }
+    }
 
     try {
         if (Test-Path $SumatraExe) {
-            # SumatraPDF silent printing arguments
-            # -print-to-default prints directly to the Windows default printer without any GUI dialogs
             $printSettings = "$Copies" + "x"
             if ($ColorType -eq "bw") {
                 $printSettings += ",monochrome"
             } else {
                 $printSettings += ",color"
             }
-            Write-Log "Printing via SumatraPDF: $FilePath (settings: $printSettings)"
-            $p = Start-Process -FilePath $SumatraExe -ArgumentList "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`"" -PassThru -WindowStyle Hidden
+
+            $argList = ""
+            if (![string]::IsNullOrWhiteSpace($TargetPrinter)) {
+                Write-Log "Printing via SumatraPDF to [$TargetPrinter]: $FilePath (settings: $printSettings)"
+                $argList = "-print-to `"$TargetPrinter`" -print-settings `"$printSettings`" -silent `"$FilePath`""
+            } else {
+                Write-Log "Printing via SumatraPDF to [Default Printer]: $FilePath (settings: $printSettings)"
+                $argList = "-print-to-default -print-settings `"$printSettings`" -silent `"$FilePath`""
+            }
+
+            $p = Start-Process -FilePath $SumatraExe -ArgumentList $argList -PassThru -WindowStyle Hidden
             $p.WaitForExit(60000) # Wait up to 60 seconds
             return $true
         } else {
@@ -128,16 +158,18 @@ while ($true) {
     try {
         # 1. Periodic Heartbeat & Status Reporting (every 15 seconds)
         if (([DateTime]::UtcNow - $lastHeartbeat).TotalSeconds -ge 15) {
-            $printers = Get-PrintersList
+            $printers = Get-DetailedPrinters
             $hbPayload = @{
                 token = $AgentToken
                 printers = $printers
                 hostname = $env:COMPUTERNAME
-            } | ConvertTo-Json
+            } | ConvertTo-Json -Depth 3
 
             try {
                 $hbResponse = Invoke-RestMethod -Uri "$ServerUrl/api/print-agent/heartbeat" -Method Post -Body $hbPayload -ContentType "application/json" -TimeoutSec 10 -ErrorAction Stop
                 $lastHeartbeat = [DateTime]::UtcNow
+                if ($hbResponse.bw_printer) { $script:BwPrinter = $hbResponse.bw_printer }
+                if ($hbResponse.color_printer) { $script:ColorPrinter = $hbResponse.color_printer }
             } catch {
                 Write-Log "Heartbeat failed: $_"
             }
@@ -147,11 +179,14 @@ while ($true) {
         $jobsUrl = "$ServerUrl/api/print-agent/jobs?token=$AgentToken"
         $jobsResponse = Invoke-RestMethod -Uri $jobsUrl -Method Get -TimeoutSec 10 -ErrorAction Stop
 
+        if ($jobsResponse.bw_printer) { $script:BwPrinter = $jobsResponse.bw_printer }
+        if ($jobsResponse.color_printer) { $script:ColorPrinter = $jobsResponse.color_printer }
+
         if ($jobsResponse.success -and $jobsResponse.jobs -and $jobsResponse.jobs.Count -gt 0) {
             Write-Log "Found $($jobsResponse.jobs.Count) pending job(s)."
 
             foreach ($job in $jobsResponse.jobs) {
-                Write-Log "Processing Job #$($job.job_code) - Filename: $($job.original_filename) ($($job.copies) copies, $($job.color_type))"
+                Write-Log "Processing Job #$($job.job_code) - Filename: $($job.original_filename) ($($job.copies) copies, $($job.color_type), target: $($job.target_printer))"
                 
                 # Acknowledge downloading
                 try {
@@ -184,12 +219,13 @@ while ($true) {
                     continue
                 }
 
-                # Print Silently
+                # Print Silently to Target Printer
                 $copies = [int]$job.copies
                 if ($copies -lt 1) { $copies = 1 }
                 $colorType = "$($job.color_type)"
+                $targetPrinter = "$($job.target_printer)"
 
-                $printSuccess = Print-DocumentSilently -FilePath $localFilePath -Copies $copies -ColorType $colorType
+                $printSuccess = Print-DocumentSilently -FilePath $localFilePath -Copies $copies -ColorType $colorType -TargetPrinter $targetPrinter
 
                 # Report Completion or Failure
                 if ($printSuccess) {
@@ -218,7 +254,6 @@ while ($true) {
         }
     } catch {
         # Silent backoff on connection errors
-        # Write-Log "Loop exception: $_"
     }
 
     Start-Sleep -Seconds 5

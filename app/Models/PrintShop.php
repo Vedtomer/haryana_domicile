@@ -21,6 +21,10 @@ class PrintShop extends Model
         'is_online',
         'last_heartbeat_at',
         'agent_token',
+        'detected_printers',
+        'bw_printer',
+        'color_printer',
+        'printer_mode',
     ];
 
     protected $casts = [
@@ -28,6 +32,7 @@ class PrintShop extends Model
         'color_rate' => 'decimal:2',
         'is_online' => 'boolean',
         'last_heartbeat_at' => 'datetime',
+        'detected_printers' => 'array',
     ];
 
     public function user(): BelongsTo

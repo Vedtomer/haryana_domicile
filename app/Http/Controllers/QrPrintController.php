@@ -44,7 +44,26 @@ class QrPrintController extends Controller
                 $table->boolean('is_online')->default(false);
                 $table->timestamp('last_heartbeat_at')->nullable();
                 $table->string('agent_token', 64)->unique();
+                $table->json('detected_printers')->nullable();
+                $table->string('bw_printer', 191)->nullable();
+                $table->string('color_printer', 191)->nullable();
+                $table->string('printer_mode', 32)->default('single');
                 $table->timestamps();
+            });
+        } else {
+            \Illuminate\Support\Facades\Schema::table('print_shops', function ($table) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'detected_printers')) {
+                    $table->json('detected_printers')->nullable();
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'bw_printer')) {
+                    $table->string('bw_printer', 191)->nullable();
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'color_printer')) {
+                    $table->string('color_printer', 191)->nullable();
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('print_shops', 'printer_mode')) {
+                    $table->string('printer_mode', 32)->default('single');
+                }
             });
         }
 
@@ -132,6 +151,10 @@ class QrPrintController extends Controller
                 'last_heartbeat_at' => $shop->last_heartbeat_at ? $shop->last_heartbeat_at->diffForHumans() : null,
                 'agent_token' => $shop->agent_token,
                 'upload_url' => url('/p/' . $shop->shop_code),
+                'detected_printers' => $shop->detected_printers ?: [],
+                'bw_printer' => $shop->bw_printer,
+                'color_printer' => $shop->color_printer,
+                'printer_mode' => $shop->printer_mode ?: 'single',
             ],
             'jobs' => $jobs,
             'stats' => $stats,
@@ -155,6 +178,24 @@ class QrPrintController extends Controller
         $shop->update($validated);
 
         return redirect()->back()->with('success', 'Shop settings updated successfully!');
+    }
+
+    /**
+     * Update Printer Routing & Assignment Settings
+     */
+    public function updatePrinterSettings(Request $request)
+    {
+        $shop = $this->getOrCreateShop();
+
+        $validated = $request->validate([
+            'printer_mode' => 'required|in:single,dual',
+            'bw_printer' => 'nullable|string|max:191',
+            'color_printer' => 'nullable|string|max:191',
+        ]);
+
+        $shop->update($validated);
+
+        return redirect()->back()->with('success', 'Printer configuration saved successfully!');
     }
 
     /**
