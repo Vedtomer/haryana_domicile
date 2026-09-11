@@ -45,26 +45,13 @@ const matchesCategory = (service, catId) => {
 
 export default function Home({ services = [] }) {
     const { auth } = usePage().props;
-    const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('all');
     const [selectedServiceForModal, setSelectedServiceForModal] = useState(null);
 
     const isLoggedIn = Boolean(auth?.user);
 
-    // Filter services
-    const filteredServices = services.filter((service) => {
-        const query = searchQuery.trim().toLowerCase();
-        const matchesSearch = query === '' ||
-            (service.name && service.name.toLowerCase().includes(query)) ||
-            (service.description && service.description.toLowerCase().includes(query)) ||
-            (service.slug && service.slug.toLowerCase().includes(query));
-
-        return matchesSearch && matchesCategory(service, activeTab);
-    });
-
-    const getCategoryCount = (catId) => {
-        return services.filter(service => matchesCategory(service, catId)).length;
-    };
+    // Filter services by active category tab
+    const filteredServices = services.filter((service) => matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
         if (!isLoggedIn) {
@@ -98,7 +85,7 @@ export default function Home({ services = [] }) {
                     <div className="relative z-10 max-w-[1280px] mx-auto px-6 text-center mt-6">
                         <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-semibold text-xs sm:text-sm mb-6 shadow-sm">
                             <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                            ⚡ {services.length}+ Live Services Ready in Portal
+                            ⚡ Verified Government & Citizen Services Portal
                         </div>
                         
                         <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-6 leading-tight tracking-tight">
@@ -109,7 +96,7 @@ export default function Home({ services = [] }) {
                         </h1>
                         
                         <p className="mt-3 max-w-2xl font-body-lg text-body-lg text-on-surface-variant mx-auto mb-8 leading-relaxed">
-                            Unified portal for PAN Cards, Aadhaar PVC, Driving Licence, Vehicle RC, Haryana Domicile, Marriage Registration, and 20+ utility services.
+                            Unified portal for PAN Cards, Aadhaar PVC, Driving Licence, Vehicle RC, Haryana Domicile, Marriage Registration, and utility services.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -143,7 +130,7 @@ export default function Home({ services = [] }) {
                                 href="#services" 
                                 className="inline-flex items-center justify-center px-7 py-3.5 font-semibold rounded-xl text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300"
                             >
-                                Browse All Services ({services.length})
+                                Browse All Services
                                 <span className="material-symbols-outlined ml-2">expand_more</span>
                             </a>
                         </div>
@@ -167,68 +154,27 @@ export default function Home({ services = [] }) {
                             </p>
                         </div>
 
-                        {/* Search & Category Tabs */}
-                        <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none mb-10">
-                            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                                {/* Search input */}
-                                <div className="relative w-full md:w-80">
-                                    <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">
-                                        search
-                                    </span>
-                                    <input
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Search any service..."
-                                        className="w-full pl-10 pr-9 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                    />
-                                    {searchQuery && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setSearchQuery('')}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs"
-                                        >
-                                            ✕
-                                        </button>
-                                    )}
-                                </div>
+                        {/* Category Filter Pills (No search bar, no counts) */}
+                        <div className="flex items-center justify-center flex-wrap gap-2.5 mb-10">
+                            {CATEGORIES.map((cat) => {
+                                const isActive = activeTab === cat.id;
 
-                                {/* Quick count status */}
-                                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 shrink-0">
-                                    Showing <span className="font-bold text-slate-900 dark:text-white">{filteredServices.length}</span> of {services.length} services
-                                </div>
-                            </div>
-
-                            {/* Category Filter Pills */}
-                            <div className="flex items-center gap-2 overflow-x-auto pb-1 mt-4 scrollbar-none">
-                                {CATEGORIES.map((cat) => {
-                                    const count = getCategoryCount(cat.id);
-                                    const isActive = activeTab === cat.id;
-
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            type="button"
-                                            onClick={() => setActiveTab(cat.id)}
-                                            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer select-none ${
-                                                isActive
-                                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 -translate-y-0.5 scale-[1.02]'
-                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                            }`}
-                                        >
-                                            <span>{cat.icon}</span>
-                                            <span>{cat.label}</span>
-                                            <span className={`text-[11px] px-1.5 py-0.2 rounded-full font-bold ${
-                                                isActive
-                                                    ? 'bg-white/20 text-white'
-                                                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
-                                            }`}>
-                                                {count}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        type="button"
+                                        onClick={() => setActiveTab(cat.id)}
+                                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer select-none border ${
+                                            isActive
+                                                ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25 -translate-y-0.5'
+                                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm'
+                                        }`}
+                                    >
+                                        <span>{cat.icon}</span>
+                                        <span>{cat.label}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
 
                         {/* 3D Services Grid (Only Service Names & Icons) */}
@@ -288,22 +234,19 @@ export default function Home({ services = [] }) {
                             </div>
                         ) : (
                             <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8">
-                                <span className="text-5xl mb-4 block">🔍</span>
+                                <span className="text-5xl mb-4 block">📋</span>
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                                    No services found matching "{searchQuery}"
+                                    No services found in this category
                                 </h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-5">
-                                    Try clearing your search or switching to another category tab to view other available services.
+                                    Switch to "All Services" to view all available services in the portal.
                                 </p>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setActiveTab('all');
-                                    }}
-                                    className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs shadow-md hover:bg-blue-700 transition"
+                                    onClick={() => setActiveTab('all')}
+                                    className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs shadow-md hover:bg-blue-700 transition cursor-pointer"
                                 >
-                                    Reset Filters & View All
+                                    View All Services
                                 </button>
                             </div>
                         )}
