@@ -864,6 +864,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
         Route::get('referrals', [\App\Http\Controllers\ReferralController::class, 'index'])->name('referrals.index');
+        Route::post('referrals/generate-new', [\App\Http\Controllers\ReferralController::class, 'generateNew'])->name('referrals.generate-new');
 
         // Payment / QR Settings — admin only
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');

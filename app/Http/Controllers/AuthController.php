@@ -108,12 +108,54 @@ class AuthController extends Controller
             'phone'         => 'required|string|max:20|unique:users,phone',
             'email'         => 'required|string|email|max:255|unique:users,email',
             'password'      => 'required|string|min:4',
-            'referral_code' => 'nullable|string|max:30|exists:users,referral_code',
+            'referral_code' => 'nullable|string|max:30',
         ], [
             'phone.unique'         => 'This mobile number is already registered.',
             'email.unique'         => 'This email address is already registered.',
-            'referral_code.exists' => 'The entered referral code does not exist. Please check or leave it blank.',
         ]);
+
+        if (!empty($data['referral_code'])) {
+            $refCode = strtoupper(trim($data['referral_code']));
+            
+            // Check if link is already used in referral_links table
+            $isUsed = false;
+            $exists = false;
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('referral_links')) {
+                    $refLink = \App\Models\ReferralLink::where('code', $refCode)->first();
+                    if ($refLink) {
+                        $exists = true;
+                        if ($refLink->is_used) {
+                            $isUsed = true;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            if (!$exists) {
+                $exists = \App\Models\User::where('referral_code', $refCode)->exists();
+            }
+
+            if ($isUsed) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ye referral link pehle se use ho chuka hai. Ek link sirf 1 baar work karta hai. Please apne friend se naya link lein.',
+                    'errors' => [
+                        'referral_code' => ['Ye referral link pehle se use ho chuka hai. Ek link sirf 1 baar work karta hai. Please naya referral link lein.']
+                    ]
+                ], 422);
+            }
+
+            if (!$exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The entered referral code does not exist. Please check or leave it blank.',
+                    'errors' => [
+                        'referral_code' => ['The entered referral code does not exist. Please check or leave it blank.']
+                    ]
+                ], 422);
+            }
+        }
 
         $email = strtolower(trim($data['email']));
         $cacheKey = 'reg_otp_' . md5($email);
@@ -201,13 +243,12 @@ class AuthController extends Controller
             'email'         => 'required|string|email|max:255|unique:users,email',
             'password'      => 'required|string|min:4',
             'otp'           => 'required|string|size:6',
-            'referral_code' => 'nullable|string|max:30|exists:users,referral_code',
+            'referral_code' => 'nullable|string|max:30',
         ], [
             'phone.unique'         => 'This mobile number is already registered.',
             'email.unique'         => 'This email address is already registered.',
             'otp.required'         => 'Please enter the 6-digit OTP sent to your email.',
             'otp.size'             => 'The OTP must be exactly 6 digits.',
-            'referral_code.exists' => 'The entered referral code is invalid.',
         ]);
 
         $email = strtolower(trim($data['email']));
@@ -225,8 +266,27 @@ class AuthController extends Controller
         \Illuminate\Support\Facades\Cache::store('file')->forget('reg_otp_cooldown_' . md5($email));
 
         $referrer = null;
+        $refLink = null;
         if (!empty($data['referral_code'])) {
-            $referrer = \App\Models\User::where('referral_code', strtoupper(trim($data['referral_code'])))->first();
+            $refCode = strtoupper(trim($data['referral_code']));
+
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('referral_links')) {
+                    $refLink = \App\Models\ReferralLink::where('code', $refCode)->first();
+                    if ($refLink) {
+                        if ($refLink->is_used) {
+                            return back()->withErrors([
+                                'referral_code' => 'Ye referral link pehle se use ho chuka hai. Ek link sirf 1 baar work karta hai. Please naya referral link lein.',
+                            ])->onlyInput('name', 'phone', 'email');
+                        }
+                        $referrer = \App\Models\User::find($refLink->user_id);
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            if (!$referrer) {
+                $referrer = \App\Models\User::where('referral_code', $refCode)->first();
+            }
         }
 
         $user = \App\Models\User::create([
@@ -242,7 +302,18 @@ class AuthController extends Controller
             'referral_reward_paid' => false,
         ]);
 
+        if ($refLink) {
+            $refLink->update([
+                'is_used' => true,
+                'used_by' => $user->id,
+                'used_at' => now(),
+            ]);
+        }
+
         if ($referrer) {
+            // Roll referrer's code to a new fresh link so the link works only once!
+            $referrer->generateNewReferralLink();
+
             $referrer->notify(new \App\Notifications\SystemAlert(
                 '👤 New Friend Joined with Your Referral!',
                 "{$user->name} ne aapke referral link se register kiya hai. Jab wo pehli baar ₹200+ wallet recharge karenge, aapko ₹10 (10 Coins) milenge!",

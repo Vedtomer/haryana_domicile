@@ -18,8 +18,9 @@ class UserController extends Controller
             abort(403);
         }
 
-        $query = User::with('roles')
+        $query = User::with(['roles', 'referrer:id,name,phone,email,referral_code'])
             ->withCount([
+                'referrals',
                 'chatMessages as unread_messages_count' => function ($q) {
                     $q->where('sender_type', 'user')->where('is_read', false);
                 }

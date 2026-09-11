@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\CoinPurchaseRequest;
+use App\Models\ReferralLink;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
 class ReferralController extends Controller
@@ -16,13 +18,9 @@ class ReferralController extends Controller
     {
         $user = auth()->user();
 
-        // Ensure user has a referral code
-        if (empty($user->referral_code)) {
-            $user->referral_code = User::generateReferralCode();
-            $user->save();
-        }
-
-        $referralLink = url('/register?ref=' . $user->referral_code);
+        // Ensure user has an active single-use referral code
+        $referralCode = $user->getActiveReferralCode();
+        $referralLink = $user->referral_link;
 
         // Fetch referred users with recharge status
         $referralsQuery = User::where('referred_by', $user->id)
@@ -55,15 +53,52 @@ class ReferralController extends Controller
             ];
         });
 
+        // Fetch single-use referral links history
+        $linkHistory = [];
+        if (Schema::hasTable('referral_links')) {
+            $linkHistory = ReferralLink::where('user_id', $user->id)
+                ->with('usedBy:id,name,phone')
+                ->latest('id')
+                ->take(15)
+                ->get()
+                ->map(function ($link) {
+                    $maskedPhone = $link->usedBy?->phone;
+                    if ($maskedPhone && strlen($maskedPhone) >= 8) {
+                        $maskedPhone = substr($maskedPhone, 0, 2) . '******' . substr($maskedPhone, -2);
+                    }
+                    return [
+                        'id'           => $link->id,
+                        'code'         => $link->code,
+                        'is_used'      => (bool) $link->is_used,
+                        'used_at'      => $link->used_at ? $link->used_at->format('d M Y, h:i A') : null,
+                        'used_by_name' => $link->usedBy ? ($link->usedBy->name ?: 'User #' . $link->usedBy->id) : null,
+                        'used_by_phone'=> $maskedPhone,
+                        'created_at'   => $link->created_at ? $link->created_at->format('d M Y') : null,
+                    ];
+                });
+        }
+
         return Inertia::render('Admin/Referrals/Index', [
-            'referralCode' => $user->referral_code,
+            'referralCode' => $referralCode,
             'referralLink' => $referralLink,
             'stats' => [
                 'totalReferrals'     => $totalReferrals,
                 'qualifiedReferrals' => $qualifiedReferrals,
                 'totalEarnedCoins'   => $totalEarnedCoins,
             ],
-            'referrals' => $referrals,
+            'referrals'   => $referrals,
+            'linkHistory' => $linkHistory,
         ]);
+    }
+
+    /**
+     * Manually generate a fresh new single-use referral code.
+     */
+    public function generateNew(Request $request)
+    {
+        $user = auth()->user();
+        $code = $user->generateNewReferralLink();
+
+        return back()->with('success', "Naya single-use referral link generate ho gaya: {$code}");
     }
 }

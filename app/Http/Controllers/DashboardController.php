@@ -46,6 +46,8 @@ class DashboardController extends Controller
             'services' => $services,
             'isAdmin' => $isAdmin,
             'stats' => $isAdmin ? $this->adminStats() : $this->userStats($user),
+            'referralCode' => $user->getActiveReferralCode(),
+            'referralLink' => $user->referral_link,
         ]);
     }
 

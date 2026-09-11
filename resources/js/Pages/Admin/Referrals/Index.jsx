@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
-export default function Index({ referralCode, referralLink, stats, referrals }) {
+export default function Index({ referralCode, referralLink, stats, referrals, linkHistory = [] }) {
     const [copiedLink, setCopiedLink] = useState(false);
     const [copiedCode, setCopiedCode] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const handleGenerateNewLink = () => {
+        if (!confirm('Kya aap naya single-use referral link generate karna chahte hain?')) return;
+        setIsGenerating(true);
+        router.post('/admin/referrals/generate-new', {}, {
+            preserveScroll: true,
+            onFinish: () => setIsGenerating(false),
+        });
+    };
 
     const handleCopyLink = () => {
         if (!referralLink) return;
@@ -87,9 +97,21 @@ export default function Index({ referralCode, referralLink, stats, referrals }) 
                         {/* Referral Code Box */}
                         <div className="lg:col-span-5 bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-5 sm:p-6 space-y-4 shadow-inner">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1.5">
-                                    Your Referral Code
-                                </label>
+                                <div className="flex items-center justify-between gap-2 mb-1.5">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-blue-200">
+                                        Your Referral Code
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={handleGenerateNewLink}
+                                        disabled={isGenerating}
+                                        className="text-[11px] font-bold text-amber-300 hover:text-amber-200 underline decoration-dashed flex items-center gap-1 cursor-pointer"
+                                        title="Manually generate a fresh single-use link"
+                                    >
+                                        <span className="material-symbols-outlined text-xs">refresh</span>
+                                        <span>{isGenerating ? 'Generating...' : 'Get Fresh Link'}</span>
+                                    </button>
+                                </div>
                                 <div className="flex items-center gap-2 bg-slate-950/60 rounded-xl p-2 px-3 border border-white/10">
                                     <span className="font-mono text-xl sm:text-2xl font-black text-amber-400 tracking-widest flex-1 select-all">
                                         {referralCode}
@@ -97,7 +119,7 @@ export default function Index({ referralCode, referralLink, stats, referrals }) 
                                     <button
                                         type="button"
                                         onClick={handleCopyCode}
-                                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors shrink-0 flex items-center gap-1"
+                                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
                                     >
                                         <span className="material-symbols-outlined text-sm">
                                             {copiedCode ? 'check' : 'content_copy'}
@@ -109,7 +131,7 @@ export default function Index({ referralCode, referralLink, stats, referrals }) 
 
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1.5">
-                                    Your Referral Link
+                                    Your Single-Use Referral Link
                                 </label>
                                 <div className="flex items-center gap-2 bg-slate-950/60 rounded-xl p-2 px-3 border border-white/10 text-xs">
                                     <span className="font-mono text-blue-200/90 truncate flex-1 select-all">
@@ -118,16 +140,19 @@ export default function Index({ referralCode, referralLink, stats, referrals }) 
                                     <button
                                         type="button"
                                         onClick={handleCopyLink}
-                                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
+                                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0 cursor-pointer"
                                     >
                                         {copiedLink ? '✓ Copied' : 'Copy'}
                                     </button>
                                 </div>
                             </div>
 
-                            <p className="text-[11px] text-blue-300/70 text-center pt-1">
-                                Share this link with anyone. The referral code is automatically applied when they open it!
-                            </p>
+                            <div className="p-3 rounded-xl bg-amber-400/15 border border-amber-400/30 text-[11px] text-amber-100 flex items-start gap-2">
+                                <span className="material-symbols-outlined text-sm text-amber-300 shrink-0 mt-0.5">lock</span>
+                                <span>
+                                    <strong>🔒 1 Link = 1 Registration:</strong> Yeh link sirf 1 dost ke register karne ke liye valid hai. Friend ke join karte hi aapko automatically naya active link mil jata hai!
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -305,6 +330,85 @@ export default function Index({ referralCode, referralLink, stats, referrals }) 
                         </div>
                     )}
                 </div>
+
+                {/* Single-Use Referral Links History */}
+                {linkHistory && linkHistory.length > 0 && (
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+                        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span>🔗</span> Referral Links History (Single-Use Tracking)
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Har link sirf 1 registration ke liye hota hai. Yahan dekhein kaunsa link active hai aur kaunsa use ho chuka hai.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleGenerateNewLink}
+                                disabled={isGenerating}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs self-start sm:self-auto"
+                            >
+                                <span className="material-symbols-outlined text-sm">add</span>
+                                <span>{isGenerating ? 'Generating...' : 'Generate New Link'}</span>
+                            </button>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                                <thead className="bg-slate-50 dark:bg-slate-800/60 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                                    <tr>
+                                        <th className="px-6 py-3.5">Referral Code</th>
+                                        <th className="px-6 py-3.5">Status</th>
+                                        <th className="px-6 py-3.5">Used By (Friend)</th>
+                                        <th className="px-6 py-3.5">Used At</th>
+                                        <th className="px-6 py-3.5">Generated On</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {linkHistory.map((link) => (
+                                        <tr key={link.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td className="px-6 py-4 font-mono font-bold text-purple-700 dark:text-purple-300">
+                                                {link.code}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {link.is_used ? (
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                                        Used (1 Friend Registered)
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 animate-pulse">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                        Active (Ready to Share)
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {link.used_by_name ? (
+                                                    <div>
+                                                        <span className="font-semibold text-slate-800 dark:text-slate-200">{link.used_by_name}</span>
+                                                        {link.used_by_phone && (
+                                                            <span className="block text-xs font-mono text-slate-400">{link.used_by_phone}</span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-slate-400 italic">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-xs text-slate-500">
+                                                {link.used_at || '—'}
+                                            </td>
+                                            <td className="px-6 py-4 text-xs text-slate-500">
+                                                {link.created_at || '—'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </AdminLayout>

@@ -14,9 +14,15 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user();
+        if ($user->referred_by) {
+            $user->load('referrer:id,name,phone,email,referral_code');
+        }
 
         return Inertia::render('Admin/Profile/Edit', [
             'user' => $user,
+            'referralCode' => $user->getActiveReferralCode(),
+            'referralLink' => $user->referral_link,
+            'referrer' => $user->referrer,
             // Full coin history so the user can audit every credit and deduction themselves.
             'ledger' => CoinTransaction::where('user_id', $user->id)
                 ->with('creator:id,name')

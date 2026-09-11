@@ -78,6 +78,7 @@ class User extends Authenticatable implements FilamentUser
     protected $appends = [
         'is_online',
         'last_seen_human',
+        'referral_code',
         'referral_link',
     ];
 
@@ -375,15 +376,107 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * All single-use referral links created by this user.
+     */
+    public function referralLinks()
+    {
+        return $this->hasMany(ReferralLink::class, 'user_id');
+    }
+
+    /**
      * Generate a unique referral code.
      */
     public static function generateReferralCode(): string
     {
         do {
             $code = 'CSP' . strtoupper(\Illuminate\Support\Str::random(5));
-        } while (static::where('referral_code', $code)->exists());
+        } while (static::where('referral_code', $code)->exists() || (\Illuminate\Support\Facades\Schema::hasTable('referral_links') && ReferralLink::where('code', $code)->exists()));
 
         return $code;
+    }
+
+    /**
+     * Get or create active single-use referral code for this user.
+     * Each link works only once (single-use).
+     */
+    public function getActiveReferralCode(): string
+    {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('referral_links')) {
+                $link = ReferralLink::where('user_id', $this->id)
+                    ->where('is_used', false)
+                    ->latest('id')
+                    ->first();
+
+                if (!$link) {
+                    $code = static::generateReferralCode();
+                    $link = ReferralLink::create([
+                        'user_id' => $this->id,
+                        'code'    => $code,
+                        'is_used' => false,
+                    ]);
+                }
+
+                if (($this->attributes['referral_code'] ?? null) !== $link->code) {
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'referral_code')) {
+                        \Illuminate\Support\Facades\DB::table('users')->where('id', $this->id)->update(['referral_code' => $link->code]);
+                    }
+                    $this->attributes['referral_code'] = $link->code;
+                }
+
+                return $link->code;
+            }
+        } catch (\Throwable $e) {
+            // fallback
+        }
+
+        if (empty($this->attributes['referral_code'])) {
+            $code = static::generateReferralCode();
+            $this->attributes['referral_code'] = $code;
+            if ($this->exists && \Illuminate\Support\Facades\Schema::hasColumn('users', 'referral_code')) {
+                try {
+                    \Illuminate\Support\Facades\DB::table('users')->where('id', $this->id)->update(['referral_code' => $code]);
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        return $this->attributes['referral_code'] ?? 'CSP' . $this->id;
+    }
+
+    /**
+     * Generate a fresh new single-use referral link for this user.
+     */
+    public function generateNewReferralLink(): string
+    {
+        $code = static::generateReferralCode();
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('referral_links')) {
+                ReferralLink::create([
+                    'user_id' => $this->id,
+                    'code'    => $code,
+                    'is_used' => false,
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'referral_code')) {
+            \Illuminate\Support\Facades\DB::table('users')->where('id', $this->id)->update(['referral_code' => $code]);
+        }
+        $this->attributes['referral_code'] = $code;
+
+        return $code;
+    }
+
+    /**
+     * Accessor to ensure referral_code is always returned and valid.
+     */
+    public function getReferralCodeAttribute($value)
+    {
+        if (empty($value)) {
+            return $this->getActiveReferralCode();
+        }
+        return $value;
     }
 
     /**
@@ -391,12 +484,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getReferralLinkAttribute(): string
     {
-        $code = $this->referral_code;
-        if (empty($code)) {
-            $code = static::generateReferralCode();
-            $this->update(['referral_code' => $code]);
-        }
-        return url('/register?ref=' . $code);
+        return url('/register?ref=' . $this->getActiveReferralCode());
     }
 
     /**
