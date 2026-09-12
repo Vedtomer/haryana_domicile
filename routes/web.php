@@ -237,7 +237,7 @@ Route::get('/force-add-pvc-services', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'pvc_card_maker',
             'sort_order' => 14,
-            'is_active' => false,
+            'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
             'unlock_cost' => 0,

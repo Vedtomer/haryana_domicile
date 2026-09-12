@@ -330,8 +330,7 @@ class Service extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)
-            ->where('slug', '!=', 'pvc-card-maker');
+        return $query->where('is_active', true);
     }
 
     /**
@@ -342,6 +341,7 @@ class Service extends Model
     {
         return $query->where(function ($q) use ($user) {
             $q->where('visibility', self::VISIBILITY_PUBLIC)
+                ->orWhereNull('visibility')
                 ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
         });
     }

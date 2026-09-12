@@ -187,7 +187,7 @@ class ServiceSeeder extends Seeder
                 'kind' => Service::KIND_MODULE,
                 'module_key' => 'pvc_card_maker',
                 'sort_order' => 14,
-                'is_active' => false, // Deactivated so individual card services show cleanly
+                'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
                 'is_premium' => false,
                 'unlock_cost' => 0,
