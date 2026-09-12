@@ -9,11 +9,6 @@ export default function Index({ services }) {
     const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'hidden'
 
     const filteredServices = services.filter((service) => {
-        const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.module_key || ''}`.toLowerCase();
-        if (((text.includes('aadhar') || text.includes('aadhaar')) && text.includes('pvc')) || text.includes('pdf to pvc')) {
-            return false;
-        }
-
         const matchesSearch =
             service.name.toLowerCase().includes(search.toLowerCase()) ||
             (service.description && service.description.toLowerCase().includes(search.toLowerCase()));

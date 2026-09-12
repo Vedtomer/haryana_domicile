@@ -12,6 +12,7 @@ use Inertia\Inertia;
 class PvcCardMakerController extends Controller
 {
     public const CARD_SLUG_MAP = [
+        'aadhaar'          => 'aadhaar-pvc-card',
         'haryana_familyid' => 'haryana-familyid-pvc',
         'ayushman'         => 'ayushman-pvc',
         'voter_epic'       => 'voter-pvc-card',
@@ -30,7 +31,7 @@ class PvcCardMakerController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $selectedCard = $request->query('card', 'haryana_familyid');
+        $selectedCard = $request->query('card', 'aadhaar');
         if ($selectedCard === 'driving_licence' || $selectedCard === 'driving-licence-pvc') {
             return redirect()->route('utilities.make-driving-licence-card');
         }

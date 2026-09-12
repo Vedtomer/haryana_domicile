@@ -50,13 +50,8 @@ export default function Home({ services = [] }) {
 
     const isLoggedIn = Boolean(auth?.user);
 
-    const isAadhaarPvc = (service) => {
-        const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.kind || ''}`.toLowerCase();
-        return ((text.includes('aadhar') || text.includes('aadhaar')) && text.includes('pvc')) || text.includes('pdf to pvc');
-    };
-
     // Filter services by active category tab
-    const filteredServices = services.filter((service) => !isAadhaarPvc(service) && matchesCategory(service, activeTab));
+    const filteredServices = services.filter((service) => matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
         if (!isLoggedIn) {

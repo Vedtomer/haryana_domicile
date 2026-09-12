@@ -256,18 +256,11 @@ export default function Dashboard({ services, stats, isAdmin }) {
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
 
-    const isAadhaarPvc = (service) => {
-        const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.module_key || ''}`.toLowerCase();
-        return ((text.includes('aadhar') || text.includes('aadhaar')) && text.includes('pvc')) || text.includes('pdf to pvc');
-    };
-
     const getCategoryCount = (catId) => {
-        return services.filter(service => !isAadhaarPvc(service) && matchesCategory(service, catId)).length;
+        return services.filter(service => matchesCategory(service, catId)).length;
     };
 
     const filteredServices = services.filter(service => {
-        if (isAadhaarPvc(service)) return false;
-
         const query = searchQuery.trim().toLowerCase();
         const matchesSearch = query === '' ||
             (service.name && service.name.toLowerCase().includes(query)) ||

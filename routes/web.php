@@ -11,12 +11,6 @@ Route::get('/', function () {
     $services = \App\Models\Service::active()
         ->ordered()
         ->get()
-        ->reject(function ($service) {
-            $text = strtolower(($service->name ?? '') . ' ' . ($service->slug ?? '') . ' ' . ($service->description ?? ''));
-            return ((str_contains($text, 'aadhar') || str_contains($text, 'aadhaar')) && str_contains($text, 'pvc'))
-                || str_contains($text, 'pdf to pvc');
-        })
-        ->values()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
@@ -62,26 +56,7 @@ Route::get('/migrate-db', function () {
             $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
         }
 
-        try {
-            \App\Models\Service::where('slug', 'aadhaar-pvc-card')
-                ->orWhere('slug', 'aadhar-pvc-card')
-                ->orWhere('slug', 'aadhar-pvc')
-                ->orWhere('slug', 'aadhaar-pvc')
-                ->orWhere('slug', 'aadhar-pdf-to-pvc')
-                ->orWhere('slug', 'aadhar-pdf-to-pvc-instant')
-                ->orWhere('slug', 'pdf-to-pvc-instant')
-                ->orWhere('module_key', 'aadhaar_pvc')
-                ->orWhere('module_key', 'aadhar_pvc')
-                ->orWhere('name', 'like', '%Aadhaar%PVC%')
-                ->orWhere('name', 'like', '%Aadhar%PVC%')
-                ->orWhere('name', 'like', '%Aadhar%pdf%to%pvc%')
-                ->orWhere('name', 'like', '%Aadhaar%pdf%to%pvc%')
-                ->orWhere('name', 'like', '%pdf%to%pvc%')
-                ->orWhere('slug', 'like', '%aadhar%pvc%')
-                ->orWhere('slug', 'like', '%aadhaar%pvc%')
-                ->orWhere('slug', 'like', '%pdf%to%pvc%')
-                ->delete();
-        } catch (\Throwable $svcEx) {}
+
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
@@ -282,6 +257,20 @@ Route::get('/force-add-pvc-services', function () {
             'unlock_cost' => 0,
         ],
         [
+            'name' => 'Aadhaar PVC Card Maker',
+            'slug' => 'aadhaar-pvc-card',
+            'description' => 'Generate Print-Ready PVC Front & Back Card from e-Aadhaar PDF.',
+            'icon' => '🔍',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhaar_pvc',
+            'sort_order' => 16,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
             'name' => 'Ayushman Bharat PVC Card',
             'slug' => 'ayushman-pvc',
             'description' => 'Generate Print-Ready PVC Front & Back Card from Ayushman Golden Card PDF.',
@@ -431,24 +420,6 @@ Route::get('/force-add-pvc-services', function () {
     }
 
     \App\Models\Service::where('slug', 'aadhar-update')->delete();
-    \App\Models\Service::where('slug', 'aadhaar-pvc-card')
-        ->orWhere('slug', 'aadhar-pvc-card')
-        ->orWhere('slug', 'aadhar-pvc')
-        ->orWhere('slug', 'aadhaar-pvc')
-        ->orWhere('slug', 'aadhar-pdf-to-pvc')
-        ->orWhere('slug', 'aadhar-pdf-to-pvc-instant')
-        ->orWhere('slug', 'pdf-to-pvc-instant')
-        ->orWhere('module_key', 'aadhaar_pvc')
-        ->orWhere('module_key', 'aadhar_pvc')
-        ->orWhere('name', 'like', '%Aadhaar%PVC%')
-        ->orWhere('name', 'like', '%Aadhar%PVC%')
-        ->orWhere('name', 'like', '%Aadhar%pdf%to%pvc%')
-        ->orWhere('name', 'like', '%Aadhaar%pdf%to%pvc%')
-        ->orWhere('name', 'like', '%pdf%to%pvc%')
-        ->orWhere('slug', 'like', '%aadhar%pvc%')
-        ->orWhere('slug', 'like', '%aadhaar%pvc%')
-        ->orWhere('slug', 'like', '%pdf%to%pvc%')
-        ->delete();
 
     return 'PVC Card Maker services added successfully and made PUBLIC! Please check your dashboard.';
 });
