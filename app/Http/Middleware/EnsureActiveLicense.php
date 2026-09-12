@@ -23,14 +23,20 @@ class EnsureActiveLicense
 
         // 1. Check if user has active license
         if (!$user->hasActiveLicense()) {
-            if ($request->expectsJson() || $request->isXmlHttpRequest()) {
+            $errorMessage = 'Portal License Required: Services use karne ke liye 6-Month License (50 Coins) active hona zaroori hai. Kripya apna license activate karein.';
+
+            if ($request->header('X-Inertia')) {
+                return redirect()->route('dashboard')->with('error', $errorMessage);
+            }
+
+            if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Active 6-Month Portal License (50 Coins) is required to access this service.',
                     'requires_license' => true,
                 ], 403);
             }
 
-            return redirect()->route('dashboard')->with('error', 'Portal License Required: Services use karne ke liye 6-Month License (50 Coins) active hona zaroori hai. Kripya apna license activate karein.');
+            return redirect()->route('dashboard')->with('error', $errorMessage);
         }
 
         // 2. Hardware / Single Desktop PC Lock Check
@@ -38,8 +44,10 @@ class EnsureActiveLicense
             ?: $request->header('X-Device-Token')
             ?: $request->input('device_token');
 
-        // If user has active license but desktop is not bound yet (auto-bind first PC):
-        if (empty($user->license_device_id)) {
+        $isLinuxDevBinding = str_contains($user->license_device_name ?? '', 'Linux Desktop');
+
+        // If user has active license but desktop is not bound yet (or was auto-bound to dev Linux Desktop):
+        if (empty($user->license_device_id) || $isLinuxDevBinding) {
             if ($deviceToken) {
                 $ua = (string) $request->userAgent();
                 $os = 'Desktop PC';
@@ -64,7 +72,6 @@ class EnsureActiveLicense
 
                 LicenseKey::where('activated_by', $user->id)
                     ->where('status', LicenseKey::STATUS_ACTIVE)
-                    ->whereNull('device_id')
                     ->latest('activated_at')
                     ->first()?->update([
                         'device_id'   => $deviceToken,
@@ -79,7 +86,11 @@ class EnsureActiveLicense
                 $boundDevice = $user->license_device_name ?: 'Registered Desktop PC';
                 $errorMessage = "🔒 Desktop Lock Alert: Aapka 6-Month Portal License dusre Desktop/PC ({$boundDevice}) par locked hai. Ek license sirf ek hi desktop par use ho sakta hai. Agar aapne PC change kiya hai, toh Admin se Desktop Reset karwayein.";
 
-                if ($request->expectsJson() || $request->isXmlHttpRequest()) {
+                if ($request->header('X-Inertia')) {
+                    return redirect()->route('dashboard')->with('error', $errorMessage);
+                }
+
+                if ($request->expectsJson()) {
                     return response()->json([
                         'message'       => $errorMessage,
                         'device_locked' => true,
