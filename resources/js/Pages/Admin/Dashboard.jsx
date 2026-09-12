@@ -205,69 +205,23 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
     return <Link href={service.url}>{cardContent}</Link>;
 }
 
-const CATEGORIES = [
-    { id: 'all', label: 'All Services', icon: '📋', activeClass: 'bg-blue-600 text-white shadow-blue-500/25' },
-    { id: 'new', label: 'New Services', icon: '🔥', activeClass: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-orange-500/25' },
-    { id: 'pan', label: 'PAN Card', icon: '💳', activeClass: 'bg-blue-600 text-white shadow-blue-500/25' },
-    { id: 'aadhaar', label: 'Aadhaar', icon: '🆔', activeClass: 'bg-emerald-600 text-white shadow-emerald-500/25' },
-    { id: 'dl', label: 'DL (Licence)', icon: '🚗', activeClass: 'bg-indigo-600 text-white shadow-indigo-500/25' },
-    { id: 'rc', label: 'RC (Vehicle)', icon: '🚙', activeClass: 'bg-violet-600 text-white shadow-violet-500/25' },
-    { id: 'pvc', label: 'PVC Cards', icon: '🪪', activeClass: 'bg-purple-600 text-white shadow-purple-500/25' },
-    { id: 'certificates', label: 'Certificates & Print', icon: '📜', activeClass: 'bg-teal-600 text-white shadow-teal-500/25' },
-];
-
-const matchesCategory = (service, catId) => {
-    if (catId === 'all') return true;
-    if (catId === 'new') return Boolean(service.is_new);
-
-    const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.module_key || ''}`.toLowerCase();
-
-    if (catId === 'pan') {
-        return text.includes('pan');
-    }
-    if (catId === 'aadhaar') {
-        return text.includes('aadhar') || text.includes('aadhaar') || text.includes('uid');
-    }
-    if (catId === 'dl') {
-        return text.includes('driving') || text.includes('licence') || text.includes('license') || text.includes(' dl') || text.includes('-dl-') || text.includes('dl ');
-    }
-    if (catId === 'rc') {
-        return text.includes('vehicle') || text.includes('rc ') || text.includes(' rc') || text.includes('(rc)') || text.includes('vahan');
-    }
-    if (catId === 'pvc') {
-        return text.includes('pvc') || text.includes('card maker') || (text.includes('card') && !text.includes('pan-card'));
-    }
-    if (catId === 'certificates') {
-        return text.includes('print') || text.includes('certificate') || text.includes('marriage') || 
-               text.includes('birth') || text.includes('domicile') || text.includes('saral') || 
-               text.includes('bill') || text.includes('electricity') || text.includes('passport') ||
-               text.includes('passbook') || text.includes('kundli');
-    }
-    return true;
-};
-
 export default function Dashboard({ services, stats, isAdmin }) {
     const { auth, flash } = usePage().props;
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('all');
 
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
 
-    const getCategoryCount = (catId) => {
-        return services.filter(service => matchesCategory(service, catId)).length;
-    };
-
     const filteredServices = services.filter(service => {
         const query = searchQuery.trim().toLowerCase();
-        const matchesSearch = query === '' ||
+        if (!query) return true;
+        return (
             (service.name && service.name.toLowerCase().includes(query)) ||
             (service.description && service.description.toLowerCase().includes(query)) ||
-            (service.slug && service.slug.toLowerCase().includes(query));
-
-        return matchesSearch && matchesCategory(service, activeTab);
+            (service.slug && service.slug.toLowerCase().includes(query))
+        );
     });
 
     const handleUnlock = () => {
@@ -364,18 +318,14 @@ export default function Dashboard({ services, stats, isAdmin }) {
                  </div>
              )}
 
-             {/* Services Section Header & Categories */}
-            <div id="services" className="space-y-3.5 mb-6 scroll-mt-6">
+             {/* Services Section Header & Search */}
+            <div id="services" className="mb-6 scroll-mt-6">
                 <div className="flex items-center justify-end">
                     <div className="w-full sm:w-80 relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-[20px]">search</span>
                         <input
                             type="text"
-                            placeholder={
-                                activeTab === 'all'
-                                    ? 'Search all services...'
-                                    : `Search ${CATEGORIES.find(c => c.id === activeTab)?.label || 'services'}...`
-                            }
+                            placeholder="Search all services..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl shadow-2xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm outline-none transition-all"
@@ -392,44 +342,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
                         )}
                     </div>
                 </div>
-
-                {/* Category Filter Pills (Horizontal scroll on mobile, wrap on tablet/desktop) */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0 sm:flex-wrap">
-                    {CATEGORIES.map((cat) => {
-                        const count = getCategoryCount(cat.id);
-                        const isActive = activeTab === cat.id;
-
-                        // Only show tabs that have services or are 'all' / 'new'
-                        if (count === 0 && cat.id !== 'all' && cat.id !== 'new') {
-                            return null;
-                        }
-
-                        return (
-                            <button
-                                key={cat.id}
-                                type="button"
-                                onClick={() => setActiveTab(cat.id)}
-                                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0 active:scale-95 ${
-                                    isActive
-                                        ? `${cat.activeClass} shadow-md`
-                                        : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-2xs'
-                                }`}
-                            >
-                                <span>{cat.icon}</span>
-                                <span>{cat.label}</span>
-                                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
-                                    isActive
-                                        ? 'bg-white/25 text-white'
-                                        : cat.id === 'new'
-                                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                                }`}>
-                                    {count}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </div>
             </div>
 
             {/* Services Grid */}
@@ -439,12 +351,12 @@ export default function Dashboard({ services, stats, isAdmin }) {
                     <p className="font-medium text-slate-700 dark:text-slate-300">
                         {searchQuery
                             ? `"${searchQuery}" ke sath koi service nahi mili.`
-                            : `Is category (${CATEGORIES.find(c => c.id === activeTab)?.label || 'Selected'}) me abhi koi service nahi hai.`}
+                            : 'No services are active yet.'}
                     </p>
-                    {(activeTab !== 'all' || searchQuery) && (
+                    {searchQuery && (
                         <button
                             type="button"
-                            onClick={() => { setActiveTab('all'); setSearchQuery(''); }}
+                            onClick={() => setSearchQuery('')}
                             className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer transition-colors"
                         >
                             <span className="material-symbols-outlined text-[16px]">restart_alt</span>
