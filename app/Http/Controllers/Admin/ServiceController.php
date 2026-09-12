@@ -19,7 +19,23 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::withCount('requests')->ordered()->get()
+        $services = Service::withCount('requests')
+            ->whereNotIn('slug', [
+                'aadhaar-pvc-card',
+                'aadhar-pvc-card',
+                'aadhar-pvc',
+                'aadhaar-pvc',
+                'aadhar-pdf-to-pvc',
+                'aadhar-pdf-to-pvc-instant',
+                'pdf-to-pvc-instant',
+            ])
+            ->where('slug', 'not like', '%aadhar%pvc%')
+            ->where('slug', 'not like', '%aadhaar%pvc%')
+            ->where('name', 'not like', '%Aadhaar%PVC%')
+            ->where('name', 'not like', '%Aadhar%PVC%')
+            ->where('name', 'not like', '%pdf%to%pvc%')
+            ->ordered()
+            ->get()
             ->map(fn (Service $service) => [...$service->toArray(), 'logo_url' => $service->logoUrl()]);
 
         return Inertia::render('Admin/Services/Index', [

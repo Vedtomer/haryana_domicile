@@ -34,7 +34,7 @@ class PdfConverterResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->can('view_any_pdf::converter');
+        return false;
     }
 
     protected static ?string $modelLabel = 'PDF Converter';
@@ -102,14 +102,12 @@ class PdfConverterResource extends Resource
             ->label('Download Front')
             ->icon('heroicon-o-arrow-down-tray')
             ->color('success')
-            ->url(fn(PdfConverter $record) => asset('storage/' . $record->front_image_path))
-            ->openUrlInNewTab(),
+            ->url(fn(PdfConverter $record) => route('admin.pdf-converters.download', ['record' => $record, 'type' => 'front'])),
             Tables\Actions\Action::make('download_back')
             ->label('Download Back')
             ->icon('heroicon-o-arrow-down-tray')
             ->color('success')
-            ->url(fn(PdfConverter $record) => asset('storage/' . $record->back_image_path))
-            ->openUrlInNewTab(),
+            ->url(fn(PdfConverter $record) => route('admin.pdf-converters.download', ['record' => $record, 'type' => 'back'])),
             Tables\Actions\DeleteAction::make(),
         ])
             ->bulkActions([

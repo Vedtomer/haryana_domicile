@@ -181,7 +181,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Smart PVC Card Maker',
                 'slug' => 'pvc-card-maker',
-                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
+                'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Ayushman, Voter, PAN, e-Shram PDFs.',
                 'icon' => '🪪',
                 'coin_cost' => 20,
                 'kind' => Service::KIND_MODULE,
@@ -201,20 +201,6 @@ class ServiceSeeder extends Seeder
                 'kind' => Service::KIND_MODULE,
                 'module_key' => 'haryana_familyid_pvc',
                 'sort_order' => 15,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PUBLIC,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
-                'name' => 'Aadhaar PVC Card Maker',
-                'slug' => 'aadhaar-pvc-card',
-                'description' => 'Generate Print-Ready PVC Front & Back Card from e-Aadhaar PDF.',
-                'icon' => '🔍',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'aadhaar_pvc',
-                'sort_order' => 16,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
                 'is_premium' => false,
@@ -427,7 +413,24 @@ class ServiceSeeder extends Seeder
             'mobile-to-details', // the old one
             'aadhar-update',
             'tenth-passbook',
+            'aadhaar-pvc-card',
+            'aadhar-pvc-card',
+            'aadhar-pvc',
+            'aadhaar-pvc',
+            'aadhar-pdf-to-pvc',
+            'aadhar-pdf-to-pvc-instant',
+            'pdf-to-pvc-instant',
         ];
-        Service::whereIn('slug', $oldSlugs)->orWhere('module_key', 'tenth_passbook')->delete();
+        Service::whereIn('slug', $oldSlugs)
+            ->orWhere('module_key', 'tenth_passbook')
+            ->orWhere('module_key', 'aadhaar_pvc')
+            ->orWhere('module_key', 'aadhar_pvc')
+            ->orWhere('name', 'like', '%Aadhaar%PVC%')
+            ->orWhere('name', 'like', '%Aadhar%PVC%')
+            ->orWhere('name', 'like', '%pdf%to%pvc%')
+            ->orWhere('slug', 'like', '%aadhar%pvc%')
+            ->orWhere('slug', 'like', '%aadhaar%pvc%')
+            ->orWhere('slug', 'like', '%pdf%to%pvc%')
+            ->delete();
     }
 }

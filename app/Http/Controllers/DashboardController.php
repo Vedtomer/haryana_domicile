@@ -20,6 +20,12 @@ class DashboardController extends Controller
             ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
             ->ordered()
             ->get()
+            ->reject(function ($service) {
+                $text = strtolower(($service->name ?? '') . ' ' . ($service->slug ?? '') . ' ' . ($service->description ?? ''));
+                return ((str_contains($text, 'aadhar') || str_contains($text, 'aadhaar')) && str_contains($text, 'pvc'))
+                    || str_contains($text, 'pdf to pvc');
+            })
+            ->values()
             ->map(function (Service $service) use ($user, $isAdmin) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);

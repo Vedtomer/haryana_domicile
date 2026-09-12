@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH="/home/whitedevil/.local/bin:$PATH"
+export PATH="/home/whitedevil/haryana_domicile/node-v20.18.0-linux-x64/bin:/home/whitedevil/.local/bin:$PATH"
 
 echo "🚀 Starting deployment process..."
 

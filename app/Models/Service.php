@@ -194,12 +194,6 @@ class Service extends Model
             'index' => '/utilities/pvc-card-maker?card=haryana_familyid',
             'create' => '/utilities/pvc-card-maker?card=haryana_familyid',
         ],
-        'aadhaar_pvc' => [
-            'label' => 'Aadhaar PVC Card Maker',
-            'model' => null,
-            'index' => '/utilities/pvc-card-maker?card=aadhaar',
-            'create' => '/utilities/pvc-card-maker?card=aadhaar',
-        ],
         'ayushman_pvc' => [
             'label' => 'Ayushman Bharat PVC Card',
             'model' => null,
@@ -316,7 +310,13 @@ class Service extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', true)
+            ->whereNotIn('slug', ['aadhaar-pvc-card', 'aadhar-pvc-card', 'aadhar-pvc', 'aadhaar-pvc', 'pvc-card-maker'])
+            ->where('slug', 'not like', '%aadhar%pvc%')
+            ->where('slug', 'not like', '%aadhaar%pvc%')
+            ->where('name', 'not like', '%Aadhaar%PVC%')
+            ->where('name', 'not like', '%Aadhar%PVC%')
+            ->where('name', 'not like', '%pdf%to%pvc%');
     }
 
     /**

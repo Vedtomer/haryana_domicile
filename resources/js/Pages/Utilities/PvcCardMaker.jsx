@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, isConfigured: initialConfigured, apiKey: initialApiKey }) {
     const { auth } = usePage().props;
-    const [selectedCardKey, setSelectedCardKey] = useState(defaultCard || 'aadhaar');
+    const [selectedCardKey, setSelectedCardKey] = useState(defaultCard || (cards && cards.length > 0 ? cards[0].key : 'haryana_familyid'));
     const [file, setFile] = useState(null);
     const [password, setPassword] = useState('');
     const [phoneOption, setPhoneOption] = useState('false');
@@ -109,12 +109,55 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
         }
     };
 
-    const downloadImage = (url, filename) => {
+    const downloadImage = async (url, filename) => {
         if (!url) return;
+
+        // 1. Try client-side fetch -> Blob -> URL.createObjectURL
+        // This is fastest and forces pure native download without browser preview
+        try {
+            const response = await fetch(url, { mode: 'cors' });
+            if (response.ok) {
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename || 'card.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+                return;
+            }
+        } catch (e) {
+            // CORS restriction on CDN, continue to backend proxy
+        }
+
+        // 2. Fallback to backend proxy with forced Content-Disposition: attachment
+        const proxyUrl = `/utilities/download-card-asset?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename || 'card.png')}`;
+
+        // Attempt fetch from proxy as blob to guarantee same-origin direct download
+        try {
+            const proxyRes = await fetch(proxyUrl);
+            if (proxyRes.ok) {
+                const proxyBlob = await proxyRes.blob();
+                const blobUrl = window.URL.createObjectURL(proxyBlob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename || 'card.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+                return;
+            }
+        } catch (e) {
+            // If fetch fails, proceed to anchor click fallback
+        }
+
+        // 3. Anchor click fallback on attachment endpoint (no target="_blank", downloads directly)
         const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.download = filename || 'pvc_card.png';
+        link.href = proxyUrl;
+        link.download = filename || 'card.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -469,15 +512,14 @@ export default function PvcCardMaker({ cards, defaultCard, userCoins, isAdmin, i
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <a
-                                        href={result.cards[0].a4}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                                    <button
+                                        type="button"
+                                        onClick={() => downloadImage(result.cards[0].a4, `${selectedCardKey}_a4_sheet.pdf`)}
+                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
                                     >
                                         <span className="material-symbols-outlined text-sm">download</span>
                                         Download A4 File
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         )}

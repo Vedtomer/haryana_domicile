@@ -17,15 +17,6 @@ class IdCardStoreService
             'coin_cost' => 20,
             'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID PDF',
         ],
-        'aadhaar' => [
-            'name' => 'Aadhaar PVC Card',
-            'endpoint' => '/card/make_aadhaar',
-            'accepts_password' => true,
-            'accepts_phone' => true,
-            'icon' => 'fingerprint',
-            'coin_cost' => 20,
-            'description' => 'Generate PVC Card from e-Aadhaar PDF with password support',
-        ],
         'ayushman' => [
             'name' => 'Ayushman Bharat Card',
             'endpoint' => '/card/make_ayushman',
@@ -153,11 +144,7 @@ class IdCardStoreService
         if (!empty($extraParams['password'])) {
             $postFields['password'] = $extraParams['password'];
         }
-        if ($cardKey === 'aadhaar') {
-            $isPhone = !empty($extraParams['phone']) && in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);
-            $postFields['phone'] = $isPhone ? 'true' : 'false';
-            $postFields['new_design'] = !empty($extraParams['new_design']) ? 'true' : 'false';
-        } elseif ($cardKey === 'driving_licence') {
+        if ($cardKey === 'driving_licence') {
             $postFields['relation'] = $extraParams['relation'] ?? 'DL No';
         } elseif (isset($extraParams['phone'])) {
             $isPhone = in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);

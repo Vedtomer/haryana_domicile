@@ -11,6 +11,12 @@ Route::get('/', function () {
     $services = \App\Models\Service::active()
         ->ordered()
         ->get()
+        ->reject(function ($service) {
+            $text = strtolower(($service->name ?? '') . ' ' . ($service->slug ?? '') . ' ' . ($service->description ?? ''));
+            return ((str_contains($text, 'aadhar') || str_contains($text, 'aadhaar')) && str_contains($text, 'pvc'))
+                || str_contains($text, 'pdf to pvc');
+        })
+        ->values()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
@@ -55,6 +61,27 @@ Route::get('/migrate-db', function () {
         } catch (\Throwable $se2) {
             $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
         }
+
+        try {
+            \App\Models\Service::where('slug', 'aadhaar-pvc-card')
+                ->orWhere('slug', 'aadhar-pvc-card')
+                ->orWhere('slug', 'aadhar-pvc')
+                ->orWhere('slug', 'aadhaar-pvc')
+                ->orWhere('slug', 'aadhar-pdf-to-pvc')
+                ->orWhere('slug', 'aadhar-pdf-to-pvc-instant')
+                ->orWhere('slug', 'pdf-to-pvc-instant')
+                ->orWhere('module_key', 'aadhaar_pvc')
+                ->orWhere('module_key', 'aadhar_pvc')
+                ->orWhere('name', 'like', '%Aadhaar%PVC%')
+                ->orWhere('name', 'like', '%Aadhar%PVC%')
+                ->orWhere('name', 'like', '%Aadhar%pdf%to%pvc%')
+                ->orWhere('name', 'like', '%Aadhaar%pdf%to%pvc%')
+                ->orWhere('name', 'like', '%pdf%to%pvc%')
+                ->orWhere('slug', 'like', '%aadhar%pvc%')
+                ->orWhere('slug', 'like', '%aadhaar%pvc%')
+                ->orWhere('slug', 'like', '%pdf%to%pvc%')
+                ->delete();
+        } catch (\Throwable $svcEx) {}
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
@@ -229,7 +256,7 @@ Route::get('/force-add-pvc-services', function () {
         [
             'name' => 'Smart PVC Card Maker',
             'slug' => 'pvc-card-maker',
-            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Aadhaar, Ayushman, Voter, PAN, e-Shram PDFs.',
+            'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Ayushman, Voter, PAN, e-Shram PDFs.',
             'icon' => '🪪',
             'coin_cost' => 20,
             'kind' => \App\Models\Service::KIND_MODULE,
@@ -249,20 +276,6 @@ Route::get('/force-add-pvc-services', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'haryana_familyid_pvc',
             'sort_order' => 15,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ],
-        [
-            'name' => 'Aadhaar PVC Card Maker',
-            'slug' => 'aadhaar-pvc-card',
-            'description' => 'Generate Print-Ready PVC Front & Back Card from e-Aadhaar PDF.',
-            'icon' => '🔍',
-            'coin_cost' => 20,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'aadhaar_pvc',
-            'sort_order' => 16,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -418,6 +431,24 @@ Route::get('/force-add-pvc-services', function () {
     }
 
     \App\Models\Service::where('slug', 'aadhar-update')->delete();
+    \App\Models\Service::where('slug', 'aadhaar-pvc-card')
+        ->orWhere('slug', 'aadhar-pvc-card')
+        ->orWhere('slug', 'aadhar-pvc')
+        ->orWhere('slug', 'aadhaar-pvc')
+        ->orWhere('slug', 'aadhar-pdf-to-pvc')
+        ->orWhere('slug', 'aadhar-pdf-to-pvc-instant')
+        ->orWhere('slug', 'pdf-to-pvc-instant')
+        ->orWhere('module_key', 'aadhaar_pvc')
+        ->orWhere('module_key', 'aadhar_pvc')
+        ->orWhere('name', 'like', '%Aadhaar%PVC%')
+        ->orWhere('name', 'like', '%Aadhar%PVC%')
+        ->orWhere('name', 'like', '%Aadhar%pdf%to%pvc%')
+        ->orWhere('name', 'like', '%Aadhaar%pdf%to%pvc%')
+        ->orWhere('name', 'like', '%pdf%to%pvc%')
+        ->orWhere('slug', 'like', '%aadhar%pvc%')
+        ->orWhere('slug', 'like', '%aadhaar%pvc%')
+        ->orWhere('slug', 'like', '%pdf%to%pvc%')
+        ->delete();
 
     return 'PVC Card Maker services added successfully and made PUBLIC! Please check your dashboard.';
 });
@@ -695,6 +726,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'index'])->name('utilities.pvc-card-maker');
     Route::post('/utilities/pvc-card-maker/generate', [\App\Http\Controllers\PvcCardMakerController::class, 'generate'])->name('utilities.pvc-card-maker.generate');
     Route::post('/utilities/pvc-card-maker/save-api-key', [\App\Http\Controllers\PvcCardMakerController::class, 'saveApiKey'])->name('utilities.pvc-card-maker.save-api-key');
+    Route::get('/utilities/download-card-asset', [\App\Http\Controllers\PvcCardMakerController::class, 'downloadAsset'])->name('utilities.download-card-asset');
 
     // Make Driving Licence (Cards)
     Route::get('/utilities/make-driving-licence-card', [\App\Http\Controllers\DrivingLicenceCardController::class, 'index'])->name('utilities.make-driving-licence-card');
@@ -828,6 +860,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         Route::resource('tenth-passbook', \App\Http\Controllers\Admin\TenthPassbookController::class);
         Route::get('tenth-passbook/{tenth_passbook}/print', [\App\Http\Controllers\Admin\TenthPassbookController::class, 'print'])->name('tenth-passbook.print'); 
+
+        // Aadhaar PDF Converter direct image download
+        Route::get('pdf-converters/{record}/download/{type}', [\App\Http\Controllers\PvcCardMakerController::class, 'downloadPdfConverterImage'])->name('pdf-converters.download'); 
 
         // QR to Print (Smart Counter)
         Route::get('qr-to-print', [\App\Http\Controllers\QrPrintController::class, 'index'])->name('qr-to-print.index');

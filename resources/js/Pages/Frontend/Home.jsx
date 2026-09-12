@@ -50,8 +50,13 @@ export default function Home({ services = [] }) {
 
     const isLoggedIn = Boolean(auth?.user);
 
+    const isAadhaarPvc = (service) => {
+        const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.kind || ''}`.toLowerCase();
+        return ((text.includes('aadhar') || text.includes('aadhaar')) && text.includes('pvc')) || text.includes('pdf to pvc');
+    };
+
     // Filter services by active category tab
-    const filteredServices = services.filter((service) => matchesCategory(service, activeTab));
+    const filteredServices = services.filter((service) => !isAadhaarPvc(service) && matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
         if (!isLoggedIn) {
@@ -96,7 +101,7 @@ export default function Home({ services = [] }) {
                         </h1>
                         
                         <p className="mt-3 max-w-2xl font-body-lg text-body-lg text-on-surface-variant mx-auto mb-8 leading-relaxed">
-                            Unified portal for PAN Cards, Aadhaar PVC, Driving Licence, Vehicle RC, Domicile Certificate, Marriage Registration, and utility services.
+                            Unified portal for PAN Cards, PVC Cards, Driving Licence, Vehicle RC, Domicile Certificate, Marriage Registration, and utility services.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row justify-center gap-4">

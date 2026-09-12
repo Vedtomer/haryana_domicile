@@ -71,11 +71,52 @@ export default function DrivingLicenceCard({ service, coinCost, userCoins, isAdm
         }
     };
 
-    const downloadFile = (url, filename) => {
+    const downloadFile = async (url, filename) => {
         if (!url) return;
+
+        // 1. Try client-side fetch -> Blob -> URL.createObjectURL
+        try {
+            const response = await fetch(url, { mode: 'cors' });
+            if (response.ok) {
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename || 'driving_licence_card.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+                return;
+            }
+        } catch (e) {
+            // CORS restriction on CDN, continue to backend proxy
+        }
+
+        // 2. Fallback to backend proxy with forced Content-Disposition: attachment
+        const proxyUrl = `/utilities/download-card-asset?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename || 'driving_licence_card.png')}`;
+
+        try {
+            const proxyRes = await fetch(proxyUrl);
+            if (proxyRes.ok) {
+                const proxyBlob = await proxyRes.blob();
+                const blobUrl = window.URL.createObjectURL(proxyBlob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename || 'driving_licence_card.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+                return;
+            }
+        } catch (e) {
+            // If fetch fails, proceed to anchor click fallback
+        }
+
+        // 3. Anchor click fallback on attachment endpoint (no target="_blank", downloads directly)
         const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
+        link.href = proxyUrl;
         link.download = filename || 'driving_licence_card.png';
         document.body.appendChild(link);
         link.click();

@@ -47,14 +47,12 @@ class ViewPdfConverter extends ViewRecord
             ->label('Download Front')
             ->icon('heroicon-o-arrow-down-tray')
             ->color('success')
-            ->url(fn() => asset('storage/' . $this->record->front_image_path))
-            ->openUrlInNewTab(),
+            ->url(fn() => route('admin.pdf-converters.download', ['record' => $this->record, 'type' => 'front'])),
             \Filament\Actions\Action::make('download_back')
             ->label('Download Back')
             ->icon('heroicon-o-arrow-down-tray')
             ->color('success')
-            ->url(fn() => asset('storage/' . $this->record->back_image_path))
-            ->openUrlInNewTab(),
+            ->url(fn() => route('admin.pdf-converters.download', ['record' => $this->record, 'type' => 'back'])),
         ];
     }
 }

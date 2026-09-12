@@ -13,7 +13,6 @@ class PvcCardMakerController extends Controller
 {
     public const CARD_SLUG_MAP = [
         'haryana_familyid' => 'haryana-familyid-pvc',
-        'aadhaar'          => 'aadhaar-pvc-card',
         'ayushman'         => 'ayushman-pvc',
         'voter_epic'       => 'voter-pvc-card',
         'pan_nsdl'         => 'pan-nsdl-pvc',
@@ -31,7 +30,7 @@ class PvcCardMakerController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $selectedCard = $request->query('card', 'aadhaar');
+        $selectedCard = $request->query('card', 'haryana_familyid');
         if ($selectedCard === 'driving_licence' || $selectedCard === 'driving-licence-pvc') {
             return redirect()->route('utilities.make-driving-licence-card');
         }
@@ -174,6 +173,118 @@ class PvcCardMakerController extends Controller
             'a4_common' => $result['a4_common'] ?? null,
             'sample'    => $result['sample'] ?? false,
             'userCoins' => $user->fresh()->coins,
+        ]);
+    }
+
+    /**
+     * Proxy asset download with forced Content-Disposition: attachment
+     * so that browser directly downloads the file instead of previewing it in a new tab.
+     */
+    public function downloadAsset(Request $request)
+    {
+        $url = $request->query('url');
+        $rawFilename = $request->query('filename') ?: 'card_asset.png';
+
+        if (!$url) {
+            abort(400, 'URL parameter is missing.');
+        }
+
+        // Sanitize filename to avoid header injection and path traversal
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $rawFilename);
+        if (!pathinfo($safeFilename, PATHINFO_EXTENSION)) {
+            $safeFilename .= '.png';
+        }
+
+        // Check if the URL is a local public storage path or absolute URL
+        $parsed = parse_url($url);
+        $host = $parsed['host'] ?? null;
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+
+        if (!$host || $host === $appHost || $host === 'localhost') {
+            $path = $parsed['path'] ?? $url;
+            $cleanPath = preg_replace('#^/?storage/#', '', $path);
+            $localCandidate = storage_path('app/public/' . $cleanPath);
+            if (file_exists($localCandidate)) {
+                return response()->download($localCandidate, $safeFilename, [
+                    'Content-Disposition' => 'attachment; filename="' . $safeFilename . '"',
+                ]);
+            }
+        }
+
+        // Allowed remote hosts
+        $allowedHosts = [
+            'idmaker.mfcdn.in',
+            'api.idcard.store',
+        ];
+
+        $isAllowed = false;
+        foreach ($allowedHosts as $allowed) {
+            if ($host === $allowed || ($host && str_ends_with($host, '.' . $allowed))) {
+                $isAllowed = true;
+                break;
+            }
+        }
+
+        if (!$isAllowed) {
+            abort(403, 'Unauthorized domain for download.');
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(60)->get($url);
+            if (!$response->successful()) {
+                abort(404, 'File could not be fetched from remote server.');
+            }
+
+            $contentType = $response->header('Content-Type') ?: 'application/octet-stream';
+            $content = $response->body();
+
+            return response($content, 200, [
+                'Content-Type'        => $contentType,
+                'Content-Disposition' => 'attachment; filename="' . $safeFilename . '"',
+                'Content-Length'      => strlen($content),
+                'Cache-Control'       => 'no-cache, no-store, must-revalidate',
+                'Pragma'              => 'no-cache',
+                'Expires'             => '0',
+            ]);
+        } catch (\Throwable $e) {
+            abort(500, 'Download failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Download front or back image for Filament Aadhaar PDF Converter
+     */
+    public function downloadPdfConverterImage(\App\Models\PdfConverter $record, string $type)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            abort(401);
+        }
+
+        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $record->user_id !== $user->id) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $field = ($type === 'back') ? 'back_image_path' : 'front_image_path';
+        $relative = $record->$field;
+
+        if (!$relative) {
+            abort(404, 'Image path not recorded.');
+        }
+
+        $path = storage_path('app/public/' . $relative);
+        if (!file_exists($path)) {
+            abort(404, 'File not found on server.');
+        }
+
+        $ext = pathinfo($path, PATHINFO_EXTENSION) ?: 'png';
+        $baseName = pathinfo($record->original_filename ?: 'aadhar_card', PATHINFO_FILENAME);
+        $safeBase = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $baseName) ?: 'aadhar_card';
+        $filename = "{$safeBase}_{$type}.{$ext}";
+
+        return response()->download($path, $filename, [
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Type'        => 'image/' . ($ext === 'jpg' ? 'jpeg' : $ext),
         ]);
     }
 }

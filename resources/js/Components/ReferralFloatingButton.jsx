@@ -41,7 +41,7 @@ export default function ReferralFloatingButton() {
     }, [isOpen]);
 
     const shareMessage = encodeURIComponent(
-        `Namaste! CSP Jaankari portal join karein aur sabhi digital services (PAN Card, Aadhaar PVC, Driving Licence, Birth/Marriage Certificate, Passport Apply) ek hi jagah paayein.\n\nMere referral link se register karein:\n${referralLink}\n\nReferral Code: ${referralCode}`
+        `Namaste! CSP Jaankari portal join karein aur sabhi digital services (PAN Card, Smart PVC Cards, Driving Licence, Birth/Marriage Certificate, Passport Apply) ek hi jagah paayein.\n\nMere referral link se register karein:\n${referralLink}\n\nReferral Code: ${referralCode}`
     );
 
     return (
