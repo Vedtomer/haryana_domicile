@@ -241,7 +241,7 @@ const matchesCategory = (service, catId) => {
         return text.includes('print') || text.includes('certificate') || text.includes('marriage') || 
                text.includes('birth') || text.includes('domicile') || text.includes('saral') || 
                text.includes('bill') || text.includes('electricity') || text.includes('passport') ||
-               text.includes('passbook');
+               text.includes('passbook') || text.includes('kundli');
     }
     return true;
 };

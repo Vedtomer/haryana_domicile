@@ -388,6 +388,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Kundli Generator (Janam Kundli)',
+                'slug' => 'kundli-generator',
+                'description' => 'Generate and print detailed Janam Kundli with charts & planetary predictions.',
+                'icon' => '🪐',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'kundli_generator',
+                'sort_order' => 30,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {

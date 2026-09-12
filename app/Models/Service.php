@@ -272,6 +272,20 @@ class Service extends Model
             'index' => '/utilities/verify-ifsc-code',
             'create' => '/utilities/verify-ifsc-code',
         ],
+        'kundli_generator' => [
+            'label' => 'Kundli Generator (Janam Kundli)',
+            'icon' => '🪐',
+            'model' => null,
+            'index' => '/utilities/kundli',
+            'create' => '/utilities/kundli',
+        ],
+        'make_kundli' => [
+            'label' => 'Kundli Generator (Janam Kundli)',
+            'icon' => '🪐',
+            'model' => null,
+            'index' => '/utilities/kundli',
+            'create' => '/utilities/kundli',
+        ],
 
     ];
 

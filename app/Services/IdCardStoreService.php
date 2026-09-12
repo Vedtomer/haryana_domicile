@@ -391,6 +391,84 @@ class IdCardStoreService
     }
 
     /**
+     * Generate Kundli HTML via idcard.store API
+     */
+    public function generateKundli(array $params): array
+    {
+        if (!$this->isConfigured()) {
+            return [
+                'success' => false,
+                'message' => 'IDCard.Store API Key is not configured. Please contact administrator.'
+            ];
+        }
+
+        $url = $this->baseUrl . '/other/make_kundli';
+
+        try {
+            $postFields = [
+                'name'   => (string) ($params['name'] ?? ''),
+                'gender' => (string) ($params['gender'] ?? 'male'),
+                'day'    => (string) ($params['day'] ?? 1),
+                'month'  => (string) ($params['month'] ?? 1),
+                'year'   => (string) ($params['year'] ?? 2000),
+                'hour'   => (string) ($params['hour'] ?? 12),
+                'min'    => (string) ($params['min'] ?? 0),
+                'sec'    => (string) ($params['sec'] ?? 0),
+                'lang'   => (string) ($params['lang'] ?? 2),
+                'place'  => (string) ($params['place'] ?? 'Delhi, NCT, IN'),
+                'tzone'  => (string) ($params['tzone'] ?? 5.5),
+                'lat'    => (string) ($params['lat'] ?? 28.6139),
+                'lon'    => (string) ($params['lon'] ?? 77.2090),
+            ];
+
+            $response = Http::timeout(60)
+                ->connectTimeout(10)
+                ->withHeaders([
+                    'Authorization' => $this->apiKey,
+                ])
+                ->asMultipart()
+                ->post($url, collect($postFields)->map(fn($v, $k) => ['name' => $k, 'contents' => $v])->values()->all());
+
+            if (!$response->successful()) {
+                Log::error('IdCardStore Kundli error response', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                $errorData = $response->json();
+                $msg = $errorData['message'] ?? $errorData['error'] ?? 'API error (HTTP ' . $response->status() . ')';
+                return [
+                    'success' => false,
+                    'message' => 'Kundli API error: ' . $msg
+                ];
+            }
+
+            $data = $response->json();
+            if (empty($data['cards']) || empty($data['cards'][0]['html'])) {
+                return [
+                    'success' => false,
+                    'message' => 'Kundli could not be generated. Please check birth details and try again.'
+                ];
+            }
+
+            $rawHtml = $data['cards'][0]['html'];
+            $htmlUrl = $this->ensureCdnUrl($rawHtml);
+
+            return [
+                'success'  => true,
+                'html_url' => $htmlUrl,
+                'sample'   => $data['sample'] ?? false,
+                'message'  => 'Kundli generated successfully!'
+            ];
+        } catch (\Throwable $e) {
+            Log::error('IdCardStore Kundli Exception: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return [
+                'success' => false,
+                'message' => 'Network/Server error while generating Kundli: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Format relative path into absolute CDN URL.
      */
     protected function ensureCdnUrl(?string $path): ?string

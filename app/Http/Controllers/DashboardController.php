@@ -22,7 +22,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function (Service $service) use ($user, $isAdmin) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator']);
 
             return [
                 'id' => $service->id,

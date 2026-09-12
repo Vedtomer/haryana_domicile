@@ -13,7 +13,7 @@ Route::get('/', function () {
         ->get()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator']);
 
             return [
                 'id' => $service->id,
@@ -705,6 +705,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/driving-licence-card', function () {
         return redirect()->route('utilities.make-driving-licence-card');
     });
+
+    // Kundli Generator (Janam Kundli)
+    Route::get('/utilities/kundli', [\App\Http\Controllers\KundliController::class, 'index'])->name('utilities.kundli');
+    Route::post('/utilities/kundli/generate', [\App\Http\Controllers\KundliController::class, 'generate'])->name('utilities.kundli.generate');
+    Route::get('/utilities/kundli/cities', [\App\Http\Controllers\KundliController::class, 'searchCities'])->name('utilities.kundli.cities');
+    Route::get('/utilities/kundli/download', [\App\Http\Controllers\KundliController::class, 'downloadAsset'])->name('utilities.kundli.download');
 
     Route::get('/utilities/vehicle-details', function () {
         return Inertia::render('Utilities/VehicleDetails');
