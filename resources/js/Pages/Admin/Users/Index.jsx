@@ -79,7 +79,6 @@ export default function Index({ users }) {
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral Info</th>
-                                <th className="px-6 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Presence</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Coins</th>
                                 <th className="px-6 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
@@ -90,17 +89,9 @@ export default function Index({ users }) {
                             {users.data.map((user) => (
                                 <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-2.5">
-                                            <span
-                                                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                                                    user.is_online ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'
-                                                }`}
-                                                title={user.is_online ? 'Online now' : `Last seen: ${user.last_seen_human}`}
-                                            />
-                                            <span className="text-sm font-semibold text-slate-800 dark:text-white">
-                                                {user.name || <span className="text-slate-400 italic">No Name</span>}
-                                            </span>
-                                        </div>
+                                        <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                                            {user.name || <span className="text-slate-400 italic">No Name</span>}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-slate-700 dark:text-slate-200">{user.email || '—'}</div>
@@ -149,22 +140,6 @@ export default function Index({ users }) {
                                                 </span>
                                             )}
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                                        {user.is_online ? (
-                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-2xs">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                                Online
-                                            </span>
-                                        ) : (
-                                            <span
-                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-                                                title={`Last activity: ${user.last_seen_human}`}
-                                            >
-                                                <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                                                {user.last_seen_human || 'Offline'}
-                                            </span>
-                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
