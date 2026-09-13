@@ -19,7 +19,9 @@
         <meta property="og:title" content="CSP Jaankari - All Online Portal Services">
         <meta property="og:description" content="CSP Jaankari Portal - Quick registration, instant print services, and all online portal utilities.">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:image" content="{{ asset('logo.png') }}">
+        <meta property="og:image" content="{{ asset('og-image.jpg') }}">
+        <meta property="og:image:secure_url" content="{{ asset('og-image.jpg') }}">
+        <meta property="og:image:type" content="image/jpeg">
         <meta property="og:image:width" content="512">
         <meta property="og:image:height" content="512">
 
@@ -27,7 +29,7 @@
         <meta name="twitter:card" content="summary">
         <meta name="twitter:title" content="CSP Jaankari - All Online Portal Services">
         <meta name="twitter:description" content="CSP Jaankari Portal - Quick registration, instant print services, and all online portal utilities.">
-        <meta name="twitter:image" content="{{ asset('logo.png') }}">
+        <meta name="twitter:image" content="{{ asset('og-image.jpg') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
