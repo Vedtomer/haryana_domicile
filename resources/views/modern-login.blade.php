@@ -113,7 +113,7 @@
                 <div class="space-y-2">
                     <div class="flex items-center justify-between px-1">
                         <label class="text-sm font-medium text-white/90">Password</label>
-                        <a href="#" class="text-xs text-indigo-200 hover:text-white transition-colors">Forgot Password?</a>
+                        <a href="/forgot-password" class="text-xs text-indigo-200 hover:text-white transition-colors">Forgot Password?</a>
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/50 group-focus-within:text-white transition-colors">

@@ -330,6 +330,186 @@ class AuthController extends Controller
         return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
     }
 
+    public function showForgotPassword()
+    {
+        return Inertia::render('Frontend/ForgotPassword');
+    }
+
+    public function sendForgotPasswordOtp(Request $request)
+    {
+        $request->validate([
+            'login' => 'required|string',
+        ], [
+            'login.required' => 'Please enter your registered email or mobile number.',
+        ]);
+
+        $loginInput = trim($request->login);
+
+        $user = \App\Models\User::where('email', $loginInput)
+            ->orWhere('phone', $loginInput)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this email or mobile number.',
+                'errors'  => [
+                    'login' => ['No account found with this email or mobile number. Please check and try again.'],
+                ],
+            ], 422);
+        }
+
+        if (empty($user->email)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No registered email found for this account. Please contact admin support.',
+                'errors'  => [
+                    'login' => ['No registered email found for this account. Please contact admin support.'],
+                ],
+            ], 422);
+        }
+
+        $email = strtolower(trim($user->email));
+        $cacheKey = 'pwd_reset_otp_' . md5($email);
+        $cooldownKey = 'pwd_reset_cooldown_' . md5($email);
+
+        // Check 60-second cooldown
+        if (\Illuminate\Support\Facades\Cache::store('file')->has($cooldownKey)) {
+            $remaining = (int) \Illuminate\Support\Facades\Cache::store('file')->get($cooldownKey) - time();
+            if ($remaining > 0) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => "Please wait {$remaining} seconds before requesting a new OTP.",
+                    'cooldown' => $remaining,
+                ], 429);
+            }
+        }
+
+        // Generate 6-digit OTP
+        $otp = (string) random_int(100000, 999999);
+
+        // Store OTP in File Cache for 10 minutes (600 seconds)
+        \Illuminate\Support\Facades\Cache::store('file')->put($cacheKey, [
+            'otp'        => $otp,
+            'user_id'    => $user->id,
+            'email'      => $email,
+            'created_at' => time(),
+        ], 600);
+
+        // Set 60-second cooldown
+        \Illuminate\Support\Facades\Cache::store('file')->put($cooldownKey, time() + 60, 60);
+
+        $mailSent = false;
+        $lastError = '';
+
+        // Attempt 1: Default SMTP (Port 587 TLS)
+        try {
+            \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
+                ->send(new \App\Mail\PasswordResetOtpMail($otp, $user->name));
+            $mailSent = true;
+        } catch (\Throwable $e) {
+            $lastError = $e->getMessage();
+            \Illuminate\Support\Facades\Log::warning('Password reset OTP email (587 TLS) failed, retrying on 465 SSL: ' . $lastError);
+        }
+
+        // Attempt 2: Fallback to Port 465 SSL
+        if (!$mailSent) {
+            try {
+                config([
+                    'mail.mailers.smtp.port' => 465,
+                    'mail.mailers.smtp.scheme' => 'smtps',
+                    'mail.mailers.smtp.encryption' => 'ssl',
+                ]);
+                app('mail.manager')->purge('smtp');
+                \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
+                    ->send(new \App\Mail\PasswordResetOtpMail($otp, $user->name));
+                $mailSent = true;
+            } catch (\Throwable $e2) {
+                $lastError = $e2->getMessage();
+                \Illuminate\Support\Facades\Log::error('Password reset OTP email (465 SSL) also failed: ' . $lastError);
+            }
+        }
+
+        if (!$mailSent) {
+            \Illuminate\Support\Facades\Cache::store('file')->forget($cacheKey);
+            \Illuminate\Support\Facades\Cache::store('file')->forget($cooldownKey);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Email deliver karne me samasya aayi: ' . $lastError,
+            ], 500);
+        }
+
+        // Mask email for user privacy (e.g. v***r@gmail.com)
+        $parts = explode('@', $email);
+        $namePart = $parts[0];
+        $domainPart = $parts[1] ?? '';
+        if (strlen($namePart) <= 2) {
+            $maskedName = substr($namePart, 0, 1) . '*';
+        } else {
+            $maskedName = substr($namePart, 0, 1) . str_repeat('*', max(1, strlen($namePart) - 2)) . substr($namePart, -1);
+        }
+        $maskedEmail = $maskedName . '@' . $domainPart;
+
+        return response()->json([
+            'success'      => true,
+            'message'      => "OTP has been sent to your registered email ({$maskedEmail}).",
+            'masked_email' => $maskedEmail,
+            'cooldown'     => 60,
+        ]);
+    }
+
+    public function resetPasswordWithOtp(Request $request)
+    {
+        $request->validate([
+            'login'                 => 'required|string',
+            'otp'                   => 'required|string|size:6',
+            'password'              => 'required|string|min:4|confirmed',
+            'password_confirmation' => 'required|string',
+        ], [
+            'login.required'        => 'Please enter your registered email or mobile number.',
+            'otp.required'          => 'Please enter the 6-digit OTP.',
+            'otp.size'              => 'OTP must be exactly 6 digits.',
+            'password.required'     => 'Please enter a new password.',
+            'password.min'          => 'Password must be at least 4 characters long.',
+            'password.confirmed'    => 'Password confirmation does not match.',
+        ]);
+
+        $loginInput = trim($request->login);
+
+        $user = \App\Models\User::where('email', $loginInput)
+            ->orWhere('phone', $loginInput)
+            ->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'login' => 'No account found with this email or mobile number.',
+            ]);
+        }
+
+        $email = strtolower(trim($user->email));
+        $cacheKey = 'pwd_reset_otp_' . md5($email);
+        $cachedData = \Illuminate\Support\Facades\Cache::store('file')->get($cacheKey);
+
+        if (!$cachedData || !isset($cachedData['otp']) || trim($request->otp) !== trim($cachedData['otp'])) {
+            return back()->withErrors([
+                'otp' => 'Invalid or expired OTP code. Please request a new OTP.',
+            ]);
+        }
+
+        // Update password and raw_password
+        $newPassword = $request->password;
+        $user->password = \Illuminate\Support\Facades\Hash::make($newPassword);
+        $user->raw_password = $newPassword;
+        $user->save();
+
+        // Clear OTP and cooldown from cache
+        \Illuminate\Support\Facades\Cache::store('file')->forget($cacheKey);
+        \Illuminate\Support\Facades\Cache::store('file')->forget('pwd_reset_cooldown_' . md5($email));
+
+        return redirect('/login')->with('success', 'Aapka password successfully reset ho gaya hai! Naye password ke saath login karein.');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

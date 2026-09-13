@@ -436,6 +436,9 @@ Route::get('/captcha/refresh', [AuthController::class, 'refreshCaptcha'])->name(
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
 Route::post('/register/send-otp', [AuthController::class, 'sendOtp'])->name('register.send-otp')->middleware(['guest', 'throttle:6,1']);
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request')->middleware('guest');
+Route::post('/forgot-password/send-otp', [AuthController::class, 'sendForgotPasswordOtp'])->name('password.send-otp')->middleware(['guest', 'throttle:6,1']);
+Route::post('/forgot-password/reset', [AuthController::class, 'resetPasswordWithOtp'])->name('password.reset.post')->middleware(['guest', 'throttle:6,1']);
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Reactivation — no auth required (user is logged out)

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, Head, Link } from '@inertiajs/react';
+import { useForm, Head, Link, usePage } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
 import FooterParticles from '../../Components/FooterParticles';
 import axios from 'axios';
 
 export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
+    const { flash } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
         login: '',
         password: '',
@@ -82,6 +83,14 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                 <p className="text-xs text-on-surface-variant">Sign in to access your CSP services dashboard</p>
                             </div>
 
+                            {/* Flash Success Message */}
+                            {flash?.success && (
+                                <div className="mb-5 p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs font-semibold text-emerald-800 dark:text-emerald-300 flex items-start gap-2">
+                                    <span className="material-symbols-outlined text-emerald-600 text-base shrink-0 mt-0.5">check_circle</span>
+                                    <span className="leading-snug">{flash.success}</span>
+                                </div>
+                            )}
+
                             {/* Form */}
                             <form onSubmit={submit} className="flex flex-col gap-stack-md">
                                 <div className="flex flex-col gap-base">
@@ -102,7 +111,7 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                 <div className="flex flex-col gap-base">
                                     <div className="flex justify-between items-center">
                                         <label className="font-label-md text-label-md text-on-surface" htmlFor="password">Password</label>
-                                        <a className="font-label-sm text-label-sm text-secondary hover:underline" href="#">Forgot Password?</a>
+                                        <Link className="font-label-sm text-label-sm text-secondary hover:underline" href="/forgot-password">Forgot Password?</Link>
                                     </div>
                                     <div className="relative flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200">
                                         <input 
