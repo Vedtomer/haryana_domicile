@@ -22,17 +22,33 @@ class VehicleToMobileController extends Controller
         }
 
         $vehicleNo = $request->input('vehicle_number');
-        $vehicleNo = strtoupper(str_replace([' ', '-'], '', $vehicleNo));
+        $vehicleNo = strtoupper(trim(str_replace([' ', '-'], '', $vehicleNo)));
         
         $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&v2num=" . urlencode($vehicleNo);
 
         try {
-            $response = Http::connectTimeout(5)->timeout(15)->get($url);
+            $response = Http::connectTimeout(10)->timeout(30)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();
                 
-                if (isset($data['success']) && $data['success'] == true) {
+                // The API can return data inside 'data' object or top-level
+                $resData = (isset($data['data']) && is_array($data['data'])) ? $data['data'] : $data;
+
+                $isSuccess = false;
+                if (!empty($data['success']) && ($data['success'] === true || $data['success'] === 'true' || $data['success'] == 1)) {
+                    $isSuccess = true;
+                } elseif (!empty($resData['success']) && ($resData['success'] === true || $resData['success'] === 'true' || $resData['success'] == 1)) {
+                    $isSuccess = true;
+                } elseif (!empty($resData['mobile'])) {
+                    $isSuccess = true;
+                }
+
+                $mobile = $resData['mobile'] ?? $data['mobile'] ?? null;
+                $chassis = $resData['chassis_last5'] ?? $data['chassis_last5'] ?? $resData['chassis'] ?? $data['chassis'] ?? null;
+                $regNo = $resData['reg_no'] ?? $data['reg_no'] ?? $resData['regNo'] ?? $vehicleNo;
+
+                if ($isSuccess && !empty($mobile)) {
                     if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
                         $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle to Mobile: ' . strtoupper($vehicleNo));
                     }
@@ -49,11 +65,18 @@ class VehicleToMobileController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'mobile' => $data['mobile'] ?? 'Not Available',
-                        'chassis' => $data['chassis_last5'] ?? 'Not Available',
+                        'mobile' => $mobile,
+                        'chassis' => $chassis ?: 'Not Available',
+                        'reg_no' => $regNo,
                         'message' => 'Vehicle details found successfully.'
                     ]);
                 }
+
+                $failMsg = $data['message'] ?? $resData['message'] ?? 'Details not found for this Vehicle Number.';
+                return response()->json([
+                    'success' => false,
+                    'message' => $failMsg
+                ]);
             }
 
             return response()->json([
@@ -62,6 +85,7 @@ class VehicleToMobileController extends Controller
             ]);
             
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('VehicleToMobile API Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error communicating with the external server.'

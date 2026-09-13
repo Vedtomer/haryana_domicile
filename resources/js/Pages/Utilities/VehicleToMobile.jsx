@@ -9,6 +9,14 @@ export default function VehicleToMobile() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = (text) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -133,22 +141,45 @@ export default function VehicleToMobile() {
                                         </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="bg-white/60 dark:bg-slate-900/40 rounded-2xl p-5 border border-green-100 dark:border-green-800/20">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                        <div className="bg-white/70 dark:bg-slate-900/50 rounded-2xl p-5 border border-green-100 dark:border-green-800/30 shadow-xs">
                                             <div className="flex items-center gap-2 text-green-700 dark:text-green-400 mb-2">
-                                                <span className="material-symbols-outlined text-sm">phone_iphone</span>
-                                                <span className="text-sm font-bold uppercase tracking-wider">Mobile Number</span>
+                                                <span className="material-symbols-outlined text-base">directions_car</span>
+                                                <span className="text-xs font-bold uppercase tracking-wider">Vehicle Number</span>
                                             </div>
-                                            <div className="text-2xl font-black text-slate-800 dark:text-white font-mono bg-green-100/50 dark:bg-green-900/20 p-3 rounded-xl inline-block border border-green-200 dark:border-green-800/30 select-all">
+                                            <div className="text-xl font-black text-slate-800 dark:text-white font-mono bg-green-100/50 dark:bg-green-900/20 px-3 py-2.5 rounded-xl block border border-green-200 dark:border-green-800/30 select-all truncate">
+                                                {result.reg_no || vehicleNo}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white/70 dark:bg-slate-900/50 rounded-2xl p-5 border border-green-100 dark:border-green-800/30 shadow-xs">
+                                            <div className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400 mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-base">phone_iphone</span>
+                                                    <span className="text-xs font-bold uppercase tracking-wider">Mobile Number</span>
+                                                </div>
+                                                {result.mobile && result.mobile !== 'Not Available' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleCopy(result.mobile)}
+                                                        className="text-xs font-bold px-2 py-0.5 rounded-md bg-green-200 dark:bg-green-800/60 text-green-800 dark:text-green-200 hover:bg-green-300 transition-colors cursor-pointer"
+                                                        title="Copy Mobile Number"
+                                                    >
+                                                        {copied ? 'Copied!' : 'Copy'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="text-xl font-black text-slate-800 dark:text-white font-mono bg-green-100/50 dark:bg-green-900/20 px-3 py-2.5 rounded-xl block border border-green-200 dark:border-green-800/30 select-all truncate">
                                                 {result.mobile}
                                             </div>
                                         </div>
-                                        <div className="bg-white/60 dark:bg-slate-900/40 rounded-2xl p-5 border border-green-100 dark:border-green-800/20">
+
+                                        <div className="bg-white/70 dark:bg-slate-900/50 rounded-2xl p-5 border border-green-100 dark:border-green-800/30 shadow-xs">
                                             <div className="flex items-center gap-2 text-green-700 dark:text-green-400 mb-2">
-                                                <span className="material-symbols-outlined text-sm">settings</span>
-                                                <span className="text-sm font-bold uppercase tracking-wider">Chassis Last 5</span>
+                                                <span className="material-symbols-outlined text-base">settings</span>
+                                                <span className="text-xs font-bold uppercase tracking-wider">Chassis Last 5</span>
                                             </div>
-                                            <div className="text-2xl font-black text-slate-800 dark:text-white font-mono bg-green-100/50 dark:bg-green-900/20 p-3 rounded-xl inline-block border border-green-200 dark:border-green-800/30 select-all">
+                                            <div className="text-xl font-black text-slate-800 dark:text-white font-mono bg-green-100/50 dark:bg-green-900/20 px-3 py-2.5 rounded-xl block border border-green-200 dark:border-green-800/30 select-all truncate">
                                                 {result.chassis}
                                             </div>
                                         </div>
