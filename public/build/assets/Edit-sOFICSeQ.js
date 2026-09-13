@@ -1,0 +1,1 @@
+import{j as r}from"./app-BaX5XXJf.js";import o from"./Create-CH7yoZV1.js";import"./app-ChpkvztK.js";import"./AdminLayout-CjyVthcE.js";import"./ReferralFloatingButton-lmHo7_Bm.js";import"./FloatingInput-C_-XfuIj.js";function f(t){return r.jsx(o,{...t})}export{f as default};

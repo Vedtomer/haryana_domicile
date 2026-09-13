@@ -8,6 +8,7 @@ import MarriageFormFields from './Form';
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         marriage_date: '',
+        application_date: new Date().toISOString().split('T')[0],
         marriage_venue: '',
         district: '',
         religion: 'Hindu',

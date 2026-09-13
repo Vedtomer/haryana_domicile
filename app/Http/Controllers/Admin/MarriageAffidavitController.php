@@ -91,6 +91,7 @@ class MarriageAffidavitController extends Controller
     {
         $data = $request->validate([
             'marriage_date' => 'required|date',
+            'application_date' => 'nullable|date',
             'marriage_venue' => 'required|string',
             'religion' => 'nullable|string',
             'groom_name' => 'required|string',

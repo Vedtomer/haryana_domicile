@@ -8,6 +8,7 @@ import MarriageFormFields from './Form';
 export default function Edit({ form }) {
     const { data, setData, put, processing, errors } = useForm({
         marriage_date: form.marriage_date ?? '',
+        application_date: form.application_date ?? '',
         marriage_venue: form.marriage_venue ?? '',
         district: form.district ?? '',
         religion: form.religion ?? '',

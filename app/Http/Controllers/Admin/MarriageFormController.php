@@ -91,6 +91,7 @@ class MarriageFormController extends Controller
     {
         $data = $request->validate([
             'marriage_date' => 'required|date',
+            'application_date' => 'nullable|date',
             'marriage_venue' => 'required|string',
             'district' => 'required|string',
             'religion' => 'nullable|string',

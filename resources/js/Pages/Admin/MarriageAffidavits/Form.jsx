@@ -41,22 +41,26 @@ const FieldCard = ({ title, size = { xs: 12 }, children }) => (
 // Defined at module scope so React keeps the same component identity across
 // renders — nesting this inside the parent would remount every input on
 // each keystroke and drop focus.
-const Party = ({ prefix, title, data, errors, onChange, onDobChange }) => (
-    <FieldCard title={title} size={{ xs: 12, md: 6 }}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <InputField label="Name" name={`${prefix}_name`} value={data[`${prefix}_name`]} onChange={onChange} error={errors[`${prefix}_name`]} />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <InputField label="Father's Name" name={`${prefix}_father_name`} value={data[`${prefix}_father_name`]} onChange={onChange} error={errors[`${prefix}_father_name`]} />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <InputField label="Date of Birth" name={`${prefix}_dob`} type="date" value={data[`${prefix}_dob`]} onChange={onDobChange} error={errors[`${prefix}_dob`]} />
-        </Grid>
-        <Grid size={12}>
-            <InputField label="Complete Postal Address" name={`${prefix}_address`} value={data[`${prefix}_address`]} onChange={onChange} error={errors[`${prefix}_address`]} />
-        </Grid>
-    </FieldCard>
-);
+const Party = ({ prefix, title, data, errors, onChange, onDobChange }) => {
+    const isGroom = prefix === 'groom';
+    const partyLabel = isGroom ? 'Groom / Boy' : 'Bride / Girl';
+    return (
+        <FieldCard title={title} size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <InputField label={`${partyLabel} Name`} name={`${prefix}_name`} value={data[`${prefix}_name`]} onChange={onChange} error={errors[`${prefix}_name`]} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <InputField label={`${partyLabel} Father's Name`} name={`${prefix}_father_name`} value={data[`${prefix}_father_name`]} onChange={onChange} error={errors[`${prefix}_father_name`]} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <InputField label={`${partyLabel} Date of Birth`} name={`${prefix}_dob`} type="date" value={data[`${prefix}_dob`]} onChange={onDobChange} error={errors[`${prefix}_dob`]} />
+            </Grid>
+            <Grid size={12}>
+                <InputField label={`${partyLabel} Complete Postal Address`} name={`${prefix}_address`} value={data[`${prefix}_address`]} onChange={onChange} error={errors[`${prefix}_address`]} />
+            </Grid>
+        </FieldCard>
+    );
+};
 
 export default function MarriageAffidavitFields({ data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false }) {
     const handleChange = (e) => setData(e.target.name, e.target.value);
@@ -88,7 +92,10 @@ export default function MarriageAffidavitFields({ data, setData, errors, process
 
                 <FieldCard title="Marriage Details" size={12}>
                     <Grid size={{ xs: 12, sm: 6 }}>
-                        <InputField label="Date of Marriage" name="marriage_date" type="date" value={data.marriage_date} onChange={handleMarriageDateChange} error={errors.marriage_date} />
+                        <InputField label="Date of Marriage (शादी की तारीख)" name="marriage_date" type="date" value={data.marriage_date} onChange={handleMarriageDateChange} error={errors.marriage_date} />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <InputField label="Form Apply Date (किस तारीख को फॉर्म भरा है)" name="application_date" type="date" value={data.application_date} onChange={handleChange} error={errors.application_date} required={false} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <SelectField label="Religion" name="religion" value={data.religion} onChange={handleChange} error={errors.religion} required={false} options={RELIGION_OPTIONS} />
@@ -98,8 +105,8 @@ export default function MarriageAffidavitFields({ data, setData, errors, process
                     </Grid>
                 </FieldCard>
 
-                <Party prefix="groom" title="Groom Details" data={data} errors={errors} onChange={handleChange} onDobChange={handleDobChange('groom')} />
-                <Party prefix="bride" title="Bride Details" data={data} errors={errors} onChange={handleChange} onDobChange={handleDobChange('bride')} />
+                <Party prefix="groom" title="Groom / Boy Details" data={data} errors={errors} onChange={handleChange} onDobChange={handleDobChange('groom')} />
+                <Party prefix="bride" title="Bride / Girl Details" data={data} errors={errors} onChange={handleChange} onDobChange={handleDobChange('bride')} />
 
             </Grid>
 

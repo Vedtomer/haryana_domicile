@@ -37,31 +37,32 @@ class MarriageFormResource extends Resource
                 Forms\Components\Hidden::make('user_id')->default(auth()->id()),
                 
                 Forms\Components\Section::make('Marriage Details')
-                    ->columns(2)
+                    ->columns(3)
                     ->schema([
-                        Forms\Components\DatePicker::make('marriage_date')->required(),
+                        Forms\Components\DatePicker::make('marriage_date')->label('Marriage Date')->required(),
+                        Forms\Components\DatePicker::make('application_date')->label('Form Apply Date'),
                         Forms\Components\TextInput::make('marriage_venue')->required(),
                     ]),
                 
-                Forms\Components\Section::make('Groom Details')
+                Forms\Components\Section::make('Groom / Boy Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('groom_name')->label('Name')->required(),
-                        Forms\Components\TextInput::make('groom_father_name')->label('Father Name')->required(),
+                        Forms\Components\TextInput::make('groom_name')->label('Groom / Boy Name')->required(),
+                        Forms\Components\TextInput::make('groom_father_name')->label("Father's Name")->required(),
                         Forms\Components\TextInput::make('groom_age')->label('Age')->numeric()->required(),
                         Forms\Components\TextInput::make('groom_address')->label('Address')->required(),
                     ]),
                 
-                Forms\Components\Section::make('Bride Details')
+                Forms\Components\Section::make('Bride / Girl Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('bride_name')->label('Name')->required(),
-                        Forms\Components\TextInput::make('bride_father_name')->label('Father Name')->required(),
+                        Forms\Components\TextInput::make('bride_name')->label('Bride / Girl Name')->required(),
+                        Forms\Components\TextInput::make('bride_father_name')->label("Father's Name")->required(),
                         Forms\Components\TextInput::make('bride_age')->label('Age')->numeric()->required(),
                         Forms\Components\TextInput::make('bride_address')->label('Address')->required(),
                     ]),
 
-                Forms\Components\Section::make('Groom Witness')
+                Forms\Components\Section::make('Groom / Boy Witness')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('groom_witness_name')->label('Name')->required(),
@@ -69,7 +70,7 @@ class MarriageFormResource extends Resource
                         Forms\Components\TextInput::make('groom_witness_address')->label('Address')->required(),
                     ]),
 
-                Forms\Components\Section::make('Bride Witness')
+                Forms\Components\Section::make('Bride / Girl Witness')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('bride_witness_name')->label('Name')->required(),
@@ -91,8 +92,9 @@ class MarriageFormResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('groom_name')->searchable(),
-                Tables\Columns\TextColumn::make('bride_name')->searchable(),
+                Tables\Columns\TextColumn::make('application_date')->label('Form Apply Date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('groom_name')->label('Groom / Boy')->searchable(),
+                Tables\Columns\TextColumn::make('bride_name')->label('Bride / Girl')->searchable(),
                 Tables\Columns\TextColumn::make('marriage_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])

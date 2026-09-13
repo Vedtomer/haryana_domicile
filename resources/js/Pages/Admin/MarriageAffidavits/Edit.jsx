@@ -8,6 +8,7 @@ import MarriageAffidavitFields from './Form';
 export default function Edit({ affidavit }) {
     const { data, setData, put, processing, errors } = useForm({
         marriage_date: affidavit.marriage_date ?? '',
+        application_date: affidavit.application_date ?? '',
         marriage_venue: affidavit.marriage_venue ?? '',
         religion: affidavit.religion ?? '',
         groom_name: affidavit.groom_name ?? '',

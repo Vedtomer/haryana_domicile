@@ -32,7 +32,7 @@
 @endphp
 
 {{-- ============================= PAGE 1: JOINT AFFIDAVIT ============================= --}}
-<h2>AFFIDAVIT (Joint Groom &amp; Bride)</h2>
+<h2>AFFIDAVIT (Joint Groom / Boy &amp; Bride / Girl)</h2>
 <p>We are {{ $record->groom_name }} S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }} &amp; {{ $record->bride_name }} D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }} do hereby solemnly affirm and declare as under:</p>
 <ol>
     <li>That we are permanent resident of above said address.</li>
@@ -53,7 +53,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGE 2: BRIDE'S AFFIDAVIT ============================= --}}
-<h2>Affidavit (Bride)</h2>
+<h2>Affidavit (Bride / Girl)</h2>
 <p>I, {{ $record->bride_name }}, D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -68,7 +68,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGE 3: GROOM'S AFFIDAVIT ============================= --}}
-<h2>Affidavit (Groom)</h2>
+<h2>Affidavit (Groom / Boy)</h2>
 <p>I, {{ $record->groom_name }}, S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>

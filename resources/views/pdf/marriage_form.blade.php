@@ -43,6 +43,7 @@
     $groomDob = $record->groom_dob ? \Carbon\Carbon::parse($record->groom_dob)->format('d-m-Y') : '';
     $brideDob = $record->bride_dob ? \Carbon\Carbon::parse($record->bride_dob)->format('d-m-Y') : '';
     $marriageDate = $record->marriage_date ? \Carbon\Carbon::parse($record->marriage_date)->format('d-m-Y') : '';
+    $applicationDate = $record->application_date ? \Carbon\Carbon::parse($record->application_date)->format('d-m-Y') : '';
     $district = $record->district ?: '____________';
     $religion = $record->religion ?: 'Hindu';
     $nationality = $record->nationality ?: 'Indian';
@@ -80,8 +81,8 @@
     <tr>
         <th style="width: 6%;">S. No.</th>
         <th style="width: 30%;">Particulars</th>
-        <th style="width: 32%;">Details of Husband</th>
-        <th style="width: 32%;">Details of Wife</th>
+        <th style="width: 32%;">Details of Husband (Groom / Boy)</th>
+        <th style="width: 32%;">Details of Wife (Bride / Girl)</th>
     </tr>
     <tr>
         <td>1</td>
@@ -155,9 +156,9 @@
 
 <br><br>
 <div style="width: 100%;">
-    <div style="float: left; width: 33%;">Date</div>
-    <div style="float: left; width: 33%;">Signature of Husband</div>
-    <div style="float: left; width: 33%;">Signature of Wife</div>
+    <div style="float: left; width: 33%;">Date: {{ $applicationDate ?: '____________' }}</div>
+    <div style="float: left; width: 33%;">Signature of Husband (Groom / Boy)</div>
+    <div style="float: left; width: 33%;">Signature of Wife (Bride / Girl)</div>
 </div>
 <div class="clear"></div>
 <p>Witness of the</p>
@@ -170,7 +171,7 @@
 
 <hr class="rule">
 <table class="proof-table">
-    <tr><td style="width: 50%;"><strong>For Wife</strong></td><td><strong>For Husband</strong></td></tr>
+    <tr><td style="width: 50%;"><strong>For Wife (Bride / Girl)</strong></td><td><strong>For Husband (Groom / Boy)</strong></td></tr>
 </table>
 <hr class="rule">
 <table class="proof-table">
@@ -184,7 +185,7 @@
 <hr class="rule">
 <p><strong>3. Proof of Age</strong></p>
 <table class="proof-table">
-    <tr><td style="width: 50%;"><strong>For Wife</strong></td><td><strong>For Husband</strong></td></tr>
+    <tr><td style="width: 50%;"><strong>For Wife (Bride / Girl)</strong></td><td><strong>For Husband (Groom / Boy)</strong></td></tr>
     <tr><td>(a) Birth Certificate</td><td>(a) Birth Certificate</td></tr>
     <tr><td>(b) School Certificate</td><td>(b) School Certificate</td></tr>
     <tr><td>(c) Medical Certificate</td><td>(c) Medical Certificate indicating age</td></tr>
@@ -201,7 +202,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 3-4: JOINT AFFIDAVIT ============================= --}}
-<h2 class="underline">AFFIDAVIT (Joint Groom & Bride)</h2>
+<h2 class="underline">AFFIDAVIT (Joint Groom / Boy & Bride / Girl)</h2>
 <p>We are {{ $record->groom_name }} S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }} &amp; {{ $record->bride_name }} D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }} do hereby solemnly affirm and declare as under:</p>
 <ol>
     <li>That we are permanent resident of above said address.</li>
@@ -219,7 +220,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>Verified that the above contents of this affidavit are true and correct to the best of our knowledge and belief and nothing has been concealed therein.</p>
-<p>Date : ___________________________</p>
+<p>Date : {{ $applicationDate ?: '___________________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">DEPONENTS</div>
 </div>
@@ -236,7 +237,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 5-6: BRIDE'S AFFIDAVIT ============================= --}}
-<h2 class="underline">Affidavit (Bride)</h2>
+<h2 class="underline">Affidavit (Bride / Girl)</h2>
 <p>I, {{ $record->bride_name }}, D/o Sh. {{ $record->bride_father_name }}, R/o {{ $record->bride_address }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -259,7 +260,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 7-8: PARENT OF THE BRIDE ============================= --}}
-<h2 class="underline">Affidavit ({{ $brideParentTitle }} of the Bride)</h2>
+<h2 class="underline">Affidavit ({{ $brideParentTitle }} of the Bride / Girl)</h2>
 <p>I, {{ $brideParentName }}, R/o {{ $brideParentAddress }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -271,7 +272,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>It is verified that the statements made in this declaration are true and correct to the best of my knowledge and belief. Nothing has been concealed therein.</p>
-<p>Date : _______________________</p>
+<p>Date : {{ $applicationDate ?: '_______________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">DEPONENT</div>
 </div>
@@ -288,7 +289,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 9-10: GROOM'S AFFIDAVIT ============================= --}}
-<h2 class="underline">Affidavit (Groom)</h2>
+<h2 class="underline">Affidavit (Groom / Boy)</h2>
 <p>I, {{ $record->groom_name }}, S/o Sh. {{ $record->groom_father_name }}, R/o {{ $record->groom_address }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -311,7 +312,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 11-12: PARENT OF THE GROOM ============================= --}}
-<h2 class="underline">Affidavit ({{ $groomParentTitle }} of the Groom)</h2>
+<h2 class="underline">Affidavit ({{ $groomParentTitle }} of the Groom / Boy)</h2>
 <p>I, {{ $groomParentName }}, R/o {{ $groomParentAddress }}, do hereby solemnly affirm and declare as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -323,7 +324,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>It is verified that the statements made in this declaration are true and correct to the best of my knowledge and belief. Nothing has been concealed therein.</p>
-<p>Date : _______________________</p>
+<p>Date : {{ $applicationDate ?: '_______________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">DEPONENT</div>
 </div>
@@ -340,7 +341,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 13-14: GROOM'S WITNESS ============================= --}}
-<h2 class="underline">Affidavit (Witness on behalf of the Groom)</h2>
+<h2 class="underline">Affidavit (Witness on behalf of the Groom / Boy)</h2>
 <p>I, Shri {{ $record->groom_witness_name }}, S/o {{ $record->groom_witness_father_name }}, R/o {{ $record->groom_witness_address }}, do hereby solemnly affirm and state as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -352,7 +353,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>It is verified that the statements made herein are true and correct to the best of my knowledge and belief. Nothing has been concealed.</p>
-<p>Date : _______________________</p>
+<p>Date : {{ $applicationDate ?: '_______________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">DEPONENT</div>
 </div>
@@ -370,7 +371,7 @@
 <div class="page-break"></div>
 
 {{-- ============================= PAGES 15-16: BRIDE'S WITNESS ============================= --}}
-<h2 class="underline">Affidavit (Witness on behalf of the Bride)</h2>
+<h2 class="underline">Affidavit (Witness on behalf of the Bride / Girl)</h2>
 <p>I, Shri {{ $record->bride_witness_name }}, S/o Shri {{ $record->bride_witness_father_name }}, R/o {{ $record->bride_witness_address }}, do hereby solemnly affirm and state as follows:</p>
 <ol>
     <li>That I am a citizen of India.</li>
@@ -382,7 +383,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>It is verified that the statements made herein are true and correct to the best of my knowledge and belief. Nothing has been concealed.</p>
-<p>Date : _______________________</p>
+<p>Date : {{ $applicationDate ?: '_______________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">Deponent</div>
 </div>
@@ -411,7 +412,7 @@
 </ol>
 <h4>VERIFICATION</h4>
 <p>It is verified that the statements made herein are true and correct to the best of my knowledge and belief. Nothing has been concealed.</p>
-<p>Date : _______________________</p>
+<p>Date : {{ $applicationDate ?: '_______________________' }}</p>
 <div class="signature-block">
     <div class="signature-right">Deponent</div>
 </div>
