@@ -56,7 +56,8 @@ class UserController extends Controller
             'password' => 'required|string|min:4',
             'type' => 'required|in:super_admin,admin,user',
             'coins' => 'required|integer|min:0',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'allowed_devices' => 'nullable|integer|in:0,1,2',
         ]);
 
         $data['raw_password'] = $data['password'];
@@ -107,7 +108,8 @@ class UserController extends Controller
             'password' => 'nullable|string|min:4',
             'type' => 'required|in:super_admin,admin,user',
             'coins' => 'required|integer|min:0',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'allowed_devices' => 'nullable|integer|in:0,1,2',
         ]);
 
         if (!empty($data['password'])) {
@@ -219,5 +221,40 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+    }
+
+    public function updateDeviceLimit(Request $request, User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'allowed_devices' => 'required|integer|in:0,1,2',
+        ]);
+
+        $user->update([
+            'allowed_devices' => (int) $data['allowed_devices'],
+        ]);
+
+        $label = match ((int)$data['allowed_devices']) {
+            0 => 'Unlimited (No PC Lock)',
+            1 => '1 PC',
+            2 => '2 PCs',
+            default => $data['allowed_devices'] . ' PCs',
+        };
+
+        return back()->with('success', "PC access limit for {$user->name} updated to {$label}.");
+    }
+
+    public function resetDeviceLock(User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        $user->resetDesktopLock();
+
+        return back()->with('success', "PC device lock for {$user->name} has been reset.");
     }
 }

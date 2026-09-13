@@ -51,11 +51,16 @@ class User extends Authenticatable implements FilamentUser
         'coins',
         'type',
         'is_active',
+        'allowed_devices',
         'license_expires_at',
         'license_device_id',
         'license_device_name',
         'license_device_ip',
         'license_device_bound_at',
+        'license_device_id_2',
+        'license_device_name_2',
+        'license_device_ip_2',
+        'license_device_bound_at_2',
         'last_activity_at',
         'last_seen_at',
         'deactivated_reason',
@@ -93,8 +98,10 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at'       => 'datetime',
             'password'                => 'hashed',
             'coins'                   => 'integer',
+            'allowed_devices'         => 'integer',
             'license_expires_at'      => 'datetime',
             'license_device_bound_at' => 'datetime',
+            'license_device_bound_at_2' => 'datetime',
             'last_activity_at'        => 'datetime',
             'last_seen_at'            => 'datetime',
             'referral_reward_paid'    => 'boolean',
@@ -167,10 +174,20 @@ class User extends Authenticatable implements FilamentUser
         $data = ['license_expires_at' => $newExpiry];
 
         if ($deviceId) {
-            $data['license_device_id'] = $deviceId;
-            $data['license_device_name'] = $deviceName ?: ($this->license_device_name ?: 'Desktop PC');
-            $data['license_device_ip'] = $deviceIp ?: request()->ip();
-            $data['license_device_bound_at'] = now();
+            $allowed = (int) ($this->allowed_devices ?? 1);
+            if ($allowed > 0) {
+                if (empty($this->license_device_id) || $this->license_device_id === $deviceId) {
+                    $data['license_device_id'] = $deviceId;
+                    $data['license_device_name'] = $deviceName ?: ($this->license_device_name ?: 'Desktop PC');
+                    $data['license_device_ip'] = $deviceIp ?: request()->ip();
+                    $data['license_device_bound_at'] = now();
+                } elseif ($allowed >= 2 && (empty($this->license_device_id_2) || $this->license_device_id_2 === $deviceId)) {
+                    $data['license_device_id_2'] = $deviceId;
+                    $data['license_device_name_2'] = $deviceName ?: ($this->license_device_name_2 ?: 'Desktop PC 2');
+                    $data['license_device_ip_2'] = $deviceIp ?: request()->ip();
+                    $data['license_device_bound_at_2'] = now();
+                }
+            }
         }
 
         $this->update($data);
@@ -184,10 +201,14 @@ class User extends Authenticatable implements FilamentUser
     public function resetDesktopLock(): void
     {
         $this->update([
-            'license_device_id' => null,
-            'license_device_name' => null,
-            'license_device_ip' => null,
-            'license_device_bound_at' => null,
+            'license_device_id'         => null,
+            'license_device_name'       => null,
+            'license_device_ip'         => null,
+            'license_device_bound_at'   => null,
+            'license_device_id_2'       => null,
+            'license_device_name_2'     => null,
+            'license_device_ip_2'       => null,
+            'license_device_bound_at_2' => null,
         ]);
     }
 

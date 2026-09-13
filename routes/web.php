@@ -861,6 +861,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::post('users/{user}/add-coins', [\App\Http\Controllers\Admin\UserController::class, 'addCoins'])->name('users.add-coins');
         Route::post('users/{user}/clear-coins', [\App\Http\Controllers\Admin\UserController::class, 'clearCoins'])->name('users.clear-coins');
+        Route::patch('users/{user}/update-device-limit', [\App\Http\Controllers\Admin\UserController::class, 'updateDeviceLimit'])->name('users.update-device-limit');
+        Route::post('users/{user}/reset-device-lock', [\App\Http\Controllers\Admin\UserController::class, 'resetDeviceLock'])->name('users.reset-device-lock');
 
         // Admin Chat with Users
         Route::get('chat/{user}', [\App\Http\Controllers\ChatController::class, 'getAdminChat'])->name('admin.chat.messages');

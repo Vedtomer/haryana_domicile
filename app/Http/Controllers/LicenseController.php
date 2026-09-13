@@ -125,9 +125,22 @@ class LicenseController extends Controller
             return back()->with('error', "🔒 Desktop Lock Alert: Yeh License Key kisi dusre PC/Desktop ({$licenseKey->device_name}) par pehle se registered hai.");
         }
 
-        // 2. If user is already bound to a desktop, ensure they are redeeming from that same desktop
-        if (!empty($user->license_device_id) && !empty($deviceToken) && $user->license_device_id !== $deviceToken) {
-            return back()->with('error', "🔒 Desktop Lock Alert: Aapka account pehle se dusre Desktop ({$user->license_device_name}) par locked hai. Naya PC bind karne ke liye Admin se Desktop Reset karwayein.");
+        // 2. If user is already bound to desktop(s), ensure they are redeeming from an allowed desktop slot
+        $allowedDevices = (int) ($user->allowed_devices ?? 1);
+        if ($allowedDevices > 0 && !empty($deviceToken)) {
+            $matchesSlot1 = !empty($user->license_device_id) && ($user->license_device_id === $deviceToken);
+            $matchesSlot2 = ($allowedDevices >= 2) && !empty($user->license_device_id_2) && ($user->license_device_id_2 === $deviceToken);
+            $slotAvailable = empty($user->license_device_id) || ($allowedDevices >= 2 && empty($user->license_device_id_2));
+
+            if (!$matchesSlot1 && !$matchesSlot2 && !$slotAvailable) {
+                if ($allowedDevices === 1) {
+                    return back()->with('error', "🔒 Desktop Lock Alert: Aapka account pehle se dusre Desktop ({$user->license_device_name}) par locked hai. Naya PC bind karne ke liye Admin se Desktop Reset karwayein.");
+                } else {
+                    $p1 = $user->license_device_name ?: 'PC 1';
+                    $p2 = $user->license_device_name_2 ?: 'PC 2';
+                    return back()->with('error', "🔒 Desktop Lock Alert: Aapka account pehle se 2 Desktops par locked hai ({$p1} aur {$p2}). Naya PC bind karne ke liye Admin se Desktop Reset karwayein.");
+                }
+            }
         }
 
         $licenseKey->activateFor($user, $deviceToken, $deviceName, $ip);
