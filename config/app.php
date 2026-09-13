@@ -13,7 +13,7 @@ return [
      |
      */
 
-    'name' => env('APP_NAME', 'Online All Service'),
+    'name' => in_array(env('APP_NAME'), [null, '', 'Laravel', 'Online All Service']) ? 'CSP Jaankari' : env('APP_NAME'),
 
     /*
      |--------------------------------------------------------------------------

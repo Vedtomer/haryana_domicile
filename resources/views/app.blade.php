@@ -10,7 +10,24 @@
         <link rel="manifest" href="/manifest.json">
         <link rel="apple-touch-icon" href="/logo.png">
         
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'CSP Jaankari') }}</title>
+        <meta name="description" content="CSP Jaankari - All Online Portal Services, PVC Card Maker, Citizen Services and Verification Portal.">
+
+        <!-- Open Graph / WhatsApp / Facebook Preview Tags -->
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="CSP Jaankari">
+        <meta property="og:title" content="CSP Jaankari - All Online Portal Services">
+        <meta property="og:description" content="CSP Jaankari Portal - Quick registration, instant print services, and all online portal utilities.">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:image" content="{{ asset('logo.png') }}">
+        <meta property="og:image:width" content="512">
+        <meta property="og:image:height" content="512">
+
+        <!-- Twitter Preview Tags -->
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="CSP Jaankari - All Online Portal Services">
+        <meta name="twitter:description" content="CSP Jaankari Portal - Quick registration, instant print services, and all online portal utilities.">
+        <meta name="twitter:image" content="{{ asset('logo.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
