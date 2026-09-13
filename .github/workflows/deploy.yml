@@ -34,7 +34,12 @@ jobs:
             $PHP artisan migrate --force
             $PHP artisan db:seed --class=ServiceSeeder --force
             $PHP artisan optimize:clear
+            $PHP artisan view:clear
+            $PHP artisan cache:clear
             $PHP artisan optimize
+            mkdir -p tmp
+            touch tmp/restart.txt
+            git log -1 --oneline
           ' 2>&1 | tee deploy.log
 
       - name: Publish Deployment Log
