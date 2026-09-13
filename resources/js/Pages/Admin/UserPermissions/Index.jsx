@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
@@ -25,6 +25,29 @@ export default function UserPermissions({ users, services }) {
         setSelectedUser(user);
         setData('service_ids', user.service_ids || []);
     };
+
+    // Auto-select user from query parameter ?user={userId} or keep updated when users change
+    useEffect(() => {
+        if (!users || users.length === 0) return;
+        const params = new URLSearchParams(window.location.search);
+        const queryUserId = params.get('user');
+
+        if (queryUserId) {
+            const targetUser = users.find(u => String(u.id) === String(queryUserId));
+            if (targetUser) {
+                handleSelectUser(targetUser);
+                return;
+            }
+        }
+
+        if (selectedUser) {
+            const refreshed = users.find(u => u.id === selectedUser.id);
+            if (refreshed) {
+                setSelectedUser(refreshed);
+                setData('service_ids', refreshed.service_ids || []);
+            }
+        }
+    }, [users]);
 
     const toggleService = (serviceId) => {
         const hasService = data.service_ids.includes(serviceId);

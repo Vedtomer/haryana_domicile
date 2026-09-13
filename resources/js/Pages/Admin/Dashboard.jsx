@@ -351,22 +351,38 @@ export default function Dashboard({ services, stats, isAdmin }) {
 
             {/* Services Grid */}
             {filteredServices.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-10 text-center text-gray-500 dark:text-slate-400 space-y-3 shadow-xs">
-                    <div className="text-3xl">🔍</div>
-                    <p className="font-medium text-slate-700 dark:text-slate-300">
-                        {searchQuery
-                            ? `"${searchQuery}" ke sath koi service nahi mili.`
-                            : 'No services are active yet.'}
-                    </p>
-                    {searchQuery && (
-                        <button
-                            type="button"
-                            onClick={() => setSearchQuery('')}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer transition-colors"
-                        >
-                            <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-                            Show All Services ({services.length})
-                        </button>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-10 text-center text-gray-500 dark:text-slate-400 space-y-4 shadow-xs">
+                    {searchQuery ? (
+                        <>
+                            <div className="text-3xl">🔍</div>
+                            <p className="font-medium text-slate-700 dark:text-slate-300">
+                                "{searchQuery}" ke sath koi service nahi mili.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery('')}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">restart_alt</span>
+                                Show All Services ({services.length})
+                            </button>
+                        </>
+                    ) : (
+                        <div className="max-w-md mx-auto py-6 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-4 shadow-sm">
+                                <span className="material-symbols-outlined text-3xl">lock_person</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">
+                                No Services Activated Yet
+                            </h3>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed mb-4">
+                                Aapke account par abhi koi service activate nahi hai. Services access karne ke liye kripya Admin se permission activate karwayein.
+                            </p>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300">
+                                <span className="material-symbols-outlined text-[16px]">verified_user</span>
+                                Admin Permission Required
+                            </span>
+                        </div>
                     )}
                 </div>
             ) : (

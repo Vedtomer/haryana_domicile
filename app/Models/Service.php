@@ -334,16 +334,12 @@ class Service extends Model
     }
 
     /**
-     * Public services are visible to everyone; private services only to
-     * their assigned users.
+     * Services visible to this user:
+     * Regular users only see services they have been granted permission for (via User Permissions).
      */
     public function scopeVisibleTo($query, User $user)
     {
-        return $query->where(function ($q) use ($user) {
-            $q->where('visibility', self::VISIBILITY_PUBLIC)
-                ->orWhereNull('visibility')
-                ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
-        });
+        return $query->whereHas('users', fn ($u) => $u->where('users.id', $user->id));
     }
 
     public function scopeOrdered($query)
