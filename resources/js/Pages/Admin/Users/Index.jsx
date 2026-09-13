@@ -81,22 +81,23 @@ export default function Index({ users }) {
                     </Link>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
-                    <table className="min-w-full divide-y divide-slate-100">
-                        <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral & Coins</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">PC Access</th>
-                                <th className="px-6 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                            {users.data.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden mb-6">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
+                            <thead>
+                                <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
+                                    <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral & Coins</th>
+                                    <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
+                                    <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">PC Access</th>
+                                    <th className="px-4 sm:px-5 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-4 sm:px-5 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                {users.data.map((user) => (
+                                    <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                                        <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap">
                                         <div className="text-sm font-semibold text-slate-800 dark:text-white mb-0.5">
                                             {user.name || <span className="text-slate-400 italic font-normal">No Name</span>}
                                         </div>
@@ -153,12 +154,12 @@ export default function Index({ users }) {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap">
                                         <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                                             {new Date(user.created_at).toLocaleDateString()}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap">
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-1.5">
                                                 <select
@@ -215,7 +216,7 @@ export default function Index({ users }) {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                    <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap text-center">
                                         <button
                                             onClick={() => handleToggleStatus(user.id)}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none ${user.is_active ? 'bg-green-500' : 'bg-slate-300'}`}
@@ -224,20 +225,20 @@ export default function Index({ users }) {
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-300 ${user.is_active ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap text-right">
                                         <div className="flex items-center justify-end gap-1">
                                             {/* Chat with User Button */}
                                             <button
                                                 type="button"
                                                 onClick={() => setChatUser(user)}
                                                 title={`Message ${user.name || 'User'}`}
-                                                className="relative p-2 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                className="relative p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                                             >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                                 </svg>
                                                 {user.unread_messages_count > 0 && (
-                                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white font-black text-[10px] rounded-full flex items-center justify-center animate-bounce shadow-sm">
+                                                    <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-red-500 text-white font-black text-[9px] rounded-full flex items-center justify-center animate-bounce shadow-sm">
                                                         {user.unread_messages_count}
                                                     </span>
                                                 )}
@@ -246,30 +247,30 @@ export default function Index({ users }) {
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"
-                                                className="p-2 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-slate-800 hover:text-amber-600 transition-colors cursor-pointer"
+                                                className="p-1.5 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-slate-800 hover:text-amber-600 transition-colors cursor-pointer"
                                             >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             </button>
                                             <button
                                                 onClick={() => handleClearCoins(user)}
                                                 title="Clear Coins to 0"
-                                                className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 transition-colors cursor-pointer"
+                                                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 transition-colors cursor-pointer"
                                             >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                             </button>
                                             <Link
                                                 href={`/admin/users/${user.id}/edit`}
                                                 title="Edit User"
-                                                className="p-2 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
+                                                className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
                                             >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(user)}
                                                 title="Delete User"
-                                                className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-slate-800 hover:text-red-600 transition-colors cursor-pointer"
+                                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-slate-800 hover:text-red-600 transition-colors cursor-pointer"
                                             >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                             </button>
                                         </div>
                                     </td>
@@ -278,6 +279,7 @@ export default function Index({ users }) {
                         </tbody>
                     </table>
                 </div>
+            </div>
 
                 {/* Pagination */}
                 <div className="flex gap-2">
