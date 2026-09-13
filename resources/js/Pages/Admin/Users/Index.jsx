@@ -85,7 +85,6 @@ export default function Index({ users }) {
                     <table className="min-w-full divide-y divide-slate-100">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral Info</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
@@ -99,12 +98,10 @@ export default function Index({ users }) {
                             {users.data.map((user) => (
                                 <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-sm font-semibold text-slate-800 dark:text-white">
-                                            {user.name || <span className="text-slate-400 italic">No Name</span>}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-slate-700 dark:text-slate-200">{user.email || '—'}</div>
+                                        <div className="text-sm font-semibold text-slate-800 dark:text-white mb-0.5">
+                                            {user.name || <span className="text-slate-400 italic font-normal">No Name</span>}
+                                        </div>
+                                        <div className="text-xs text-slate-600 dark:text-slate-300">{user.email || '—'}</div>
                                         <div className="text-xs text-slate-400 mb-1">{user.phone || ''}</div>
                                         {user.raw_password && (
                                             <div className="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-200/60 dark:bg-slate-800 rounded px-2 py-0.5 inline-flex items-center gap-1 border border-slate-300/50 dark:border-slate-700" title="User Password">
