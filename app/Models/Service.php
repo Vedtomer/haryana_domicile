@@ -348,7 +348,7 @@ class Service extends Model
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order')->orderBy('name');
+        return $query->orderByRaw('TRIM(name) ASC');
     }
 
     public function isFree(): bool

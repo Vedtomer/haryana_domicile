@@ -50,8 +50,13 @@ export default function Home({ services = [] }) {
 
     const isLoggedIn = Boolean(auth?.user);
 
+    // Sort services alphabetically by name
+    const sortedServices = [...services].sort((a, b) =>
+        (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
+    );
+
     // Filter services by active category tab
-    const filteredServices = services.filter((service) => matchesCategory(service, activeTab));
+    const filteredServices = sortedServices.filter((service) => matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
         if (!isLoggedIn) {

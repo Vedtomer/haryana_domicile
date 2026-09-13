@@ -6,6 +6,11 @@ export default function UserPermissions({ users, services }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
 
+    // Sort services alphabetically by name
+    const sortedServices = [...(services || [])].sort((a, b) =>
+        (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
+    );
+
     const { data, setData, post, processing } = useForm({
         service_ids: [],
     });
@@ -32,7 +37,7 @@ export default function UserPermissions({ users, services }) {
     };
 
     const toggleAll = (check) => {
-        setData('service_ids', check ? services.map(s => s.id) : []);
+        setData('service_ids', check ? sortedServices.map(s => s.id) : []);
     };
 
     const submit = (e) => {
@@ -146,7 +151,7 @@ export default function UserPermissions({ users, services }) {
                             
                             <div className="flex-1 overflow-y-auto p-5">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {services.map((service) => {
+                                    {sortedServices.map((service) => {
                                         const hasAccess = data.service_ids.includes(service.id);
                                         return (
                                             <div 

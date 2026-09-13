@@ -214,7 +214,12 @@ export default function Dashboard({ services, stats, isAdmin }) {
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
 
-    const filteredServices = services.filter(service => {
+    // Sort services alphabetically by name
+    const sortedServices = [...(services || [])].sort((a, b) =>
+        (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
+    );
+
+    const filteredServices = sortedServices.filter(service => {
         const query = searchQuery.trim().toLowerCase();
         if (!query) return true;
         return (

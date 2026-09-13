@@ -8,7 +8,12 @@ export default function Index({ services }) {
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'hidden'
 
-    const filteredServices = services.filter((service) => {
+    // Sort services alphabetically by name
+    const sortedServices = [...(services || [])].sort((a, b) =>
+        (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
+    );
+
+    const filteredServices = sortedServices.filter((service) => {
         const matchesSearch =
             service.name.toLowerCase().includes(search.toLowerCase()) ||
             (service.description && service.description.toLowerCase().includes(search.toLowerCase()));
