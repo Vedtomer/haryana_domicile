@@ -416,6 +416,104 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'Aadhar Card to PPP ID Instant',
+                'slug' => 'aadhar-to-ppp-id',
+                'description' => 'Instantly retrieve Haryana Family ID (PPP ID) using 12-digit Aadhaar Number without OTP.',
+                'icon' => '🆔',
+                'coin_cost' => 0,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'aadhar_to_ppp_id',
+                'sort_order' => 31,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'PPP ID to Aadhar Number (All Members)',
+                'slug' => 'ppp-to-aadhar-all-members',
+                'description' => 'Fetch unmasked Aadhaar Card numbers of all family members from PPP ID without OTP.',
+                'icon' => '👥',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'ppp_to_aadhar_all_members',
+                'sort_order' => 32,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'PPP ID to Mobile Number (All Members)',
+                'slug' => 'ppp-to-mobile-all-members',
+                'description' => 'Fetch linked mobile numbers of all family members from PPP ID without OTP.',
+                'icon' => '📱',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'ppp_to_mobile_all_members',
+                'sort_order' => 33,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'PPP ID to Bank Account & IFSC Code',
+                'slug' => 'ppp-to-bank-details',
+                'description' => 'Fetch bank account numbers, IFSC codes, and branch details from PPP ID without OTP.',
+                'icon' => '🏦',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'ppp_to_bank_details',
+                'sort_order' => 34,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'Vehicle PUC (Without OTP)',
+                'slug' => 'vehicle-puc-without-otp',
+                'description' => 'Download Vehicle Pollution Under Control (PUC) certificate details instantly without OTP.',
+                'icon' => '🚗',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'vehicle_puc_without_otp',
+                'sort_order' => 35,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'Vehicle PUC (With OTP)',
+                'slug' => 'vehicle-puc-with-otp',
+                'description' => 'Verify with OTP and download official Vehicle PUC Certificate PDF.',
+                'icon' => '🔐',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'vehicle_puc_with_otp',
+                'sort_order' => 36,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
+            [
+                'name' => 'S.I.R Voter Card List',
+                'slug' => 'sir-voter-card-list',
+                'description' => 'Search electoral roll and voter card list by State, District, Assembly, or EPIC number.',
+                'icon' => '🗳️',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'sir_voter_card_list',
+                'sort_order' => 37,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {
@@ -426,7 +524,8 @@ class ServiceSeeder extends Seeder
 
             if (!$existing) {
                 $service['is_active'] = $service['is_active'] ?? true;
-                Service::create($service);
+                $created = Service::create($service);
+                $targetService = $created;
             } else {
                 // Update fields to ensure new modules and features are active
                 $existing->update([
@@ -435,13 +534,21 @@ class ServiceSeeder extends Seeder
                     'kind' => $service['kind'],
                     'module_key' => $service['module_key'],
                     'is_active' => $service['is_active'] ?? true,
-                    'visibility' => $service['visibility'] ?? Service::VISIBILITY_PRIVATE,
+                    'visibility' => $service['visibility'] ?? Service::VISIBILITY_PUBLIC,
                     'is_premium' => $service['is_premium'] ?? false,
                     'unlock_cost' => $service['unlock_cost'] ?? 0,
                     'icon' => $service['icon'],
                     'description' => $service['description'],
                     'sort_order' => $service['sort_order'],
                 ]);
+                $targetService = $existing;
+            }
+
+            if ($targetService) {
+                $userIds = \App\Models\User::pluck('id')->toArray();
+                if (!empty($userIds)) {
+                    $targetService->users()->syncWithoutDetaching($userIds);
+                }
             }
         }
 

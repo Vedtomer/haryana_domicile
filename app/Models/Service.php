@@ -286,6 +286,55 @@ class Service extends Model
             'index' => '/utilities/kundli',
             'create' => '/utilities/kundli',
         ],
+        'aadhar_to_ppp_id' => [
+            'label' => 'Aadhar Card to PPP ID',
+            'icon' => '🆔',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-ppp-id',
+            'create' => '/utilities/aadhar-to-ppp-id',
+        ],
+        'ppp_to_aadhar_all_members' => [
+            'label' => 'PPP ID to Aadhar Number All Member',
+            'icon' => '👥',
+            'model' => null,
+            'index' => '/utilities/ppp-to-aadhar-all-members',
+            'create' => '/utilities/ppp-to-aadhar-all-members',
+        ],
+        'ppp_to_mobile_all_members' => [
+            'label' => 'PPP ID to Mobile Number All Member',
+            'icon' => '📱',
+            'model' => null,
+            'index' => '/utilities/ppp-to-mobile-all-members',
+            'create' => '/utilities/ppp-to-mobile-all-members',
+        ],
+        'ppp_to_bank_details' => [
+            'label' => 'PPP ID to Bank Account & IFSC Code',
+            'icon' => '🏦',
+            'model' => null,
+            'index' => '/utilities/ppp-to-bank-details',
+            'create' => '/utilities/ppp-to-bank-details',
+        ],
+        'vehicle_puc_without_otp' => [
+            'label' => 'Vehicle PUC (Without OTP)',
+            'icon' => '🚗',
+            'model' => null,
+            'index' => '/utilities/vehicle-puc-without-otp',
+            'create' => '/utilities/vehicle-puc-without-otp',
+        ],
+        'vehicle_puc_with_otp' => [
+            'label' => 'Vehicle PUC (With OTP)',
+            'icon' => '🔐',
+            'model' => null,
+            'index' => '/utilities/vehicle-puc-with-otp',
+            'create' => '/utilities/vehicle-puc-with-otp',
+        ],
+        'sir_voter_card_list' => [
+            'label' => 'S.I.R Voter Card List',
+            'icon' => '🗳️',
+            'model' => null,
+            'index' => '/utilities/sir-voter-card-list',
+            'create' => '/utilities/sir-voter-card-list',
+        ],
 
     ];
 

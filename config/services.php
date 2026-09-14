@@ -51,4 +51,24 @@ return [
         'cdn_url' => env('IDCARD_STORE_CDN_URL') ?: 'https://idmaker.mfcdn.in/',
     ],
 
+    'ppp' => [
+        'api_key' => env('PPP_API_KEY', ''),
+        'aadhar_to_ppp_url' => env('PPP_AADHAR_TO_PPP_URL', ''),
+        'ppp_to_aadhar_url' => env('PPP_TO_AADHAR_API_URL', ''),
+        'ppp_to_mobile_url' => env('PPP_TO_MOBILE_API_URL', ''),
+        'ppp_to_bank_url' => env('PPP_TO_BANK_API_URL', ''),
+    ],
+
+    'vahan' => [
+        'api_key' => env('VAHAN_API_KEY', ''),
+        'puc_without_otp_url' => env('PUC_WITHOUT_OTP_API_URL', ''),
+        'puc_send_otp_url' => env('PUC_SEND_OTP_API_URL', ''),
+        'puc_verify_otp_url' => env('PUC_VERIFY_OTP_API_URL', ''),
+    ],
+
+    'voter' => [
+        'api_key' => env('VOTER_API_KEY', ''),
+        'sir_voter_list_url' => env('SIR_VOTER_LIST_API_URL', ''),
+    ],
+
 ];

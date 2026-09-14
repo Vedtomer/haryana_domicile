@@ -223,7 +223,118 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ]
     );
-    return 'Service added successfully and made PUBLIC! Please go back to your dashboard.';
+
+    $newServices = [
+        [
+            'name' => 'Aadhar Card to PPP ID Instant',
+            'slug' => 'aadhar-to-ppp-id',
+            'description' => 'Instantly retrieve Haryana Family ID (PPP ID) using 12-digit Aadhaar Number without OTP.',
+            'icon' => '🆔',
+            'coin_cost' => 0,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_to_ppp_id',
+            'sort_order' => 31,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'PPP ID to Aadhar Number (All Members)',
+            'slug' => 'ppp-to-aadhar-all-members',
+            'description' => 'Fetch unmasked Aadhaar Card numbers of all family members from PPP ID without OTP.',
+            'icon' => '👥',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ppp_to_aadhar_all_members',
+            'sort_order' => 32,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'PPP ID to Mobile Number (All Members)',
+            'slug' => 'ppp-to-mobile-all-members',
+            'description' => 'Fetch linked mobile numbers of all family members from PPP ID without OTP.',
+            'icon' => '📱',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ppp_to_mobile_all_members',
+            'sort_order' => 33,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'PPP ID to Bank Account & IFSC Code',
+            'slug' => 'ppp-to-bank-details',
+            'description' => 'Fetch bank account numbers, IFSC codes, and branch details from PPP ID without OTP.',
+            'icon' => '🏦',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ppp_to_bank_details',
+            'sort_order' => 34,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Vehicle PUC (Without OTP)',
+            'slug' => 'vehicle-puc-without-otp',
+            'description' => 'Download Vehicle Pollution Under Control (PUC) certificate details instantly without OTP.',
+            'icon' => '🚗',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'vehicle_puc_without_otp',
+            'sort_order' => 35,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Vehicle PUC (With OTP)',
+            'slug' => 'vehicle-puc-with-otp',
+            'description' => 'Verify with OTP and download official Vehicle PUC Certificate PDF.',
+            'icon' => '🔐',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'vehicle_puc_with_otp',
+            'sort_order' => 36,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'S.I.R Voter Card List',
+            'slug' => 'sir-voter-card-list',
+            'description' => 'Search electoral roll and voter card list by State, District, Assembly, or EPIC number.',
+            'icon' => '🗳️',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'sir_voter_card_list',
+            'sort_order' => 37,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+    ];
+
+    $userIds = \App\Models\User::pluck('id')->toArray();
+
+    foreach ($newServices as $ns) {
+        $srv = \App\Models\Service::updateOrCreate(['slug' => $ns['slug']], $ns);
+        if (!empty($userIds)) {
+            $srv->users()->syncWithoutDetaching($userIds);
+        }
+    }
+
+    return 'Services added successfully and made PUBLIC! Please go back to your dashboard.';
 });
 
 Route::get('/force-add-pvc-services', function () {
@@ -760,6 +871,49 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         return back()->with('error', 'Vehicle details not found. Please check the Registration Number.');
     })->name('utilities.vehicle-details.download');
+
+    // 1. Aadhar Card to PPP ID Instant
+    Route::get('/utilities/aadhar-to-ppp-id', function () {
+        return Inertia::render('Utilities/AadharToPppId');
+    })->name('utilities.aadhar-to-ppp-id');
+    Route::post('/utilities/aadhar-to-ppp-id/search', [\App\Http\Controllers\AadharToPppIdController::class, 'search'])->name('utilities.aadhar-to-ppp-id.search');
+
+    // 2. PPP ID to Aadhar Number (All Members - Without OTP)
+    Route::get('/utilities/ppp-to-aadhar-all-members', function () {
+        return Inertia::render('Utilities/PppToAadharAllMembers');
+    })->name('utilities.ppp-to-aadhar-all-members');
+    Route::post('/utilities/ppp-to-aadhar-all-members/search', [\App\Http\Controllers\PppToAadharAllMembersController::class, 'search'])->name('utilities.ppp-to-aadhar-all-members.search');
+
+    // 3. PPP ID to Mobile Number (All Members - Without OTP)
+    Route::get('/utilities/ppp-to-mobile-all-members', function () {
+        return Inertia::render('Utilities/PppToMobileAllMembers');
+    })->name('utilities.ppp-to-mobile-all-members');
+    Route::post('/utilities/ppp-to-mobile-all-members/search', [\App\Http\Controllers\PppToMobileAllMembersController::class, 'search'])->name('utilities.ppp-to-mobile-all-members.search');
+
+    // 4. PPP ID to Bank Account & IFSC Code (Without OTP)
+    Route::get('/utilities/ppp-to-bank-details', function () {
+        return Inertia::render('Utilities/PppToBankDetails');
+    })->name('utilities.ppp-to-bank-details');
+    Route::post('/utilities/ppp-to-bank-details/search', [\App\Http\Controllers\PppToBankDetailsController::class, 'search'])->name('utilities.ppp-to-bank-details.search');
+
+    // 5. Vehicle PUC (Without OTP)
+    Route::get('/utilities/vehicle-puc-without-otp', function () {
+        return Inertia::render('Utilities/VehiclePucWithoutOtp');
+    })->name('utilities.vehicle-puc-without-otp');
+    Route::post('/utilities/vehicle-puc-without-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-without-otp.search');
+
+    // 6. Vehicle PUC (With OTP)
+    Route::get('/utilities/vehicle-puc-with-otp', function () {
+        return Inertia::render('Utilities/VehiclePucWithOtp');
+    })->name('utilities.vehicle-puc-with-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'sendOtp'])->name('utilities.vehicle-puc-with-otp.send-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'verifyOtp'])->name('utilities.vehicle-puc-with-otp.verify-otp');
+
+    // 7. S.I.R Voter Card List
+    Route::get('/utilities/sir-voter-card-list', function () {
+        return Inertia::render('Utilities/SirVoterCardList');
+    })->name('utilities.sir-voter-card-list');
+    Route::post('/utilities/sir-voter-card-list/search', [\App\Http\Controllers\SirVoterCardListController::class, 'search'])->name('utilities.sir-voter-card-list.search');
 
     // Premium Service Unlock
     Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {
