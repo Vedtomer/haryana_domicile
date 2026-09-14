@@ -188,11 +188,12 @@ class AuthController extends Controller
 
         $mailSent = false;
         $lastError = '';
+        $userName = !empty($data['name']) ? $data['name'] : 'User';
 
         // Attempt 1: Default SMTP (Port 587 TLS)
         try {
             \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
-                ->send(new \App\Mail\RegistrationOtpMail($otp, $data['name']));
+                ->send(new \App\Mail\RegistrationOtpMail($otp, $userName));
             $mailSent = true;
         } catch (\Throwable $e) {
             $lastError = $e->getMessage();
@@ -209,7 +210,7 @@ class AuthController extends Controller
                 ]);
                 app('mail.manager')->purge('smtp');
                 \Illuminate\Support\Facades\Mail::mailer('smtp')->to($email)
-                    ->send(new \App\Mail\RegistrationOtpMail($otp, $data['name']));
+                    ->send(new \App\Mail\RegistrationOtpMail($otp, $userName));
                 $mailSent = true;
             } catch (\Throwable $e2) {
                 $lastError = $e2->getMessage();

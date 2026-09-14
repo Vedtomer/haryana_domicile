@@ -12,10 +12,14 @@ class RegistrationOtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public string $userName;
+
     public function __construct(
         public string $otp,
-        public string $userName
-    ) {}
+        ?string $userName = 'User'
+    ) {
+        $this->userName = !empty($userName) ? $userName : 'User';
+    }
 
     public function envelope(): Envelope
     {

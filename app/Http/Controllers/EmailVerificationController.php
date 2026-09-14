@@ -91,11 +91,12 @@ class EmailVerificationController extends Controller
 
         $mailSent = false;
         $lastError = '';
+        $userName = !empty($user->name) ? $user->name : 'User';
 
         // Attempt 1: Port 587 TLS
         try {
             Mail::mailer('smtp')->to($email)
-                ->send(new RegistrationOtpMail($otp, $user->name));
+                ->send(new RegistrationOtpMail($otp, $userName));
             $mailSent = true;
         } catch (\Throwable $e) {
             $lastError = $e->getMessage();
@@ -112,7 +113,7 @@ class EmailVerificationController extends Controller
                 ]);
                 app('mail.manager')->purge('smtp');
                 Mail::mailer('smtp')->to($email)
-                    ->send(new RegistrationOtpMail($otp, $user->name));
+                    ->send(new RegistrationOtpMail($otp, $userName));
                 $mailSent = true;
             } catch (\Throwable $e2) {
                 $lastError = $e2->getMessage();
