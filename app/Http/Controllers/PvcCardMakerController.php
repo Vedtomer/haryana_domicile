@@ -17,8 +17,6 @@ class PvcCardMakerController extends Controller
         'ayushman'         => 'ayushman-pvc',
         'voter_epic'       => 'voter-pvc-card',
         'pan_nsdl'         => 'pan-nsdl-pvc',
-        'pan_uti'          => 'pan-uti-pvc',
-        'pan_incometax'    => 'pan-instant-pvc',
         'eshram'           => 'eshram-pvc-card',
         'driving_licence'  => 'make-driving-licence-card',
         'healthid'         => 'healthid-pvc',

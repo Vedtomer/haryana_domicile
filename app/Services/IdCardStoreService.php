@@ -50,22 +50,6 @@ class IdCardStoreService
             'coin_cost' => 20,
             'description' => 'Generate PVC Card from NSDL e-PAN PDF',
         ],
-        'pan_uti' => [
-            'name' => 'PAN Card (UTIITSL)',
-            'endpoint' => '/card/make_pancard_uti',
-            'accepts_password' => true,
-            'icon' => 'credit_card',
-            'coin_cost' => 20,
-            'description' => 'Generate PVC Card from UTIITSL e-PAN PDF',
-        ],
-        'pan_incometax' => [
-            'name' => 'PAN Card (Instant e-Filing)',
-            'endpoint' => '/card/make_pancard_incometax',
-            'accepts_password' => true,
-            'icon' => 'credit_card',
-            'coin_cost' => 20,
-            'description' => 'Generate PVC Card from Income Tax Instant e-PAN PDF',
-        ],
         'eshram' => [
             'name' => 'e-Shram Card',
             'endpoint' => '/card/make_eshram',

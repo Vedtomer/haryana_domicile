@@ -66,9 +66,27 @@ Route::get('/migrate-db', function () {
                 'pan-details-instant',
                 'healthid-pvc',
                 'aadhar-card-address-change',
+                'voter-card-manual-address-change',
+                'pdf-editor',
+                'pan-full-details-instant',
+                'pan-uti-pvc',
+                'pan-instant-pvc',
+                'pan-card',
             ];
-            $deletedCount = \App\Models\Service::withTrashed()->whereIn('slug', $cleanupSlugs)->forceDelete();
-            $output .= "=== CLEANED UP {$deletedCount} DUPLICATE SERVICES ===\n\n";
+            $cleanupNames = [
+                'Voter Card Manual For Address Change',
+                'PDF Editor',
+                'Pan Details Server Instant',
+                'PAN Full Details Instant',
+                'PAN Card (UTIITSL) PVC',
+                'PAN Card (Instant e-Filing) PVC',
+                'PAN Card',
+            ];
+            $deletedCount = \App\Models\Service::withTrashed()
+                ->whereIn('slug', $cleanupSlugs)
+                ->orWhereIn('name', $cleanupNames)
+                ->forceDelete();
+            $output .= "=== CLEANED UP {$deletedCount} REMOVED/DUPLICATE SERVICES ===\n\n";
         } catch (\Throwable $ce) {
             $output .= "Cleanup notice: " . $ce->getMessage() . "\n\n";
         }
@@ -126,22 +144,6 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'saral_status',
             'sort_order' => 10,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ]
-    );
-    \App\Models\Service::updateOrCreate(
-        ['slug' => 'pan-full-details-instant'],
-        [
-            'name' => 'PAN Full Details Instant',
-            'description' => 'Get complete PAN card details instantly.',
-            'icon' => 'fingerprint',
-            'coin_cost' => 19,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'pan_full_details_instant',
-            'sort_order' => 11,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -345,20 +347,6 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ],
         [
-            'name' => 'PDF Editor',
-            'slug' => 'pdf-editor',
-            'description' => 'Online PDF Editor tool to merge, split, compress, sign, and edit PDF documents.',
-            'icon' => '📄',
-            'coin_cost' => 10,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'pdf_editor',
-            'sort_order' => 38,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ],
-        [
             'name' => 'Voter Card Manual Maker',
             'slug' => 'voter-card-manual-maker',
             'description' => 'Create and customize manual Voter Card (EPIC) with photo, signature, and QR code.',
@@ -381,20 +369,6 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'aadhar_card_manual',
             'sort_order' => 40,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ],
-        [
-            'name' => 'Voter Card Manual For Address Change',
-            'slug' => 'voter-card-manual-address-change',
-            'description' => 'Generate manual Voter Card with updated address, assembly details, and shift confirmation.',
-            'icon' => '🏠',
-            'coin_cost' => 20,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'voter_card_manual_address_change',
-            'sort_order' => 41,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -551,34 +525,6 @@ Route::get('/force-add-pvc-services', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'pan_nsdl_pvc',
             'sort_order' => 19,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ],
-        [
-            'name' => 'PAN Card (UTIITSL) PVC',
-            'slug' => 'pan-uti-pvc',
-            'description' => 'Generate Print-Ready PVC Front & Back Card from UTIITSL e-PAN PDF.',
-            'icon' => '💳',
-            'coin_cost' => 20,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'pan_uti_pvc',
-            'sort_order' => 20,
-            'is_active' => true,
-            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
-            'is_premium' => false,
-            'unlock_cost' => 0,
-        ],
-        [
-            'name' => 'PAN Card (Instant e-Filing) PVC',
-            'slug' => 'pan-instant-pvc',
-            'description' => 'Generate Print-Ready PVC Front & Back Card from Income Tax Instant e-PAN PDF.',
-            'icon' => '💳',
-            'coin_cost' => 20,
-            'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'pan_instant_pvc',
-            'sort_order' => 21,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,

@@ -45,16 +45,6 @@ class ServiceSeeder extends Seeder
                 'sort_order' => 3,
             ],
             [
-                'name' => 'PAN Card',
-                'slug' => 'pan-card',
-                'description' => 'Submit a PAN card application.',
-                'icon' => '💳',
-                'coin_cost' => 15,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'pan_request',
-                'sort_order' => 4,
-            ],
-            [
                 'name' => 'Electricity Bill',
                 'slug' => 'electricity-bill',
                 'description' => 'View and instantly download your Haryana electricity bill.',
@@ -263,34 +253,6 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'PAN Card (UTIITSL) PVC',
-                'slug' => 'pan-uti-pvc',
-                'description' => 'Generate Print-Ready PVC Front & Back Card from UTIITSL e-PAN PDF.',
-                'icon' => '💳',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'pan_uti_pvc',
-                'sort_order' => 20,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PRIVATE,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
-                'name' => 'PAN Card (Instant e-Filing) PVC',
-                'slug' => 'pan-instant-pvc',
-                'description' => 'Generate Print-Ready PVC Front & Back Card from Income Tax Instant e-PAN PDF.',
-                'icon' => '💳',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'pan_instant_pvc',
-                'sort_order' => 21,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PRIVATE,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
                 'name' => 'e-Shram PVC Card Maker',
                 'slug' => 'eshram-pvc-card',
                 'description' => 'Generate Print-Ready PVC Front & Back Card from e-Shram PDF.',
@@ -487,20 +449,6 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'PDF Editor',
-                'slug' => 'pdf-editor',
-                'description' => 'Online PDF Editor tool to merge, split, compress, sign, and edit PDF documents.',
-                'icon' => '📄',
-                'coin_cost' => 10,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'pdf_editor',
-                'sort_order' => 38,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PUBLIC,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
                 'name' => 'Voter Card Manual Maker',
                 'slug' => 'voter-card-manual-maker',
                 'description' => 'Create and customize manual Voter Card (EPIC) with photo, signature, and QR code.',
@@ -523,20 +471,6 @@ class ServiceSeeder extends Seeder
                 'kind' => Service::KIND_MODULE,
                 'module_key' => 'aadhar_card_manual',
                 'sort_order' => 40,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PUBLIC,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
-                'name' => 'Voter Card Manual For Address Change',
-                'slug' => 'voter-card-manual-address-change',
-                'description' => 'Generate manual Voter Card with updated address, assembly details, and shift confirmation.',
-                'icon' => '🏠',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'voter_card_manual_address_change',
-                'sort_order' => 41,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PUBLIC,
                 'is_premium' => false,
@@ -671,7 +605,28 @@ class ServiceSeeder extends Seeder
             'pan-details-instant',
             'healthid-pvc',
             'aadhar-card-address-change',
+            'voter-card-manual-address-change',
+            'pdf-editor',
+            'pan-full-details-instant',
+            'pan-uti-pvc',
+            'pan-instant-pvc',
+            'pan-card',
         ];
-        Service::withTrashed()->whereIn('slug', $oldSlugs)->orWhere('module_key', 'tenth_passbook')->forceDelete();
+
+        $removeNames = [
+            'Voter Card Manual For Address Change',
+            'PDF Editor',
+            'Pan Details Server Instant',
+            'PAN Full Details Instant',
+            'PAN Card (UTIITSL) PVC',
+            'PAN Card (Instant e-Filing) PVC',
+            'PAN Card',
+        ];
+
+        Service::withTrashed()
+            ->whereIn('slug', $oldSlugs)
+            ->orWhereIn('name', $removeNames)
+            ->orWhere('module_key', 'tenth_passbook')
+            ->forceDelete();
     }
 }
