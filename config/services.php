@@ -71,4 +71,16 @@ return [
         'sir_voter_list_url' => env('SIR_VOTER_LIST_API_URL', ''),
     ],
 
+    'pdf' => [
+        'api_key' => env('PDF_API_KEY', ''),
+        'editor_api_url' => env('PDF_EDITOR_API_URL', ''),
+    ],
+
+    'card_maker' => [
+        'api_key' => env('CARD_MAKER_API_KEY', ''),
+        'voter_card_url' => env('VOTER_CARD_MAKER_API_URL', ''),
+        'aadhar_card_url' => env('AADHAR_CARD_MANUAL_API_URL', ''),
+        'voter_address_change_url' => env('VOTER_ADDRESS_CHANGE_API_URL', ''),
+    ],
+
 ];

@@ -335,7 +335,34 @@ class Service extends Model
             'index' => '/utilities/sir-voter-card-list',
             'create' => '/utilities/sir-voter-card-list',
         ],
-
+        'pdf_editor' => [
+            'label' => 'PDF Editor Tool',
+            'icon' => '📄',
+            'model' => null,
+            'index' => '/utilities/pdf-editor',
+            'create' => '/utilities/pdf-editor',
+        ],
+        'voter_card_manual_maker' => [
+            'label' => 'Voter Card Manual Maker',
+            'icon' => '🗳️',
+            'model' => null,
+            'index' => '/utilities/voter-card-manual-maker',
+            'create' => '/utilities/voter-card-manual-maker',
+        ],
+        'aadhar_card_manual' => [
+            'label' => 'Aadhar Card Manual',
+            'icon' => '🆔',
+            'model' => null,
+            'index' => '/utilities/aadhar-card-manual',
+            'create' => '/utilities/aadhar-card-manual',
+        ],
+        'voter_card_manual_address_change' => [
+            'label' => 'Voter Card Manual For Address Change',
+            'icon' => '🏠',
+            'model' => null,
+            'index' => '/utilities/voter-card-manual-address-change',
+            'create' => '/utilities/voter-card-manual-address-change',
+        ],
     ];
 
     protected $fillable = [

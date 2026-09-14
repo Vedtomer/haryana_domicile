@@ -323,6 +323,62 @@ Route::get('/force-add-service', function () {
             'is_premium' => false,
             'unlock_cost' => 0,
         ],
+        [
+            'name' => 'PDF Editor',
+            'slug' => 'pdf-editor',
+            'description' => 'Online PDF Editor tool to merge, split, compress, sign, and edit PDF documents.',
+            'icon' => '📄',
+            'coin_cost' => 10,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pdf_editor',
+            'sort_order' => 38,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Voter Card Manual Maker',
+            'slug' => 'voter-card-manual-maker',
+            'description' => 'Create and customize manual Voter Card (EPIC) with photo, signature, and QR code.',
+            'icon' => '🗳️',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_card_manual_maker',
+            'sort_order' => 39,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Aadhar Card Manual',
+            'slug' => 'aadhar-card-manual',
+            'description' => 'Generate and customize manual Aadhaar Card with photo, QR code, and regional language details.',
+            'icon' => '🆔',
+            'coin_cost' => 25,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_card_manual',
+            'sort_order' => 40,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Voter Card Manual For Address Change',
+            'slug' => 'voter-card-manual-address-change',
+            'description' => 'Generate manual Voter Card with updated address, assembly details, and shift confirmation.',
+            'icon' => '🏠',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_card_manual_address_change',
+            'sort_order' => 41,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
     ];
 
     $userIds = \App\Models\User::pluck('id')->toArray();
@@ -914,6 +970,30 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/SirVoterCardList');
     })->name('utilities.sir-voter-card-list');
     Route::post('/utilities/sir-voter-card-list/search', [\App\Http\Controllers\SirVoterCardListController::class, 'search'])->name('utilities.sir-voter-card-list.search');
+
+    // 8. PDF Editor
+    Route::get('/utilities/pdf-editor', function () {
+        return Inertia::render('Utilities/PdfEditor');
+    })->name('utilities.pdf-editor');
+    Route::post('/utilities/pdf-editor/process', [\App\Http\Controllers\PdfEditorController::class, 'process'])->name('utilities.pdf-editor.process');
+
+    // 9. Voter Card Manual Maker
+    Route::get('/utilities/voter-card-manual-maker', function () {
+        return Inertia::render('Utilities/VoterCardManualMaker');
+    })->name('utilities.voter-card-manual-maker');
+    Route::post('/utilities/voter-card-manual-maker/generate', [\App\Http\Controllers\VoterCardManualMakerController::class, 'generate'])->name('utilities.voter-card-manual-maker.generate');
+
+    // 10. Aadhar Card Manual
+    Route::get('/utilities/aadhar-card-manual', function () {
+        return Inertia::render('Utilities/AadharCardManual');
+    })->name('utilities.aadhar-card-manual');
+    Route::post('/utilities/aadhar-card-manual/generate', [\App\Http\Controllers\AadharCardManualController::class, 'generate'])->name('utilities.aadhar-card-manual.generate');
+
+    // 11. Voter Card Manual For Address Change
+    Route::get('/utilities/voter-card-manual-address-change', function () {
+        return Inertia::render('Utilities/VoterCardManualAddressChange');
+    })->name('utilities.voter-card-manual-address-change');
+    Route::post('/utilities/voter-card-manual-address-change/generate', [\App\Http\Controllers\VoterCardManualAddressChangeController::class, 'generate'])->name('utilities.voter-card-manual-address-change.generate');
 
     // Premium Service Unlock
     Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {
