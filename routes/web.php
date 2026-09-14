@@ -77,6 +77,8 @@ Route::get('/migrate-db', function () {
             . "<pre style='background:#111;color:#f87171;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>"
             . "</div>";
     }
+Route::get('/api/debug-services', function () {
+    return \App\Models\Service::orderBy('name')->get(['id', 'name', 'slug', 'module_key', 'is_active', 'kind']);
 });
 
 Route::get('/force-add-service', function () {
