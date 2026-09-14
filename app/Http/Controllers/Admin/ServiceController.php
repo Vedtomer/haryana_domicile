@@ -111,13 +111,17 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        $name = $service->name;
+
         if ($service->logo) {
             Storage::disk('public')->delete($service->logo);
         }
 
+        $service->users()->detach();
+
         $service->delete();
 
-        return back()->with('success', 'Service deleted.');
+        return back()->with('success', "Service '{$name}' has been removed successfully.");
     }
 
     public function toggleActive(Service $service)

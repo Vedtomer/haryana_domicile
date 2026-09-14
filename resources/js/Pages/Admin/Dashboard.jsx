@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import ConfirmDialog from '../../Components/ConfirmDialog';
 
 const TONES = {
     blue: 'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/60 text-blue-700 dark:text-blue-300',
@@ -107,7 +108,7 @@ function StatCard({ label, value, tone, url, icon }) {
     );
 }
 
-function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin }) {
+function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin, onToggleStatus, onDeleteClick }) {
     const isInactive = service.is_active === false;
     const isLockedPremium = !isInactive && service.is_premium && !service.is_unlocked;
     const isLicenseBlocked = !isInactive && !isAdmin && !hasLicense;
@@ -143,47 +144,100 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                 </div>
             )}
 
-            <div className="flex items-start justify-between gap-3">
-                {service.logo_url ? (
-                    <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-slate-700 flex-shrink-0" />
-                ) : (
-                    <span className="text-3xl leading-none">{service.icon}</span>
-                )}
-
-                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                    {isInactive ? (
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-600 text-white shadow-sm flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">block</span>
-                            UNAVAILABLE
-                        </span>
-                    ) : service.is_new ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs flex items-center gap-1 animate-pulse">
-                            <span>🔥</span>
-                            <span>NEW</span>
-                        </span>
-                    ) : null}
-
-                    {!isInactive && (
-                        isLockedPremium ? (
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[14px]">lock</span>
-                                PREMIUM
-                            </span>
-                        ) : isLicenseBlocked ? (
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[13px]">lock</span>
-                                LICENSE
-                            </span>
-                        ) : service.is_free ? (
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
-                                FREE
-                            </span>
-                        ) : (
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
-                                🪙 {service.coin_cost}
-                            </span>
-                        )
+            <div className="flex items-start justify-between gap-2 relative z-30">
+                <div className="flex items-center gap-2">
+                    {service.logo_url ? (
+                        <img src={service.logo_url} alt="" className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-slate-700 flex-shrink-0" />
+                    ) : (
+                        <span className="text-3xl leading-none">{service.icon}</span>
                     )}
+                </div>
+
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    {/* Admin Direct Action Bar (Toggle, Edit, Remove) */}
+                    {isAdmin && (
+                        <div className="flex items-center gap-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xs p-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs pointer-events-auto">
+                            {/* Toggle Active / Unavailable */}
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onToggleStatus(service);
+                                }}
+                                className={`p-1 rounded-md text-xs transition-colors cursor-pointer ${
+                                    service.is_active
+                                        ? 'text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50'
+                                        : 'text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/50'
+                                }`}
+                                title={service.is_active ? 'Click to mark as Unavailable' : 'Click to mark as Active'}
+                            >
+                                <span className="material-symbols-outlined text-[15px]">
+                                    {service.is_active ? 'visibility' : 'visibility_off'}
+                                </span>
+                            </button>
+
+                            {/* Edit Link */}
+                            <Link
+                                href={`/admin/services/${service.id}/edit`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-1 rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
+                                title="Edit Service"
+                            >
+                                <span className="material-symbols-outlined text-[15px]">edit</span>
+                            </Link>
+
+                            {/* Delete/Remove Button */}
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onDeleteClick(service);
+                                }}
+                                className="p-1 rounded-md text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50 transition-colors cursor-pointer hover:scale-105"
+                                title="Remove/Delete Service"
+                            >
+                                <span className="material-symbols-outlined text-[15px]">delete</span>
+                            </button>
+                        </div>
+                    )}
+
+                    <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                        {isInactive ? (
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-600 text-white shadow-sm flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[13px]">block</span>
+                                UNAVAILABLE
+                            </span>
+                        ) : service.is_new ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs flex items-center gap-1 animate-pulse">
+                                <span>🔥</span>
+                                <span>NEW</span>
+                            </span>
+                        ) : null}
+
+                        {!isInactive && (
+                            isLockedPremium ? (
+                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[14px]">lock</span>
+                                    PREMIUM
+                                </span>
+                            ) : isLicenseBlocked ? (
+                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[13px]">lock</span>
+                                    LICENSE
+                                </span>
+                            ) : service.is_free ? (
+                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
+                                    FREE
+                                </span>
+                            ) : (
+                                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
+                                    🪙 {service.coin_cost}
+                                </span>
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -256,6 +310,11 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [toDeleteService, setToDeleteService] = useState(null);
+
+    const handleToggleStatus = (service) => {
+        router.patch(`/admin/services/${service.id}/toggle-active`, {}, { preserveScroll: true });
+    };
 
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
@@ -371,7 +430,26 @@ export default function Dashboard({ services, stats, isAdmin }) {
 
              {/* Services Section Header & Search */}
             <div id="services" className="mb-6 scroll-mt-6">
-                <div className="flex items-center justify-end">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    {isAdmin ? (
+                        <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                            <Link
+                                href="/admin/services"
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all whitespace-nowrap"
+                            >
+                                <span className="material-symbols-outlined text-[17px]">home_repair_service</span>
+                                Manage All Services ({services?.length || 0})
+                            </Link>
+                            <Link
+                                href="/admin/services/create"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl shadow-2xs transition-all whitespace-nowrap"
+                            >
+                                <span className="material-symbols-outlined text-[17px]">add_circle</span>
+                                + Add Service
+                            </Link>
+                        </div>
+                    ) : <div />}
+
                     <div className="w-full sm:w-80 relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-[20px]">search</span>
                         <input
@@ -441,6 +519,8 @@ export default function Dashboard({ services, stats, isAdmin }) {
                              onRequireLicenseClick={handleRequireLicenseClick}
                              hasLicense={hasLicense}
                              isAdmin={isAdmin}
+                             onToggleStatus={handleToggleStatus}
+                             onDeleteClick={setToDeleteService}
                          />
                      ))}
                  </div>
@@ -510,6 +590,21 @@ export default function Dashboard({ services, stats, isAdmin }) {
                     </div>
                 </div>
             )}
+
+            {/* Service Delete Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!toDeleteService}
+                title="Delete Service?"
+                message={`Are you sure you want to permanently remove "${toDeleteService?.name}"? Users will no longer be able to see or use this service.`}
+                onConfirm={() =>
+                    router.delete(`/admin/services/${toDeleteService.id}`, {
+                        preserveScroll: true,
+                        onFinish: () => setToDeleteService(null),
+                    })
+                }
+                onCancel={() => setToDeleteService(null)}
+                confirmLabel="Yes, Remove Service"
+            />
         </AdminLayout>
     );
 }

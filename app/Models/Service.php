@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Service extends Model
 {
+    use SoftDeletes;
     const KIND_MODULE = 'module';   // user fills a built-in form, coins deducted instantly
     const KIND_MANUAL = 'manual';   // user submits a request, admin processes it
 

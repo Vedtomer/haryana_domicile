@@ -179,20 +179,6 @@ class ServiceSeeder extends Seeder
                 'unlock_cost' => 0,
             ],
             [
-                'name' => 'Pan Details Server Instant',
-                'slug' => 'pan-details-instant',
-                'description' => 'Get complete PAN card details instantly using PAN number.',
-                'icon' => 'fingerprint',
-                'coin_cost' => 29,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'pan_details_instant',
-                'sort_order' => 13,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PRIVATE,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
                 'name' => 'Smart PVC Card Maker',
                 'slug' => 'pvc-card-maker',
                 'description' => 'Generate Print-Ready PVC Front, Back & A4 Sheet from Haryana Family ID, Ayushman, Voter, PAN, e-Shram PDFs.',
@@ -327,20 +313,6 @@ class ServiceSeeder extends Seeder
                 'kind' => Service::KIND_MODULE,
                 'module_key' => 'make_driving_licence_card',
                 'sort_order' => 23,
-                'is_active' => true,
-                'visibility' => Service::VISIBILITY_PRIVATE,
-                'is_premium' => false,
-                'unlock_cost' => 0,
-            ],
-            [
-                'name' => 'ABHA Health ID PVC Card',
-                'slug' => 'healthid-pvc',
-                'description' => 'Generate Print-Ready PVC Front & Back Card from ABHA Health ID PDF.',
-                'icon' => '🏥',
-                'coin_cost' => 20,
-                'kind' => Service::KIND_MODULE,
-                'module_key' => 'healthid_pvc',
-                'sort_order' => 24,
                 'is_active' => true,
                 'visibility' => Service::VISIBILITY_PRIVATE,
                 'is_premium' => false,
@@ -643,9 +615,14 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            $existing = Service::where('slug', $service['slug'])->first();
+            $existing = Service::withTrashed()->where('slug', $service['slug'])->first();
             if (!$existing && $service['slug'] === 'make-driving-licence-card') {
-                $existing = Service::where('slug', 'driving-licence-pvc')->first();
+                $existing = Service::withTrashed()->where('slug', 'driving-licence-pvc')->first();
+            }
+
+            // If the service was removed/deleted by admin, do NOT recreate or restore it!
+            if ($existing && $existing->trashed()) {
+                continue;
             }
 
             if (!$existing) {
@@ -678,7 +655,7 @@ class ServiceSeeder extends Seeder
             }
         }
 
-        // Clean up old services that are no longer used
+        // Clean up old and duplicate services that are no longer used
         $oldSlugs = [
             'telegram-num',
             'telegram-aadhar',
@@ -688,7 +665,13 @@ class ServiceSeeder extends Seeder
             'mobile-to-details', // the old one
             'aadhar-update',
             'tenth-passbook',
+            'haryana-domocile',
+            'rc-pdf-instant',
+            'dl-pdf-instant',
+            'pan-details-instant',
+            'healthid-pvc',
+            'aadhar-card-address-change',
         ];
-        Service::whereIn('slug', $oldSlugs)->orWhere('module_key', 'tenth_passbook')->delete();
+        Service::withTrashed()->whereIn('slug', $oldSlugs)->orWhere('module_key', 'tenth_passbook')->forceDelete();
     }
 }

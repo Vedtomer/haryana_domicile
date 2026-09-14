@@ -58,6 +58,21 @@ Route::get('/migrate-db', function () {
             $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
         }
 
+        try {
+            $cleanupSlugs = [
+                'haryana-domocile',
+                'rc-pdf-instant',
+                'dl-pdf-instant',
+                'pan-details-instant',
+                'healthid-pvc',
+                'aadhar-card-address-change',
+            ];
+            $deletedCount = \App\Models\Service::withTrashed()->whereIn('slug', $cleanupSlugs)->forceDelete();
+            $output .= "=== CLEANED UP {$deletedCount} DUPLICATE SERVICES ===\n\n";
+        } catch (\Throwable $ce) {
+            $output .= "Cleanup notice: " . $ce->getMessage() . "\n\n";
+        }
+
 
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
