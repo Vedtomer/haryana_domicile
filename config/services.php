@@ -69,6 +69,7 @@ return [
     'voter' => [
         'api_key' => env('VOTER_API_KEY', ''),
         'sir_voter_list_url' => env('SIR_VOTER_LIST_API_URL', ''),
+        'official_portal_url' => env('SIR_VOTER_OFFICIAL_URL', 'https://voters.eci.gov.in/searchInSIR/S2UA4DPDF-JK4QWODSE'),
     ],
 
 ];

@@ -44,6 +44,10 @@ class SirVoterCardListController extends Controller
         $district = $request->input('district', '');
         $acName = $request->input('ac_name', '');
         $voterName = $request->input('voter_name', '');
+        $relativeName = $request->input('relative_name', '');
+        $partNo = $request->input('part_no', '');
+        $sectionNo = $request->input('section_no', '');
+        $officialPortalUrl = config('services.voter.official_portal_url', 'https://voters.eci.gov.in/searchInSIR/S2UA4DPDF-JK4QWODSE');
 
         // =========================================================================
         // API CONFIGURATION (Put your Voter Card List API URL & Key here when provided)
@@ -68,6 +72,9 @@ class SirVoterCardListController extends Controller
                         'district' => $district,
                         'ac_name' => $acName,
                         'voter_name' => $voterName,
+                        'relative_name' => $relativeName,
+                        'part_no' => $partNo,
+                        'section_no' => $sectionNo,
                         'key' => $apiKey,
                     ]);
 
@@ -82,6 +89,7 @@ class SirVoterCardListController extends Controller
                             'success' => true,
                             'total_found' => count($voters),
                             'voters' => $voters,
+                            'official_portal_url' => $officialPortalUrl,
                             'pdf_url' => $data['pdf_url'] ?? null,
                             'message' => 'Voter list retrieved successfully.'
                         ]);
@@ -143,6 +151,7 @@ class SirVoterCardListController extends Controller
                 'success' => true,
                 'total_found' => count($mockVoters),
                 'voters' => $mockVoters,
+                'official_portal_url' => $officialPortalUrl,
                 'is_demo' => true,
                 'message' => 'Voter list found (API configuration pending. Edit API in controller when provided).'
             ]);
