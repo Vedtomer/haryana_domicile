@@ -15,14 +15,93 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $services = Service::query()
+        $rawServices = Service::query()
             ->with('users')
             ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
             ->ordered()
-            ->get()
-            ->map(function (Service $service) use ($user, $isAdmin) {
+            ->get();
+
+        // Pre-aggregate ServiceRequest counts in 2 bulk queries instead of 50+ sequential queries
+        try {
+            $reqByServiceId = ServiceRequest::query()
+                ->when(!$isAdmin, fn ($q) => $q->where('user_id', $user->id))
+                ->whereNotNull('service_id')
+                ->groupBy('service_id')
+                ->selectRaw('service_id, count(*) as aggregate')
+                ->pluck('aggregate', 'service_id')
+                ->all();
+        } catch (\Throwable $e) {
+            $reqByServiceId = [];
+        }
+
+        try {
+            $reqByServiceName = ServiceRequest::query()
+                ->when(!$isAdmin, fn ($q) => $q->where('user_id', $user->id))
+                ->whereNull('service_id')
+                ->whereNotNull('service_name')
+                ->groupBy('service_name')
+                ->selectRaw('service_name, count(*) as aggregate')
+                ->pluck('aggregate', 'service_name')
+                ->all();
+        } catch (\Throwable $e) {
+            $reqByServiceName = [];
+        }
+
+        // Pre-calculate QR print count
+        $printJobCount = 0;
+        try {
+            if ($isAdmin) {
+                $printJobCount = \App\Models\PrintJob::count();
+            } else {
+                $shop = \App\Models\PrintShop::where('user_id', $user->id)->first();
+                $printJobCount = $shop ? \App\Models\PrintJob::where('print_shop_id', $shop->id)->count() : 0;
+            }
+        } catch (\Throwable $e) {
+            $printJobCount = 0;
+        }
+
+        // Pre-calculate built-in module model counts
+        $modelCounts = [];
+        $moduleModels = [
+            \App\Models\MarriageForm::class,
+            \App\Models\MarriageAffidavit::class,
+            \App\Models\BirthRecord::class,
+            \App\Models\HaryanaDomicile::class,
+            \App\Models\PanRequest::class,
+            \App\Models\ManualPanCard::class,
+            \App\Models\AirtelPassbook::class,
+        ];
+        foreach ($moduleModels as $modelClass) {
+            if (class_exists($modelClass)) {
+                try {
+                    $q = $modelClass::query();
+                    if (!$isAdmin) {
+                        $q->where('user_id', $user->id);
+                    }
+                    $modelCounts[$modelClass] = $q->count();
+                } catch (\Throwable $e) {
+                    $modelCounts[$modelClass] = 0;
+                }
+            }
+        }
+
+        $services = $rawServices->map(function (Service $service) use ($user, $isAdmin, $reqByServiceId, $reqByServiceName, $printJobCount, $modelCounts) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
                 || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator']);
+
+            $count = 0;
+            if ($service->module_key === 'qr_to_print') {
+                $count = $printJobCount;
+            } elseif ($service->isModule()) {
+                $model = $service->moduleModel();
+                if ($model && isset($modelCounts[$model])) {
+                    $count = $modelCounts[$model];
+                } else {
+                    $count = ($reqByServiceId[$service->id] ?? 0) + ($reqByServiceName[$service->name] ?? 0);
+                }
+            } else {
+                $count = ($reqByServiceId[$service->id] ?? 0) + ($reqByServiceName[$service->name] ?? 0);
+            }
 
             return [
                 'id' => $service->id,
@@ -38,7 +117,7 @@ class DashboardController extends Controller
                 'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
                 'is_active' => (bool) $service->is_active,
                 'url' => $service->targetUrl(),
-                'count' => $this->countFor($service, $user, $isAdmin),
+                'count' => $count,
                 'is_new' => (bool) $isNew,
             ];
         });
@@ -52,45 +131,22 @@ class DashboardController extends Controller
         ]);
     }
 
-    /**
-     * Records created through this service — everyone's for an admin,
-     * only their own for a regular user.
-     */
-    private function countFor(Service $service, User $user, bool $isAdmin): int
-    {
-        if ($service->module_key === 'qr_to_print') {
-            if ($isAdmin) {
-                return \App\Models\PrintJob::count();
-            }
-            $shop = \App\Models\PrintShop::where('user_id', $user->id)->first();
-            return $shop ? \App\Models\PrintJob::where('print_shop_id', $shop->id)->count() : 0;
-        }
-
-        if ($service->isModule()) {
-            $model = $service->moduleModel();
-            if (!$model) {
-                $query = ServiceRequest::where(function ($q) use ($service) {
-                    $q->where('service_id', $service->id)
-                      ->orWhere('service_name', $service->name);
-                });
-            } else {
-                $query = $model::query();
-            }
-        } else {
-            $query = ServiceRequest::where('service_id', $service->id);
-        }
-
-        if (!$isAdmin) {
-            $query->where('user_id', $user->id);
-        }
-
-        return $query->count();
-    }
-
     private function userStats(User $user): array
     {
-        $requests = ServiceRequest::where('user_id', $user->id);
-        $totalServices = Service::visibleTo($user)->count();
+        try {
+            $requests = ServiceRequest::where('user_id', $user->id);
+            $pendingCount = (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count();
+            $completedCount = (clone $requests)->whereIn('status', ['completed', 'accepted'])->count();
+        } catch (\Throwable $e) {
+            $pendingCount = 0;
+            $completedCount = 0;
+        }
+
+        try {
+            $totalServices = Service::visibleTo($user)->count();
+        } catch (\Throwable $e) {
+            $totalServices = 0;
+        }
 
         $licenseLabel = $user->hasActiveLicense() 
             ? ($user->licenseDaysLeft() . ' Days Left') 
@@ -100,26 +156,60 @@ class DashboardController extends Controller
             ['label' => 'Total Services', 'value' => $totalServices, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
             ['label' => '6M Portal License', 'value' => $licenseLabel, 'tone' => $user->hasActiveLicense() ? 'dark-green' : 'dark-amber', 'url' => '#license', 'icon' => 'vpn_key'],
-            ['label' => 'Pending', 'value' => (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
-            ['label' => 'Completed', 'value' => (clone $requests)->whereIn('status', ['completed', 'accepted'])->count(), 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed', 'icon' => 'check_circle'],
+            ['label' => 'Pending', 'value' => $pendingCount, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
+            ['label' => 'Completed', 'value' => $completedCount, 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed', 'icon' => 'check_circle'],
         ];
     }
 
     private function adminStats(): array
     {
-        $activeKeys = \App\Models\LicenseKey::where('status', \App\Models\LicenseKey::STATUS_ACTIVE)->count();
-        $totalKeys = \App\Models\LicenseKey::count();
+        try {
+            $activeKeys = \App\Models\LicenseKey::where('status', \App\Models\LicenseKey::STATUS_ACTIVE)->count();
+        } catch (\Throwable $e) {
+            $activeKeys = 0;
+        }
+
+        try {
+            $userCount = User::where('type', 'user')->count();
+        } catch (\Throwable $e) {
+            $userCount = 0;
+        }
+
+        try {
+            $serviceCount = Service::count();
+        } catch (\Throwable $e) {
+            $serviceCount = 0;
+        }
+
+        try {
+            $pendingRequests = ServiceRequest::where('status', 'pending')->count();
+            $totalRequests = ServiceRequest::count();
+        } catch (\Throwable $e) {
+            $pendingRequests = 0;
+            $totalRequests = 0;
+        }
+
+        try {
+            $pendingReactivations = \App\Models\ReactivationRequest::where('status', 'pending')->count();
+        } catch (\Throwable $e) {
+            $pendingReactivations = 0;
+        }
+
+        try {
+            $pendingCoins = \App\Models\CoinPurchaseRequest::where('status', 'pending')->count();
+        } catch (\Throwable $e) {
+            $pendingCoins = 0;
+        }
 
         return [
-            ['label' => 'Manage Users', 'value' => User::where('type', 'user')->count(), 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
+            ['label' => 'Manage Users', 'value' => $userCount, 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
             ['label' => 'Manage License Keys', 'value' => "{$activeKeys} Active", 'tone' => 'dark-indigo', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
-            ['label' => 'Manage Services', 'value' => Service::count(), 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
+            ['label' => 'Manage Services', 'value' => $serviceCount, 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
-            ['label' => 'Pending Requests', 'value' => ServiceRequest::where('status', 'pending')->count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
-            ['label' => 'Service Requests', 'value' => ServiceRequest::count(), 'tone' => 'dark-purple', 'url' => '/admin/service-requests', 'icon' => 'assignment'],
-            ['label' => 'Reactivation Requests', 'value' => \App\Models\ReactivationRequest::where('status', 'pending')->count() . ' Pending', 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests', 'icon' => 'how_to_reg'],
-            ['label' => 'Coin Requests', 'value' => \App\Models\CoinPurchaseRequest::where('status', 'pending')->count() . ' Pending', 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
+            ['label' => 'Pending Requests', 'value' => $pendingRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
+            ['label' => 'Service Requests', 'value' => $totalRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests', 'icon' => 'assignment'],
+            ['label' => 'Reactivation Requests', 'value' => "{$pendingReactivations} Pending", 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests', 'icon' => 'how_to_reg'],
+            ['label' => 'Coin Requests', 'value' => "{$pendingCoins} Pending", 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
         ];
     }
-
 }
