@@ -911,9 +911,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     // 7. S.I.R Voter Card List
     Route::get('/utilities/sir-voter-card-list', function () {
-        return Inertia::render('Utilities/SirVoterCardList', [
-            'officialUrl' => config('services.voter.official_portal_url', 'https://voters.eci.gov.in/searchInSIR/S2UA4DPDF-JK4QWODSE'),
-        ]);
+        return Inertia::render('Utilities/SirVoterCardList');
     })->name('utilities.sir-voter-card-list');
     Route::post('/utilities/sir-voter-card-list/search', [\App\Http\Controllers\SirVoterCardListController::class, 'search'])->name('utilities.sir-voter-card-list.search');
 
