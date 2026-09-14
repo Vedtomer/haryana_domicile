@@ -1076,6 +1076,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.aadhar-full-name-change');
     Route::post('/utilities/aadhar-full-name-change/update', [\App\Http\Controllers\AadharFullNameChangeController::class, 'update'])->name('utilities.aadhar-full-name-change.update');
 
+    // 16. ABHA Health ID Make
+    Route::get('/utilities/abha-health-id-make', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'index'])->name('utilities.abha-health-id-make');
+    Route::post('/utilities/abha-health-id-make/send-otp', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'sendOtp'])->name('utilities.abha-health-id-make.send-otp');
+    Route::post('/utilities/abha-health-id-make/verify-otp', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'verifyOtp'])->name('utilities.abha-health-id-make.verify-otp');
+
     // Premium Service Unlock
     Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {
         $user = auth()->user();

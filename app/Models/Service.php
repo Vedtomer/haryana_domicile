@@ -391,6 +391,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-full-name-change',
             'create' => '/utilities/aadhar-full-name-change',
         ],
+        'abha_health_id_make' => [
+            'label' => 'ABHA Health ID Make',
+            'icon' => '🏥',
+            'model' => null,
+            'index' => '/utilities/abha-health-id-make',
+            'create' => '/utilities/abha-health-id-make',
+        ],
     ];
 
     protected $fillable = [

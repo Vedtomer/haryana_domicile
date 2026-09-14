@@ -626,6 +626,20 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'ABHA Health ID Make',
+                'slug' => 'abha-health-id-make',
+                'description' => 'Create and download new Ayushman Bharat Health Account (ABHA) Card online via ABDM v3.',
+                'icon' => '🏥',
+                'coin_cost' => 20,
+                'kind' => Service::KIND_MODULE,
+                'module_key' => 'abha_health_id_make',
+                'sort_order' => 46,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+            ],
         ];
 
         foreach ($services as $service) {
