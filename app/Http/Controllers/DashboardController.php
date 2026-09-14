@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        $services = Service::active()
+        $services = Service::query()
             ->with('users')
             ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
             ->ordered()
@@ -36,6 +36,7 @@ class DashboardController extends Controller
                 'is_premium' => $service->is_premium,
                 'unlock_cost' => $service->unlock_cost,
                 'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
+                'is_active' => (bool) $service->is_active,
                 'url' => $service->targetUrl(),
                 'count' => $this->countFor($service, $user, $isAdmin),
                 'is_new' => (bool) $isNew,
@@ -89,7 +90,7 @@ class DashboardController extends Controller
     private function userStats(User $user): array
     {
         $requests = ServiceRequest::where('user_id', $user->id);
-        $totalServices = Service::active()->visibleTo($user)->count();
+        $totalServices = Service::visibleTo($user)->count();
 
         $licenseLabel = $user->hasActiveLicense() 
             ? ($user->licenseDaysLeft() . ' Days Left') 

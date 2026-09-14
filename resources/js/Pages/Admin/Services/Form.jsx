@@ -191,7 +191,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                     <label className="flex items-center gap-2 mt-2">
                         <input type="checkbox" className="w-5 h-5 rounded text-blue-600"
                             checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} />
-                        <span className="text-sm text-gray-700">Visible to users</span>
+                        <span className="text-sm text-gray-700 font-medium">Active (if unchecked, service is marked Unavailable &amp; disabled)</span>
                     </label>
                 </div>
             </div>

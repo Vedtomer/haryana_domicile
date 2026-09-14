@@ -59,6 +59,10 @@ export default function Home({ services = [] }) {
     const filteredServices = sortedServices.filter((service) => matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
+        if (service.is_active === false) {
+            return;
+        }
+
         if (!isLoggedIn) {
             setSelectedServiceForModal(service);
             return;
@@ -185,57 +189,92 @@ export default function Home({ services = [] }) {
                         {/* 3D Services Grid (Only Service Names & Icons) */}
                         {filteredServices.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
-                                {filteredServices.map((service) => (
-                                    <div
-                                        key={service.id}
-                                        onClick={() => handleServiceClick(service)}
-                                        className="relative bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 border-b-[5px] border-b-slate-300 dark:border-b-slate-700 hover:border-b-blue-600 dark:hover:border-b-blue-500 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 group cursor-pointer flex flex-col items-center justify-between text-center min-h-[170px] sm:min-h-[190px]"
-                                    >
-                                        {/* Top Corner NEW Badge */}
-                                        {service.is_new && (
-                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs animate-pulse">
-                                                NEW
-                                            </span>
-                                        )}
+                                {filteredServices.map((service) => {
+                                    const isInactive = service.is_active === false;
 
-                                        {/* 3D Embossed Logo/Icon Container */}
-                                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl p-2.5 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-800 dark:to-slate-750 border border-slate-200/80 dark:border-slate-700 shadow-inner flex items-center justify-center group-hover:scale-110 group-hover:rotate-1 transition-transform duration-300 flex-shrink-0 mt-2">
-                                            {service.logo_url ? (
-                                                <img
-                                                    src={service.logo_url}
-                                                    alt={service.name}
-                                                    className="w-10 h-10 sm:w-11 sm:h-11 object-cover rounded-xl"
-                                                />
-                                            ) : (
-                                                <span className="text-3xl sm:text-4xl leading-none select-none">
-                                                    {service.icon || '📄'}
+                                    return (
+                                        <div
+                                            key={service.id}
+                                            onClick={() => !isInactive && handleServiceClick(service)}
+                                            className={`relative bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 border-b-[5px] transition-all duration-300 flex flex-col items-center justify-between text-center min-h-[170px] sm:min-h-[190px] overflow-hidden ${
+                                                isInactive
+                                                    ? 'border-b-slate-300 dark:border-b-slate-700 cursor-not-allowed opacity-90 select-none'
+                                                    : 'border-b-slate-300 dark:border-b-slate-700 hover:border-b-blue-600 dark:hover:border-b-blue-500 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] group cursor-pointer'
+                                            }`}
+                                        >
+                                            {/* Prominent UNAVAILABLE Center Overlay for Inactive Services */}
+                                            {isInactive && (
+                                                <div className="absolute inset-0 z-20 bg-slate-950/45 dark:bg-slate-950/70 backdrop-blur-[2px] flex flex-col items-center justify-center p-2 text-center pointer-events-none">
+                                                    <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center mb-1.5 shadow-md ring-3 ring-red-500/30">
+                                                        <span className="material-symbols-outlined text-xl font-bold">block</span>
+                                                    </div>
+                                                    <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase text-white bg-red-600 px-2.5 py-0.5 rounded-full shadow-xs">
+                                                        UNAVAILABLE
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-white/95 drop-shadow-md mt-1">
+                                                        Currently Unavailable
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {/* Top Corner Badge */}
+                                            {isInactive ? (
+                                                <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-red-600 text-white shadow-xs flex items-center gap-0.5 z-10">
+                                                    <span className="material-symbols-outlined text-[11px]">block</span>
+                                                    UNAVAILABLE
                                                 </span>
-                                            )}
-                                        </div>
+                                            ) : service.is_new ? (
+                                                <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs animate-pulse">
+                                                    NEW
+                                                </span>
+                                            ) : null}
 
-                                        {/* Only Service Name */}
-                                        <div className="my-auto px-1">
-                                            <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
-                                                {service.name}
-                                            </h3>
-                                        </div>
+                                            {/* 3D Embossed Logo/Icon Container */}
+                                            <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl p-2.5 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-800 dark:to-slate-750 border border-slate-200/80 dark:border-slate-700 shadow-inner flex items-center justify-center flex-shrink-0 mt-2 ${!isInactive ? 'group-hover:scale-110 group-hover:rotate-1 transition-transform duration-300' : ''}`}>
+                                                {service.logo_url ? (
+                                                    <img
+                                                        src={service.logo_url}
+                                                        alt={service.name}
+                                                        className="w-10 h-10 sm:w-11 sm:h-11 object-cover rounded-xl"
+                                                    />
+                                                ) : (
+                                                    <span className="text-3xl sm:text-4xl leading-none select-none">
+                                                        {service.icon || '📄'}
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                        {/* Subtle Status Indicator */}
-                                        <div className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                            {isLoggedIn ? (
-                                                <>
-                                                    <span>Open</span>
-                                                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
-                                                </>
+                                            {/* Only Service Name */}
+                                            <div className="my-auto px-1">
+                                                <h3 className={`font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug ${!isInactive ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors' : ''}`}>
+                                                    {service.name}
+                                                </h3>
+                                            </div>
+
+                                            {/* Subtle Status Indicator */}
+                                            {isInactive ? (
+                                                <div className="inline-flex items-center gap-1 text-[11px] font-bold text-red-600 dark:text-red-400">
+                                                    <span className="material-symbols-outlined text-[13px]">block</span>
+                                                    <span>Unavailable</span>
+                                                </div>
                                             ) : (
-                                                <>
-                                                    <span className="material-symbols-outlined text-[13px]">lock</span>
-                                                    <span>Login to Use</span>
-                                                </>
+                                                <div className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    {isLoggedIn ? (
+                                                        <>
+                                                            <span>Open</span>
+                                                            <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <span className="material-symbols-outlined text-[13px]">lock</span>
+                                                            <span>Login to Use</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8">

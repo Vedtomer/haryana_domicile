@@ -108,21 +108,41 @@ function StatCard({ label, value, tone, url, icon }) {
 }
 
 function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin }) {
-    const isLockedPremium = service.is_premium && !service.is_unlocked;
-    const isLicenseBlocked = !isAdmin && !hasLicense;
+    const isInactive = service.is_active === false;
+    const isLockedPremium = !isInactive && service.is_premium && !service.is_unlocked;
+    const isLicenseBlocked = !isInactive && !isAdmin && !hasLicense;
 
     const cardContent = (
-        <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border transition-all duration-200 ${
-            service.is_new
+        <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border transition-all duration-200 overflow-hidden ${
+            isInactive
+                ? 'border-gray-300 dark:border-slate-800 shadow-sm opacity-90 select-none'
+                : service.is_new
                 ? 'border-amber-400 dark:border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-400/40'
                 : 'border-gray-200 dark:border-slate-800 shadow-sm'
         } ${
-            isLockedPremium 
+            isInactive
+                ? 'cursor-not-allowed'
+                : isLockedPremium 
                 ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100 dark:hover:shadow-amber-950/30' 
                 : isLicenseBlocked
                 ? 'cursor-pointer hover:border-red-400 hover:shadow-red-100 dark:hover:shadow-red-950/30'
                 : 'hover:shadow-lg hover:border-blue-300 dark:hover:border-indigo-500 hover:-translate-y-1'
         }`}>
+            {/* Prominent UNAVAILABLE Center Overlay for Inactive Services */}
+            {isInactive && (
+                <div className="absolute inset-0 z-20 bg-slate-950/45 dark:bg-slate-950/70 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 text-center pointer-events-none">
+                    <div className="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center mb-2 shadow-lg ring-4 ring-red-500/30">
+                        <span className="material-symbols-outlined text-2xl font-bold">block</span>
+                    </div>
+                    <span className="text-xs sm:text-sm font-black tracking-widest uppercase text-white bg-red-600 px-3.5 py-1 rounded-full shadow-md">
+                        UNAVAILABLE
+                    </span>
+                    <span className="text-[11px] font-bold text-white/95 drop-shadow-md mt-1.5">
+                        Currently Unavailable
+                    </span>
+                </div>
+            )}
+
             <div className="flex items-start justify-between gap-3">
                 {service.logo_url ? (
                     <img src={service.logo_url} alt="" className="w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-slate-700 flex-shrink-0" />
@@ -131,36 +151,43 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                 )}
 
                 <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                    {service.is_new && (
+                    {isInactive ? (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-600 text-white shadow-sm flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[13px]">block</span>
+                            UNAVAILABLE
+                        </span>
+                    ) : service.is_new ? (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-xs flex items-center gap-1 animate-pulse">
                             <span>🔥</span>
                             <span>NEW</span>
                         </span>
-                    )}
+                    ) : null}
 
-                    {isLockedPremium ? (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px]">lock</span>
-                            PREMIUM
-                        </span>
-                    ) : isLicenseBlocked ? (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">lock</span>
-                            LICENSE
-                        </span>
-                    ) : service.is_free ? (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
-                            FREE
-                        </span>
-                    ) : (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
-                            🪙 {service.coin_cost}
-                        </span>
+                    {!isInactive && (
+                        isLockedPremium ? (
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-sm flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[14px]">lock</span>
+                                PREMIUM
+                            </span>
+                        ) : isLicenseBlocked ? (
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[13px]">lock</span>
+                                LICENSE
+                            </span>
+                        ) : service.is_free ? (
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
+                                FREE
+                            </span>
+                        ) : (
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
+                                🪙 {service.coin_cost}
+                            </span>
+                        )
                     )}
                 </div>
             </div>
 
-            <h3 className="mt-3 font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+            <h3 className={`mt-3 font-bold text-gray-800 dark:text-white line-clamp-2 ${!isInactive ? 'group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors' : ''}`}>
                 {service.name}
             </h3>
 
@@ -172,7 +199,12 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                 <span className="text-sm text-gray-500 dark:text-slate-400">
                     <span className="font-bold text-gray-800 dark:text-white text-base">{service.count}</span> total
                 </span>
-                {isLockedPremium ? (
+                {isInactive ? (
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px]">block</span>
+                        Unavailable
+                    </span>
+                ) : isLockedPremium ? (
                     <span className="text-xs font-bold text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Unlock →
                     </span>
@@ -188,6 +220,20 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
             </div>
         </div>
     );
+
+    if (isInactive) {
+        return (
+            <div 
+                className="cursor-not-allowed select-none"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+            >
+                {cardContent}
+            </div>
+        );
+    }
 
     if (isLicenseBlocked) {
         return <div onClick={() => onRequireLicenseClick(service)}>{cardContent}</div>;

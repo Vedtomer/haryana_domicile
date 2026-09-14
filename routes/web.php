@@ -8,7 +8,7 @@ use App\Http\Controllers\HaryanaDomicileController;
 use App\Http\Controllers\PdfCoordinateController;
 
 Route::get('/', function () {
-    $services = \App\Models\Service::active()
+    $services = \App\Models\Service::query()
         ->ordered()
         ->get()
         ->map(function (\App\Models\Service $service) {
@@ -26,6 +26,7 @@ Route::get('/', function () {
                 'is_free' => $service->isFree(),
                 'kind' => $service->kind,
                 'is_premium' => (bool) $service->is_premium,
+                'is_active' => (bool) $service->is_active,
                 'is_new' => (bool) $isNew,
                 'url' => $service->targetUrl(),
             ];

@@ -125,10 +125,10 @@ export default function Index({ services }) {
                     </div>
                     <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-semibold text-rose-500 uppercase">Hidden</p>
+                            <p className="text-xs font-semibold text-rose-500 uppercase">Unavailable</p>
                             <p className="text-2xl font-black text-rose-600 mt-0.5">{services.length - activeCount}</p>
                         </div>
-                        <span className="material-symbols-outlined text-rose-400 text-3xl">visibility_off</span>
+                        <span className="material-symbols-outlined text-rose-400 text-3xl">block</span>
                     </div>
                     <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
@@ -183,7 +183,7 @@ export default function Index({ services }) {
                                     : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
                             }`}
                         >
-                            Hidden ({services.length - activeCount})
+                            Unavailable ({services.length - activeCount})
                         </button>
                     </div>
                 </div>
@@ -267,7 +267,7 @@ export default function Index({ services }) {
                                                 >
                                                     {service.is_active ? 'check_circle' : 'cancel'}
                                                 </span>
-                                                {service.is_active ? 'Active' : 'Hidden'}
+                                                {service.is_active ? 'Active' : 'Unavailable'}
                                             </button>
                                         </td>
                                         <td className="px-5 py-4 whitespace-nowrap text-right">
