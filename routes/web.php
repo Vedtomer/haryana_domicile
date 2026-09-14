@@ -379,6 +379,62 @@ Route::get('/force-add-service', function () {
             'is_premium' => false,
             'unlock_cost' => 0,
         ],
+        [
+            'name' => 'Aadhar Card Mobile Number Update',
+            'slug' => 'aadhar-mobile-update',
+            'description' => 'Link or update mobile number on Aadhaar Card with instant acknowledgement receipt.',
+            'icon' => '📱',
+            'coin_cost' => 25,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_mobile_update',
+            'sort_order' => 42,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Aadhar Card DOB Change',
+            'slug' => 'aadhar-dob-change',
+            'description' => 'Apply for Date of Birth (DOB) correction on Aadhaar Card with supporting documents.',
+            'icon' => '📅',
+            'coin_cost' => 25,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_dob_change',
+            'sort_order' => 43,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Aadhar Card Surname Change',
+            'slug' => 'aadhar-surname-change',
+            'description' => 'Update or change surname/last name on Aadhaar Card after marriage or legal correction.',
+            'icon' => '👤',
+            'coin_cost' => 25,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_surname_change',
+            'sort_order' => 44,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Aadhar Card Full Name Change',
+            'slug' => 'aadhar-full-name-change',
+            'description' => 'Correct or update full legal name on Aadhaar Card with identity proof verification.',
+            'icon' => '🪪',
+            'coin_cost' => 25,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_full_name_change',
+            'sort_order' => 45,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
     ];
 
     $userIds = \App\Models\User::pluck('id')->toArray();
@@ -994,6 +1050,30 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/VoterCardManualAddressChange');
     })->name('utilities.voter-card-manual-address-change');
     Route::post('/utilities/voter-card-manual-address-change/generate', [\App\Http\Controllers\VoterCardManualAddressChangeController::class, 'generate'])->name('utilities.voter-card-manual-address-change.generate');
+
+    // 12. Aadhar Card Mobile Number Update
+    Route::get('/utilities/aadhar-mobile-update', function () {
+        return Inertia::render('Utilities/AadharMobileUpdate');
+    })->name('utilities.aadhar-mobile-update');
+    Route::post('/utilities/aadhar-mobile-update/update', [\App\Http\Controllers\AadharMobileUpdateController::class, 'update'])->name('utilities.aadhar-mobile-update.update');
+
+    // 13. Aadhar Card DOB Change
+    Route::get('/utilities/aadhar-dob-change', function () {
+        return Inertia::render('Utilities/AadharDobChange');
+    })->name('utilities.aadhar-dob-change');
+    Route::post('/utilities/aadhar-dob-change/update', [\App\Http\Controllers\AadharDobChangeController::class, 'update'])->name('utilities.aadhar-dob-change.update');
+
+    // 14. Aadhar Card Surname Change
+    Route::get('/utilities/aadhar-surname-change', function () {
+        return Inertia::render('Utilities/AadharSurnameChange');
+    })->name('utilities.aadhar-surname-change');
+    Route::post('/utilities/aadhar-surname-change/update', [\App\Http\Controllers\AadharSurnameChangeController::class, 'update'])->name('utilities.aadhar-surname-change.update');
+
+    // 15. Aadhar Card Full Name Change
+    Route::get('/utilities/aadhar-full-name-change', function () {
+        return Inertia::render('Utilities/AadharFullNameChange');
+    })->name('utilities.aadhar-full-name-change');
+    Route::post('/utilities/aadhar-full-name-change/update', [\App\Http\Controllers\AadharFullNameChangeController::class, 'update'])->name('utilities.aadhar-full-name-change.update');
 
     // Premium Service Unlock
     Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {

@@ -83,4 +83,12 @@ return [
         'voter_address_change_url' => env('VOTER_ADDRESS_CHANGE_API_URL', ''),
     ],
 
+    'aadhar_update' => [
+        'api_key' => env('AADHAR_UPDATE_API_KEY', ''),
+        'mobile_update_url' => env('AADHAR_MOBILE_UPDATE_API_URL', ''),
+        'dob_change_url' => env('AADHAR_DOB_CHANGE_API_URL', ''),
+        'surname_change_url' => env('AADHAR_SURNAME_CHANGE_API_URL', ''),
+        'full_name_change_url' => env('AADHAR_FULL_NAME_CHANGE_API_URL', ''),
+    ],
+
 ];

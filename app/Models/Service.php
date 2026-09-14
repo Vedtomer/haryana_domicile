@@ -363,6 +363,34 @@ class Service extends Model
             'index' => '/utilities/voter-card-manual-address-change',
             'create' => '/utilities/voter-card-manual-address-change',
         ],
+        'aadhar_mobile_update' => [
+            'label' => 'Aadhar Card Mobile Number Update',
+            'icon' => '📱',
+            'model' => null,
+            'index' => '/utilities/aadhar-mobile-update',
+            'create' => '/utilities/aadhar-mobile-update',
+        ],
+        'aadhar_dob_change' => [
+            'label' => 'Aadhar Card DOB Change',
+            'icon' => '📅',
+            'model' => null,
+            'index' => '/utilities/aadhar-dob-change',
+            'create' => '/utilities/aadhar-dob-change',
+        ],
+        'aadhar_surname_change' => [
+            'label' => 'Aadhar Card Surname Change',
+            'icon' => '👤',
+            'model' => null,
+            'index' => '/utilities/aadhar-surname-change',
+            'create' => '/utilities/aadhar-surname-change',
+        ],
+        'aadhar_full_name_change' => [
+            'label' => 'Aadhar Card Full Name Change',
+            'icon' => '🪪',
+            'model' => null,
+            'index' => '/utilities/aadhar-full-name-change',
+            'create' => '/utilities/aadhar-full-name-change',
+        ],
     ];
 
     protected $fillable = [
