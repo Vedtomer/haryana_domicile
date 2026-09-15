@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import ConfirmDialog from '../../Components/ConfirmDialog';
 
 const TONES = {
     blue: 'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/60 text-blue-700 dark:text-blue-300',
@@ -108,7 +107,7 @@ function StatCard({ label, value, tone, url, icon }) {
     );
 }
 
-function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin, onToggleStatus, onDeleteClick }) {
+function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin }) {
     const isInactive = service.is_active === false;
     const isLockedPremium = !isInactive && service.is_premium && !service.is_unlocked;
     const isLicenseBlocked = !isInactive && !isAdmin && !hasLicense;
@@ -153,57 +152,7 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                     )}
                 </div>
 
-                <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    {/* Admin Direct Action Bar (Toggle, Edit, Remove) */}
-                    {isAdmin && (
-                        <div className="flex items-center gap-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xs p-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs pointer-events-auto">
-                            {/* Toggle Active / Unavailable */}
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    onToggleStatus(service);
-                                }}
-                                className={`p-1 rounded-md text-xs transition-colors cursor-pointer ${
-                                    service.is_active
-                                        ? 'text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50'
-                                        : 'text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/50'
-                                }`}
-                                title={service.is_active ? 'Click to mark as Unavailable' : 'Click to mark as Active'}
-                            >
-                                <span className="material-symbols-outlined text-[15px]">
-                                    {service.is_active ? 'visibility' : 'visibility_off'}
-                                </span>
-                            </button>
-
-                            {/* Edit Link */}
-                            <Link
-                                href={`/admin/services/${service.id}/edit`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="p-1 rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
-                                title="Edit Service"
-                            >
-                                <span className="material-symbols-outlined text-[15px]">edit</span>
-                            </Link>
-
-                            {/* Delete/Remove Button */}
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    onDeleteClick(service);
-                                }}
-                                className="p-1 rounded-md text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50 transition-colors cursor-pointer hover:scale-105"
-                                title="Remove/Delete Service"
-                            >
-                                <span className="material-symbols-outlined text-[15px]">delete</span>
-                            </button>
-                        </div>
-                    )}
-
-                    <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
                         {isInactive ? (
                             <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-600 text-white shadow-sm flex items-center gap-1">
                                 <span className="material-symbols-outlined text-[13px]">block</span>
@@ -239,7 +188,6 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                         )}
                     </div>
                 </div>
-            </div>
 
             <h3 className={`mt-3 font-bold text-gray-800 dark:text-white line-clamp-2 ${!isInactive ? 'group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors' : ''}`}>
                 {service.name}
@@ -310,11 +258,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [toDeleteService, setToDeleteService] = useState(null);
-
-    const handleToggleStatus = (service) => {
-        router.patch(`/admin/services/${service.id}/toggle-active`, {}, { preserveScroll: true });
-    };
 
     // License status
     const hasLicense = Boolean(auth?.user?.has_active_license);
@@ -510,21 +453,19 @@ export default function Dashboard({ services, stats, isAdmin }) {
                     )}
                 </div>
             ) : (
-                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                     {filteredServices.map((service) => (
-                         <ServiceCard 
-                             key={service.id} 
-                             service={service} 
-                             onUnlockClick={setUnlockingService}
-                             onRequireLicenseClick={handleRequireLicenseClick}
-                             hasLicense={hasLicense}
-                             isAdmin={isAdmin}
-                             onToggleStatus={handleToggleStatus}
-                             onDeleteClick={setToDeleteService}
-                         />
-                     ))}
-                 </div>
-             )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+                      {filteredServices.map((service) => (
+                          <ServiceCard 
+                              key={service.id} 
+                              service={service} 
+                              onUnlockClick={setUnlockingService}
+                              onRequireLicenseClick={handleRequireLicenseClick}
+                              hasLicense={hasLicense}
+                              isAdmin={isAdmin}
+                          />
+                      ))}
+                  </div>
+              )}
 
              {/* Premium Unlock Modal */}
              {unlockingService && (
@@ -590,21 +531,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
                     </div>
                 </div>
             )}
-
-            {/* Service Delete Confirmation Dialog */}
-            <ConfirmDialog
-                open={!!toDeleteService}
-                title="Delete Service?"
-                message={`Are you sure you want to permanently remove "${toDeleteService?.name}"? Users will no longer be able to see or use this service.`}
-                onConfirm={() =>
-                    router.delete(`/admin/services/${toDeleteService.id}`, {
-                        preserveScroll: true,
-                        onFinish: () => setToDeleteService(null),
-                    })
-                }
-                onCancel={() => setToDeleteService(null)}
-                confirmLabel="Yes, Remove Service"
-            />
         </AdminLayout>
     );
 }
