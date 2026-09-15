@@ -373,26 +373,7 @@ export default function Dashboard({ services, stats, isAdmin }) {
 
              {/* Services Section Header & Search */}
             <div id="services" className="mb-6 scroll-mt-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    {isAdmin ? (
-                        <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-                            <Link
-                                href="/admin/services"
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all whitespace-nowrap"
-                            >
-                                <span className="material-symbols-outlined text-[17px]">home_repair_service</span>
-                                Manage All Services ({services?.length || 0})
-                            </Link>
-                            <Link
-                                href="/admin/services/create"
-                                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl shadow-2xs transition-all whitespace-nowrap"
-                            >
-                                <span className="material-symbols-outlined text-[17px]">add_circle</span>
-                                + Add Service
-                            </Link>
-                        </div>
-                    ) : <div />}
-
+                <div className="flex items-center justify-end">
                     <div className="w-full sm:w-80 relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-[20px]">search</span>
                         <input
