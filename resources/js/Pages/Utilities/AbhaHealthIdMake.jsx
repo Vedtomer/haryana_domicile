@@ -16,6 +16,7 @@ export default function AbhaHealthIdMake({ service, coinCost = 20, userCoins = 0
     const [result, setResult] = useState(null);
     const [timer, setTimer] = useState(60);
     const [timerActive, setTimerActive] = useState(false);
+    const [isDemo, setIsDemo] = useState(false);
 
     // Format Aadhaar with spaces: XXXX XXXX XXXX
     const formatAadhar = (val) => {
@@ -75,6 +76,7 @@ export default function AbhaHealthIdMake({ service, coinCost = 20, userCoins = 0
 
             if (response.data.success) {
                 setTxnId(response.data.txn_id || '');
+                setIsDemo(Boolean(response.data.is_demo));
                 setStep(2);
                 setTimer(60);
                 setTimerActive(true);
@@ -326,12 +328,38 @@ export default function AbhaHealthIdMake({ service, coinCost = 20, userCoins = 0
                             <h3 className="text-xl font-bold text-slate-800 dark:text-white">
                                 Enter 6-Digit OTP
                             </h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
                                 An OTP was dispatched to the mobile number registered with Aadhaar{' '}
                                 <strong className="text-slate-800 dark:text-slate-200">
                                     •••• •••• {aadharNo.replace(/\D/g, '').slice(-4)}
                                 </strong>
                             </p>
+
+                            {isDemo && (
+                                <div className="mb-5 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs text-left shadow-xs">
+                                    <div className="flex items-start gap-2.5">
+                                        <span className="material-symbols-outlined text-xl text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5">info</span>
+                                        <div className="flex-1">
+                                            <p className="font-bold text-amber-950 dark:text-amber-100 text-sm">
+                                                Mobile par OTP kyu nahi aaya?
+                                            </p>
+                                            <p className="mt-1 text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                                                Real mobile par OTP aane ke liye <strong>ABDM (National Health Authority) Live Gateway API</strong> connect hona zaroori hai. Abhi card generation workflow test karne ke liye test OTP <strong className="font-mono text-sm font-black bg-amber-200/80 dark:bg-amber-900/60 px-1.5 py-0.5 rounded text-amber-950 dark:text-amber-100">123456</strong> use karein:
+                                            </p>
+                                            <div className="mt-3 flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setOtp('123456')}
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                                                >
+                                                    <span className="material-symbols-outlined text-[16px]">touch_app</span>
+                                                    Click to Fill Test OTP (123456)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <form onSubmit={handleVerifyOtp} className="space-y-5">
                                 <div>
