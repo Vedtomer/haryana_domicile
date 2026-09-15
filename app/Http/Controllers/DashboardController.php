@@ -17,6 +17,11 @@ class DashboardController extends Controller
 
         $rawServices = Service::query()
             ->with('users')
+            ->whereNotIn('slug', ['abha-health-id-make'])
+            ->where(function ($q) {
+                $q->whereNull('module_key')->orWhere('module_key', '!=', 'abha_health_id_make');
+            })
+            ->where('name', 'not like', '%ABHA Health ID Make%')
             ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
             ->ordered()
             ->get();
