@@ -148,14 +148,10 @@ class DashboardController extends Controller
             $totalServices = 0;
         }
 
-        $licenseLabel = $user->hasActiveLicense() 
-            ? ($user->licenseDaysLeft() . ' Days Left') 
-            : 'Inactive (50 Coins)';
-
         return [
             ['label' => 'Total Services', 'value' => $totalServices, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
-            ['label' => '6M Portal License', 'value' => $licenseLabel, 'tone' => $user->hasActiveLicense() ? 'dark-green' : 'dark-amber', 'url' => '#license', 'icon' => 'vpn_key'],
+            ['label' => 'History & My Requests', 'value' => $pendingCount + $completedCount, 'tone' => 'dark-indigo', 'url' => '/admin/service-requests', 'icon' => 'history'],
             ['label' => 'Pending', 'value' => $pendingCount, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
             ['label' => 'Completed', 'value' => $completedCount, 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed', 'icon' => 'check_circle'],
         ];

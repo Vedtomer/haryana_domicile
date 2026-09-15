@@ -16,11 +16,6 @@ class DrivingLicenceCardController extends Controller
         $user = auth()->user();
         $isAdmin = $user->isAdmin() || $user->hasRole('super_admin');
 
-        // Check 6-month license enforcement for regular users
-        if (!$isAdmin && !$user->hasActiveLicense()) {
-            return redirect('/dashboard')->with('error', 'Portal ki sabhi services use karne ke liye 6-Month Portal License active hona zaroori hai.');
-        }
-
         $service = Service::whereIn('slug', ['make-driving-licence-card', 'driving-licence-pvc'])->first();
         $coinCost = $service ? $service->coin_cost : 20;
 
@@ -44,13 +39,6 @@ class DrivingLicenceCardController extends Controller
 
         $user = auth()->user();
         $isAdmin = $user->isAdmin() || $user->hasRole('super_admin');
-
-        if (!$isAdmin && !$user->hasActiveLicense()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Portal License Inactive. Kripya pehle 6-Month License activate karein.',
-            ], 403);
-        }
 
         $service = Service::whereIn('slug', ['make-driving-licence-card', 'driving-licence-pvc'])->first();
         $coinCost = $service ? $service->coin_cost : 20;

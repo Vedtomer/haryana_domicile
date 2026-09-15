@@ -201,30 +201,9 @@ export default function AdminLayout({ header, children }) {
                     
 
 
-                    {/* Coin balance + Buy Coins + License Status — only for user type */}
+                    {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
                         <>
-                            {auth?.user?.has_active_license ? (
-                                <button
-                                    type="button"
-                                    onClick={() => openLicense('gift')}
-                                    className="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs hover:border-slate-300 transition-all cursor-pointer"
-                                    title="Buy Gift Key for someone else (50 Coins)"
-                                >
-                                    <span className="material-symbols-outlined text-[14px]">card_giftcard</span>
-                                    <span>Gift Key</span>
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => openLicense('direct')}
-                                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 animate-pulse transition-all shadow-sm cursor-pointer"
-                                    title="Active 6-Month License Required (50 Coins)"
-                                >
-                                    <span className="material-symbols-outlined text-[15px]">lock</span>
-                                    <span>Activate License</span>
-                                </button>
-                            )}
 
                             <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
                                 🪙 {auth.user.coins}

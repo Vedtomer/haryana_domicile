@@ -397,8 +397,8 @@ class Service extends Model
             'label' => 'ABHA Health ID Make',
             'icon' => '🏥',
             'model' => null,
-            'index' => 'https://abha.abdm.gov.in/abha/v3/register',
-            'create' => 'https://abha.abdm.gov.in/abha/v3/register',
+            'index' => '/utilities/abha-health-id-make',
+            'create' => '/utilities/abha-health-id-make',
         ],
     ];
 

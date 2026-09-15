@@ -141,11 +141,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function hasActiveLicense(): bool
     {
-        if ($this->isAdmin() || $this->hasRole('super_admin')) {
-            return true;
-        }
-
-        return $this->license_expires_at !== null && $this->license_expires_at->isFuture();
+        return true;
     }
 
     /**

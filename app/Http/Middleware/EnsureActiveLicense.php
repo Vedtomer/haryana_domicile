@@ -21,23 +21,7 @@ class EnsureActiveLicense
             return $next($request);
         }
 
-        // 1. Check if user has active license
-        if (!$user->hasActiveLicense()) {
-            $errorMessage = 'Portal License Required: Services use karne ke liye 6-Month License (50 Coins) active hona zaroori hai. Kripya apna license activate karein.';
-
-            if ($request->header('X-Inertia')) {
-                return redirect()->route('dashboard')->with('error', $errorMessage);
-            }
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => 'Active 6-Month Portal License (50 Coins) is required to access this service.',
-                    'requires_license' => true,
-                ], 403);
-            }
-
-            return redirect()->route('dashboard')->with('error', $errorMessage);
-        }
+        // 1. 6-Month Portal License check removed per request (all users have portal access)
 
         // 2. Hardware / Desktop PC Lock Check
         $allowedDevices = (int) ($user->allowed_devices ?? 1); // 0 = no lock, 1 = 1 PC, 2 = 2 PC

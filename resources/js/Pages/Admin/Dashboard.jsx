@@ -107,10 +107,10 @@ function StatCard({ label, value, tone, url, icon }) {
     );
 }
 
-function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense, isAdmin }) {
+function ServiceCard({ service, onUnlockClick, isAdmin }) {
     const isInactive = service.is_active === false;
     const isLockedPremium = !isInactive && service.is_premium && !service.is_unlocked;
-    const isLicenseBlocked = !isInactive && !isAdmin && !hasLicense;
+    const isLicenseBlocked = false;
 
     const cardContent = (
         <div className={`group relative flex flex-col h-56 p-5 bg-white dark:bg-slate-900 rounded-xl border transition-all duration-200 overflow-hidden ${
@@ -124,8 +124,6 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                 ? 'cursor-not-allowed'
                 : isLockedPremium 
                 ? 'cursor-pointer hover:border-amber-400 hover:shadow-amber-100 dark:hover:shadow-amber-950/30' 
-                : isLicenseBlocked
-                ? 'cursor-pointer hover:border-red-400 hover:shadow-red-100 dark:hover:shadow-red-950/30'
                 : 'hover:shadow-lg hover:border-blue-300 dark:hover:border-indigo-500 hover:-translate-y-1'
         }`}>
             {/* Center Overlay for Inactive Services */}
@@ -162,11 +160,6 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                             <span className="material-symbols-outlined text-[14px]">lock</span>
                             PREMIUM
                         </span>
-                    ) : isLicenseBlocked ? (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">lock</span>
-                            LICENSE
-                        </span>
                     ) : service.is_free ? (
                         <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 dark:bg-emerald-950/50 text-green-700 dark:text-emerald-300 border border-green-200 dark:border-emerald-800">
                             FREE
@@ -200,10 +193,6 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
                     <span className="text-xs font-bold text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Unlock →
                     </span>
-                ) : isLicenseBlocked ? (
-                    <span className="text-xs font-bold text-red-600 dark:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                        License Required →
-                    </span>
                 ) : (
                     <span className="text-xs font-semibold text-blue-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Open →
@@ -227,10 +216,6 @@ function ServiceCard({ service, onUnlockClick, onRequireLicenseClick, hasLicense
         );
     }
 
-    if (isLicenseBlocked) {
-        return <div onClick={() => onRequireLicenseClick(service)}>{cardContent}</div>;
-    }
-
     if (isLockedPremium) {
         return <div onClick={() => onUnlockClick(service)}>{cardContent}</div>;
     }
@@ -248,9 +233,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-
-    // License status
-    const hasLicense = Boolean(auth?.user?.has_active_license);
 
     // Sort services alphabetically by name
     const sortedServices = [...(services || [])].sort((a, b) =>
@@ -281,10 +263,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
         });
     };
 
-    const handleRequireLicenseClick = (service) => {
-        window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { service, tab: 'direct' } }));
-    };
-
     return (
         <AdminLayout
             header={
@@ -311,57 +289,7 @@ export default function Dashboard({ services, stats, isAdmin }) {
                 ))}
             </div>
 
-            {/* License Status Banner for Regular Users (Only when license is INACTIVE) */}
-            {!isAdmin && !hasLicense && (
-                <div id="license" className="mb-6 scroll-mt-6">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-amber-500/15 via-rose-500/10 to-orange-500/15 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-6 shadow-xl shadow-amber-500/5">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
-                            <div className="flex items-start gap-4">
-                                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-red-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/30 animate-pulse">
-                                    <span className="material-symbols-outlined text-3xl">lock</span>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                         <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                                             Portal License Inactive (6 Months)
-                                         </h3>
-                                         <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-red-600 text-white uppercase tracking-wider shadow-sm">
-                                             Required
-                                         </span>
-                                     </div>
-                                     <p className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 max-w-2xl leading-relaxed">
-                                         Portal ki sabhi services use karne ke liye <strong>6-Month License (50 Coins)</strong> active hona zaroori hai. Aap 50 coins se direct activate kar sakte hain ya license key enter kar sakte hain.
-                                     </p>
-                                 </div>
-                             </div>
-                             <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
-                                 <button
-                                     type="button"
-                                     onClick={() => {
-                                         window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'direct' } }));
-                                     }}
-                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all cursor-pointer"
-                                 >
-                                     <span className="material-symbols-outlined text-[18px]">bolt</span>
-                                     Activate Now (50 Coins)
-                                 </button>
-                                 <button
-                                     type="button"
-                                     onClick={() => {
-                                         window.dispatchEvent(new CustomEvent('open-license-modal', { detail: { tab: 'key' } }));
-                                     }}
-                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-sm rounded-2xl border border-slate-300 dark:border-slate-700 shadow-sm transition-all cursor-pointer"
-                                 >
-                                     <span className="material-symbols-outlined text-[18px]">vpn_key</span>
-                                     Enter Key
-                                 </button>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             )}
-
-             {/* Services Section Header & Search */}
+            {/* Services Section Header & Search */}
             <div id="services" className="mb-6 scroll-mt-6">
                 <div className="flex items-center justify-end">
                     <div className="w-full sm:w-80 relative">
@@ -430,8 +358,6 @@ export default function Dashboard({ services, stats, isAdmin }) {
                               key={service.id} 
                               service={service} 
                               onUnlockClick={setUnlockingService}
-                              onRequireLicenseClick={handleRequireLicenseClick}
-                              hasLicense={hasLicense}
                               isAdmin={isAdmin}
                           />
                       ))}

@@ -158,18 +158,9 @@ export default function AbhaHealthIdMake({ service, coinCost = 20, userCoins = 0
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                             🪙 {coinCost} Coins / Card
                         </span>
-                        <a
-                            href="https://abha.abdm.gov.in/abha/v3/register"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors shadow-2xs"
-                        >
-                            <span>Open Official Register Portal</span>
-                            <span className="material-symbols-outlined text-sm">open_in_new</span>
-                        </a>
                     </div>
                 </div>
             }
@@ -238,31 +229,6 @@ export default function AbhaHealthIdMake({ service, coinCost = 20, userCoins = 0
                                 </p>
                             </div>
 
-                            {/* Direct Official Link for Real OTP */}
-                            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-2 border-emerald-500/30 dark:border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-xs">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-black text-[10px] uppercase tracking-wider">
-                                            Real OTP Direct Link
-                                        </span>
-                                        <span className="text-xs font-bold text-slate-800 dark:text-white">
-                                            Official ABDM Portal
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                                        Real mobile par direct UIDAI / Government OTP aane ke liye official portal use karein:
-                                    </p>
-                                </div>
-                                <a
-                                    href="https://abha.abdm.gov.in/abha/v3/register"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs shadow-md shadow-emerald-600/20 whitespace-nowrap transition-all cursor-pointer hover:scale-[1.02]"
-                                >
-                                    <span>Open Register Portal</span>
-                                    <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-                                </a>
-                            </div>
 
                             <form onSubmit={handleSendOtp} className="space-y-5">
                                 <div>
