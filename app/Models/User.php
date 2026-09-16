@@ -357,7 +357,9 @@ class User extends Authenticatable implements FilamentUser
      */
     public function isAdmin(): bool
     {
-        return $this->type === 'admin';
+        return in_array($this->type, ['admin', 'super_admin'])
+            || $this->hasRole('admin')
+            || $this->hasRole('super_admin');
     }
 
     /**

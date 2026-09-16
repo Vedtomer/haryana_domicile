@@ -118,39 +118,39 @@ Route::get('/api/debug-services', function () {
 });
 
 Route::get('/api/debug-dashboard-diff', function () {
-    $allServices = \App\Models\Service::ordered()->get();
-    $users = \App\Models\User::all();
-
-    $userReport = $users->map(function ($u) use ($allServices) {
-        $visibleCount = \App\Models\Service::visibleTo($u)->count();
-        $assignedIds = $u->services()->pluck('services.id')->all();
-        $isStaff = $u->isAdmin() || $u->hasRole('super_admin');
-        return [
-            'id' => $u->id,
-            'name' => $u->name,
-            'email' => $u->email,
-            'type' => $u->type,
-            'is_admin_method' => $u->isAdmin(),
-            'has_role_super_admin' => $u->hasRole('super_admin'),
-            'is_staff' => $isStaff,
-            'assigned_services_count' => count($assignedIds),
-            'visible_services_count' => $visibleCount,
+    $manageServices = \App\Models\Service::withCount('requests')->ordered()->get();
+    
+    $results = [];
+    foreach (\App\Models\User::all() as $user) {
+        $isAdmin = in_array($user->type, ['admin', 'super_admin']) || $user->hasRole('super_admin') || $user->hasRole('admin');
+        
+        $rawDashboard = \App\Models\Service::query()
+            ->with('users')
+            ->whereNotIn('slug', ['abha-health-id-make'])
+            ->where(function ($q) {
+                $q->whereNull('module_key')->orWhere('module_key', '!=', 'abha_health_id_make');
+            })
+            ->where('name', 'not like', '%ABHA Health ID Make%')
+            ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
+            ->ordered()
+            ->get();
+            
+        $missingSlugs = $manageServices->pluck('slug')->diff($rawDashboard->pluck('slug'))->values();
+        $missingNames = $manageServices->whereIn('slug', $missingSlugs)->pluck('name')->values();
+        
+        $results[] = [
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'type' => $user->type,
+            'is_admin' => $isAdmin,
+            'manage_count' => $manageServices->count(),
+            'dashboard_count' => $rawDashboard->count(),
+            'missing_count' => $missingSlugs->count(),
+            'missing_services' => $missingNames,
         ];
-    });
-
-    return [
-        'total_services' => $allServices->count(),
-        'services_list' => $allServices->map(fn ($s) => [
-            'id' => $s->id,
-            'name' => $s->name,
-            'slug' => $s->slug,
-            'is_active' => $s->is_active,
-            'visibility' => $s->visibility,
-            'kind' => $s->kind,
-            'module_key' => $s->module_key,
-        ]),
-        'users' => $userReport,
-    ];
+    }
+    
+    return $results;
 });
 
 Route::get('/force-add-service', function () {

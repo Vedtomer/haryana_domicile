@@ -111,6 +111,7 @@ class DashboardController extends Controller
             return [
                 'id' => $service->id,
                 'name' => $service->name,
+                'slug' => $service->slug,
                 'description' => $service->description,
                 'icon' => $service->icon ?: '📄',
                 'logo_url' => $service->logoUrl(),
