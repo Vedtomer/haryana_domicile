@@ -640,37 +640,93 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // All portal services requiring active 6-Month license
         Route::middleware(['license.active'])->group(function () {
     
-    Route::get('/utilities/electricity-bill', function () {
-
-        return Inertia::render('Utilities/ElectricityBill');
+    Route::get('/utilities/electricity-bill', function (Request $request) {
+        $defaultDiscom = $request->query('discom', 'dhbvn');
+        return Inertia::render('Utilities/ElectricityBill', [
+            'defaultDiscom' => $defaultDiscom,
+        ]);
     })->name('utilities.electricity-bill');
 
+    Route::get('/utilities/dhbvn-bill', function () {
+        return Inertia::render('Utilities/ElectricityBill', [
+            'defaultDiscom' => 'dhbvn',
+        ]);
+    })->name('utilities.dhbvn-bill');
+
+    Route::get('/utilities/uhbvn-bill', function () {
+        return Inertia::render('Utilities/ElectricityBill', [
+            'defaultDiscom' => 'uhbvn',
+        ]);
+    })->name('utilities.uhbvn-bill');
+
     Route::get('/utilities/electricity-bill/download', function (Request $request) {
-        $uid = $request->query('uid');
+        $uid = trim($request->query('uid', ''));
+        $discom = strtolower(trim($request->query('discom', 'dhbvn')));
         if (!$uid) return back()->with('error', 'Account number is required');
 
-        $url = "https://uhbvn.org.in/Rapdrp/BD?UID=" . $uid;
-        $response = \Illuminate\Support\Facades\Http::get($url);
+        $discomUrls = [
+            'dhbvn' => "https://dhbvn.org.in/Rapdrp/BD?UID=" . $uid,
+            'uhbvn' => "https://uhbvn.org.in/Rapdrp/BD?UID=" . $uid,
+        ];
 
-        // UHBVN returns text/plain or HTML if invalid, and application/pdf if valid
-        if ($response->successful() && str_contains($response->header('Content-Type'), 'pdf')) {
-            $service = \App\Models\Service::where('slug', 'electricity-bill')->first();
+        $primaryDiscom = in_array($discom, ['dhbvn', 'uhbvn']) ? $discom : 'dhbvn';
+        $secondaryDiscom = ($primaryDiscom === 'dhbvn') ? 'uhbvn' : 'dhbvn';
+
+        $fetchBill = function ($url) {
+            try {
+                return \Illuminate\Support\Facades\Http::withoutVerifying()
+                    ->timeout(15)
+                    ->get($url);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Electricity bill fetch error for {$url}: " . $e->getMessage());
+                return null;
+            }
+        };
+
+        $isValidPdf = function ($response) {
+            return $response && $response->successful() &&
+                (str_contains(strtolower($response->header('Content-Type', '')), 'pdf') ||
+                 str_starts_with($response->body(), '%PDF'));
+        };
+
+        $activeDiscom = $primaryDiscom;
+        $response = $fetchBill($discomUrls[$primaryDiscom]);
+
+        // If primary didn't return a valid PDF, fallback to the other discom
+        if (!$isValidPdf($response)) {
+            $fallbackResponse = $fetchBill($discomUrls[$secondaryDiscom]);
+            if ($isValidPdf($fallbackResponse)) {
+                $response = $fallbackResponse;
+                $activeDiscom = $secondaryDiscom;
+            }
+        }
+
+        if ($isValidPdf($response)) {
+            $serviceSlug = $activeDiscom . '-electricity-bill';
+            $service = \App\Models\Service::where('slug', $serviceSlug)
+                ->orWhere('slug', 'electricity-bill')
+                ->first();
+
             \App\Models\ServiceRequest::create([
                 'user_id' => auth()->id(),
                 'service_id' => $service ? $service->id : null,
-                'service_name' => $service ? $service->name : 'Electricity Bill',
-                'input_data' => ['Account Number (UID)' => $uid],
+                'service_name' => $service ? $service->name : (strtoupper($activeDiscom) . ' Electricity Bill'),
+                'input_data' => [
+                    'Account Number (UID)' => $uid,
+                    'Discom' => strtoupper($activeDiscom),
+                ],
                 'coins_charged' => 0,
                 'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
                 'completed_at' => now(),
             ]);
 
+            $discomLabel = strtoupper($activeDiscom);
             return response($response->body())
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="Electricity_Bill_' . $uid . '.pdf"');
+                ->header('Content-Disposition', 'attachment; filename="' . $discomLabel . '_Bill_' . $uid . '.pdf"');
         }
 
-        return back()->with('error', 'Bill not found. Please check your Account Number.');
+        return back()->with('error', 'Bill not found for Account Number ' . $uid . '. Please check your Account Number and Discom.');
     })->name('utilities.electricity-bill.download');
 
     Route::get('/utilities/aadhar-to-family-id', function () {

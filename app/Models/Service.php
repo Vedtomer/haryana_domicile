@@ -70,6 +70,18 @@ class Service extends Model
             'index' => '/utilities/electricity-bill',
             'create' => '/utilities/electricity-bill',
         ],
+        'dhbvn_electricity_bill' => [
+            'label' => 'DHBVN Electricity Bill',
+            'model' => null,
+            'index' => '/utilities/electricity-bill?discom=dhbvn',
+            'create' => '/utilities/electricity-bill?discom=dhbvn',
+        ],
+        'uhbvn_electricity_bill' => [
+            'label' => 'UHBVN Electricity Bill',
+            'model' => null,
+            'index' => '/utilities/electricity-bill?discom=uhbvn',
+            'create' => '/utilities/electricity-bill?discom=uhbvn',
+        ],
         'vehicle_details' => [
             'label' => 'Vehicle Details',
             'model' => null,
