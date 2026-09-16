@@ -33,6 +33,7 @@ export default function ResourceIndex({
     printHref,
     deleteHref,
     emptyLabel = 'No records found.',
+    extraActions = null,
 }) {
     const [toDelete, setToDelete] = useState(null);
 
@@ -44,13 +45,16 @@ export default function ResourceIndex({
         <>
             <Head title={pageTitle ?? title} />
 
-            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                 <Typography variant="h5" fontWeight="bold" color="text.primary">
                     {title}
                 </Typography>
-                <Button component={Link} href={createHref} variant="contained" startIcon={<AddIcon />}>
-                    Create
-                </Button>
+                <Stack direction="row" spacing={1.5} alignItems="center">
+                    {extraActions}
+                    <Button component={Link} href={createHref} variant="contained" startIcon={<AddIcon />}>
+                        Create
+                    </Button>
+                </Stack>
             </Box>
 
             <Paper elevation={1} sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' }}>

@@ -96,16 +96,26 @@ export default function BirthCertificateDownload({ recentRecords = [], defaultRe
 
     return (
         <AdminLayout header={
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/dashboard"
+                        className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-lg">arrow_back</span>
+                    </Link>
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-slate-200 leading-tight">
+                        Birth Certificate Download
+                    </h2>
+                </div>
+
                 <Link
-                    href="/dashboard"
-                    className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                    href="/admin/birth-records"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition-colors"
                 >
-                    <span className="material-symbols-outlined text-lg">arrow_back</span>
+                    <PostAddIcon sx={{ fontSize: 18 }} />
+                    Name Add Form & Records →
                 </Link>
-                <h2 className="font-semibold text-xl text-gray-800 dark:text-slate-200 leading-tight">
-                    Birth Certificate Download
-                </h2>
             </div>
         }>
             <Head title="Birth Certificate Download" />
@@ -229,6 +239,16 @@ export default function BirthCertificateDownload({ recentRecords = [], defaultRe
                             >
                                 {isSearching ? 'Searching Certificate...' : 'Download Birth Certificate PDF'}
                             </Button>
+
+                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
+                                <Link
+                                    href="/admin/birth-records/create"
+                                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 font-semibold"
+                                >
+                                    <PostAddIcon sx={{ fontSize: 16 }} />
+                                    नया नाम जुड़वाने हेतु घोषणा पत्र भरें (Birth Certificate Name Add Form) →
+                                </Link>
+                            </div>
                         </form>
 
                     </div>

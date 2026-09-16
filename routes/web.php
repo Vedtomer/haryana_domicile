@@ -93,33 +93,66 @@ Route::get('/migrate-db', function () {
                 'updated_at' => now(),
             ]);
 
-            $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
-                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate', 'crs-birth-portal'])
-                ->pluck('id')
-                ->toArray();
-
-            // Ensure Birth Certificate Name Add is active and CRS portal card is hidden
+            // 1. Birth Certificate Name Add (Form & Records)
             \Illuminate\Support\Facades\DB::table('services')
                 ->where('slug', 'birth-certificate')
                 ->orWhere('module_key', 'birth_record')
                 ->update([
                     'name' => 'Birth Certificate Name Add',
-                    'description' => 'Enter Certificate / Registration Number to download PDF instantly (Color & B&W Options).',
+                    'slug' => 'birth-certificate',
+                    'module_key' => 'birth_record',
+                    'description' => 'जन्म रिकार्ड में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Name Add Form & Records)',
+                    'icon' => '📝',
                     'is_active' => true,
                     'visibility' => 'private',
-                    'coin_cost' => 0,
+                    'coin_cost' => 10,
+                    'deleted_at' => null,
                     'updated_at' => now(),
                 ]);
 
-            // Hide / deactivate crs-birth-portal so no external website link is shown on frontend
-            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'crs-birth-portal')->update([
-                'is_active' => false,
-                'deleted_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // 2. Birth Certificate Download (Instant PDF Download)
+            $downloadService = \Illuminate\Support\Facades\DB::table('services')
+                ->where('slug', 'birth-certificate-download')
+                ->orWhere('slug', 'crs-birth-portal')
+                ->orWhere('module_key', 'birth_certificate_download')
+                ->first();
 
+            if ($downloadService) {
+                \Illuminate\Support\Facades\DB::table('services')
+                    ->where('id', $downloadService->id)
+                    ->update([
+                        'name' => 'Birth Certificate Download',
+                        'slug' => 'birth-certificate-download',
+                        'module_key' => 'birth_certificate_download',
+                        'description' => 'जन्म प्रमाण पत्र / रजिस्ट्रेशन नंबर दर्ज करके तुरंत PDF डाउनलोड करें (Color & B&W)',
+                        'icon' => '👶',
+                        'is_active' => true,
+                        'visibility' => 'private',
+                        'coin_cost' => 0,
+                        'kind' => 'module',
+                        'deleted_at' => null,
+                        'updated_at' => now(),
+                    ]);
+            } else {
+                \Illuminate\Support\Facades\DB::table('services')->insert([
+                    'name' => 'Birth Certificate Download',
+                    'slug' => 'birth-certificate-download',
+                    'module_key' => 'birth_certificate_download',
+                    'description' => 'जन्म प्रमाण पत्र / रजिस्ट्रेशन नंबर दर्ज करके तुरंत PDF डाउनलोड करें (Color & B&W)',
+                    'icon' => '👶',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'sort_order' => 3,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Sync all target services to all users
             $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
-                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate'])
+                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate', 'birth-certificate-download'])
                 ->pluck('id')
                 ->toArray();
 
@@ -128,7 +161,7 @@ Route::get('/migrate-db', function () {
                 $u->services()->syncWithoutDetaching($targetServiceIds);
             }
 
-            $output .= "=== BIRTH SERVICE STATUS ===\n" . json_encode(\App\Models\Service::where('slug', 'birth-certificate')->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
+            $output .= "=== BIRTH SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['birth-certificate', 'birth-certificate-download'])->get(['id', 'name', 'slug', 'module_key', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
         } catch (\Throwable $se2) {
             $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
         }

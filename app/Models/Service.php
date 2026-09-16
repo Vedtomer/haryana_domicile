@@ -43,8 +43,15 @@ class Service extends Model
         'birth_record' => [
             'label' => 'Birth Certificate Name Add',
             'model' => BirthRecord::class,
-            'index' => '/utilities/birth-certificate',
+            'index' => '/admin/birth-records',
             'create' => '/admin/birth-records/create',
+        ],
+        'birth_certificate_download' => [
+            'label' => 'Birth Certificate Download',
+            'icon' => '👶',
+            'model' => null,
+            'index' => '/utilities/birth-certificate',
+            'create' => '/utilities/birth-certificate',
         ],
         'haryana_domicile' => [
             'label' => 'Haryana Domicile',

@@ -1,4 +1,7 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
+import { Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import ResourceIndex from '../../../Components/ResourceIndex';
 
@@ -21,6 +24,17 @@ export default function Index({ records }) {
                 printHref={(r) => `/birth-records/${r.id}/print`}
                 deleteHref={(r) => `/admin/birth-records/${r.id}`}
                 emptyLabel="No birth records found."
+                extraActions={
+                    <Button
+                        component={Link}
+                        href="/utilities/birth-certificate"
+                        variant="outlined"
+                        startIcon={<FileDownloadIcon />}
+                        sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+                    >
+                        Download by Reg. No
+                    </Button>
+                }
             />
         </AdminLayout>
     );
