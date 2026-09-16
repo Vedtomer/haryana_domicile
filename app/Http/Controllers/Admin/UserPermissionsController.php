@@ -12,27 +12,27 @@ class UserPermissionsController extends Controller
 {
     public function index()
     {
-        // Get all regular users
+        // Get all regular users with their assigned services (in a single bulk query)
         $users = User::where('type', 'user')
+            ->with('services:id')
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'phone'])
             ->map(function ($user) {
-                // Load their assigned service IDs
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'service_ids' => $user->services()->pluck('services.id'),
+                    'service_ids' => $user->services->pluck('id')->map(fn ($id) => (int) $id)->values()->all(),
                 ];
             });
 
-        // Get all active services
+        // Get all services
         $services = Service::ordered()
             ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo'])
             ->map(function ($service) {
                 return [
-                    'id' => $service->id,
+                    'id' => (int) $service->id,
                     'name' => $service->name,
                     'icon' => $service->icon,
                     'slug' => $service->slug,
@@ -52,7 +52,7 @@ class UserPermissionsController extends Controller
     {
         $data = $request->validate([
             'service_ids' => 'present|array',
-            'service_ids.*' => 'exists:services,id',
+            'service_ids.*' => 'integer|exists:services,id',
         ]);
 
         $user->services()->sync($data['service_ids']);

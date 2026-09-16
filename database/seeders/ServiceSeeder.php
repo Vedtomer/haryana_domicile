@@ -580,13 +580,6 @@ class ServiceSeeder extends Seeder
                 ]);
                 $targetService = $existing;
             }
-
-            if ($targetService) {
-                $userIds = \App\Models\User::pluck('id')->toArray();
-                if (!empty($userIds)) {
-                    $targetService->users()->syncWithoutDetaching($userIds);
-                }
-            }
         }
 
         // Clean up old and duplicate services that are no longer used

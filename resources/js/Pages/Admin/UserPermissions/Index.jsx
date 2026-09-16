@@ -23,7 +23,7 @@ export default function UserPermissions({ users, services }) {
 
     const handleSelectUser = (user) => {
         setSelectedUser(user);
-        setData('service_ids', user.service_ids || []);
+        setData('service_ids', (user.service_ids || []).map(Number));
     };
 
     // Auto-select user from query parameter ?user={userId} or keep updated when users change
@@ -44,23 +44,25 @@ export default function UserPermissions({ users, services }) {
             const refreshed = users.find(u => u.id === selectedUser.id);
             if (refreshed) {
                 setSelectedUser(refreshed);
-                setData('service_ids', refreshed.service_ids || []);
+                setData('service_ids', (refreshed.service_ids || []).map(Number));
             }
         }
     }, [users]);
 
     const toggleService = (serviceId) => {
-        const hasService = data.service_ids.includes(serviceId);
+        const id = Number(serviceId);
+        const currentIds = (data.service_ids || []).map(Number);
+        const hasService = currentIds.includes(id);
         setData(
             'service_ids', 
             hasService 
-                ? data.service_ids.filter(id => id !== serviceId)
-                : [...data.service_ids, serviceId]
+                ? currentIds.filter(item => item !== id)
+                : [...currentIds, id]
         );
     };
 
     const toggleAll = (check) => {
-        setData('service_ids', check ? sortedServices.map(s => s.id) : []);
+        setData('service_ids', check ? sortedServices.map(s => Number(s.id)) : []);
     };
 
     const submit = (e) => {
@@ -175,7 +177,7 @@ export default function UserPermissions({ users, services }) {
                             <div className="flex-1 overflow-y-auto p-5">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {sortedServices.map((service) => {
-                                        const hasAccess = data.service_ids.includes(service.id);
+                                        const hasAccess = data.service_ids.includes(Number(service.id));
                                         return (
                                             <div 
                                                 key={service.id}

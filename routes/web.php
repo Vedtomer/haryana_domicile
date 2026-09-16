@@ -432,13 +432,8 @@ Route::get('/force-add-service', function () {
         ],
     ];
 
-    $userIds = \App\Models\User::pluck('id')->toArray();
-
     foreach ($newServices as $ns) {
         $srv = \App\Models\Service::updateOrCreate(['slug' => $ns['slug']], $ns);
-        if (!empty($userIds)) {
-            $srv->users()->syncWithoutDetaching($userIds);
-        }
     }
 
     return 'Services added successfully and made PUBLIC! Please go back to your dashboard.';
