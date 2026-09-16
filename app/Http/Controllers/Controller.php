@@ -25,7 +25,12 @@ abstract class Controller
     {
         $user = auth()->user();
 
-        return $user->isAdmin() || $user->hasRole('super_admin');
+        return $user && (
+            $user->isAdmin()
+            || in_array($user->type, ['admin', 'super_admin'])
+            || $user->hasRole('super_admin')
+            || $user->hasRole('admin')
+        );
     }
 
     /**

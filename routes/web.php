@@ -51,52 +51,25 @@ Route::get('/migrate-db', function () {
             $output .= "TenthPassbookSeeder Notice: " . $se1->getMessage() . "\n\n";
         }
 
+        // Ensure all staff/admin users have access to all services
         try {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceSeeder', '--force' => true]);
-            $output .= "=== SERVICE SEEDER ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
-        } catch (\Throwable $se2) {
-            $output .= "ServiceSeeder Notice: " . $se2->getMessage() . "\n\n";
+            $allServiceIds = \App\Models\Service::pluck('id')->all();
+            $adminUsers = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->get();
+            foreach ($adminUsers as $adm) {
+                $adm->services()->syncWithoutDetaching($allServiceIds);
+            }
+            $output .= "=== ADMIN USER SERVICES SYNCED ===\n\n";
+        } catch (\Throwable $ue) {
+            $output .= "Admin sync notice: " . $ue->getMessage() . "\n\n";
         }
-
-        try {
-            $cleanupSlugs = [
-                'haryana-domocile',
-                'rc-pdf-instant',
-                'dl-pdf-instant',
-                'pan-details-instant',
-                'healthid-pvc',
-                'aadhar-card-address-change',
-                'voter-card-manual-address-change',
-                'pdf-editor',
-                'pan-full-details-instant',
-                'pan-uti-pvc',
-                'pan-instant-pvc',
-                'pan-card',
-            ];
-            $cleanupNames = [
-                'Voter Card Manual For Address Change',
-                'PDF Editor',
-                'Pan Details Server Instant',
-                'PAN Full Details Instant',
-                'PAN Card (UTIITSL) PVC',
-                'PAN Card (Instant e-Filing) PVC',
-                'PAN Card',
-            ];
-            $deletedCount = \App\Models\Service::withTrashed()
-                ->whereIn('slug', $cleanupSlugs)
-                ->orWhereIn('name', $cleanupNames)
-                ->forceDelete();
-            $output .= "=== CLEANED UP {$deletedCount} REMOVED/DUPLICATE SERVICES ===\n\n";
-        } catch (\Throwable $ce) {
-            $output .= "Cleanup notice: " . $ce->getMessage() . "\n\n";
-        }
-
-
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
         $output .= "=== ALL CACHES CLEARED ===\nDone.\n";
 
         return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
