@@ -117,6 +117,42 @@ Route::get('/api/debug-services', function () {
     return \App\Models\Service::orderBy('name')->get(['id', 'name', 'slug', 'module_key', 'is_active', 'kind']);
 });
 
+Route::get('/api/debug-dashboard-diff', function () {
+    $allServices = \App\Models\Service::ordered()->get();
+    $users = \App\Models\User::all();
+
+    $userReport = $users->map(function ($u) use ($allServices) {
+        $visibleCount = \App\Models\Service::visibleTo($u)->count();
+        $assignedIds = $u->services()->pluck('services.id')->all();
+        $isStaff = $u->isAdmin() || $u->hasRole('super_admin');
+        return [
+            'id' => $u->id,
+            'name' => $u->name,
+            'email' => $u->email,
+            'type' => $u->type,
+            'is_admin_method' => $u->isAdmin(),
+            'has_role_super_admin' => $u->hasRole('super_admin'),
+            'is_staff' => $isStaff,
+            'assigned_services_count' => count($assignedIds),
+            'visible_services_count' => $visibleCount,
+        ];
+    });
+
+    return [
+        'total_services' => $allServices->count(),
+        'services_list' => $allServices->map(fn ($s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'slug' => $s->slug,
+            'is_active' => $s->is_active,
+            'visibility' => $s->visibility,
+            'kind' => $s->kind,
+            'module_key' => $s->module_key,
+        ]),
+        'users' => $userReport,
+    ];
+});
+
 Route::get('/force-add-service', function () {
     \App\Models\Service::updateOrCreate(
         ['slug' => 'aadhar-to-pan'],
