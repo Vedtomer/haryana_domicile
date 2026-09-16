@@ -82,6 +82,13 @@ class Service extends Model
             'index' => '/utilities/electricity-bill?discom=uhbvn',
             'create' => '/utilities/electricity-bill?discom=uhbvn',
         ],
+        'ayushman_3lakh_income_make' => [
+            'label' => 'Ayushman 3Lakh Income Make',
+            'icon' => '🏥',
+            'model' => null,
+            'index' => '/utilities/ayushman-3lakh-income-make',
+            'create' => '/utilities/ayushman-3lakh-income-make',
+        ],
         'vehicle_details' => [
             'label' => 'Vehicle Details',
             'model' => null,

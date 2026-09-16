@@ -637,6 +637,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // All portal services requiring active 6-Month license
         Route::middleware(['license.active'])->group(function () {
     
+    Route::get('/utilities/ayushman-3lakh-income-make', function () {
+        return Inertia::render('Utilities/Ayushman3LakhIncomeMake');
+    })->name('utilities.ayushman-3lakh-income-make');
+
     Route::get('/utilities/electricity-bill', function (Request $request) {
         $defaultDiscom = $request->query('discom', 'dhbvn');
         return Inertia::render('Utilities/ElectricityBill', [
