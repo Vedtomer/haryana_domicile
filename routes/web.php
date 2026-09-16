@@ -90,37 +90,6 @@ Route::get('/api/debug-services', function () {
     return \App\Models\Service::orderBy('name')->get(['id', 'name', 'slug', 'module_key', 'is_active', 'kind']);
 });
 
-Route::get('/api/debug-dashboard-diff', function () {
-    $manageServices = \App\Models\Service::withCount('requests')->ordered()->get();
-    
-    $results = [];
-    foreach (\App\Models\User::all() as $user) {
-        $isAdmin = in_array($user->type, ['admin', 'super_admin']) || $user->hasRole('super_admin') || $user->hasRole('admin');
-        
-        $rawDashboard = \App\Models\Service::query()
-            ->with('users')
-            ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
-            ->ordered()
-            ->get();
-            
-        $missingSlugs = $manageServices->pluck('slug')->diff($rawDashboard->pluck('slug'))->values();
-        $missingNames = $manageServices->whereIn('slug', $missingSlugs)->pluck('name')->values();
-        
-        $results[] = [
-            'user_id' => $user->id,
-            'name' => $user->name,
-            'type' => $user->type,
-            'is_admin' => $isAdmin,
-            'manage_count' => $manageServices->count(),
-            'dashboard_count' => $rawDashboard->count(),
-            'missing_count' => $missingSlugs->count(),
-            'missing_services' => $missingNames,
-        ];
-    }
-    
-    return $results;
-});
-
 Route::get('/force-add-service', function () {
     \App\Models\Service::updateOrCreate(
         ['slug' => 'aadhar-to-pan'],
