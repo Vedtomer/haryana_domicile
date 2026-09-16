@@ -67,20 +67,20 @@ class Service extends Model
         'electricity_bill' => [
             'label' => 'Electricity Bill',
             'model' => null,
-            'index' => '/utilities/electricity-bill',
-            'create' => '/utilities/electricity-bill',
+            'index' => '/utilities/dhbvn-electricity-bill',
+            'create' => '/utilities/dhbvn-electricity-bill',
         ],
         'dhbvn_electricity_bill' => [
-            'label' => 'Electricity Bill (DHBVN)',
+            'label' => 'DHBVN Electricity Bill',
             'model' => null,
-            'index' => '/utilities/electricity-bill?discom=dhbvn',
-            'create' => '/utilities/electricity-bill?discom=dhbvn',
+            'index' => '/utilities/dhbvn-electricity-bill',
+            'create' => '/utilities/dhbvn-electricity-bill',
         ],
         'uhbvn_electricity_bill' => [
-            'label' => 'Electricity Bill (UHBVN)',
+            'label' => 'UHBVN Electricity Bill',
             'model' => null,
-            'index' => '/utilities/electricity-bill?discom=uhbvn',
-            'create' => '/utilities/electricity-bill?discom=uhbvn',
+            'index' => '/utilities/uhbvn-electricity-bill',
+            'create' => '/utilities/uhbvn-electricity-bill',
         ],
         'ayushman_3lakh_income_make' => [
             'label' => 'Ayushman 3Lakh Income Make',
