@@ -418,11 +418,6 @@
         </div>
 
         <div class="panel-group">
-            <!-- Official CRS Portal Link Button -->
-            <a href="https://dc.crsorgi.gov.in/" target="_blank" rel="noopener noreferrer" class="btn btn-crs" title="Civil Registration System - Birth & Death Registration">
-                🌐 CRS Portal (dc.crsorgi.gov.in) &#8599;
-            </a>
-
             <!-- Print Button -->
             <button onclick="window.print()" class="btn btn-print">
                 🖨️ Print / Save PDF
@@ -561,7 +556,7 @@
 
                 <div class="crs-footer-note">
                     <span>* जन्म प्रमाण पत्र नाम जुड़वाने का स्वयं सत्यापित घोषणा पत्र</span>
-                    <span>CRS Official Portal: dc.crsorgi.gov.in</span>
+                    <span>प्रारूप: जन्म एवं मृत्यु रजिस्ट्रीकरण</span>
                 </div>
             </div>
         </div>
@@ -621,6 +616,10 @@
                     toggleBorder(shouldShow);
                 }
             } catch(e) {}
+
+            if (urlParams.get('auto') === '1' || urlParams.get('print') === '1') {
+                setTimeout(function() { window.print(); }, 400);
+            }
         })();
     </script>
 </body>

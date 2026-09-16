@@ -43,7 +43,7 @@ class Service extends Model
         'birth_record' => [
             'label' => 'Birth Certificate Name Add',
             'model' => BirthRecord::class,
-            'index' => '/admin/birth-records',
+            'index' => '/utilities/birth-certificate',
             'create' => '/admin/birth-records/create',
         ],
         'haryana_domicile' => [
@@ -90,11 +90,11 @@ class Service extends Model
             'create' => '/utilities/ayushman-3lakh-income-make',
         ],
         'crs_portal' => [
-            'label' => 'CRS Birth & Death Portal',
-            'icon' => '🏛️',
+            'label' => 'Birth Certificate Download',
+            'icon' => '👶',
             'model' => null,
-            'index' => '/utilities/crs-portal',
-            'create' => '/utilities/crs-portal',
+            'index' => '/utilities/birth-certificate',
+            'create' => '/utilities/birth-certificate',
         ],
         'vehicle_details' => [
             'label' => 'Vehicle Details',

@@ -39,29 +39,6 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
     return (
         <Paper component="form" onSubmit={handleFormSubmit} elevation={0} sx={{ p: 4, borderRadius: 3, bgcolor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' }}>
 
-            {/* Official CRS Portal Notice Banner */}
-            <Box sx={{ mb: 4, p: 2, bgcolor: '#f0f7ff', border: '1px solid #bfdbfe', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-                <Box>
-                    <Typography variant="subtitle2" fontWeight="bold" color="#1e3a8a">
-                        Official Civil Registration System (CRS) Portal
-                    </Typography>
-                    <Typography variant="body2" color="#475569" sx={{ fontSize: '0.8rem' }}>
-                        घोषणा पत्र (Declaration Form) प्रिंट करने के बाद आधिकारिक पोर्टल पर जन्म रिकॉर्ड में नाम जुड़वाने के लिए: <strong style={{ color: '#1d4ed8' }}>https://dc.crsorgi.gov.in/</strong>
-                    </Typography>
-                </Box>
-                <Button
-                    variant="outlined"
-                    size="small"
-                    component="a"
-                    href="https://dc.crsorgi.gov.in/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{ textTransform: 'none', fontWeight: 600, borderColor: '#3b82f6', color: '#1d4ed8' }}
-                >
-                    Open dc.crsorgi.gov.in ↗
-                </Button>
-            </Box>
-
             <SectionHeader title="Search Details" />
             <Grid container spacing={3}>
                 <Grid size={{ xs: 12, md: 4 }}>

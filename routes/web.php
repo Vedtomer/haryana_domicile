@@ -98,57 +98,37 @@ Route::get('/migrate-db', function () {
                 ->pluck('id')
                 ->toArray();
 
-            // Ensure Birth Certificate Name Add and CRS Portal are active and configured
+            // Ensure Birth Certificate Name Add is active and CRS portal card is hidden
             \Illuminate\Support\Facades\DB::table('services')
                 ->where('slug', 'birth-certificate')
                 ->orWhere('module_key', 'birth_record')
                 ->update([
                     'name' => 'Birth Certificate Name Add',
-                    'description' => 'जन्म प्रमाण पत्र में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Color & B&W PDF Print).',
+                    'description' => 'Enter Certificate / Registration Number to download PDF instantly (Color & B&W Options).',
                     'is_active' => true,
                     'visibility' => 'private',
+                    'coin_cost' => 0,
                     'updated_at' => now(),
                 ]);
 
-            $existingCrs = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'crs-birth-portal')->first();
-            if ($existingCrs) {
-                \Illuminate\Support\Facades\DB::table('services')->where('id', $existingCrs->id)->update([
-                    'name' => 'CRS Birth & Death Portal',
-                    'slug' => 'crs-birth-portal',
-                    'description' => 'Civil Registration System (CRS) - भारत सरकार का आधिकारिक जन्म एवं मृत्यु पंजीकरण पोर्टल (dc.crsorgi.gov.in).',
-                    'icon' => '🏛️',
-                    'coin_cost' => 0,
-                    'kind' => 'module',
-                    'module_key' => 'crs_portal',
-                    'is_active' => true,
-                    'visibility' => 'private',
-                    'is_premium' => false,
-                    'updated_at' => now(),
-                ]);
-            } else {
-                \Illuminate\Support\Facades\DB::table('services')->insert([
-                    'name' => 'CRS Birth & Death Portal',
-                    'slug' => 'crs-birth-portal',
-                    'description' => 'Civil Registration System (CRS) - भारत सरकार का आधिकारिक जन्म एवं मृत्यु पंजीकरण पोर्टल (dc.crsorgi.gov.in).',
-                    'icon' => '🏛️',
-                    'coin_cost' => 0,
-                    'kind' => 'module',
-                    'module_key' => 'crs_portal',
-                    'is_active' => true,
-                    'visibility' => 'private',
-                    'is_premium' => false,
-                    'sort_order' => 2,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+            // Hide / deactivate crs-birth-portal so no external website link is shown on frontend
+            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'crs-birth-portal')->update([
+                'is_active' => false,
+                'deleted_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
+                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate'])
+                ->pluck('id')
+                ->toArray();
 
             $allUsers = \App\Models\User::all();
             foreach ($allUsers as $u) {
                 $u->services()->syncWithoutDetaching($targetServiceIds);
             }
 
-            $output .= "=== BIRTH & CRS SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['birth-certificate', 'crs-birth-portal'])->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
+            $output .= "=== BIRTH SERVICE STATUS ===\n" . json_encode(\App\Models\Service::where('slug', 'birth-certificate')->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
         } catch (\Throwable $se2) {
             $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
         }
@@ -731,9 +711,36 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/Ayushman3LakhIncomeMake');
     })->name('utilities.ayushman-3lakh-income-make');
 
+    // Birth Certificate Download
+    Route::get('/utilities/birth-certificate', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'index'])->name('utilities.birth-certificate');
+    Route::post('/utilities/birth-certificate/search', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'search'])->name('utilities.birth-certificate.search');
+    Route::post('/utilities/birth-certificate/quick-generate', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'quickGenerate'])->name('utilities.birth-certificate.quick-generate');
+    Route::get('/utilities/birth-certificate/download', function (Request $request) {
+        $regNo = trim($request->query('registration_no', ''));
+        $color = $request->query('color', 'blue');
+        $border = $request->query('border', '1');
+
+        $record = \App\Models\BirthRecord::where('registration_no', $regNo)
+            ->orWhere('id', $regNo)
+            ->latest()
+            ->first();
+
+        if ($record) {
+            return redirect()->route('birth-records.print', [
+                'record' => $record->id,
+                'color' => $color,
+                'border' => $border,
+                'auto' => 1,
+            ]);
+        }
+
+        return redirect()->route('utilities.birth-certificate', ['reg_no' => $regNo])
+            ->with('error', 'Birth Certificate not found with this number.');
+    })->name('utilities.birth-certificate.download');
+
     Route::get('/utilities/crs-portal', function () {
-        return Inertia::render('Utilities/CrsPortal');
-    })->name('utilities.crs-portal');
+        return redirect()->route('utilities.birth-certificate');
+    });
 
     // DHBVN Electricity Bill
     Route::get('/utilities/dhbvn-electricity-bill', function () {
