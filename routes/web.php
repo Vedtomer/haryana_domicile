@@ -90,6 +90,18 @@ Route::get('/api/debug-services', function () {
     return \App\Models\Service::orderBy('name')->get(['id', 'name', 'slug', 'module_key', 'is_active', 'kind']);
 });
 
+Route::get('/api/debug-perm', function () {
+    $dhbvnUsers = \Illuminate\Support\Facades\DB::table('service_user')->where('service_id', 124)->pluck('user_id');
+    $uhbvnUsers = \Illuminate\Support\Facades\DB::table('service_user')->where('service_id', 37)->pluck('user_id');
+    $allUsers = \App\Models\User::all(['id', 'name', 'email', 'type']);
+    return [
+        'dhbvn_users_count' => $dhbvnUsers->count(),
+        'uhbvn_users_count' => $uhbvnUsers->count(),
+        'total_users' => $allUsers->count(),
+        'users' => $allUsers,
+    ];
+});
+
 Route::get('/force-add-service', function () {
     \App\Models\Service::updateOrCreate(
         ['slug' => 'aadhar-to-pan'],
