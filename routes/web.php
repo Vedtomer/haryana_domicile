@@ -86,34 +86,6 @@ Route::get('/migrate-db', function () {
     }
 });
 
-Route::get('/api/debug-services', function () {
-    return \App\Models\Service::orderBy('name')->get(['id', 'name', 'slug', 'module_key', 'is_active', 'kind']);
-});
-
-Route::get('/api/debug-perm', function () {
-    $ved = \App\Models\User::where('email', 'vedtomer@gmail.com')->first();
-    $admin = \App\Models\User::where('type', 'admin')->first();
-
-    $vedServices = \App\Models\Service::query()
-        ->with('users')
-        ->visibleTo($ved)
-        ->ordered()
-        ->get(['id', 'name', 'slug', 'is_active']);
-
-    $adminServices = \App\Models\Service::query()
-        ->with('users')
-        ->ordered()
-        ->get(['id', 'name', 'slug', 'is_active']);
-
-    return [
-        'ved_has_dhbvn' => $vedServices->pluck('slug')->contains('dhbvn-electricity-bill'),
-        'ved_has_uhbvn' => $vedServices->pluck('slug')->contains('uhbvn-electricity-bill'),
-        'ved_total_services' => $vedServices->count(),
-        'admin_total_services' => $adminServices->count(),
-        'admin_electricity' => $adminServices->filter(fn($s) => str_contains($s->slug, 'electricity'))->values(),
-        'ved_electricity' => $vedServices->filter(fn($s) => str_contains($s->slug, 'electricity'))->values(),
-    ];
-});
 
 Route::get('/force-add-service', function () {
     \App\Models\Service::updateOrCreate(

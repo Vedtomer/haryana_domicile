@@ -45,9 +45,9 @@ class ServiceSeeder extends Seeder
                 'sort_order' => 3,
             ],
             [
-                'name' => 'DHBVN Electricity Bill',
+                'name' => 'Electricity Bill (DHBVN)',
                 'slug' => 'dhbvn-electricity-bill',
-                'description' => 'View and instantly download Dakshin Haryana (DHBVN) electricity bill PDF.',
+                'description' => 'Bijli Bill - Dakshin Haryana Bijli Vitran Nigam (DHBVN) duplicate electricity bill instant PDF download.',
                 'icon' => '⚡',
                 'coin_cost' => 0,
                 'kind' => Service::KIND_MODULE,
@@ -57,9 +57,9 @@ class ServiceSeeder extends Seeder
                 'visibility' => Service::VISIBILITY_PRIVATE,
             ],
             [
-                'name' => 'UHBVN Electricity Bill',
+                'name' => 'Electricity Bill (UHBVN)',
                 'slug' => 'uhbvn-electricity-bill',
-                'description' => 'View and instantly download Uttar Haryana (UHBVN) electricity bill PDF.',
+                'description' => 'Bijli Bill - Uttar Haryana Bijli Vitran Nigam (UHBVN) duplicate electricity bill instant PDF download.',
                 'icon' => '⚡',
                 'coin_cost' => 0,
                 'kind' => Service::KIND_MODULE,

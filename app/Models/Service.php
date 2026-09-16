@@ -71,13 +71,13 @@ class Service extends Model
             'create' => '/utilities/electricity-bill',
         ],
         'dhbvn_electricity_bill' => [
-            'label' => 'DHBVN Electricity Bill',
+            'label' => 'Electricity Bill (DHBVN)',
             'model' => null,
             'index' => '/utilities/electricity-bill?discom=dhbvn',
             'create' => '/utilities/electricity-bill?discom=dhbvn',
         ],
         'uhbvn_electricity_bill' => [
-            'label' => 'UHBVN Electricity Bill',
+            'label' => 'Electricity Bill (UHBVN)',
             'model' => null,
             'index' => '/utilities/electricity-bill?discom=uhbvn',
             'create' => '/utilities/electricity-bill?discom=uhbvn',
