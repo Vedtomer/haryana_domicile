@@ -94,16 +94,61 @@ Route::get('/migrate-db', function () {
             ]);
 
             $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
-                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make'])
+                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate', 'crs-birth-portal'])
                 ->pluck('id')
                 ->toArray();
+
+            // Ensure Birth Certificate Name Add and CRS Portal are active and configured
+            \Illuminate\Support\Facades\DB::table('services')
+                ->where('slug', 'birth-certificate')
+                ->orWhere('module_key', 'birth_record')
+                ->update([
+                    'name' => 'Birth Certificate Name Add',
+                    'description' => 'जन्म प्रमाण पत्र में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Color & B&W PDF Print).',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'updated_at' => now(),
+                ]);
+
+            $existingCrs = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'crs-birth-portal')->first();
+            if ($existingCrs) {
+                \Illuminate\Support\Facades\DB::table('services')->where('id', $existingCrs->id)->update([
+                    'name' => 'CRS Birth & Death Portal',
+                    'slug' => 'crs-birth-portal',
+                    'description' => 'Civil Registration System (CRS) - भारत सरकार का आधिकारिक जन्म एवं मृत्यु पंजीकरण पोर्टल (dc.crsorgi.gov.in).',
+                    'icon' => '🏛️',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'module_key' => 'crs_portal',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'is_premium' => false,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                \Illuminate\Support\Facades\DB::table('services')->insert([
+                    'name' => 'CRS Birth & Death Portal',
+                    'slug' => 'crs-birth-portal',
+                    'description' => 'Civil Registration System (CRS) - भारत सरकार का आधिकारिक जन्म एवं मृत्यु पंजीकरण पोर्टल (dc.crsorgi.gov.in).',
+                    'icon' => '🏛️',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'module_key' => 'crs_portal',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'is_premium' => false,
+                    'sort_order' => 2,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
 
             $allUsers = \App\Models\User::all();
             foreach ($allUsers as $u) {
                 $u->services()->syncWithoutDetaching($targetServiceIds);
             }
 
-            $output .= "=== SEPARATE SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill'])->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
+            $output .= "=== BIRTH & CRS SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['birth-certificate', 'crs-birth-portal'])->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
         } catch (\Throwable $se2) {
             $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
         }
@@ -685,6 +730,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/ayushman-3lakh-income-make', function () {
         return Inertia::render('Utilities/Ayushman3LakhIncomeMake');
     })->name('utilities.ayushman-3lakh-income-make');
+
+    Route::get('/utilities/crs-portal', function () {
+        return Inertia::render('Utilities/CrsPortal');
+    })->name('utilities.crs-portal');
 
     // DHBVN Electricity Bill
     Route::get('/utilities/dhbvn-electricity-bill', function () {

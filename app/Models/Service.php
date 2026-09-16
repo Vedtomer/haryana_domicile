@@ -41,7 +41,7 @@ class Service extends Model
             'create' => '/admin/marriage-affidavits/create',
         ],
         'birth_record' => [
-            'label' => 'Birth Certificate',
+            'label' => 'Birth Certificate Name Add',
             'model' => BirthRecord::class,
             'index' => '/admin/birth-records',
             'create' => '/admin/birth-records/create',
@@ -88,6 +88,13 @@ class Service extends Model
             'model' => null,
             'index' => '/utilities/ayushman-3lakh-income-make',
             'create' => '/utilities/ayushman-3lakh-income-make',
+        ],
+        'crs_portal' => [
+            'label' => 'CRS Birth & Death Portal',
+            'icon' => '🏛️',
+            'model' => null,
+            'index' => '/utilities/crs-portal',
+            'create' => '/utilities/crs-portal',
         ],
         'vehicle_details' => [
             'label' => 'Vehicle Details',
