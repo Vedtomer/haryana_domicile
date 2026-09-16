@@ -963,6 +963,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.learning-licence-pdf');
 
     Route::post('/utilities/learning-licence-pdf/search', [\App\Http\Controllers\LearningLicenceController::class, 'search'])->name('utilities.learning-licence-pdf.search');
+    Route::post('/utilities/learning-licence-pdf/deduct-coins', [\App\Http\Controllers\LearningLicenceController::class, 'deductCoins'])->name('utilities.learning-licence-pdf.deduct-coins');
 
     Route::get('/utilities/voter-mobile-update', function () {
         $service = \App\Models\Service::where('slug', 'voter-mobile-update')->first();

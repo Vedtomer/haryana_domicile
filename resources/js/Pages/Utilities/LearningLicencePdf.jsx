@@ -26,6 +26,9 @@ export default function LearningLicencePdf() {
     const [error, setError] = useState(null);
     const [directPortal, setDirectPortal] = useState('https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do');
 
+    const NEXUS_API_URL = 'https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php';
+    const API_KEY = '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386';
+
     const handleSearch = async (e) => {
         e.preventDefault();
         const clean = applNum.trim().toUpperCase();
@@ -36,21 +39,76 @@ export default function LearningLicencePdf() {
         setLoading(true);
         setError(null);
         setResult(null);
+
         try {
-            const response = await axios.post('/utilities/learning-licence-pdf/search', {
-                applNum: clean,
-                dob: dob.trim(),
+            // Try direct API call from browser first (bypasses server-side blocking)
+            let params = `apiKey=${API_KEY}&applNum=${encodeURIComponent(clean)}`;
+            if (dob.trim()) params += `&dob=${encodeURIComponent(dob.trim())}`;
+
+            const directUrl = `${NEXUS_API_URL}?${params}`;
+            const directResp = await fetch(directUrl, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json, application/pdf, */*' },
             });
-            if (response.data.success) {
-                setResult(response.data.data);
-            } else {
-                setError(response.data.message || 'Details not found.');
-                if (response.data.direct_portal) {
-                    setDirectPortal(response.data.direct_portal);
-                }
+
+            const contentType = directResp.headers.get('content-type') || '';
+
+            // Handle raw PDF binary
+            if (contentType.includes('application/pdf')) {
+                const blob = await directResp.blob();
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setResult({ pdf: reader.result.split(',')[1] });
+                };
+                reader.readAsDataURL(blob);
+
+                // Deduct coins via backend
+                try {
+                    await axios.post('/utilities/learning-licence-pdf/deduct-coins', { applNum: clean, dob: dob.trim() });
+                } catch (_) {}
+                setLoading(false);
+                return;
             }
-        } catch (err) {
-            setError(err.response?.data?.message || 'An error occurred while fetching the details.');
+
+            const data = await directResp.json();
+
+            // Check if response has PDF data or is successful
+            const status = data?.Status || data?.status;
+            const isSuccess = status === 'Success' || status === 'success' || status === true;
+            const hasPdf = data?.pdf_url || data?.pdf || data?.base64 || data?.file_url
+                || data?.data?.pdf || data?.data?.pdf_url || data?.data?.base64 || data?.data;
+
+            if (isSuccess || hasPdf) {
+                setResult(data);
+                // Deduct coins via backend
+                try {
+                    await axios.post('/utilities/learning-licence-pdf/deduct-coins', { applNum: clean, dob: dob.trim() });
+                } catch (_) {}
+                setLoading(false);
+                return;
+            }
+
+            // If direct call returned error (503 etc.), try backend as fallback
+            throw new Error(data?.message || 'Direct API failed, trying backend...');
+
+        } catch (directErr) {
+            // Fallback: try via backend
+            try {
+                const response = await axios.post('/utilities/learning-licence-pdf/search', {
+                    applNum: applNum.trim().toUpperCase(),
+                    dob: dob.trim(),
+                });
+                if (response.data.success) {
+                    setResult(response.data.data);
+                } else {
+                    setError(response.data.message || 'Details not found.');
+                    if (response.data.direct_portal) {
+                        setDirectPortal(response.data.direct_portal);
+                    }
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || directErr.message || 'API server से संपर्क नहीं हो सका। कृपया थोड़ी देर बाद प्रयास करें।');
+            }
         } finally {
             setLoading(false);
         }
