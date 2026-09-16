@@ -1,1 +1,0 @@
-import{r as m,t as p,n as a}from"./Grow-eT5_eVdi.js";const f=m();function u(n){const{theme:e,name:t,props:o}=n;return!e||!e.components||!e.components[t]||!e.components[t].defaultProps?o:p(e.components[t].defaultProps,o)}function h(n){const{props:e,name:t,defaultTheme:o,themeId:r}=n;let s=a(o);return r&&(s=s[r]||s),u({theme:s,name:t,props:e})}export{f as s,h as u};

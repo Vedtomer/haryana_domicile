@@ -1,168 +1,140 @@
 {
-  "_AdminLayout-DDZz_nkS.js": {
-    "file": "assets/AdminLayout-DDZz_nkS.js",
+  "_AdminLayout-Cv-dNa1y.js": {
+    "file": "assets/AdminLayout-Cv-dNa1y.js",
     "name": "AdminLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
-  "_Alert-KEFcH4Ho.js": {
-    "file": "assets/Alert-KEFcH4Ho.js",
+  "_Alert-BuFaR9mH.js": {
+    "file": "assets/Alert-BuFaR9mH.js",
     "name": "Alert",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js",
-      "_IconButton-khx1wHL0.js"
+      "_Grow-BG0DbikL.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
-  "_ArrowBack-Tg9HRjMV.js": {
-    "file": "assets/ArrowBack-Tg9HRjMV.js",
+  "_ArrowBack-BTaZQ0ep.js": {
+    "file": "assets/ArrowBack-BTaZQ0ep.js",
     "name": "ArrowBack",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
-  "_Box-DwK5ssoj.js": {
-    "file": "assets/Box-DwK5ssoj.js",
+  "_Box-CIL8Le9b.js": {
+    "file": "assets/Box-CIL8Le9b.js",
     "name": "Box",
     "imports": [
-      "_Grow-eT5_eVdi.js",
+      "_Grow-BG0DbikL.js",
       "resources/js/app.jsx"
     ]
   },
-  "_ConfirmDialog-DkspZhM6.js": {
-    "file": "assets/ConfirmDialog-DkspZhM6.js",
+  "_ConfirmDialog-D5FYqxrC.js": {
+    "file": "assets/ConfirmDialog-D5FYqxrC.js",
     "name": "ConfirmDialog",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_Delete-Bzaxnuca.js": {
-    "file": "assets/Delete-Bzaxnuca.js",
+  "_Delete-BttUEsZO.js": {
+    "file": "assets/Delete-BttUEsZO.js",
     "name": "Delete",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
-  "_ElectricBolt-CVsLMUvT.js": {
-    "file": "assets/ElectricBolt-CVsLMUvT.js",
+  "_ElectricBolt-BOzVcHYk.js": {
+    "file": "assets/ElectricBolt-BOzVcHYk.js",
     "name": "ElectricBolt",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
-  "_FileDownload-g8-JmzMB.js": {
-    "file": "assets/FileDownload-g8-JmzMB.js",
+  "_FileDownload-BvTKmOd5.js": {
+    "file": "assets/FileDownload-BvTKmOd5.js",
     "name": "FileDownload",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
-  "_FloatingInput-D58ElJ_r.js": {
-    "file": "assets/FloatingInput-D58ElJ_r.js",
+  "_FloatingInput-mr9SLZVU.js": {
+    "file": "assets/FloatingInput-mr9SLZVU.js",
     "name": "FloatingInput",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_FormInputs-CG18m0J2.js": {
-    "file": "assets/FormInputs-CG18m0J2.js",
+  "_FormInputs-DJ9AUKV5.js": {
+    "file": "assets/FormInputs-DJ9AUKV5.js",
     "name": "FormInputs",
     "imports": [
+      "_Grow-BG0DbikL.js",
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js",
-      "_Box-DwK5ssoj.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js"
+      "_TextField-DPv0RT5M.js",
+      "_Box-CIL8Le9b.js"
     ]
   },
-  "_FrontendLayout-DckGcIvM.js": {
-    "file": "assets/FrontendLayout-DckGcIvM.js",
+  "_FrontendLayout-DDWS63yF.js": {
+    "file": "assets/FrontendLayout-DDWS63yF.js",
     "name": "FrontendLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
-  "_Grow-eT5_eVdi.js": {
-    "file": "assets/Grow-eT5_eVdi.js",
+  "_Grow-BG0DbikL.js": {
+    "file": "assets/Grow-BG0DbikL.js",
     "name": "Grow",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_IconButton-khx1wHL0.js": {
-    "file": "assets/IconButton-khx1wHL0.js",
+  "_IconButton-COS6r-Xr.js": {
+    "file": "assets/IconButton-COS6r-Xr.js",
     "name": "IconButton",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
-  "_MenuItem-CY2fs_Ls.js": {
-    "file": "assets/MenuItem-CY2fs_Ls.js",
-    "name": "MenuItem",
-    "imports": [
-      "_Grow-eT5_eVdi.js",
-      "resources/js/app.jsx",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
-    ]
-  },
-  "_ReferralFloatingButton-D5RJmZN0.js": {
-    "file": "assets/ReferralFloatingButton-D5RJmZN0.js",
+  "_ReferralFloatingButton-T5aeAun0.js": {
+    "file": "assets/ReferralFloatingButton-T5aeAun0.js",
     "name": "ReferralFloatingButton",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_ResourceIndex-Cx5vVijm.js": {
-    "file": "assets/ResourceIndex-Cx5vVijm.js",
+  "_ResourceIndex-CeVN0KIh.js": {
+    "file": "assets/ResourceIndex-CeVN0KIh.js",
     "name": "ResourceIndex",
     "imports": [
       "resources/js/app.jsx",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
-  "_StatusBadge-N3N79M6Q.js": {
-    "file": "assets/StatusBadge-N3N79M6Q.js",
+  "_StatusBadge-DFL6nl9T.js": {
+    "file": "assets/StatusBadge-DFL6nl9T.js",
     "name": "StatusBadge",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_TableRow-BvF8dQE0.js": {
-    "file": "assets/TableRow-BvF8dQE0.js",
-    "name": "TableRow",
-    "imports": [
-      "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
-    ]
-  },
-  "_TextField-Bm_yWtAe.js": {
-    "file": "assets/TextField-Bm_yWtAe.js",
+  "_TextField-DPv0RT5M.js": {
+    "file": "assets/TextField-DPv0RT5M.js",
     "name": "TextField",
     "imports": [
       "resources/js/app.jsx",
-      "_Grow-eT5_eVdi.js"
-    ]
-  },
-  "_useThemeProps-CcjRoym-.js": {
-    "file": "assets/useThemeProps-CcjRoym-.js",
-    "name": "useThemeProps",
-    "imports": [
-      "_Grow-eT5_eVdi.js"
+      "_Grow-BG0DbikL.js"
     ]
   },
   "resources/css/app.css": {
@@ -176,664 +148,616 @@
     ]
   },
   "resources/js/Pages/Admin/AadharUpdate/Create.jsx": {
-    "file": "assets/Create-BqtjVq7Q.js",
+    "file": "assets/Create-CeTCw37_.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/AadharUpdate/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/AadharUpdate/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AadharUpdate/Edit.jsx": {
-    "file": "assets/Edit-RccgSmHw.js",
+    "file": "assets/Edit-BF9wpJzd.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/AadharUpdate/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/AadharUpdate/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AadharUpdate/Form.jsx": {
-    "file": "assets/Form-CsnSfwxw.js",
+    "file": "assets/Form-CWdZ-Qyc.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/AadharUpdate/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AadharUpdate/Index.jsx": {
-    "file": "assets/Index-v7f5Yuw9.js",
+    "file": "assets/Index-BMmu_Fng.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/AadharUpdate/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/AirtelPassbook/Create.jsx": {
-    "file": "assets/Create-BLh0qIe8.js",
+    "file": "assets/Create-CKw6Is5s.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/AirtelPassbook/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/AirtelPassbook/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AirtelPassbook/Edit.jsx": {
-    "file": "assets/Edit-DEj2z7iC.js",
+    "file": "assets/Edit-CzAUabjc.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/AirtelPassbook/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/AirtelPassbook/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AirtelPassbook/Form.jsx": {
-    "file": "assets/Form-DCTGYijI.js",
+    "file": "assets/Form-pa376i1e.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/AirtelPassbook/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/AirtelPassbook/Index.jsx": {
-    "file": "assets/Index-CTROyqn-.js",
+    "file": "assets/Index-nbOvbZ40.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/AirtelPassbook/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Create.jsx": {
-    "file": "assets/Create-zZozkLoo.js",
+    "file": "assets/Create-Crk-B3Cu.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/BirthRecords/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/BirthRecords/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_Delete-Bzaxnuca.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js",
+      "_Delete-BttUEsZO.js"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Edit.jsx": {
-    "file": "assets/Edit-BuX5j8cc.js",
+    "file": "assets/Edit-Cn4kOr_S.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/BirthRecords/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/BirthRecords/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_Delete-Bzaxnuca.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js",
+      "_Delete-BttUEsZO.js"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Form.jsx": {
-    "file": "assets/Form-x8aH1MkG.js",
+    "file": "assets/Form-CQJ37r2i.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/BirthRecords/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/BirthRecords/Index.jsx": {
-    "file": "assets/Index-yqNkKUwF.js",
+    "file": "assets/Index-Fi3JyOME.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/BirthRecords/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FileDownload-g8-JmzMB.js",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
-      "_Grow-eT5_eVdi.js",
+      "_FileDownload-BvTKmOd5.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx": {
-    "file": "assets/Create-CWV8DB3O.js",
+    "file": "assets/Create-BBRh0wOj.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx": {
-    "file": "assets/Index-BlOxjIZb.js",
+    "file": "assets/Index-DsEavKxe.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/CoinPurchaseRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Dashboard.jsx": {
-    "file": "assets/Dashboard-DTwqdgkS.js",
+    "file": "assets/Dashboard-CoIx7cXh.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Admin/Dashboard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx": {
-    "file": "assets/Create-DoNLB3hi.js",
+    "file": "assets/Create-DumqFtq6.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Edit.jsx": {
-    "file": "assets/Edit-DWXJRL1J.js",
+    "file": "assets/Edit-i2jHyWEC.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx": {
-    "file": "assets/Form-Bx0O0FB2.js",
+    "file": "assets/Form-CSZh7p-B.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx": {
-    "file": "assets/Index-CPhj3-HP.js",
+    "file": "assets/Index-65m2mPY8.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/HaryanaDomicile/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/LicenseKeys/Index.jsx": {
-    "file": "assets/Index-D_ZedZ1S.js",
+    "file": "assets/Index-dgzCozf2.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/LicenseKeys/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Login.jsx": {
-    "file": "assets/Login-CHX_oNvy.js",
+    "file": "assets/Login-BAQQw5TL.js",
     "name": "Login",
     "src": "resources/js/Pages/Admin/Login.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/ManualPanCard/Create.jsx": {
-    "file": "assets/Create-BPGdK-z5.js",
+    "file": "assets/Create-dIp4xGjw.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/ManualPanCard/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/ManualPanCard/Index.jsx": {
-    "file": "assets/Index-Dukf9vAW.js",
+    "file": "assets/Index-DRL385ke.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/ManualPanCard/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ],
     "dynamicImports": [
       "resources/js/app.jsx"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Create.jsx": {
-    "file": "assets/Create-BzhFL6eu.js",
+    "file": "assets/Create-BJDIU1JA.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Edit.jsx": {
-    "file": "assets/Edit-cuXe3d_d.js",
+    "file": "assets/Edit-CoWXMQOX.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx": {
-    "file": "assets/Form-BvWYdRbh.js",
+    "file": "assets/Form-Cne5eunc.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageAffidavits/Index.jsx": {
-    "file": "assets/Index-BJTtAcfK.js",
+    "file": "assets/Index-0KTYmxX-.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/MarriageAffidavits/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Create.jsx": {
-    "file": "assets/Create-CW_KRORc.js",
+    "file": "assets/Create-BUaJ0gwh.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/MarriageForms/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/MarriageForms/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Edit.jsx": {
-    "file": "assets/Edit-dTNzInO2.js",
+    "file": "assets/Edit-DWKw1j68.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/MarriageForms/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/MarriageForms/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Form.jsx": {
-    "file": "assets/Form-uFSbMKe1.js",
+    "file": "assets/Form-CAy_CjW5.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/MarriageForms/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/MarriageForms/Index.jsx": {
-    "file": "assets/Index-Ci7uCMg-.js",
+    "file": "assets/Index-Dl6FjGY-.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/MarriageForms/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/Notifications/Index.jsx": {
-    "file": "assets/Index-SYp4MyNG.js",
+    "file": "assets/Index-BJk9YnFH.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Notifications/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Create.jsx": {
-    "file": "assets/Create-Pt9kJcpo.js",
+    "file": "assets/Create-DnXRUosF.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/PanRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Edit.jsx": {
-    "file": "assets/Edit-PjQbRNtb.js",
+    "file": "assets/Edit-Bh22KWX5.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PanRequests/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/PanRequests/Index.jsx": {
-    "file": "assets/Index-BrIbbBxn.js",
+    "file": "assets/Index-GUlO8Cck.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/PanRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/PaymentSettings/Edit.jsx": {
-    "file": "assets/Edit-DDSf_SJD.js",
+    "file": "assets/Edit-CTXTDz2B.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PaymentSettings/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/PdfCoordinates/Edit.jsx": {
-    "file": "assets/Edit-CxX5k7Aa.js",
+    "file": "assets/Edit-Dn4QkVFW.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/PdfCoordinates/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Profile/Edit.jsx": {
-    "file": "assets/Edit-emZlkuRz.js",
+    "file": "assets/Edit-33UknjYB.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Profile/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FloatingInput-D58ElJ_r.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FloatingInput-mr9SLZVU.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/QrPrint/Index.jsx": {
-    "file": "assets/Index-6_q5rqLt.js",
+    "file": "assets/Index-QgSJuJaB.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/QrPrint/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/QrPrint/Standee.jsx": {
-    "file": "assets/Standee-mmd8O0-s.js",
+    "file": "assets/Standee-B8TKWpDc.js",
     "name": "Standee",
     "src": "resources/js/Pages/Admin/QrPrint/Standee.jsx",
     "isDynamicEntry": true,
@@ -843,96 +767,96 @@
     ]
   },
   "resources/js/Pages/Admin/ReactivationRequests/Index.jsx": {
-    "file": "assets/Index-nilX-wse.js",
+    "file": "assets/Index-CBnGwGE7.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/ReactivationRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Referrals/Index.jsx": {
-    "file": "assets/Index-DHHtyR4a.js",
+    "file": "assets/Index-CmtXj-ET.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Referrals/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Create.jsx": {
-    "file": "assets/Create-FHybYn2A.js",
+    "file": "assets/Create-D2vSmeWq.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/ServiceRequests/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Index.jsx": {
-    "file": "assets/Index-dNBZ8SFe.js",
+    "file": "assets/Index-CgADeDON.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/ServiceRequests/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_StatusBadge-N3N79M6Q.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_StatusBadge-DFL6nl9T.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/ServiceRequests/Show.jsx": {
-    "file": "assets/Show-vuzg8u-v.js",
+    "file": "assets/Show-TJui1zHW.js",
     "name": "Show",
     "src": "resources/js/Pages/Admin/ServiceRequests/Show.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_StatusBadge-N3N79M6Q.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_StatusBadge-DFL6nl9T.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Services/Create.jsx": {
-    "file": "assets/Create-WiDmi7KB.js",
+    "file": "assets/Create-BFCIeonx.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/Services/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/js/Pages/Admin/Services/Form.jsx",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Services/Edit.jsx": {
-    "file": "assets/Edit-CmojxDm4.js",
+    "file": "assets/Edit-DccxbAJZ.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Services/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/js/Pages/Admin/Services/Form.jsx",
-      "_ConfirmDialog-DkspZhM6.js",
+      "_ConfirmDialog-D5FYqxrC.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Services/Form.jsx": {
-    "file": "assets/Form-aOIke-tS.js",
+    "file": "assets/Form-Drw3lA1l.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/Services/Form.jsx",
     "isDynamicEntry": true,
@@ -942,147 +866,139 @@
     ]
   },
   "resources/js/Pages/Admin/Services/Index.jsx": {
-    "file": "assets/Index-BY36Erqz.js",
+    "file": "assets/Index-Djr1b_Y2.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Services/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ConfirmDialog-DkspZhM6.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ConfirmDialog-D5FYqxrC.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/TenthPassbook/Create.jsx": {
-    "file": "assets/Create-BGiA1ZLZ.js",
+    "file": "assets/Create-OxCS3r00.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/TenthPassbook/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/TenthPassbook/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/TenthPassbook/Edit.jsx": {
-    "file": "assets/Edit-CazR-mI3.js",
+    "file": "assets/Edit-DjPUim67.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/TenthPassbook/Edit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ArrowBack-Tg9HRjMV.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ArrowBack-BTaZQ0ep.js",
       "resources/js/Pages/Admin/TenthPassbook/Form.jsx",
-      "_Box-DwK5ssoj.js",
-      "_IconButton-khx1wHL0.js",
-      "_Grow-eT5_eVdi.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js",
+      "_Grow-BG0DbikL.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FormInputs-CG18m0J2.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/TenthPassbook/Form.jsx": {
-    "file": "assets/Form-C_fCupYB.js",
+    "file": "assets/Form-D8t3llf9.js",
     "name": "Form",
     "src": "resources/js/Pages/Admin/TenthPassbook/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FormInputs-CG18m0J2.js",
-      "_Grow-eT5_eVdi.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_Box-DwK5ssoj.js",
+      "_FormInputs-DJ9AUKV5.js",
+      "_Grow-BG0DbikL.js",
+      "_Box-CIL8Le9b.js",
       "resources/css/app.css",
-      "_TextField-Bm_yWtAe.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_TextField-DPv0RT5M.js"
     ]
   },
   "resources/js/Pages/Admin/TenthPassbook/Index.jsx": {
-    "file": "assets/Index-BuWvN4PW.js",
+    "file": "assets/Index-CnyaVSEj.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/TenthPassbook/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ResourceIndex-Cx5vVijm.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ResourceIndex-CeVN0KIh.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_Delete-Bzaxnuca.js",
-      "_Grow-eT5_eVdi.js",
-      "_ConfirmDialog-DkspZhM6.js",
-      "_Box-DwK5ssoj.js",
-      "_useThemeProps-CcjRoym-.js",
-      "_TableRow-BvF8dQE0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_Delete-BttUEsZO.js",
+      "_Grow-BG0DbikL.js",
+      "_ConfirmDialog-D5FYqxrC.js",
+      "_Box-CIL8Le9b.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Admin/TwoFactorChallenge.jsx": {
-    "file": "assets/TwoFactorChallenge-Evx5681i.js",
+    "file": "assets/TwoFactorChallenge-BoaUxNYF.js",
     "name": "TwoFactorChallenge",
     "src": "resources/js/Pages/Admin/TwoFactorChallenge.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/TwoFactorSetup.jsx": {
-    "file": "assets/TwoFactorSetup-cEeGY22r.js",
+    "file": "assets/TwoFactorSetup-D2VrtivM.js",
     "name": "TwoFactorSetup",
     "src": "resources/js/Pages/Admin/TwoFactorSetup.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/UserPermissions/Index.jsx": {
-    "file": "assets/Index-5HC2WsWP.js",
+    "file": "assets/Index-DZuB7MoD.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/UserPermissions/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Users/Create.jsx": {
-    "file": "assets/Create-dm-eFBvx.js",
+    "file": "assets/Create-BoY6eDI2.js",
     "name": "Create",
     "src": "resources/js/Pages/Admin/Users/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FloatingInput-D58ElJ_r.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FloatingInput-mr9SLZVU.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Admin/Users/Edit.jsx": {
-    "file": "assets/Edit-CYtrs83Z.js",
+    "file": "assets/Edit-S9APt03t.js",
     "name": "Edit",
     "src": "resources/js/Pages/Admin/Users/Edit.jsx",
     "isDynamicEntry": true,
@@ -1090,73 +1006,73 @@
       "resources/js/app.jsx",
       "resources/js/Pages/Admin/Users/Create.jsx",
       "resources/css/app.css",
-      "_AdminLayout-DDZz_nkS.js",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_FloatingInput-D58ElJ_r.js"
+      "_AdminLayout-Cv-dNa1y.js",
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_FloatingInput-mr9SLZVU.js"
     ]
   },
   "resources/js/Pages/Admin/Users/Index.jsx": {
-    "file": "assets/Index-DU_N_kra.js",
+    "file": "assets/Index-C59sfpZN.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Users/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Auth/VerifyEmail.jsx": {
-    "file": "assets/VerifyEmail-DOcU-Wlo.js",
+    "file": "assets/VerifyEmail-CK-VDB4L.js",
     "name": "VerifyEmail",
     "src": "resources/js/Pages/Auth/VerifyEmail.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Frontend/ForgotPassword.jsx": {
-    "file": "assets/ForgotPassword-CpA8Wy_w.js",
+    "file": "assets/ForgotPassword-BjV0SOAJ.js",
     "name": "ForgotPassword",
     "src": "resources/js/Pages/Frontend/ForgotPassword.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Frontend/Home.jsx": {
-    "file": "assets/Home-DswMNqZm.js",
+    "file": "assets/Home-DfyXHwws.js",
     "name": "Home",
     "src": "resources/js/Pages/Frontend/Home.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Frontend/Register.jsx": {
-    "file": "assets/Register-CKian1Fl.js",
+    "file": "assets/Register-hUSBh7qM.js",
     "name": "Register",
     "src": "resources/js/Pages/Frontend/Register.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_FrontendLayout-DckGcIvM.js",
+      "_FrontendLayout-DDWS63yF.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Public/QrPrint/PublicUpload.jsx": {
-    "file": "assets/PublicUpload-CMnq8tTF.js",
+    "file": "assets/PublicUpload-DYR1WEqU.js",
     "name": "PublicUpload",
     "src": "resources/js/Pages/Public/QrPrint/PublicUpload.jsx",
     "isDynamicEntry": true,
@@ -1166,7 +1082,7 @@
     ]
   },
   "resources/js/Pages/Reactivate.jsx": {
-    "file": "assets/Reactivate-DC2cIrkR.js",
+    "file": "assets/Reactivate-VC_29wJZ.js",
     "name": "Reactivate",
     "src": "resources/js/Pages/Reactivate.jsx",
     "isDynamicEntry": true,
@@ -1176,561 +1092,558 @@
     ]
   },
   "resources/js/Pages/Utilities/AadhaarServices.jsx": {
-    "file": "assets/AadhaarServices-BzzWQ7SH.js",
+    "file": "assets/AadhaarServices-FE0wOYCK.js",
     "name": "AadhaarServices",
     "src": "resources/js/Pages/Utilities/AadhaarServices.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharCardManual.jsx": {
-    "file": "assets/AadharCardManual-7XBQ_khs.js",
+    "file": "assets/AadharCardManual-CBc4DhgC.js",
     "name": "AadharCardManual",
     "src": "resources/js/Pages/Utilities/AadharCardManual.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharDobChange.jsx": {
-    "file": "assets/AadharDobChange-gfO21ALD.js",
+    "file": "assets/AadharDobChange-CedOBy19.js",
     "name": "AadharDobChange",
     "src": "resources/js/Pages/Utilities/AadharDobChange.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharFullNameChange.jsx": {
-    "file": "assets/AadharFullNameChange-CySDiP05.js",
+    "file": "assets/AadharFullNameChange-BLnih7iB.js",
     "name": "AadharFullNameChange",
     "src": "resources/js/Pages/Utilities/AadharFullNameChange.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharMobileUpdate.jsx": {
-    "file": "assets/AadharMobileUpdate-DOVzwM-x.js",
+    "file": "assets/AadharMobileUpdate-D15AnHqL.js",
     "name": "AadharMobileUpdate",
     "src": "resources/js/Pages/Utilities/AadharMobileUpdate.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharSurnameChange.jsx": {
-    "file": "assets/AadharSurnameChange-Ceowv2cr.js",
+    "file": "assets/AadharSurnameChange-CrcwJ41I.js",
     "name": "AadharSurnameChange",
     "src": "resources/js/Pages/Utilities/AadharSurnameChange.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharToFamilyId.jsx": {
-    "file": "assets/AadharToFamilyId-WKfbOciQ.js",
+    "file": "assets/AadharToFamilyId-TYzsmqv9.js",
     "name": "AadharToFamilyId",
     "src": "resources/js/Pages/Utilities/AadharToFamilyId.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharToMaskPan.jsx": {
-    "file": "assets/AadharToMaskPan-BJ7skIbB.js",
+    "file": "assets/AadharToMaskPan-Dtg1Vc-y.js",
     "name": "AadharToMaskPan",
     "src": "resources/js/Pages/Utilities/AadharToMaskPan.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharToName.jsx": {
-    "file": "assets/AadharToName-7j8yRgMw.js",
+    "file": "assets/AadharToName-BrgpKLbt.js",
     "name": "AadharToName",
     "src": "resources/js/Pages/Utilities/AadharToName.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharToPan.jsx": {
-    "file": "assets/AadharToPan-B4B_x1jU.js",
+    "file": "assets/AadharToPan-BN3BgNwG.js",
     "name": "AadharToPan",
     "src": "resources/js/Pages/Utilities/AadharToPan.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AadharToPppId.jsx": {
-    "file": "assets/AadharToPppId-DwSAfqPj.js",
+    "file": "assets/AadharToPppId-G2BFBjnF.js",
     "name": "AadharToPppId",
     "src": "resources/js/Pages/Utilities/AadharToPppId.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/AbhaHealthIdMake.jsx": {
-    "file": "assets/AbhaHealthIdMake-BvKfj59i.js",
+    "file": "assets/AbhaHealthIdMake-HLdzgQ0_.js",
     "name": "AbhaHealthIdMake",
     "src": "resources/js/Pages/Utilities/AbhaHealthIdMake.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/Ayushman3LakhIncomeMake.jsx": {
-    "file": "assets/Ayushman3LakhIncomeMake-zh5Ety8B.js",
+    "file": "assets/Ayushman3LakhIncomeMake-C38YI3QP.js",
     "name": "Ayushman3LakhIncomeMake",
     "src": "resources/js/Pages/Utilities/Ayushman3LakhIncomeMake.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/BirthCertificateDownload.jsx": {
-    "file": "assets/BirthCertificateDownload-CgljVq9B.js",
+    "file": "assets/BirthCertificateDownload-CTxzGrYK.js",
     "name": "BirthCertificateDownload",
     "src": "resources/js/Pages/Utilities/BirthCertificateDownload.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FileDownload-g8-JmzMB.js",
-      "_Grow-eT5_eVdi.js",
-      "_Alert-KEFcH4Ho.js",
-      "_TextField-Bm_yWtAe.js",
-      "_MenuItem-CY2fs_Ls.js",
-      "_TableRow-BvF8dQE0.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FileDownload-BvTKmOd5.js",
+      "_Grow-BG0DbikL.js",
+      "_Alert-BuFaR9mH.js",
+      "_TextField-DPv0RT5M.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_IconButton-khx1wHL0.js",
-      "_useThemeProps-CcjRoym-.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Utilities/DhbvnElectricityBill.jsx": {
-    "file": "assets/DhbvnElectricityBill-Buj7LwTq.js",
+    "file": "assets/DhbvnElectricityBill-By62Zap2.js",
     "name": "DhbvnElectricityBill",
     "src": "resources/js/Pages/Utilities/DhbvnElectricityBill.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FileDownload-g8-JmzMB.js",
-      "_ElectricBolt-CVsLMUvT.js",
-      "_Grow-eT5_eVdi.js",
-      "_Alert-KEFcH4Ho.js",
-      "_TextField-Bm_yWtAe.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FileDownload-BvTKmOd5.js",
+      "_ElectricBolt-BOzVcHYk.js",
+      "_Grow-BG0DbikL.js",
+      "_Alert-BuFaR9mH.js",
+      "_TextField-DPv0RT5M.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Utilities/DrivingLicenceCard.jsx": {
-    "file": "assets/DrivingLicenceCard-DG5zZHoR.js",
+    "file": "assets/DrivingLicenceCard-BV0tnfBk.js",
     "name": "DrivingLicenceCard",
     "src": "resources/js/Pages/Utilities/DrivingLicenceCard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/ElectricityBill.jsx": {
-    "file": "assets/ElectricityBill-CH5HWs44.js",
+    "file": "assets/ElectricityBill-C1avvK2G.js",
     "name": "ElectricityBill",
     "src": "resources/js/Pages/Utilities/ElectricityBill.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FileDownload-g8-JmzMB.js",
-      "_ElectricBolt-CVsLMUvT.js",
-      "_Grow-eT5_eVdi.js",
-      "_Alert-KEFcH4Ho.js",
-      "_TextField-Bm_yWtAe.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FileDownload-BvTKmOd5.js",
+      "_ElectricBolt-BOzVcHYk.js",
+      "_Grow-BG0DbikL.js",
+      "_Alert-BuFaR9mH.js",
+      "_TextField-DPv0RT5M.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Utilities/IfscVerification.jsx": {
-    "file": "assets/IfscVerification-DQi9OhVW.js",
+    "file": "assets/IfscVerification-KRpobJGF.js",
     "name": "IfscVerification",
     "src": "resources/js/Pages/Utilities/IfscVerification.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/Kundli.jsx": {
-    "file": "assets/Kundli-Cvv3zcyS.js",
+    "file": "assets/Kundli-CgTvyoxF.js",
     "name": "Kundli",
     "src": "resources/js/Pages/Utilities/Kundli.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/LearningLicencePdf.jsx": {
-    "file": "assets/LearningLicencePdf-BgDIw3XN.js",
+    "file": "assets/LearningLicencePdf-DC2JdOmU.js",
     "name": "LearningLicencePdf",
     "src": "resources/js/Pages/Utilities/LearningLicencePdf.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/MobileToPan.jsx": {
-    "file": "assets/MobileToPan-BA2oMm_x.js",
+    "file": "assets/MobileToPan-BdCM-KpO.js",
     "name": "MobileToPan",
     "src": "resources/js/Pages/Utilities/MobileToPan.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PanDetails.jsx": {
-    "file": "assets/PanDetails-C50YZhbq.js",
+    "file": "assets/PanDetails-Cv3i1PK7.js",
     "name": "PanDetails",
     "src": "resources/js/Pages/Utilities/PanDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PanFullDetails.jsx": {
-    "file": "assets/PanFullDetails-DXIbCGSx.js",
+    "file": "assets/PanFullDetails-CFTgOsgW.js",
     "name": "PanFullDetails",
     "src": "resources/js/Pages/Utilities/PanFullDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PanToAadhar.jsx": {
-    "file": "assets/PanToAadhar-DHgZr_In.js",
+    "file": "assets/PanToAadhar-CMhh18Ta.js",
     "name": "PanToAadhar",
     "src": "resources/js/Pages/Utilities/PanToAadhar.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PanToUid.jsx": {
-    "file": "assets/PanToUid-0H2A-qII.js",
+    "file": "assets/PanToUid-DVECjbHU.js",
     "name": "PanToUid",
     "src": "resources/js/Pages/Utilities/PanToUid.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PassportApply.jsx": {
-    "file": "assets/PassportApply-ukyFsuoK.js",
+    "file": "assets/PassportApply-Bgk3q0rd.js",
     "name": "PassportApply",
     "src": "resources/js/Pages/Utilities/PassportApply.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PassportMaker.jsx": {
-    "file": "assets/PassportMaker-XhOy6b4k.js",
+    "file": "assets/PassportMaker-PK_f6dM5.js",
     "name": "PassportMaker",
     "src": "resources/js/Pages/Utilities/PassportMaker.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PdfEditor.jsx": {
-    "file": "assets/PdfEditor-UvOoaHmN.js",
+    "file": "assets/PdfEditor-D8qB9FQS.js",
     "name": "PdfEditor",
     "src": "resources/js/Pages/Utilities/PdfEditor.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PdfResizer.jsx": {
-    "file": "assets/PdfResizer-D8STVc_0.js",
+    "file": "assets/PdfResizer-BGNFSH2N.js",
     "name": "PdfResizer",
     "src": "resources/js/Pages/Utilities/PdfResizer.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PppToAadharAllMembers.jsx": {
-    "file": "assets/PppToAadharAllMembers-BNmjG73Y.js",
+    "file": "assets/PppToAadharAllMembers-eBogokL_.js",
     "name": "PppToAadharAllMembers",
     "src": "resources/js/Pages/Utilities/PppToAadharAllMembers.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PppToBankDetails.jsx": {
-    "file": "assets/PppToBankDetails-DQTe4Mpf.js",
+    "file": "assets/PppToBankDetails-CtBGrMqZ.js",
     "name": "PppToBankDetails",
     "src": "resources/js/Pages/Utilities/PppToBankDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PppToMobileAllMembers.jsx": {
-    "file": "assets/PppToMobileAllMembers-CwefDPZo.js",
+    "file": "assets/PppToMobileAllMembers-CsR_N_ra.js",
     "name": "PppToMobileAllMembers",
     "src": "resources/js/Pages/Utilities/PppToMobileAllMembers.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/PvcCardMaker.jsx": {
-    "file": "assets/PvcCardMaker-B0ZztPDm.js",
+    "file": "assets/PvcCardMaker-ODvTId6h.js",
     "name": "PvcCardMaker",
     "src": "resources/js/Pages/Utilities/PvcCardMaker.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/RcPdf.jsx": {
-    "file": "assets/RcPdf-D232ctWA.js",
+    "file": "assets/RcPdf-niGS6OLZ.js",
     "name": "RcPdf",
     "src": "resources/js/Pages/Utilities/RcPdf.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/SaralStatus.jsx": {
-    "file": "assets/SaralStatus-e7lyLrS5.js",
+    "file": "assets/SaralStatus-bZiE6S0l.js",
     "name": "SaralStatus",
     "src": "resources/js/Pages/Utilities/SaralStatus.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/SirVoterCardList.jsx": {
-    "file": "assets/SirVoterCardList-BPj6f9pR.js",
+    "file": "assets/SirVoterCardList-CsjEd3d8.js",
     "name": "SirVoterCardList",
     "src": "resources/js/Pages/Utilities/SirVoterCardList.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/UhbvnElectricityBill.jsx": {
-    "file": "assets/UhbvnElectricityBill-Co5oINdB.js",
+    "file": "assets/UhbvnElectricityBill-BXbL0dDN.js",
     "name": "UhbvnElectricityBill",
     "src": "resources/js/Pages/Utilities/UhbvnElectricityBill.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
-      "_FileDownload-g8-JmzMB.js",
-      "_ElectricBolt-CVsLMUvT.js",
-      "_Grow-eT5_eVdi.js",
-      "_Alert-KEFcH4Ho.js",
-      "_TextField-Bm_yWtAe.js",
+      "_AdminLayout-Cv-dNa1y.js",
+      "_FileDownload-BvTKmOd5.js",
+      "_ElectricBolt-BOzVcHYk.js",
+      "_Grow-BG0DbikL.js",
+      "_Alert-BuFaR9mH.js",
+      "_TextField-DPv0RT5M.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js",
-      "_IconButton-khx1wHL0.js"
+      "_ReferralFloatingButton-T5aeAun0.js",
+      "_IconButton-COS6r-Xr.js"
     ]
   },
   "resources/js/Pages/Utilities/VehicleDetails.jsx": {
-    "file": "assets/VehicleDetails-D4z8ZLX8.js",
+    "file": "assets/VehicleDetails-B2zwuwfV.js",
     "name": "VehicleDetails",
     "src": "resources/js/Pages/Utilities/VehicleDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VehiclePucWithOtp.jsx": {
-    "file": "assets/VehiclePucWithOtp-CzX0ZUxK.js",
+    "file": "assets/VehiclePucWithOtp-D6r6TfkQ.js",
     "name": "VehiclePucWithOtp",
     "src": "resources/js/Pages/Utilities/VehiclePucWithOtp.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VehiclePucWithoutOtp.jsx": {
-    "file": "assets/VehiclePucWithoutOtp-B3p5ej0Q.js",
+    "file": "assets/VehiclePucWithoutOtp-8V4QqJkZ.js",
     "name": "VehiclePucWithoutOtp",
     "src": "resources/js/Pages/Utilities/VehiclePucWithoutOtp.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VehicleToMobile.jsx": {
-    "file": "assets/VehicleToMobile-eAovLbUJ.js",
+    "file": "assets/VehicleToMobile-CnQeClbN.js",
     "name": "VehicleToMobile",
     "src": "resources/js/Pages/Utilities/VehicleToMobile.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VoterCardManualAddressChange.jsx": {
-    "file": "assets/VoterCardManualAddressChange-miCLvx6a.js",
+    "file": "assets/VoterCardManualAddressChange-CTDgEd4_.js",
     "name": "VoterCardManualAddressChange",
     "src": "resources/js/Pages/Utilities/VoterCardManualAddressChange.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VoterCardManualMaker.jsx": {
-    "file": "assets/VoterCardManualMaker-DZfmNt94.js",
+    "file": "assets/VoterCardManualMaker-COQTzXKi.js",
     "name": "VoterCardManualMaker",
     "src": "resources/js/Pages/Utilities/VoterCardManualMaker.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/Pages/Utilities/VoterMobileUpdate.jsx": {
-    "file": "assets/VoterMobileUpdate-CrmrlXIW.js",
+    "file": "assets/VoterMobileUpdate-AnmL6qjp.js",
     "name": "VoterMobileUpdate",
     "src": "resources/js/Pages/Utilities/VoterMobileUpdate.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-DDZz_nkS.js",
+      "_AdminLayout-Cv-dNa1y.js",
       "resources/css/app.css",
-      "_ReferralFloatingButton-D5RJmZN0.js"
+      "_ReferralFloatingButton-T5aeAun0.js"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-DSmHlzrL.js",
+    "file": "assets/app-Dhp1zklK.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,

@@ -12,15 +12,7 @@ class BirthCertificateDownloadController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $recentRecords = BirthRecord::query()
-            ->visibleTo($user)
-            ->latest()
-            ->take(10)
-            ->get();
-
         return Inertia::render('Utilities/BirthCertificateDownload', [
-            'recentRecords' => $recentRecords,
             'defaultRegNo' => $request->query('reg_no', ''),
         ]);
     }
@@ -57,7 +49,8 @@ class BirthCertificateDownloadController extends Controller
         }
 
         if ($record) {
-            $service = Service::where('slug', 'birth-certificate')->first();
+            $service = Service::where('slug', 'birth-certificate-download')->first()
+                ?: Service::where('slug', 'birth-certificate')->first();
 
             ServiceRequest::create([
                 'user_id' => $user->id,
@@ -91,8 +84,8 @@ class BirthCertificateDownloadController extends Controller
         return response()->json([
             'success' => false,
             'not_found' => true,
-            'message' => "सर्टिफिकेट/रजिस्ट्रेशन नंबर \"{$regNo}\" का रिकॉर्ड नहीं मिला। नीचे दिए गए विवरण भरकर तुरंत 1 क्लिक में PDF जनरेट करें।",
-        ]);
+            'message' => "सर्टिफिकेट / रजिस्ट्रेशन नंबर \"{$regNo}\" का कोई रिकॉर्ड नहीं मिला। कृपया सही रजिस्ट्रेशन नंबर दर्ज करें।",
+        ], 404);
     }
 
     public function quickGenerate(Request $request)
