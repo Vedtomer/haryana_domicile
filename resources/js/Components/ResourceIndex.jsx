@@ -53,28 +53,30 @@ export default function ResourceIndex({
                 </Button>
             </Box>
 
-            <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+            <Paper elevation={1} sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' }}>
                 <TableContainer>
                     <Table>
-                        <TableHead sx={{ bgcolor: 'grey.50' }}>
+                        <TableHead sx={{ bgcolor: '#f8fafc' }}>
                             <TableRow>
                                 {columns.map((col) => (
-                                    <TableCell key={col.label} sx={{ fontWeight: 700, color: 'text.secondary' }}>
+                                    <TableCell key={col.label} sx={{ fontWeight: 700, color: '#475569', fontSize: '0.8125rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e2e8f0', py: 2 }}>
                                         {col.label}
                                     </TableCell>
                                 ))}
-                                <TableCell align="right" sx={{ fontWeight: 700, color: 'text.secondary' }}>
+                                <TableCell align="right" sx={{ fontWeight: 700, color: '#475569', fontSize: '0.8125rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e2e8f0', py: 2 }}>
                                     Actions
                                 </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {items.data.map((row) => (
-                                <TableRow key={row.id} hover>
+                                <TableRow key={row.id} hover sx={{ '&:hover': { bgcolor: '#f8fafc !important' }, bgcolor: '#ffffff' }}>
                                     {columns.map((col) => (
-                                        <TableCell key={col.label}>{col.render(row)}</TableCell>
+                                        <TableCell key={col.label} sx={{ color: '#0f172a', fontWeight: 500, fontSize: '0.875rem', borderBottom: '1px solid #f1f5f9', py: 2 }}>
+                                            {col.render(row)}
+                                        </TableCell>
                                     ))}
-                                    <TableCell align="right">
+                                    <TableCell align="right" sx={{ borderBottom: '1px solid #f1f5f9', py: 2 }}>
                                         <Stack direction="row" spacing={0.5} justifyContent="flex-end">
                                             {printHref && (
                                                 <Tooltip title="Print">
@@ -99,7 +101,7 @@ export default function ResourceIndex({
                             ))}
                             {items.data.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length + 1} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                                    <TableCell colSpan={columns.length + 1} align="center" sx={{ py: 8, color: '#64748b', fontSize: '0.875rem' }}>
                                         {emptyLabel}
                                     </TableCell>
                                 </TableRow>

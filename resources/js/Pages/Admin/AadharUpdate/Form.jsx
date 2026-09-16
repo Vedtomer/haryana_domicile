@@ -21,7 +21,7 @@ export default function AadharUpdateFields({ data, setData, errors, processing, 
     };
 
     return (
-        <Paper component="form" onSubmit={handleFormSubmit} elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Paper component="form" onSubmit={handleFormSubmit} elevation={0} sx={{ p: 4, borderRadius: 3, bgcolor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' }}>
 
             <SectionHeader title="Resident Details" />
             <Grid container spacing={3}>

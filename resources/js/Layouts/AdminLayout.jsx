@@ -4,7 +4,6 @@ import axios from 'axios';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
-import ThemeToggle from '../Components/ThemeToggle';
 import LicenseModal from '../Components/LicenseModal';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
@@ -83,7 +82,7 @@ export default function AdminLayout({ header, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#060b13] flex font-sans text-slate-800 dark:text-slate-100">
+        <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
             <Toast />
             
             {/* Sidebar — hidden on the dashboard itself, and hidden for regular users */}
@@ -164,7 +163,7 @@ export default function AdminLayout({ header, children }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <TopDisclaimerTicker />
-                <header className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative">
+                <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">
                         {showSidebar && (
@@ -302,19 +301,12 @@ export default function AdminLayout({ header, children }) {
                                     PDF Coordinates
                                 </Link>
                             )}
-                            <div className="border-t border-gray-100 dark:border-slate-700 my-1"></div>
-                            <div className="px-4 py-2 flex flex-col gap-2">
-                                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Appearance</span>
-                                <div className="transform scale-90 origin-left">
-                                    <ThemeToggle />
-                                </div>
-                            </div>
-                            <div className="border-t border-gray-100 dark:border-slate-700 my-1"></div>
+                            <div className="border-t border-gray-100 my-1"></div>
                             <Link
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
                             >
                                 Sign Out
                             </Link>
@@ -322,7 +314,7 @@ export default function AdminLayout({ header, children }) {
                     </div>
                     </div>
                 </header>
-                <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950">
+                <main className="flex-1 p-8 overflow-y-auto bg-gray-50 text-slate-800">
                     {showSpellingWarning && (
                         <div className="mb-6 max-w-6xl mx-auto bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
                             <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">

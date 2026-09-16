@@ -7,7 +7,7 @@ export default function AirtelPassbookFields({
     data, setData, errors, processing, onSubmit, submitLabel, showSaveAndCreate = false 
 }) {
     return (
-        <Paper component="form" onSubmit={onSubmit} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
+        <Paper component="form" onSubmit={onSubmit} elevation={0} sx={{ p: { xs: 2, md: 4 }, borderRadius: 3, bgcolor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' }}>
             <SectionHeader title="Airtel Passbook Details" subtitle="Enter the account and personal details to generate the passbook" />
             
             <Grid container spacing={3}>

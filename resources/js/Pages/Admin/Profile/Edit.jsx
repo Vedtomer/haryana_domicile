@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import FloatingInput from '../../../Components/FloatingInput';
-import ThemeToggle from '../../../Components/ThemeToggle';
 
 // Plain-language labels — the ledger exists so nothing looks unexplained.
 const TYPE_LABELS = {
@@ -112,12 +111,6 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                             </button>
                         </div>
                     </form>
-
-                    <div className="px-8 pb-8 pt-6 mt-2 border-t border-gray-100 dark:border-slate-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Appearance</h3>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">Choose how the dashboard looks on this device.</p>
-                        <ThemeToggle />
-                    </div>
                 </div>
 
                 {/* Coin Ledger — every credit and deduction, so nothing looks unexplained */}

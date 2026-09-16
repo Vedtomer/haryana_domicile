@@ -12,6 +12,7 @@ export const InputField = ({
     error,
     required = true,
     size = "small",
+    sx = {},
     ...props
 }) => (
     <TextField
@@ -28,6 +29,38 @@ export const InputField = ({
         rows={rows}
         variant="outlined"
         required={required}
+        sx={{
+            bgcolor: '#ffffff',
+            borderRadius: 1,
+            '& .MuiOutlinedInput-root': {
+                bgcolor: '#ffffff',
+                '& fieldset': {
+                    borderColor: '#cbd5e1',
+                },
+                '&:hover fieldset': {
+                    borderColor: '#94a3b8',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                },
+                '& input': {
+                    color: '#0f172a !important',
+                    bgcolor: 'transparent !important',
+                },
+                '& textarea': {
+                    color: '#0f172a !important',
+                    bgcolor: 'transparent !important',
+                },
+            },
+            '& .MuiInputLabel-root': {
+                color: '#64748b',
+                '&.Mui-focused': {
+                    color: '#2563eb',
+                },
+            },
+            ...sx,
+        }}
         {...(type === 'date' ? { slotProps: { inputLabel: { shrink: true } } } : {})}
         {...props}
     />
@@ -42,6 +75,7 @@ export const SelectField = ({
     required = true,
     options = [],
     size = "small",
+    sx = {},
     ...props
 }) => (
     <TextField
@@ -56,6 +90,34 @@ export const SelectField = ({
         helperText={error}
         variant="outlined"
         required={required}
+        sx={{
+            bgcolor: '#ffffff',
+            borderRadius: 1,
+            '& .MuiOutlinedInput-root': {
+                bgcolor: '#ffffff',
+                '& fieldset': {
+                    borderColor: '#cbd5e1',
+                },
+                '&:hover fieldset': {
+                    borderColor: '#94a3b8',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                },
+                '& .MuiSelect-select': {
+                    color: '#0f172a !important',
+                    bgcolor: 'transparent !important',
+                },
+            },
+            '& .MuiInputLabel-root': {
+                color: '#64748b',
+                '&.Mui-focused': {
+                    color: '#2563eb',
+                },
+            },
+            ...sx,
+        }}
         {...props}
     >
         {options.map((opt) => (
