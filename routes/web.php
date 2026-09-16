@@ -91,14 +91,17 @@ Route::get('/api/debug-services', function () {
 });
 
 Route::get('/api/debug-perm', function () {
-    $dhbvnUsers = \Illuminate\Support\Facades\DB::table('service_user')->where('service_id', 124)->pluck('user_id');
-    $uhbvnUsers = \Illuminate\Support\Facades\DB::table('service_user')->where('service_id', 37)->pluck('user_id');
-    $allUsers = \App\Models\User::all(['id', 'name', 'email', 'type']);
+    $user = \App\Models\User::first();
+    $rawServices = \App\Models\Service::query()
+        ->ordered()
+        ->get()
+        ->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'slug' => $s->slug, 'is_active' => $s->is_active]);
+    
+    $electricity = $rawServices->filter(fn($s) => str_contains(strtolower($s['name']), 'bill') || str_contains(strtolower($s['name']), 'elect'));
+
     return [
-        'dhbvn_users_count' => $dhbvnUsers->count(),
-        'uhbvn_users_count' => $uhbvnUsers->count(),
-        'total_users' => $allUsers->count(),
-        'users' => $allUsers,
+        'total_services' => $rawServices->count(),
+        'electricity_services' => $electricity->values(),
     ];
 });
 
