@@ -63,6 +63,51 @@ Route::get('/migrate-db', function () {
             $output .= "Admin sync notice: " . $ue->getMessage() . "\n\n";
         }
 
+        // Ensure DHBVN and UHBVN are separate and assigned to ALL users
+        try {
+            $logo = 'service-logos/Yh61ZFPQAAE2Rfl7Jy4V0Lp3qzOTlu44eKCJUYuq.jpg';
+            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'dhbvn-electricity-bill')->update([
+                'name' => 'DHBVN Electricity Bill',
+                'description' => 'Dakshin Haryana Bijli Vitran Nigam (DHBVN) duplicate electricity bill instant PDF download.',
+                'icon' => '⚡',
+                'logo' => $logo,
+                'is_active' => true,
+                'visibility' => 'private',
+                'is_premium' => false,
+                'updated_at' => now(),
+            ]);
+
+            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'uhbvn-electricity-bill')->update([
+                'name' => 'UHBVN Electricity Bill',
+                'description' => 'Uttar Haryana Bijli Vitran Nigam (UHBVN) duplicate electricity bill instant PDF download.',
+                'icon' => '⚡',
+                'logo' => $logo,
+                'is_active' => true,
+                'visibility' => 'private',
+                'is_premium' => false,
+                'updated_at' => now(),
+            ]);
+
+            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'electricity-bill')->update([
+                'is_active' => false,
+                'updated_at' => now(),
+            ]);
+
+            $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
+                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make'])
+                ->pluck('id')
+                ->toArray();
+
+            $allUsers = \App\Models\User::all();
+            foreach ($allUsers as $u) {
+                $u->services()->syncWithoutDetaching($targetServiceIds);
+            }
+
+            $output .= "=== SEPARATE SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill'])->get(['id', 'name', 'slug', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
+        } catch (\Throwable $se2) {
+            $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
+        }
+
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
