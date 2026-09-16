@@ -59,7 +59,8 @@ export default function Home({ services = [] }) {
     const filteredServices = sortedServices.filter((service) => matchesCategory(service, activeTab));
 
     const handleServiceClick = (service) => {
-        if (service.is_active === false) {
+        const isInactive = !service.is_active || service.is_active === '0' || service.is_active === 'false';
+        if (isInactive) {
             return;
         }
 
@@ -190,7 +191,7 @@ export default function Home({ services = [] }) {
                         {filteredServices.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
                                 {filteredServices.map((service) => {
-                                    const isInactive = service.is_active === false;
+                                    const isInactive = !service.is_active || service.is_active === '0' || service.is_active === 'false';
 
                                     return (
                                         <div

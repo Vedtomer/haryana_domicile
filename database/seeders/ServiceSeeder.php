@@ -561,19 +561,19 @@ class ServiceSeeder extends Seeder
 
             if (!$existing) {
                 $service['is_active'] = $service['is_active'] ?? true;
+                $service['visibility'] = $service['visibility'] ?? Service::VISIBILITY_PUBLIC;
+                $service['is_premium'] = $service['is_premium'] ?? false;
+                $service['unlock_cost'] = $service['unlock_cost'] ?? 0;
                 $created = Service::create($service);
                 $targetService = $created;
             } else {
-                // Update fields to ensure new modules and features are active
+                // Update only code-driven metadata.
+                // NEVER overwrite admin-controlled attributes: is_active, coin_cost, visibility, is_premium, unlock_cost!
                 $existing->update([
                     'name' => $service['name'],
                     'slug' => $service['slug'],
                     'kind' => $service['kind'],
                     'module_key' => $service['module_key'],
-                    'is_active' => $service['is_active'] ?? true,
-                    'visibility' => $service['visibility'] ?? Service::VISIBILITY_PUBLIC,
-                    'is_premium' => $service['is_premium'] ?? false,
-                    'unlock_cost' => $service['unlock_cost'] ?? 0,
                     'icon' => $service['icon'],
                     'description' => $service['description'],
                     'sort_order' => $service['sort_order'],

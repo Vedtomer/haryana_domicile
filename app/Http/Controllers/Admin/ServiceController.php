@@ -126,13 +126,21 @@ class ServiceController extends Controller
 
     public function toggleActive(Service $service)
     {
-        $service->update(['is_active' => !$service->is_active]);
+        $service->is_active = !$service->is_active;
+        $service->save();
 
-        return back()->with('success', "Service {$service->name} status updated.");
+        $statusText = $service->is_active ? 'Active' : 'Unavailable (Inactive)';
+
+        return back()->with('success', "Service '{$service->name}' is now {$statusText}.");
     }
 
     private function validated(Request $request, ?Service $service = null): array
     {
+        // Explicitly cast is_active to real boolean (handles string "false"/"true", 0, 1 from FormData)
+        $request->merge([
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',

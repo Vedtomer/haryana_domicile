@@ -108,7 +108,7 @@ function StatCard({ label, value, tone, url, icon }) {
 }
 
 function ServiceCard({ service, onUnlockClick, isAdmin }) {
-    const isInactive = service.is_active === false;
+    const isInactive = !service.is_active || service.is_active === '0' || service.is_active === 'false';
     const isLockedPremium = !isInactive && service.is_premium && !service.is_unlocked;
     const isLicenseBlocked = false;
 

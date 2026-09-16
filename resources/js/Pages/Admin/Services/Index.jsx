@@ -26,8 +26,19 @@ export default function Index({ services }) {
         return true;
     });
 
+    const [togglingId, setTogglingId] = useState(null);
+
     const handleToggleStatus = (service) => {
-        router.patch(`/admin/services/${service.id}/toggle-active`, {}, { preserveScroll: true });
+        if (togglingId) return;
+        setTogglingId(service.id);
+        router.patch(
+            `/admin/services/${service.id}/toggle-active`,
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => setTogglingId(null),
+            }
+        );
     };
 
     const renderServiceIcon = (service) => {
@@ -253,19 +264,26 @@ export default function Index({ services }) {
                                         <td className="px-5 py-4 whitespace-nowrap">
                                             <button
                                                 type="button"
+                                                disabled={togglingId === service.id}
                                                 onClick={() => handleToggleStatus(service)}
                                                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all shadow-sm ${
+                                                    togglingId === service.id ? 'opacity-50 cursor-wait' : ''
+                                                } ${
                                                     service.is_active
                                                         ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
                                                         : 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200'
                                                 }`}
-                                                title="Click to toggle status"
+                                                title={service.is_active ? 'Click to make Unavailable' : 'Click to make Active'}
                                             >
                                                 <span
-                                                    className="material-symbols-outlined text-sm"
+                                                    className={`material-symbols-outlined text-sm ${togglingId === service.id ? 'animate-spin' : ''}`}
                                                     style={{ fontVariationSettings: "'FILL' 1" }}
                                                 >
-                                                    {service.is_active ? 'check_circle' : 'cancel'}
+                                                    {togglingId === service.id
+                                                        ? 'sync'
+                                                        : service.is_active
+                                                        ? 'check_circle'
+                                                        : 'cancel'}
                                                 </span>
                                                 {service.is_active ? 'Active' : 'Unavailable'}
                                             </button>

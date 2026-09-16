@@ -80,7 +80,7 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
         logo: null,
         remove_logo: false,
         coin_cost: service?.coin_cost ?? 0,
-        is_active: service?.is_active ?? true,
+        is_active: service?.is_active !== undefined ? Boolean(service.is_active) : true,
         visibility: service?.visibility ?? 'private',
         user_ids: service?.user_ids ?? [],
         sort_order: service?.sort_order ?? 0,
@@ -188,10 +188,12 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
 
                 <div>
                     <label className={label}>Status</label>
-                    <label className="flex items-center gap-2 mt-2">
-                        <input type="checkbox" className="w-5 h-5 rounded text-blue-600"
-                            checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} />
-                        <span className="text-sm text-gray-700 font-medium">Active (if unchecked, service is marked Unavailable &amp; disabled)</span>
+                    <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                        <input type="checkbox" className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            checked={Boolean(data.is_active)} onChange={(e) => setData('is_active', e.target.checked)} />
+                        <span className="text-sm text-gray-700 font-medium">
+                            Active {Boolean(data.is_active) ? '(Service is visible & enabled)' : '(Service is marked Unavailable & disabled)'}
+                        </span>
                     </label>
                 </div>
             </div>
