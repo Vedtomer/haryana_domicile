@@ -20,9 +20,11 @@ const InfoRow = ({ label, value, icon }) => {
 
 export default function LearningLicencePdf() {
     const [applNum, setApplNum] = useState('');
+    const [dob, setDob] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [directPortal, setDirectPortal] = useState('https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do');
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -35,14 +37,20 @@ export default function LearningLicencePdf() {
         setError(null);
         setResult(null);
         try {
-            const response = await axios.post('/utilities/learning-licence-pdf/search', { applNum: clean });
+            const response = await axios.post('/utilities/learning-licence-pdf/search', {
+                applNum: clean,
+                dob: dob.trim(),
+            });
             if (response.data.success) {
                 setResult(response.data.data);
             } else {
                 setError(response.data.message || 'Details not found.');
+                if (response.data.direct_portal) {
+                    setDirectPortal(response.data.direct_portal);
+                }
             }
         } catch (err) {
-            setError('An error occurred while fetching the details.');
+            setError(err.response?.data?.message || 'An error occurred while fetching the details.');
         } finally {
             setLoading(false);
         }
@@ -58,8 +66,13 @@ export default function LearningLicencePdf() {
         }
         
         // Handle Base64 PDF
-        let pdfData = result.pdf || result.data?.pdf || result.base64;
+        let pdfData = result.pdf || result.data?.pdf || result.base64 || result.file_url;
         if (pdfData) {
+            if (pdfData.startsWith('http://') || pdfData.startsWith('https://')) {
+                window.open(pdfData, '_blank');
+                return;
+            }
+
             // Check if it already has data URI prefix
             if (!pdfData.startsWith('data:application/pdf;base64,')) {
                 pdfData = 'data:application/pdf;base64,' + pdfData;
@@ -108,16 +121,30 @@ export default function LearningLicencePdf() {
                         <form onSubmit={handleSearch} className="space-y-5">
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    Application Number
+                                    Application Number *
                                 </label>
                                 <input
                                     type="text"
                                     value={applNum}
                                     onChange={(e) => {
                                         setApplNum(e.target.value.toUpperCase());
+                                        if (error) setError(null);
                                     }}
-                                    placeholder="Enter Application Number"
+                                    placeholder="e.g. 12345678"
+                                    required
                                     className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-wider font-black transition-all text-center dark:text-white uppercase"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                                    Date of Birth (DOB) <span className="text-xs font-normal text-slate-400 lowercase">(optional / यदि उपलब्ध हो)</span>
+                                </label>
+                                <input
+                                    type="date"
+                                    value={dob}
+                                    onChange={(e) => setDob(e.target.value)}
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-semibold text-center dark:text-white"
                                 />
                             </div>
 
@@ -144,18 +171,39 @@ export default function LearningLicencePdf() {
                         </form>
 
                         {error && (
-                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-                                <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
-                                <p className="text-red-700 dark:text-red-300 font-medium">{error}</p>
+                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl space-y-3 animate-fadeIn">
+                                <div className="flex items-start gap-3">
+                                    <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
+                                    <p className="text-red-700 dark:text-red-300 font-medium text-sm leading-relaxed">{error}</p>
+                                </div>
+                                <div className="pt-3 border-t border-red-200/60 dark:border-red-800/60 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                                        सरकारी Parivahan Sarathi पोर्टल से सीधे प्रिंट करें:
+                                    </span>
+                                    <a
+                                        href={directPortal}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow transition-all"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                                        Parivahan Sarathi Portal &rarr;
+                                    </a>
+                                </div>
                             </div>
                         )}
                     </div>
 
                     <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-8">
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                            Live instant server lookup
-                        </p>
+                        <a
+                            href="https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline flex items-center gap-1"
+                        >
+                            <span className="material-symbols-outlined text-sm">open_in_new</span>
+                            Official Parivahan Direct Link
+                        </a>
                         <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-[16px]">monetization_on</span>
                             19 Coins
