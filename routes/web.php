@@ -258,7 +258,7 @@ Route::get('/force-add-service', function () {
     \App\Models\Service::updateOrCreate(
         ['slug' => 'learning-licence-pdf'],
         [
-            'name' => 'Learning Licence PDF Download',
+            'name' => 'Learning Licence Download',
             'description' => 'Download Learning Licence PDF instantly.',
             'icon' => 'directions_car',
             'coin_cost' => 19,

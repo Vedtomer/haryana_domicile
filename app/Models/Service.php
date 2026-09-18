@@ -194,7 +194,7 @@ class Service extends Model
             'create' => '/utilities/pan-to-uid-advance',
         ],
         'learning_licence_pdf' => [
-            'label' => 'Learning Licence PDF Download',
+            'label' => 'Learning Licence Download',
             'model' => null,
             'index' => '/utilities/learning-licence-pdf',
             'create' => '/utilities/learning-licence-pdf',

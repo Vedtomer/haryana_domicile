@@ -269,7 +269,7 @@ class IdCardStoreService
         $cleanDob = trim($dob);
         if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $cleanDob, $m)) {
             $cleanDob = "{$m[3]}-{$m[2]}-{$m[1]}";
-        } elseif (preg_match('/^(\d{2})[-/](\d{2})[-/](\d{4})$/', $cleanDob, $m)) {
+        } elseif (preg_match('/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/', $cleanDob, $m)) {
             $cleanDob = "{$m[1]}-{$m[2]}-{$m[3]}";
         }
 

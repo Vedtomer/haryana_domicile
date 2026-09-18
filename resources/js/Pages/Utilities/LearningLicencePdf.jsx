@@ -26,9 +26,6 @@ export default function LearningLicencePdf() {
     const [error, setError] = useState(null);
     const [directPortal, setDirectPortal] = useState('https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do');
 
-    const NEXUS_API_URL = 'https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php';
-    const API_KEY = '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386';
-
     const handleSearch = async (e) => {
         e.preventDefault();
         const clean = applNum.trim().toUpperCase();
@@ -41,74 +38,21 @@ export default function LearningLicencePdf() {
         setResult(null);
 
         try {
-            // Try direct API call from browser first (bypasses server-side blocking)
-            let params = `apiKey=${API_KEY}&applNum=${encodeURIComponent(clean)}`;
-            if (dob.trim()) params += `&dob=${encodeURIComponent(dob.trim())}`;
-
-            const directUrl = `${NEXUS_API_URL}?${params}`;
-            const directResp = await fetch(directUrl, {
-                method: 'GET',
-                headers: { 'Accept': 'application/json, application/pdf, */*' },
+            const response = await axios.post('/utilities/learning-licence-pdf/search', {
+                applNum: clean,
+                dob: dob.trim(),
             });
 
-            const contentType = directResp.headers.get('content-type') || '';
-
-            // Handle raw PDF binary
-            if (contentType.includes('application/pdf')) {
-                const blob = await directResp.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setResult({ pdf: reader.result.split(',')[1] });
-                };
-                reader.readAsDataURL(blob);
-
-                // Deduct coins via backend
-                try {
-                    await axios.post('/utilities/learning-licence-pdf/deduct-coins', { applNum: clean, dob: dob.trim() });
-                } catch (_) {}
-                setLoading(false);
-                return;
-            }
-
-            const data = await directResp.json();
-
-            // Check if response has PDF data or is successful
-            const status = data?.Status || data?.status;
-            const isSuccess = status === 'Success' || status === 'success' || status === true;
-            const hasPdf = data?.pdf_url || data?.pdf || data?.base64 || data?.file_url
-                || data?.data?.pdf || data?.data?.pdf_url || data?.data?.base64 || data?.data;
-
-            if (isSuccess || hasPdf) {
-                setResult(data);
-                // Deduct coins via backend
-                try {
-                    await axios.post('/utilities/learning-licence-pdf/deduct-coins', { applNum: clean, dob: dob.trim() });
-                } catch (_) {}
-                setLoading(false);
-                return;
-            }
-
-            // If direct call returned error (503 etc.), try backend as fallback
-            throw new Error(data?.message || 'Direct API failed, trying backend...');
-
-        } catch (directErr) {
-            // Fallback: try via backend
-            try {
-                const response = await axios.post('/utilities/learning-licence-pdf/search', {
-                    applNum: applNum.trim().toUpperCase(),
-                    dob: dob.trim(),
-                });
-                if (response.data.success) {
-                    setResult(response.data.data);
-                } else {
-                    setError(response.data.message || 'Details not found.');
-                    if (response.data.direct_portal) {
-                        setDirectPortal(response.data.direct_portal);
-                    }
+            if (response.data.success) {
+                setResult(response.data.data);
+            } else {
+                setError(response.data.message || 'Details not found.');
+                if (response.data.direct_portal) {
+                    setDirectPortal(response.data.direct_portal);
                 }
-            } catch (err) {
-                setError(err.response?.data?.message || directErr.message || 'API server से संपर्क नहीं हो सका। कृपया थोड़ी देर बाद प्रयास करें।');
             }
+        } catch (err) {
+            setError(err.response?.data?.message || 'API server से संपर्क नहीं हो सका। कृपया थोड़ी देर बाद दोबारा प्रयास करें।');
         } finally {
             setLoading(false);
         }
@@ -116,26 +60,24 @@ export default function LearningLicencePdf() {
 
     const downloadPdf = () => {
         if (!result) return;
-        
-        // Handle direct PDF URL
-        if (result.pdf_url) {
-            window.open(result.pdf_url, '_blank');
+
+        const directUrl = result.a4_pdf || result.pdf_url || result.a4 || (result.cards && result.cards[0]?.a4) || result.file_url;
+        if (directUrl) {
+            window.open(directUrl, '_blank');
             return;
         }
-        
-        // Handle Base64 PDF
-        let pdfData = result.pdf || result.data?.pdf || result.base64 || result.file_url;
+
+        let pdfData = result.pdf || result.data?.pdf || result.base64;
         if (pdfData) {
             if (pdfData.startsWith('http://') || pdfData.startsWith('https://')) {
                 window.open(pdfData, '_blank');
                 return;
             }
 
-            // Check if it already has data URI prefix
             if (!pdfData.startsWith('data:application/pdf;base64,')) {
                 pdfData = 'data:application/pdf;base64,' + pdfData;
             }
-            
+
             const link = document.createElement('a');
             link.href = pdfData;
             link.download = `Learning_Licence_${applNum}.pdf`;
@@ -152,7 +94,7 @@ export default function LearningLicencePdf() {
             header={
                 <div className="flex flex-col">
                     <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Learning Licence PDF
+                        Learning Licence Download
                     </h1>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
                         Download Learning Licence PDF instantly
@@ -160,7 +102,7 @@ export default function LearningLicencePdf() {
                 </div>
             }
         >
-            <Head title="Learning Licence PDF" />
+            <Head title="Learning Licence Download" />
 
             <div className="max-w-xl mx-auto mt-8 space-y-6">
                 {/* Input Card */}
@@ -282,22 +224,66 @@ export default function LearningLicencePdf() {
                             </div>
                         </div>
                         
-                        {(result.pdf_url || result.pdf || result.data?.pdf || result.base64) && (
-                            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+                        {(result.pdf_url || result.a4_pdf || result.a4 || result.pdf || result.data?.pdf || result.base64 || (result.cards && result.cards[0]?.a4)) && (
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-800 space-y-3">
                                 <button
                                     onClick={downloadPdf}
-                                    className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
+                                    className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all text-base"
                                 >
                                     <span className="material-symbols-outlined">download</span>
-                                    Download PDF
+                                    Download Learning Licence PDF (Print-Ready)
                                 </button>
+                            </div>
+                        )}
+
+                        {result.cards && result.cards.length > 0 && result.cards[0]?.front && (
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+                                <h3 className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider mb-4">
+                                    Licence Cards (Front & Back)
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {result.cards[0].front && (
+                                        <div className="space-y-2">
+                                            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                                                <img src={result.cards[0].front} alt="Card Front" className="w-full h-auto object-contain" />
+                                            </div>
+                                            <a
+                                                href={result.cards[0].front}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                download={`LL_${applNum}_front.png`}
+                                                className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">download</span>
+                                                Download Front
+                                            </a>
+                                        </div>
+                                    )}
+                                    {result.cards[0].back && (
+                                        <div className="space-y-2">
+                                            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                                                <img src={result.cards[0].back} alt="Card Back" className="w-full h-auto object-contain" />
+                                            </div>
+                                            <a
+                                                href={result.cards[0].back}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                download={`LL_${applNum}_back.png`}
+                                                className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">download</span>
+                                                Download Back
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                         
                         <div className="p-6 space-y-1">
-                            <InfoRow label="Application Number"  value={applNum} icon="tag" />
+                            <InfoRow label="Application / LL Number" value={applNum} icon="tag" />
+                            <InfoRow label="Date of Birth" value={dob || result.dob || result.data?.dob} icon="calendar_today" />
                             {result.data?.name && <InfoRow label="Name" value={result.data.name} icon="person" />}
-                            {result.data?.dob && <InfoRow label="Date of Birth" value={result.data.dob} icon="calendar_today" />}
                         </div>
                     </div>
                 )}
