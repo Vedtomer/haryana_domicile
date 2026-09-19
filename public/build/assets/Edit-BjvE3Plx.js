@@ -1,0 +1,1 @@
+import{j as r}from"./app-Colnfux-.js";import o from"./Create-DgrnY9e9.js";import"./app-D65KGxCs.js";import"./AdminLayout-C-FiCj7B.js";import"./ThemeToggle-CWyJfYlT.js";import"./FloatingInput-CFwVSx6F.js";function f(t){return r.jsx(o,{...t})}export{f as default};

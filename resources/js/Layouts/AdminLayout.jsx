@@ -291,15 +291,6 @@ export default function AdminLayout({ header, children }) {
                                     PDF Coordinates
                                 </Link>
                             )}
-                            <div className="border-t border-gray-100 dark:border-slate-800 my-1"></div>
-                            <Link
-                                href="/logout"
-                                method="post"
-                                as="button"
-                                className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-                            >
-                                Sign Out
-                            </Link>
                         </div>
                     </div>
 
