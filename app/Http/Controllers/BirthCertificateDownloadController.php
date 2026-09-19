@@ -19,7 +19,7 @@ class BirthCertificateDownloadController extends Controller
         return Inertia::render('Utilities/BirthCertificateDownload', [
             'defaultRegNo' => $request->query('reg_no', ''),
             'userCoins' => $user ? $user->coins : 0,
-            'isStaff' => $user ? ($user->isAdmin() || $user->isStaff()) : false,
+            'isStaff' => $this->isStaff(),
         ]);
     }
 
@@ -48,7 +48,7 @@ class BirthCertificateDownloadController extends Controller
             ? 'Birth Certificate Name Add'
             : 'Birth Certificate Color PDF Download';
 
-        $isStaff = $user ? ($user->isAdmin() || $user->isStaff()) : false;
+        $isStaff = $this->isStaff();
 
         // 1. Coin Balance Check
         if (!$isStaff && !$user->hasEnoughCoins($cost)) {
@@ -328,7 +328,7 @@ class BirthCertificateDownloadController extends Controller
     public function downloadMerged(ServiceRequest $serviceRequest)
     {
         $user = auth()->user();
-        if (!$user->isAdmin() && !$user->isStaff() && $serviceRequest->user_id !== $user->id) {
+        if (!$this->isStaff() && $serviceRequest->user_id !== $user->id) {
             abort(403, 'Unauthorized access to this document.');
         }
 

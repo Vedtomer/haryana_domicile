@@ -363,6 +363,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Check if user is staff / admin
+     */
+    public function isStaff(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    /**
      * Check if user is retailer (legacy role, now mapped to user)
      */
     public function isRetailer(): bool
