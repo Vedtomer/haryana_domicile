@@ -47,7 +47,7 @@ class Service extends Model
             'create' => '/admin/birth-records/create',
         ],
         'birth_certificate_download' => [
-            'label' => 'Birth Certificate Download',
+            'label' => 'Birth Certificate Document Merger',
             'icon' => '👶',
             'model' => null,
             'index' => '/utilities/birth-certificate',

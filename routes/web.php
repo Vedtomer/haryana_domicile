@@ -106,13 +106,13 @@ Route::get('/migrate-db', function () {
                     'description' => 'जन्म रिकार्ड में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Name Add Form & Records)',
                     'icon' => '📝',
                     'is_active' => true,
-                    'visibility' => 'private',
+                    'visibility' => 'public',
                     'coin_cost' => 10,
                     'deleted_at' => null,
                     'updated_at' => now(),
                 ]);
 
-            // 2. Birth Certificate Download (Instant PDF Download)
+            // 2. Birth Certificate Document Merger (Single PDF Merger & Download)
             $downloadService = \Illuminate\Support\Facades\DB::table('services')
                 ->where('slug', 'birth-certificate-download')
                 ->orWhere('slug', 'crs-birth-portal')
@@ -123,13 +123,13 @@ Route::get('/migrate-db', function () {
                 \Illuminate\Support\Facades\DB::table('services')
                     ->where('id', $downloadService->id)
                     ->update([
-                        'name' => 'Birth Certificate Download',
+                        'name' => 'Birth Certificate Document Merger',
                         'slug' => 'birth-certificate-download',
                         'module_key' => 'birth_certificate_download',
-                        'description' => 'जन्म प्रमाण पत्र / रजिस्ट्रेशन नंबर दर्ज करके तुरंत PDF डाउनलोड करें (Color & B&W)',
+                        'description' => 'पुराना जन्म प्रमाण पत्र और आधार कार्ड जोड़कर 1 सिंगल PDF बनाएं (Document Merger)',
                         'icon' => '👶',
                         'is_active' => true,
-                        'visibility' => 'private',
+                        'visibility' => 'public',
                         'coin_cost' => 0,
                         'kind' => 'module',
                         'deleted_at' => null,
@@ -137,13 +137,13 @@ Route::get('/migrate-db', function () {
                     ]);
             } else {
                 \Illuminate\Support\Facades\DB::table('services')->insert([
-                    'name' => 'Birth Certificate Download',
+                    'name' => 'Birth Certificate Document Merger',
                     'slug' => 'birth-certificate-download',
                     'module_key' => 'birth_certificate_download',
-                    'description' => 'जन्म प्रमाण पत्र / रजिस्ट्रेशन नंबर दर्ज करके तुरंत PDF डाउनलोड करें (Color & B&W)',
+                    'description' => 'पुराना जन्म प्रमाण पत्र और आधार कार्ड जोड़कर 1 सिंगल PDF बनाएं (Document Merger)',
                     'icon' => '👶',
                     'is_active' => true,
-                    'visibility' => 'private',
+                    'visibility' => 'public',
                     'coin_cost' => 0,
                     'kind' => 'module',
                     'sort_order' => 3,
@@ -1527,13 +1527,17 @@ Route::get('/api/transliterate-hindi', function (\Illuminate\Http\Request $reque
 
     try {
         $url = 'https://inputtools.google.com/request?text=' . urlencode($text) . '&itc=hi-t-i0-und&num=1';
-        $ctx = stream_context_create([
-            'http' => [
-                'timeout' => 3,
-                'header' => "User-Agent: Mozilla/5.0\r\n",
-            ],
-        ]);
-        $response = @file_get_contents($url, false, $ctx);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+        $response = curl_exec($ch);
+        curl_close($ch);
+
         if ($response) {
             $data = json_decode($response, true);
             if (isset($data[0]) && $data[0] === 'SUCCESS' && isset($data[1][0][1][0])) {

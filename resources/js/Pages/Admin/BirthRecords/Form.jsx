@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { Paper, Grid, Box, Button, IconButton, Typography, ToggleButton, ToggleButtonGroup, Card, CardContent } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TranslateIcon from '@mui/icons-material/Translate';
 import LinkIcon from '@mui/icons-material/Link';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { InputField, SelectField, SectionHeader } from '../../../Components/FormInputs';
 import BilingualInputField from '../../../Components/BilingualInputField';
 
@@ -214,6 +216,31 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
                     </Box>
                 </CardContent>
             </Card>
+
+            {/* Quick Action: Document Merger (Single PDF) */}
+            <Box sx={{ mb: 4, p: 2, bgcolor: '#eff6ff', borderRadius: 2, border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <PictureAsPdfIcon sx={{ color: '#2563eb' }} />
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight="700" color="#1e40af">
+                            Need to Merge Documents (Old Birth Cert + Aadhaar) into a Single PDF?
+                        </Typography>
+                        <Typography variant="caption" color="#3b82f6">
+                            पुराना जन्म प्रमाण पत्र और माता-पिता का आधार कार्ड जोड़कर 1 सिंगल PDF बनाने के लिए मर्जर टूल खोलें।
+                        </Typography>
+                    </Box>
+                </Box>
+                <Button
+                    component={Link}
+                    href="/utilities/birth-certificate"
+                    variant="contained"
+                    size="small"
+                    startIcon={<PictureAsPdfIcon />}
+                    sx={{ textTransform: 'none', bgcolor: '#2563eb', fontWeight: 'bold', '&:hover': { bgcolor: '#1d4ed8' } }}
+                >
+                    Open Document Merger
+                </Button>
+            </Box>
 
             {/* 1. Search Details */}
             <SectionHeader title="Search Details" />

@@ -154,12 +154,22 @@ class EnsureActiveLicense
         if (!$targetService && str_starts_with($path, '/utilities/')) {
             $segment = explode('/', trim($path, '/'))[1] ?? null;
             if ($segment) {
-                $targetService = \App\Models\Service::where('slug', $segment)->first();
+                if ($segment === 'birth-certificate') {
+                    $targetService = \App\Models\Service::where('slug', 'birth-certificate-download')
+                        ->orWhere('module_key', 'birth_certificate_download')
+                        ->orWhere('slug', 'birth-certificate')
+                        ->first();
+                } else {
+                    $targetService = \App\Models\Service::where('slug', $segment)->first();
+                }
             }
         }
 
         if ($targetService) {
-            $hasAccess = $targetService->users()->where('user_id', $user->id)->exists();
+            $isStaff = (method_exists($user, 'isAdmin') && $user->isAdmin()) 
+                || (method_exists($user, 'isStaff') && $user->isStaff());
+            $isPublic = $targetService->visibility === \App\Models\Service::VISIBILITY_PUBLIC;
+            $hasAccess = $isStaff || $isPublic || $targetService->users()->where('user_id', $user->id)->exists();
             if (!$hasAccess) {
                 $errorMsg = "🔒 Service Permission Required: Aapke account par '{$targetService->name}' service activate nahi hai. Kripya Admin se permission activate karwayein.";
 

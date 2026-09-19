@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import { Button } from '@mui/material';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import ResourceIndex from '../../../Components/ResourceIndex';
 
@@ -29,10 +29,10 @@ export default function Index({ records }) {
                         component={Link}
                         href="/utilities/birth-certificate"
                         variant="outlined"
-                        startIcon={<FileDownloadIcon />}
+                        startIcon={<PictureAsPdfIcon />}
                         sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
                     >
-                        Download by Reg. No
+                        Merge Documents (एक PDF बनाएं)
                     </Button>
                 }
             />
