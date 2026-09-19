@@ -658,6 +658,20 @@ class ServiceSeeder extends Seeder
             'pan-uti-pvc',
             'pan-instant-pvc',
             'pan-card',
+            'pan-pdf',
+            'pan-card-pdf',
+            'pan-pdf-download',
+            'pan-download-pdf',
+            'instant-pan-pdf',
+            'pan-pdf-service',
+            'pan-find-pdf',
+            'find-pan-pdf',
+            'pan-number-to-pdf',
+            'pan-to-pdf',
+            'pan-pdf-instant',
+            'pan-card-download-pdf',
+            'e-pan-pdf',
+            'epan-pdf',
         ];
 
         $removeNames = [
@@ -668,11 +682,31 @@ class ServiceSeeder extends Seeder
             'PAN Card (UTIITSL) PVC',
             'PAN Card (Instant e-Filing) PVC',
             'PAN Card',
+            'PAN PDF',
+            'Pan PDF',
+            'PAN Card PDF',
+            'Pan Card PDF',
+            'PAN PDF Download',
+            'Instant PAN PDF',
+            'Download PAN PDF',
+            'PAN PDF Service',
+            'PAN Card (PDF)',
+            'Pan Card Download PDF',
+            'Pan PDF Instant',
+            'E-PAN PDF',
+            'e-PAN PDF',
         ];
 
         Service::withTrashed()
             ->whereIn('slug', $oldSlugs)
             ->orWhereIn('name', $removeNames)
+            ->orWhere('coin_cost', 129)
+            ->orWhere('unlock_cost', 129)
+            ->orWhere('module_key', 'pan_pdf')
+            ->orWhere(function ($q) {
+                $q->where('name', 'like', '%pan%')
+                  ->where('name', 'like', '%pdf%');
+            })
             ->orWhere('module_key', 'tenth_passbook')
             ->forceDelete();
     }
