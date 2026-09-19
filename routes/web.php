@@ -1517,6 +1517,35 @@ Route::get('/haryana-domicile/print/{id}', [HaryanaDomicileController::class, 'p
 // Birth Record Print Route
 Route::get('/birth-records/{record}/print', \App\Http\Controllers\PrintBirthRecordController::class)->name('birth-records.print');
 
+// English to Hindi Transliteration API
+Route::get('/api/transliterate-hindi', function (\Illuminate\Http\Request $request) {
+    $text = trim($request->query('text', ''));
+    if ($text === '') {
+        return response()->json(['success' => true, 'result' => '']);
+    }
+
+    try {
+        $url = 'https://inputtools.google.com/request?text=' . urlencode($text) . '&itc=hi-t-i0-und&num=1';
+        $ctx = stream_context_create([
+            'http' => [
+                'timeout' => 3,
+                'header' => "User-Agent: Mozilla/5.0\r\n",
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $ctx);
+        if ($response) {
+            $data = json_decode($response, true);
+            if (isset($data[0]) && $data[0] === 'SUCCESS' && isset($data[1][0][1][0])) {
+                return response()->json(['success' => true, 'result' => $data[1][0][1][0]]);
+            }
+        }
+    } catch (\Throwable $e) {
+        // Silently ignore and fallback
+    }
+
+    return response()->json(['success' => false, 'result' => $text]);
+})->name('api.transliterate-hindi');
+
 
 Route::get('/cc', function() {
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
