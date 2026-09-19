@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Paper, Grid, Box, Button, IconButton, Typography, ToggleButton, ToggleButtonGroup, Card, CardContent } from '@mui/material';
+import { Paper, Grid, Box, Button, Typography, ToggleButton, ToggleButtonGroup, Card, CardContent } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import TranslateIcon from '@mui/icons-material/Translate';
 import LinkIcon from '@mui/icons-material/Link';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { InputField, SelectField, SectionHeader } from '../../../Components/FormInputs';
 import BilingualInputField from '../../../Components/BilingualInputField';
 
@@ -150,23 +146,6 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
     const resyncAddressParentsBirth = () => {
         setCustomized(prev => ({ ...prev, address_parents_birth: false }));
         setData('address_parents_birth', data.permanent_address);
-    };
-
-    // Other children management
-    const addOtherChild = () => {
-        setData('other_children', [...(data.other_children || []), { name: '', dob: '', birth_place: '', is_recorded: 'Yes' }]);
-    };
-
-    const removeOtherChild = (index) => {
-        const next = [...(data.other_children || [])];
-        next.splice(index, 1);
-        setData('other_children', next);
-    };
-
-    const handleChildChange = (index, field, value) => {
-        const next = [...(data.other_children || [])];
-        next[index][field] = value;
-        setData('other_children', next);
     };
 
     return (
@@ -457,61 +436,6 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
                     />
                 </Grid>
             </Grid>
-
-            {/* 6. Other Children Details */}
-            <Box sx={{ mt: 4, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" color="primary" fontWeight="bold">Other Children Details</Typography>
-                <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={addOtherChild}>Add Child</Button>
-            </Box>
-            {(data.other_children || []).map((child, index) => (
-                <Grid container spacing={2} key={index} alignItems="center" sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <BilingualInputField
-                            label="Name"
-                            name={`other_children_${index}_name`}
-                            value={child.name}
-                            onChange={(e) => handleChildChange(index, 'name', e.target.value)}
-                            error={errors[`other_children.${index}.name`]}
-                            formatMode={formatMode}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <InputField
-                            label="DOB"
-                            type="date"
-                            value={child.dob}
-                            onChange={(e) => handleChildChange(index, 'dob', e.target.value)}
-                            error={errors[`other_children.${index}.dob`]}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <BilingualInputField
-                            label="Birth Place"
-                            name={`other_children_${index}_birth_place`}
-                            required={false}
-                            value={child.birth_place}
-                            onChange={(e) => handleChildChange(index, 'birth_place', e.target.value)}
-                            error={errors[`other_children.${index}.birth_place`]}
-                            formatMode={formatMode}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 5, md: 2 }}>
-                        <SelectField
-                            label="Recorded?"
-                            value={child.is_recorded}
-                            onChange={(e) => handleChildChange(index, 'is_recorded', e.target.value)}
-                            options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]}
-                            error={errors[`other_children.${index}.is_recorded`]}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 1, md: 1 }}>
-                        <IconButton color="error" onClick={() => removeOtherChild(index)}><DeleteIcon /></IconButton>
-                    </Grid>
-                </Grid>
-            ))}
-            {(!data.other_children || data.other_children.length === 0) && (
-                <Typography color="text.secondary" fontStyle="italic" sx={{ mb: 2 }}>No other children added.</Typography>
-            )}
 
             {/* Form Actions */}
             <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>

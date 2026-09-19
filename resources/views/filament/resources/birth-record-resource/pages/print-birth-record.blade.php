@@ -468,44 +468,6 @@
                             हम भविष्य में अपने लड़के/लड़की के नाम में कोई परिवर्तन नहीं करेंगे।
                         </div>
                     </div>
-
-                    <div class="list-item">
-                        <div style="width: 100%;">
-                            हमारे निम्नलिखित और बच्चे हैं जिनके जन्म का विवरण निम्नप्रकार है–
-                        
-                            <table class="table-section">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50px;">क्र.सं.</th>
-                                        <th>नाम</th>
-                                        <th style="width: 110px;">जन्म तिथि</th>
-                                        <th>जन्म स्थान</th>
-                                        <th style="width: 110px;">दर्ज है या नहीं</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($record->other_children && count($record->other_children) > 0)
-                                        @foreach($record->other_children as $index => $child)
-                                            <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td><span class="table-val">{{ $child['name'] ?? '' }}</span></td>
-                                                <td><span class="table-val">{{ $child['dob'] ?? '' }}</span></td>
-                                                <td><span class="table-val">{{ $child['birth_place'] ?? '' }}</span></td>
-                                                <td><span class="table-val">{{ $child['is_recorded'] ?? '' }}</span></td>
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td>1.</td><td colspan="4"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2.</td><td colspan="4"></td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                     
                     <div class="list-item">
                         <div>
