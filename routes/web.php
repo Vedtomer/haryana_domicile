@@ -1115,8 +1115,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
             if ($regFound) {
                 $data['regNo'] = $data['regNo'] ?? $regFound;
-                $data['vehicleClass'] = $data['vehicleClass'] ?? ($data['class'] ?? 'N/A');
+                $data['vehicleClass'] = $data['vehicleClass'] ?? ($data['class'] ?? ($rawData['vehicle_details']['vehicle_category_description'] ?? 'Motor Car(LMV)'));
                 $data['owner'] = !empty($data['owner']) ? $data['owner'] : ($rawData['customer_details']['full_name'] ?? 'N/A');
+                $data['ownerFatherName'] = !empty($data['ownerFatherName']) ? $data['ownerFatherName'] : ($rawData['customer_details']['father_name'] ?? 'N/A');
                 $data['chassis'] = !empty($data['chassis']) ? $data['chassis'] : ($rawData['chassis_number'] ?? ($rawData['vehicle_details']['chassis_no'] ?? 'N/A'));
                 $data['engine'] = !empty($data['engine']) ? $data['engine'] : ($rawData['engine_number'] ?? ($rawData['vehicle_details']['engine_no'] ?? 'N/A'));
                 $data['presentAddress'] = !empty($data['presentAddress']) ? $data['presentAddress'] : ($rawData['customer_details']['communication_address']['address_line'] ?? 'N/A');
@@ -1125,11 +1126,64 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
                 $data['vehicleInsuranceCompanyName'] = !empty($data['vehicleInsuranceCompanyName']) ? $data['vehicleInsuranceCompanyName'] : ($rawData['previous_insurer_code'] ?? 'N/A');
                 $data['vehicleColour'] = !empty($data['vehicleColour']) ? $data['vehicleColour'] : ($rawData['vehicle_details']['vehicle_color'] ?? 'N/A');
                 $data['regDate'] = !empty($data['regDate']) ? $data['regDate'] : ($rawData['vehicle_details']['registration_date'] ?? 'N/A');
+                $data['model'] = !empty($data['model']) ? $data['model'] : ($rawData['vehicle_details']['model'] ?? 'N/A');
+                $data['vehicleManufacturerName'] = !empty($data['vehicleManufacturerName']) ? $data['vehicleManufacturerName'] : ($rawData['vehicle_details']['manufacturer'] ?? 'N/A');
+                $data['type'] = !empty($data['type']) ? $data['type'] : ($rawData['vehicle_details']['fuel_type'] ?? 'N/A');
+                $data['rcExpiryDate'] = !empty($data['rcExpiryDate']) ? $data['rcExpiryDate'] : ($rawData['vehicle_details']['fitness_upto'] ?? ($rawData['vehicle_details']['rc_expiry_date'] ?? 'N/A'));
+                $data['vehicleTaxUpto'] = !empty($data['vehicleTaxUpto']) ? $data['vehicleTaxUpto'] : ($rawData['vehicle_details']['tax_upto'] ?? 'N/A');
+                $data['puccUpto'] = !empty($data['puccUpto']) ? $data['puccUpto'] : 'N/A';
+                $data['puccNumber'] = !empty($data['puccNumber']) ? $data['puccNumber'] : 'N/A';
+                $data['rcFinancer'] = !empty($data['rcFinancer']) ? $data['rcFinancer'] : ($rawData['vehicle_details']['financier'] ?? 'NONE');
+                $data['regAuthority'] = !empty($data['regAuthority']) ? $data['regAuthority'] : ($rawData['vehicle_details']['rto_name'] ?? 'N/A');
+                $data['normsType'] = !empty($data['normsType']) ? $data['normsType'] : 'N/A';
+                $data['bodyType'] = !empty($data['bodyType']) ? $data['bodyType'] : 'N/A';
+                $data['ownerCount'] = !empty($data['ownerCount']) ? $data['ownerCount'] : '1';
+                $data['status'] = !empty($data['status']) ? $data['status'] : 'ACTIVE';
+                $data['vehicleCubicCapacity'] = !empty($data['vehicleCubicCapacity']) ? $data['vehicleCubicCapacity'] : ($rawData['vehicle_details']['cubic_capacity'] ?? 'N/A');
+                $data['grossVehicleWeight'] = !empty($data['grossVehicleWeight']) ? $data['grossVehicleWeight'] : ($rawData['vehicle_details']['gross_vehicle_weight'] ?? 'N/A');
+                $data['unladenWeight'] = !empty($data['unladenWeight']) ? $data['unladenWeight'] : ($rawData['vehicle_details']['unladen_weight'] ?? 'N/A');
+                $data['vehicleSeatCapacity'] = !empty($data['vehicleSeatCapacity']) ? $data['vehicleSeatCapacity'] : ($rawData['vehicle_details']['seating_capacity'] ?? 'N/A');
+                $data['wheelbase'] = !empty($data['wheelbase']) ? $data['wheelbase'] : ($rawData['vehicle_details']['wheelbase'] ?? 'N/A');
 
                 foreach ($data as $k => $v) {
                     if (is_string($v) && trim($v) === '') {
                         $data[$k] = 'N/A';
                     }
+                }
+
+                // Determine State Name
+                $stateMap = [
+                    'AN' => 'ANDAMAN & NICOBAR', 'AP' => 'ANDHRA PRADESH', 'AR' => 'ARUNACHAL PRADESH',
+                    'AS' => 'ASSAM', 'BR' => 'BIHAR', 'CH' => 'CHANDIGARH', 'CG' => 'CHHATTISGARH',
+                    'DD' => 'DAMAN & DIU', 'DL' => 'DELHI', 'DN' => 'DADRA & NAGAR HAVELI', 'GA' => 'GOA',
+                    'GJ' => 'GUJARAT', 'HR' => 'HARYANA', 'HP' => 'HIMACHAL PRADESH', 'JK' => 'JAMMU & KASHMIR',
+                    'JH' => 'JHARKHAND', 'KA' => 'KARNATAKA', 'KL' => 'KERALA', 'LA' => 'LADAKH',
+                    'LD' => 'LAKSHADWEEP', 'MP' => 'MADHYA PRADESH', 'MH' => 'MAHARASHTRA', 'MN' => 'MANIPUR',
+                    'ML' => 'MEGHALAYA', 'MZ' => 'MIZORAM', 'NL' => 'NAGALAND', 'OD' => 'ODISHA',
+                    'OR' => 'ODISHA', 'PB' => 'PUNJAB', 'PY' => 'PUDUCHERRY', 'RJ' => 'RAJASTHAN',
+                    'SK' => 'SIKKIM', 'TN' => 'TAMIL NADU', 'TS' => 'TELANGANA', 'TR' => 'TRIPURA',
+                    'UP' => 'UTTAR PRADESH', 'UK' => 'UTTARAKHAND', 'UA' => 'UTTARAKHAND', 'WB' => 'WEST BENGAL',
+                    'BH' => 'BHARAT',
+                ];
+                $stCode = substr(strtoupper($cleanRegNo), 0, 2);
+                $stateName = $stateMap[$stCode] ?? null;
+                if (!$stateName && !empty($data['regAuthority']) && $data['regAuthority'] !== 'N/A') {
+                    $parts = explode(',', $data['regAuthority']);
+                    $stateName = strtoupper(trim(end($parts)));
+                }
+                $data['stateName'] = $stateName ?: 'INDIA';
+
+                // Generate QR Code as SVG data URI
+                try {
+                    $qrText = "RC Details | Reg: " . $data['regNo'] . " | Owner: " . $data['owner'] . " | Chassis: " . $data['chassis'] . " | Engine: " . $data['engine'] . " | Valid Upto: " . ($data['rcExpiryDate'] ?? 'N/A');
+                    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+                        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(100, 0),
+                        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+                    );
+                    $writer = new \BaconQrCode\Writer($renderer);
+                    $data['qrCodeSvg'] = 'data:image/svg+xml;base64,' . base64_encode($writer->writeString($qrText));
+                } catch (\Throwable $e) {
+                    $data['qrCodeSvg'] = null;
                 }
 
                 // Deduct coins only if successful
@@ -1148,9 +1202,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
                 ]);
                 
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
+                $pdf->setPaper('a4', 'portrait');
                 return response($pdf->output())
                     ->header('Content-Type', 'application/pdf')
-                    ->header('Content-Disposition', 'attachment; filename="Vehicle_Details_' . strtoupper($cleanRegNo) . '.pdf"');
+                    ->header('Content-Disposition', 'attachment; filename="RC_Smart_Card_' . strtoupper($cleanRegNo) . '.pdf"');
             }
         }
 
