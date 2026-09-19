@@ -492,7 +492,10 @@ class Service extends Model
      */
     public function scopeVisibleTo($query, User $user)
     {
-        return $query->whereHas('users', fn ($u) => $u->where('users.id', $user->id));
+        return $query->where(function ($q) use ($user) {
+            $q->where('visibility', self::VISIBILITY_PUBLIC)
+              ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
+        });
     }
 
     public function scopeOrdered($query)
