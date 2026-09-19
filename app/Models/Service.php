@@ -139,6 +139,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-mask-pan',
             'create' => '/utilities/aadhar-to-mask-pan',
         ],
+        'aadhar_to_info' => [
+            'label' => 'Aadhaar No. To Info',
+            'icon' => '🪪',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-info',
+            'create' => '/utilities/aadhar-to-info',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,

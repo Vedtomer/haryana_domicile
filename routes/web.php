@@ -256,6 +256,22 @@ Route::get('/force-add-service', function () {
         ]
     );
     \App\Models\Service::updateOrCreate(
+        ['slug' => 'aadhar-to-info'],
+        [
+            'name' => 'Aadhaar No. To Info',
+            'description' => 'Find all linked mobile numbers, telecom circle, father name, and address from Aadhaar Number.',
+            'icon' => 'contact_phone',
+            'coin_cost' => 99,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_to_info',
+            'sort_order' => 14,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
         ['slug' => 'learning-licence-pdf'],
         [
             'name' => 'Learning Licence Download',
@@ -908,6 +924,19 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.aadhar-to-name');
 
     Route::post('/utilities/aadhar-to-name/search', [\App\Http\Controllers\AadharToNameController::class, 'search'])->name('utilities.aadhar-to-name.search');
+
+    Route::get('/utilities/aadhar-to-info', function () {
+        $service = \App\Models\Service::where('slug', 'aadhar-to-info')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        return Inertia::render('Utilities/AadharToInfo', [
+            'coinCost' => $service ? $service->coin_cost : 99,
+        ]);
+    })->name('utilities.aadhar-to-info');
+
+    Route::post('/utilities/aadhar-to-info/search', [\App\Http\Controllers\AadharToInfoController::class, 'search'])->name('utilities.aadhar-to-info.search');
 
     Route::get('/utilities/pan-details-instant', function () {
         $service = \App\Models\Service::where('slug', 'pan-details-instant')->first();
