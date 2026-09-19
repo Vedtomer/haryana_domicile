@@ -17,6 +17,8 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
     const [captchaSvg, setCaptchaSvg] = useState(initialCaptchaSvg);
     const [refreshingCaptcha, setRefreshingCaptcha] = useState(false);
 
+    const isCaptchaComplete = data.captcha?.trim().length === 5;
+
     const handleRefreshCaptcha = async () => {
         if (refreshingCaptcha) return;
         setRefreshingCaptcha(true);
@@ -75,7 +77,22 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
 
                     {/* Right: Login form — standalone card */}
                     <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
-                        <main className="w-full max-w-[460px] rounded-2xl overflow-hidden shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-2 border-blue-600 bg-surface">
+                        <main className={`w-full max-w-[460px] rounded-2xl overflow-hidden transition-all duration-500 border-2 bg-surface relative ${
+                            isCaptchaComplete
+                                ? 'shadow-[0px_16px_48px_rgba(59,130,246,0.32)] border-blue-500 ring-2 ring-blue-400/30'
+                                : 'shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-blue-600'
+                        }`}>
+                            
+                            {/* Glassy Loading Overlay during Processing */}
+                            {processing && (
+                                <div className="absolute inset-0 z-30 backdrop-blur-sm bg-slate-950/40 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
+                                    <div className="p-6 rounded-2xl bg-white/20 dark:bg-slate-900/60 border border-white/40 shadow-2xl backdrop-blur-md flex flex-col items-center gap-3">
+                                        <div className="w-10 h-10 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span className="text-white text-sm font-bold tracking-wide drop-shadow-sm">Verifying & Signing In...</span>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Right Side: Login Form */}
                             <div className="w-full relative z-10 p-6 sm:p-8">
                             <div className="mb-8">
@@ -137,8 +154,14 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                 {/* Security Captcha */}
                                 <div className="flex flex-col gap-base">
                                     <div className="flex justify-between items-center">
-                                        <label className="font-label-md text-label-md text-on-surface font-semibold" htmlFor="captcha">
-                                            Security Captcha
+                                        <label className="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" htmlFor="captcha">
+                                            <span>Security Captcha</span>
+                                            {isCaptchaComplete && (
+                                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/60 animate-in fade-in zoom-in duration-200">
+                                                    <span className="material-symbols-outlined text-[12px]">verified</span>
+                                                    <span>Ready</span>
+                                                </span>
+                                            )}
                                         </label>
                                         <button
                                             type="button"
@@ -156,13 +179,17 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
 
                                     <div className="flex items-center gap-2">
                                         {/* Input Box */}
-                                        <div className="relative flex-1 flex items-center input-field bg-[#F1F5F9] rounded-lg border-2 border-transparent transition-colors duration-200 focus-within:border-blue-500 focus-within:bg-white">
+                                        <div className={`relative flex-1 flex items-center input-field rounded-lg border-2 transition-all duration-300 ${
+                                            isCaptchaComplete
+                                                ? 'bg-emerald-50/60 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
+                                                : 'bg-[#F1F5F9] border-transparent focus-within:border-blue-500 focus-within:bg-white'
+                                        }`}>
                                             <input 
                                                 id="captcha" 
                                                 name="captcha"
                                                 value={data.captcha}
                                                 onChange={(e) => setData('captcha', e.target.value.replace(/\D/g, ''))}
-                                                className="w-full bg-transparent border-none py-2.5 px-3 text-base font-mono font-bold tracking-widest text-slate-800 focus:ring-0 focus:outline-none rounded-lg" 
+                                                className="w-full bg-transparent border-none py-2.5 pl-3 pr-8 text-base font-mono font-bold tracking-widest text-slate-800 focus:ring-0 focus:outline-none rounded-lg" 
                                                 placeholder="5-digit code" 
                                                 type="text"
                                                 inputMode="numeric"
@@ -171,6 +198,11 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                                 autoComplete="off"
                                                 required
                                             />
+                                            {isCaptchaComplete && (
+                                                <div className="absolute right-2.5 flex items-center pointer-events-none text-emerald-600 animate-in zoom-in duration-200">
+                                                    <span className="material-symbols-outlined text-xl">check_circle</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Captcha SVG Preview */}
@@ -214,13 +246,39 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                     )}
                                 </div>
                                 
+                                {/* Glassy Animated Login Button */}
                                 <button 
                                     type="submit"
                                     disabled={processing}
-                                    className="w-full py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 hover:-translate-y-[2px] transition-all shadow-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+                                    className={`relative w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2 mt-4 overflow-hidden disabled:opacity-50 select-none cursor-pointer ${
+                                        isCaptchaComplete
+                                            ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-xl shadow-blue-500/35 border border-white/40 animate-glass-glow hover:scale-[1.01]'
+                                            : 'bg-primary text-on-primary hover:bg-primary/90 hover:-translate-y-[2px]'
+                                    }`}
                                 >
-                                    {processing ? 'Signing In...' : 'Sign In'}
-                                    {!processing && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>}
+                                    {/* Glassy reflection light beam sweep */}
+                                    {isCaptchaComplete && !processing && (
+                                        <span className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
+                                            <span className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-shine"></span>
+                                        </span>
+                                    )}
+
+                                    {processing ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Signing In...
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="tracking-wide">Sign In</span>
+                                            <span className={`material-symbols-outlined transition-transform duration-300 ${isCaptchaComplete ? 'translate-x-1' : ''}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                arrow_forward
+                                            </span>
+                                        </>
+                                    )}
                                 </button>
                                 
                                 <div className="text-center mt-2">
