@@ -89,7 +89,7 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
             Auth::logoutOtherDevices($request->password);
-            return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
+            return redirect()->intended('/dashboard');
         }
 
         // Credentials wrong: generate fresh captcha for next attempt
@@ -328,7 +328,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended('/dashboard')->with('login_voice', 'Welcome to C S P Jaankari');
+        return redirect()->intended('/dashboard');
     }
 
     public function showForgotPassword()

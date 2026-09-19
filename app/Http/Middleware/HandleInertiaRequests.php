@@ -67,7 +67,6 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
-                'login_voice' => $request->session()->get('login_voice'),
                 'submitted_request' => $request->session()->get('submitted_request'),
                 'generated_key' => $request->session()->get('generated_key'),
             ],
