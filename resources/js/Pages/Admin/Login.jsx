@@ -77,18 +77,98 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
 
                     {/* Right: Login form — standalone card */}
                     <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
-                        <main className={`w-full max-w-[460px] rounded-2xl overflow-hidden transition-all duration-500 border-2 bg-surface relative ${
+                        {/* Embedded Glassmorphism Styles to guarantee cross-browser execution and zero stylesheet caching delay */}
+                        <style>{`
+                            @keyframes glassShineSweep {
+                                0% {
+                                    transform: translateX(-160%) skewX(-25deg);
+                                }
+                                40%, 100% {
+                                    transform: translateX(300%) skewX(-25deg);
+                                }
+                            }
+                            @keyframes glassGlowPulse {
+                                0%, 100% {
+                                    box-shadow: 0 0 16px rgba(59, 130, 246, 0.5), 0 8px 30px rgba(37, 99, 235, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+                                    transform: scale(1);
+                                }
+                                50% {
+                                    box-shadow: 0 0 32px rgba(99, 102, 241, 0.8), 0 12px 38px rgba(14, 165, 233, 0.6), inset 0 2px 3px rgba(255, 255, 255, 1);
+                                    transform: scale(1.015);
+                                }
+                            }
+                            @keyframes glassCardAura {
+                                0%, 100% {
+                                    box-shadow: 0 16px 48px -10px rgba(59, 130, 246, 0.35), 0 0 20px rgba(99, 102, 241, 0.2);
+                                    border-color: rgba(96, 165, 250, 0.6);
+                                }
+                                50% {
+                                    box-shadow: 0 20px 60px -10px rgba(59, 130, 246, 0.55), 0 0 35px rgba(147, 197, 253, 0.4);
+                                    border-color: rgba(147, 197, 253, 0.9);
+                                }
+                            }
+                            @keyframes glassParticleFloat {
+                                0%, 100% {
+                                    transform: translateY(0px) rotate(0deg);
+                                    opacity: 0.4;
+                                }
+                                50% {
+                                    transform: translateY(-12px) rotate(180deg);
+                                    opacity: 0.7;
+                                }
+                            }
+                            .glass-active-card {
+                                animation: glassCardAura 3s ease-in-out infinite;
+                            }
+                            .glass-btn-active {
+                                animation: glassGlowPulse 2.2s ease-in-out infinite;
+                            }
+                            .glass-beam-anim {
+                                animation: glassShineSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                            }
+                        `}</style>
+
+                        <main className={`w-full max-w-[460px] rounded-2xl overflow-hidden transition-all duration-500 border-2 relative ${
                             isCaptchaComplete
-                                ? 'shadow-[0px_16px_48px_rgba(59,130,246,0.32)] border-blue-500 ring-2 ring-blue-400/30'
+                                ? 'glass-active-card'
                                 : 'shadow-[0px_8px_32px_rgba(0,102,255,0.15)] border-blue-600'
-                        }`}>
+                        }`}
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.96)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: isCaptchaComplete ? undefined : '0 10px 30px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.8)'
+                        }}
+                        >
+                            {/* Glass card ambient glow when captcha is complete */}
+                            {isCaptchaComplete && (
+                                <div 
+                                    className="absolute -top-32 -left-32 w-72 h-72 pointer-events-none rounded-full blur-2xl opacity-40 bg-gradient-to-br from-blue-400 to-cyan-300"
+                                    style={{ animation: 'glassParticleFloat 6s ease-in-out infinite' }}
+                                />
+                            )}
                             
-                            {/* Glassy Loading Overlay during Processing */}
+                            {/* Full Frosted Glass Loading Overlay during Processing */}
                             {processing && (
-                                <div className="absolute inset-0 z-30 backdrop-blur-sm bg-slate-950/40 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
-                                    <div className="p-6 rounded-2xl bg-white/20 dark:bg-slate-900/60 border border-white/40 shadow-2xl backdrop-blur-md flex flex-col items-center gap-3">
-                                        <div className="w-10 h-10 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        <span className="text-white text-sm font-bold tracking-wide drop-shadow-sm">Verifying & Signing In...</span>
+                                <div className="absolute inset-0 z-30 backdrop-blur-md bg-slate-950/60 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
+                                    <div 
+                                        className="p-6 rounded-2xl border border-white/40 shadow-2xl flex flex-col items-center gap-4 text-center max-w-[280px]"
+                                        style={{
+                                            background: 'rgba(255, 255, 255, 0.18)',
+                                            backdropFilter: 'blur(20px)',
+                                            WebkitBackdropFilter: 'blur(20px)',
+                                            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.6)'
+                                        }}
+                                    >
+                                        <div className="relative w-14 h-14 flex items-center justify-center">
+                                            <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-cyan-400 border-r-blue-400 animate-spin"></div>
+                                            <div className="absolute inset-1.5 rounded-full border-2 border-transparent border-b-indigo-400 border-l-white/70 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.2s' }}></div>
+                                            <span className="material-symbols-outlined text-white text-2xl animate-pulse">lock_open</span>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white text-base font-bold tracking-wide drop-shadow-sm">Verifying & Signing In</h4>
+                                            <p className="text-blue-100 text-xs mt-1 drop-shadow-sm">Checking captcha & credentials...</p>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -157,9 +237,9 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                         <label className="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" htmlFor="captcha">
                                             <span>Security Captcha</span>
                                             {isCaptchaComplete && (
-                                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/60 animate-in fade-in zoom-in duration-200">
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-sm shadow-emerald-500/40 animate-in fade-in zoom-in duration-200">
                                                     <span className="material-symbols-outlined text-[12px]">verified</span>
-                                                    <span>Ready</span>
+                                                    <span>Verified</span>
                                                 </span>
                                             )}
                                         </label>
@@ -181,9 +261,18 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                         {/* Input Box */}
                                         <div className={`relative flex-1 flex items-center input-field rounded-lg border-2 transition-all duration-300 ${
                                             isCaptchaComplete
-                                                ? 'bg-emerald-50/60 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
+                                                ? 'bg-emerald-50/70 border-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.3)]'
                                                 : 'bg-[#F1F5F9] border-transparent focus-within:border-blue-500 focus-within:bg-white'
-                                        }`}>
+                                        }`}
+                                        style={
+                                            isCaptchaComplete
+                                                ? {
+                                                    backdropFilter: 'blur(8px)',
+                                                    WebkitBackdropFilter: 'blur(8px)',
+                                                }
+                                                : {}
+                                        }
+                                        >
                                             <input 
                                                 id="captcha" 
                                                 name="captcha"
@@ -250,21 +339,46 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                 <button 
                                     type="submit"
                                     disabled={processing}
-                                    className={`relative w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2 mt-4 overflow-hidden disabled:opacity-50 select-none cursor-pointer ${
+                                    className={`relative w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 mt-4 overflow-hidden disabled:opacity-50 select-none cursor-pointer ${
                                         isCaptchaComplete
-                                            ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-xl shadow-blue-500/35 border border-white/40 animate-glass-glow hover:scale-[1.01]'
-                                            : 'bg-primary text-on-primary hover:bg-primary/90 hover:-translate-y-[2px]'
+                                            ? 'text-white border border-white/70 shadow-2xl glass-btn-active'
+                                            : 'bg-primary text-on-primary hover:bg-primary/90 hover:-translate-y-[2px] shadow-md'
                                     }`}
+                                    style={
+                                        isCaptchaComplete
+                                            ? {
+                                                background: 'linear-gradient(135deg, #1d4ed8 0%, #4338ca 48%, #0284c7 100%)',
+                                                backdropFilter: 'blur(12px)',
+                                                WebkitBackdropFilter: 'blur(12px)',
+                                            }
+                                            : {}
+                                    }
                                 >
-                                    {/* Glassy reflection light beam sweep */}
+                                    {/* Glass Specular Top Highlight */}
+                                    {isCaptchaComplete && (
+                                        <span 
+                                            className="absolute top-0 left-0 right-0 h-[45%] pointer-events-none rounded-t-xl"
+                                            style={{
+                                                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 70%, transparent 100%)',
+                                            }}
+                                        />
+                                    )}
+
+                                    {/* Bright Glass Reflection Beam Sweep */}
                                     {isCaptchaComplete && !processing && (
                                         <span className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
-                                            <span className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-shine"></span>
+                                            <span 
+                                                className="absolute top-0 bottom-0 pointer-events-none glass-beam-anim"
+                                                style={{
+                                                    width: '65px',
+                                                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.3) 75%, transparent 100%)',
+                                                }}
+                                            />
                                         </span>
                                     )}
 
                                     {processing ? (
-                                        <span className="flex items-center justify-center gap-2">
+                                        <span className="flex items-center justify-center gap-2 relative z-10">
                                             <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -272,12 +386,14 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                             Signing In...
                                         </span>
                                     ) : (
-                                        <>
-                                            <span className="tracking-wide">Sign In</span>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            <span className="tracking-wide">
+                                                {isCaptchaComplete ? 'Sign In / Login' : 'Sign In'}
+                                            </span>
                                             <span className={`material-symbols-outlined transition-transform duration-300 ${isCaptchaComplete ? 'translate-x-1' : ''}`} style={{ fontVariationSettings: "'FILL' 1" }}>
                                                 arrow_forward
                                             </span>
-                                        </>
+                                        </span>
                                     )}
                                 </button>
                                 
