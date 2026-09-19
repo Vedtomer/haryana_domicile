@@ -50,10 +50,12 @@ export default function Home({ services = [] }) {
 
     const isLoggedIn = Boolean(auth?.user);
 
-    // Sort services alphabetically by name
-    const sortedServices = [...services].sort((a, b) =>
-        (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
-    );
+    // Sort services alphabetically by name, excluding Haryana Domicile from public view
+    const sortedServices = [...services]
+        .filter((s) => s.slug !== 'haryana-domicile' && !s.name?.toLowerCase().includes('haryana domicile'))
+        .sort((a, b) =>
+            (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
+        );
 
     // Filter services by active category tab
     const filteredServices = sortedServices.filter((service) => matchesCategory(service, activeTab));
@@ -82,7 +84,7 @@ export default function Home({ services = [] }) {
             <div className="bg-background min-h-screen">
                 <Head>
                     <title>CertifyIndia - Digital Citizen Services Portal</title>
-                    <meta name="description" content="All-in-one portal for digital citizen services: PAN Card, Aadhaar, Driving Licence, RC, Domicile & Certificates." />
+                    <meta name="description" content="All-in-one portal for digital citizen services: PAN Card, Aadhaar, Driving Licence, RC, Certificates & Print." />
                 </Head>
 
                 {/* Hero Section */}
@@ -106,7 +108,7 @@ export default function Home({ services = [] }) {
                         </h1>
                         
                         <p className="mt-3 max-w-2xl font-body-lg text-body-lg text-on-surface-variant mx-auto mb-8 leading-relaxed">
-                            Unified portal for PAN Cards, PVC Cards, Driving Licence, Vehicle RC, Domicile Certificate, Marriage Registration, and utility services.
+                            Unified portal for PAN Cards, PVC Cards, Driving Licence, Vehicle RC, Marriage Registration, and utility services.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row justify-center gap-4">

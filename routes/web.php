@@ -10,6 +10,8 @@ use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     $services = \App\Models\Service::query()
+        ->where('slug', '!=', 'haryana-domicile')
+        ->where('name', 'not like', '%haryana domicile%')
         ->ordered()
         ->get()
         ->map(function (\App\Models\Service $service) {
