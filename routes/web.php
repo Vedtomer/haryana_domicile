@@ -1172,12 +1172,40 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
                     $stateName = strtoupper(trim(end($parts)));
                 }
                 $data['stateName'] = $stateName ?: 'INDIA';
+                $data['stateCode'] = $stCode ?: 'IND';
+
+                // Non-Transport (NT) or Transport (T)
+                $vClassUpper = strtoupper($data['vehicleClass'] ?? '');
+                $isT = (str_contains($vClassUpper, 'GOODS') || str_contains($vClassUpper, 'COMMERCIAL') || str_contains($vClassUpper, 'TAXI') || str_contains($vClassUpper, 'TRANSPORT') || str_contains($vClassUpper, 'BUS') || str_contains($vClassUpper, 'TRUCK'));
+                $data['isTransport'] = $isT ? 'T' : 'NT';
+
+                // Month-Year of Mfg
+                $mfg = $rawData['manufacturing_date'] ?? ($rawData['vehicle_details']['mfg_date'] ?? null);
+                if (!$mfg && !empty($data['regDate']) && $data['regDate'] !== 'N/A') {
+                    try {
+                        $mfg = \Carbon\Carbon::parse($data['regDate'])->format('m-Y');
+                    } catch (\Throwable $e) {
+                        $mfg = null;
+                    }
+                }
+                $data['mfgMonthYear'] = $mfg ?: '01-2021';
+                $data['cylinders'] = $rawData['vehicle_details']['no_of_cylinders'] ?? (isset($data['vehicleCubicCapacity']) && intval($data['vehicleCubicCapacity']) > 0 && intval($data['vehicleCubicCapacity']) < 1000 ? '3' : '4');
+                $data['horsePower'] = $rawData['vehicle_details']['horse_power'] ?? ($rawData['vehicle_details']['hp'] ?? 'N/A');
+                $data['ownership'] = !empty($rawData['ownership_type']) ? strtoupper($rawData['ownership_type']) : 'INDIVIDUAL';
+
+                // Load Emblem SVG Base64
+                $emblemPath = public_path('images/emblem.svg');
+                if (file_exists($emblemPath)) {
+                    $data['emblemSvg'] = 'data:image/svg+xml;base64,' . base64_encode(file_get_contents($emblemPath));
+                } else {
+                    $data['emblemSvg'] = null;
+                }
 
                 // Generate QR Code as SVG data URI
                 try {
-                    $qrText = "RC Details | Reg: " . $data['regNo'] . " | Owner: " . $data['owner'] . " | Chassis: " . $data['chassis'] . " | Engine: " . $data['engine'] . " | Valid Upto: " . ($data['rcExpiryDate'] ?? 'N/A');
+                    $qrText = "Regn No: " . $data['regNo'] . "\nRegn Date: " . $data['regDate'] . "\nOwner: " . $data['owner'] . "\nChassis No: " . $data['chassis'] . "\nEngine No: " . $data['engine'] . "\nClass: " . $data['vehicleClass'] . "\nMaker: " . $data['vehicleManufacturerName'] . "\nModel: " . $data['model'] . "\nFuel: " . $data['type'] . "\nValid Upto: " . ($data['rcExpiryDate'] ?? 'N/A');
                     $renderer = new \BaconQrCode\Renderer\ImageRenderer(
-                        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(100, 0),
+                        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(120, 0),
                         new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
                     );
                     $writer = new \BaconQrCode\Writer($renderer);

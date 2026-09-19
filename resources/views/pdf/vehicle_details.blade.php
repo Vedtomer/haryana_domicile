@@ -5,7 +5,7 @@
     <title>RC Smart Card - {{ $data['regNo'] ?? 'Vehicle Details' }}</title>
     <style>
         @page {
-            margin: 8mm 10mm 8mm 10mm;
+            margin: 6mm 8mm 6mm 8mm;
             size: A4 portrait;
         }
         * {
@@ -15,198 +15,169 @@
         }
         body {
             font-family: 'DejaVu Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #1e293b;
+            color: #0f172a;
             margin: 0;
             padding: 0;
-            font-size: 8pt;
-            line-height: 1.25;
+            font-size: 7.5pt;
+            line-height: 1.2;
             background: #ffffff;
         }
 
         /* Top Page Header */
         .page-header {
             text-align: center;
-            margin-bottom: 6mm;
-            padding-bottom: 3mm;
-            border-bottom: 1.5px solid #0284c7;
+            margin-bottom: 3.5mm;
+            padding-bottom: 2mm;
+            border-bottom: 1px solid #0284c7;
         }
         .page-header h1 {
             margin: 0;
-            font-size: 13pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #0c4a6e;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
         }
         .page-header .subtitle {
-            margin: 2px 0 0 0;
-            font-size: 7.5pt;
-            color: #475569;
-            font-weight: 500;
+            margin: 1.5px 0 0 0;
+            font-size: 6.8pt;
+            color: #64748b;
         }
 
-        /* PVC Cards Layout Table */
-        .pvc-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 6mm 0;
-            margin-bottom: 3.5mm;
+        /* Center Card Container */
+        .cards-wrapper {
+            width: 85.6mm;
+            margin: 0 auto 3mm auto;
+            text-align: left;
         }
-        .pvc-col {
-            width: 50%;
-            vertical-align: top;
-            text-align: center;
-        }
-        .card-label {
-            font-size: 6.8pt;
+
+        .side-label {
+            font-size: 6.2pt;
             font-weight: bold;
-            color: #475569;
-            margin-bottom: 1.5mm;
+            color: #64748b;
+            margin-bottom: 1mm;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            text-align: center;
         }
 
-        /* CR80 PVC Card Dimensions: 85.6mm x 54.0mm */
-        .card-cut-wrapper {
-            display: inline-block;
-            padding: 1.2mm;
-            border: 0.8px dashed #94a3b8;
-            border-radius: 4.2mm;
-            background: #fafafa;
-        }
-        .pvc-card {
+        /* CR80 Standard Dimensions: 85.6mm x 54.0mm */
+        .card-box {
             width: 85.6mm;
             height: 54.0mm;
             max-height: 54.0mm;
-            margin: 0 auto;
-            border: 1.4px solid #0f3d68;
+            border: 0.8px solid #64748b;
             border-radius: 3.2mm;
             overflow: hidden;
             background: #ffffff;
             position: relative;
-            text-align: left;
+            box-sizing: border-box;
         }
 
-        /* Watermark */
-        .card-watermark {
-            position: absolute;
-            top: 17mm;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 24pt;
-            font-weight: 900;
-            color: #0284c7;
-            opacity: 0.05;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            z-index: 1;
+        /* Top Header Bar */
+        .header-bar-front {
+            background-color: #dbeafe;
+            border-bottom: 0.8px solid #93c5fd;
+            padding: 0.8mm 2mm;
+            height: 9.2mm;
+            box-sizing: border-box;
+        }
+        .header-bar-back {
+            background-color: #dbeafe;
+            border-bottom: 0.8px solid #93c5fd;
+            padding: 0.8mm 2mm;
+            height: 6.5mm;
+            box-sizing: border-box;
         }
 
-        /* Tricolor Ribbon */
-        .tricolor-bar {
-            width: 100%;
-            height: 2.2px;
-            font-size: 0;
-            line-height: 0;
-        }
-        .tricolor-orange { display: inline-block; width: 33.33%; height: 2.2px; background-color: #FF9933; }
-        .tricolor-white  { display: inline-block; width: 33.34%; height: 2.2px; background-color: #FFFFFF; }
-        .tricolor-green  { display: inline-block; width: 33.33%; height: 2.2px; background-color: #138808; }
-
-        /* Card Header */
-        .card-header {
-            background-color: #0f2d4a;
-            color: #ffffff;
-            padding: 1.2mm 2mm;
-            text-align: center;
-            border-bottom: 0.8px solid #f59e0b;
-        }
-        .card-header .title-gov {
-            font-size: 6.8pt;
-            font-weight: bold;
-            color: #fef08a;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            margin: 0;
-            line-height: 1.15;
-        }
-        .card-header .title-sub {
-            font-size: 4.6pt;
-            color: #e0f2fe;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin: 0.5px 0 0 0;
-            line-height: 1.1;
-        }
-
-        /* Reg Number Badge */
-        .reg-badge {
-            background: #f8fafc;
-            border: 1px solid #0284c7;
-            border-radius: 1.5mm;
-            padding: 0.8mm 1.5mm;
-            text-align: center;
-        }
-        .reg-number {
-            font-size: 9.8pt;
-            font-weight: 900;
-            color: #0c4a6e;
-            letter-spacing: 1.2px;
-            font-family: 'DejaVu Sans', monospace;
-            line-height: 1.1;
-        }
-        .status-badge {
+        /* Badges */
+        .badge-nt {
             display: inline-block;
-            background: #16a34a;
-            color: #ffffff;
-            font-size: 4pt;
-            font-weight: bold;
-            padding: 0.2mm 1mm;
-            border-radius: 0.8mm;
-            text-transform: uppercase;
-            vertical-align: middle;
-            margin-left: 1mm;
-        }
-
-        /* Mini Data Tables */
-        .card-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 5pt;
-            line-height: 1.18;
-        }
-        .card-table td {
-            padding: 0.3mm 0.5mm;
-            vertical-align: top;
-        }
-        .lbl {
-            color: #475569;
-            font-weight: normal;
-        }
-        .val {
-            color: #0f172a;
-            font-weight: bold;
-        }
-
-        /* Card Footer */
-        .card-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #f8fafc;
-            border-top: 0.6px solid #cbd5e1;
-            padding: 0.7mm 1.5mm;
+            width: 12px;
+            height: 12px;
+            line-height: 12px;
             text-align: center;
-            font-size: 4pt;
-            color: #64748b;
-            line-height: 1.1;
+            border-radius: 50%;
+            background-color: #38bdf8;
+            border: 0.6px solid #0284c7;
+            color: #082f49;
+            font-size: 4.5pt;
+            font-weight: 900;
+        }
+        .badge-st {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            line-height: 12px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #f97316;
+            border: 0.6px solid #c2410c;
+            color: #ffffff;
+            font-size: 4.5pt;
+            font-weight: 900;
+            margin-left: 1.5px;
         }
 
-        /* Scissor Cut Line */
+        .circled-serial {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            line-height: 11px;
+            text-align: center;
+            border-radius: 50%;
+            border: 0.8px solid #0f172a;
+            font-weight: bold;
+            font-size: 4.8pt;
+        }
+
+        /* Typography */
+        .t-lbl {
+            font-size: 3.9pt;
+            color: #475569;
+            line-height: 1.0;
+            margin: 0;
+            padding: 0;
+        }
+        .t-val {
+            font-size: 4.9pt;
+            font-weight: bold;
+            color: #0f172a;
+            line-height: 1.1;
+            margin: 0 0 0.25mm 0;
+            padding: 0;
+        }
+
+        /* Rotated Vertical Text */
+        .rot-text {
+            position: absolute;
+            left: 83.6mm;
+            top: 15.5mm;
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
+            transform-origin: 0 0;
+            font-size: 4.1pt;
+            color: #64748b;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+        .rot-text-back {
+            position: absolute;
+            left: 83.6mm;
+            top: 20mm;
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
+            transform-origin: 0 0;
+            font-size: 4.4pt;
+            font-weight: bold;
+            color: #64748b;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+
+        /* Divider & Guide */
         .cut-guide-container {
-            margin: 2mm 0 3mm 0;
+            margin: 2mm 0 2.5mm 0;
             text-align: center;
         }
         .cut-line {
@@ -217,8 +188,8 @@
         .cut-badge {
             display: inline-block;
             background: #ffffff;
-            color: #64748b;
-            font-size: 6.5pt;
+            color: #475569;
+            font-size: 6.2pt;
             font-weight: bold;
             padding: 0 4mm;
             margin-top: -2.8mm;
@@ -229,33 +200,34 @@
             border: 0.8px solid #bae6fd;
             border-radius: 1.5mm;
             padding: 1.2mm 2.5mm;
-            font-size: 6.2pt;
+            font-size: 5.8pt;
             color: #0369a1;
             line-height: 1.25;
             text-align: center;
-            margin: 1mm 0 2.5mm 0;
+            margin: 1mm auto 2.5mm auto;
+            width: 90%;
         }
 
-        /* Full Particulars Table */
+        /* Official Particulars Sheet (Bottom of page) */
         .summary-header {
             background: #f1f5f9;
-            border-left: 3.5px solid #0284c7;
-            padding: 1.2mm 2.5mm;
-            font-size: 7.5pt;
+            border-left: 3px solid #0284c7;
+            padding: 1mm 2mm;
+            font-size: 7.2pt;
             font-weight: bold;
             color: #0f172a;
-            margin: 2mm 0 1.2mm 0;
+            margin: 1.5mm 0 1mm 0;
             text-transform: uppercase;
         }
         .details-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 6.5pt;
-            margin-bottom: 2mm;
+            font-size: 6.2pt;
+            margin-bottom: 1.5mm;
         }
         .details-table th, .details-table td {
-            border: 0.6px solid #e2e8f0;
-            padding: 1.1mm 1.8mm;
+            border: 0.5px solid #cbd5e1;
+            padding: 1mm 1.6mm;
             text-align: left;
         }
         .details-table th {
@@ -270,12 +242,11 @@
             width: 28%;
         }
 
-        /* Official Footer */
         .official-footer {
             border-top: 0.8px solid #cbd5e1;
-            padding-top: 1.5mm;
-            margin-top: 1.5mm;
-            font-size: 5.5pt;
+            padding-top: 1.2mm;
+            margin-top: 1mm;
+            font-size: 5.2pt;
             color: #94a3b8;
             text-align: center;
         }
@@ -287,189 +258,240 @@
     <div class="page-header">
         <h1>Indian Union Vehicle Registration Certificate</h1>
         <div class="subtitle">
-            Smart Card RC Format &bull; Standard CR80 PVC Printable Sheet (85.60 mm &times; 53.98 mm)
+            Parivahan e-RC Smart Card Format &bull; Standard CR80 PVC Printable Sheet (85.60 mm &times; 53.98 mm)
         </div>
     </div>
 
-    <!-- PVC Smart Cards (Front & Back Side-by-Side) -->
-    <table class="pvc-table">
-        <tr>
-            <!-- FRONT SIDE -->
-            <td class="pvc-col">
-                <div class="card-label">&#9986; FRONT SIDE &bull; CR80 PVC (85.6 mm &times; 54.0 mm)</div>
-                <div class="card-cut-wrapper">
-                    <div class="pvc-card">
-                        <!-- Subtle Watermark -->
-                        <div class="card-watermark">INDIA</div>
+    <!-- CARDS CONTAINER (Stacked Front & Back exactly as in user image) -->
+    <div class="cards-wrapper">
 
-                        <!-- Tricolor Ribbon -->
-                        <div class="tricolor-bar">
-                            <span class="tricolor-orange"></span><span class="tricolor-white"></span><span class="tricolor-green"></span>
-                        </div>
+        <!-- FRONT SIDE -->
+        <div class="side-label">&bull; FRONT SIDE &bull; (CR80 SMART CARD)</div>
+        <div class="card-box">
+            <!-- Header Bar -->
+            <div class="header-bar-front">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <!-- Ashoka Emblem -->
+                        <td style="width: 7.5mm; vertical-align: middle; padding: 0;">
+                            @if(!empty($data['emblemSvg']))
+                                <img src="{{ $data['emblemSvg'] }}" height="26" style="display: block;" />
+                            @else
+                                <div style="font-size: 4pt; font-weight: bold;">INDIA</div>
+                            @endif
+                        </td>
+                        <!-- Title -->
+                        <td style="text-align: center; vertical-align: middle; padding: 0 1mm;">
+                            <div style="font-size: 5.8pt; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 0.2px; line-height: 1.15;">
+                                Issued by GOVERNMENT OF {{ $data['stateName'] ?? 'INDIA' }}
+                            </div>
+                        </td>
+                        <!-- NT & State Badges -->
+                        <td style="width: 10mm; text-align: right; vertical-align: middle; padding: 0;">
+                            <span class="badge-nt">{{ $data['isTransport'] ?? 'NT' }}</span><span class="badge-st">{{ $data['stateCode'] ?? 'IND' }}</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-                        <!-- Header -->
-                        <div class="card-header">
-                            <div class="title-gov">GOVERNMENT OF {{ $data['stateName'] ?? 'INDIA' }}</div>
-                            <div class="title-sub">TRANSPORT DEPARTMENT &bull; FORM 23 &bull; CERTIFICATE OF REGISTRATION</div>
-                        </div>
+            <!-- Front Card Body -->
+            <div style="padding: 0.8mm 3.2mm 0.4mm 2mm;">
+                <!-- 4 Columns Header: Regn No, Date, Validity, Owner Serial -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 0.3mm;">
+                    <tr>
+                        <td style="width: 29%; vertical-align: top; padding: 0;">
+                            <div class="t-lbl">Regn No</div>
+                            <div class="t-val" style="font-size: 6.2pt; font-family: monospace; color: #000000;">{{ $data['regNo'] ?? 'N/A' }}</div>
+                        </td>
+                        <td style="width: 26%; vertical-align: top; padding: 0;">
+                            <div class="t-lbl">Date of Regn.</div>
+                            <div class="t-val">{{ $data['regDate'] ?? 'N/A' }}</div>
+                        </td>
+                        <td style="width: 27%; vertical-align: top; padding: 0;">
+                            <div class="t-lbl">Regn. Validity</div>
+                            <div class="t-val" style="color: #15803d;">{{ $data['rcExpiryDate'] ?? 'N/A' }}</div>
+                        </td>
+                        <td style="width: 18%; vertical-align: top; text-align: right; padding: 0 2.2mm 0 0;">
+                            <div class="t-lbl" style="text-align: right;">Owner Serial</div>
+                            <div style="text-align: right; margin-top: 0.2mm;"><span class="circled-serial">{{ $data['ownerCount'] ?? '1' }}</span></div>
+                        </td>
+                    </tr>
+                </table>
 
-                        <!-- Card Body -->
-                        <div style="padding: 1.2mm 1.8mm 0 1.8mm; position: relative; z-index: 2;">
-                            <!-- Microchip & Reg Number Row -->
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 1mm;">
+                <!-- Chassis No -->
+                <div class="t-lbl">Chassis No</div>
+                <div class="t-val" style="font-family: monospace; font-size: 5.2pt;">{{ $data['chassis'] ?? 'N/A' }}</div>
+
+                <!-- Engine/Motor No -->
+                <div class="t-lbl">Engine/Motor No</div>
+                <div class="t-val" style="font-family: monospace; font-size: 5.2pt;">{{ $data['engine'] ?? 'N/A' }}</div>
+
+                <!-- Owner Name -->
+                <div class="t-lbl">Owner Name</div>
+                <div class="t-val" style="font-size: 5.4pt; color: #0c4a6e;">{{ Str::limit($data['owner'] ?? 'N/A', 36) }}</div>
+
+                <!-- Son/Wife/Daughter of -->
+                <div class="t-lbl">Son/Wife/Daughter of (In case of Individual Owner)</div>
+                <div class="t-val">{{ Str::limit($data['ownerFatherName'] ?? 'N/A', 36) }}</div>
+
+                <!-- Ownership -->
+                <div class="t-lbl">Ownership</div>
+                <div class="t-val">{{ $data['ownership'] ?? 'INDIVIDUAL' }}</div>
+
+                <!-- Address -->
+                <div class="t-lbl">Address</div>
+                <div class="t-val" style="font-size: 4.4pt; line-height: 1.05; margin-bottom: 0.35mm;">{{ Str::limit($data['presentAddress'] ?? 'N/A', 75) }}</div>
+
+                <!-- Fuel & Emission Norms -->
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 35%; vertical-align: top; padding: 0;">
+                            <div class="t-lbl">Fuel</div>
+                            <div class="t-val" style="margin: 0;">{{ $data['type'] ?? 'N/A' }}</div>
+                        </td>
+                        <td style="vertical-align: top; padding: 0;">
+                            <div class="t-lbl">Emission Norms</div>
+                            <div class="t-val" style="margin: 0;">{{ $data['normsType'] ?? 'N/A' }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Rotated Card Issue Date on Right Edge -->
+            <div class="rot-text">Card Issue Date {{ now()->format('d-m-Y') }}</div>
+        </div>
+
+        <!-- GAP / CUT GUIDE BETWEEN FRONT & BACK -->
+        <div style="height: 3mm; line-height: 3mm; text-align: center; font-size: 4.8pt; color: #94a3b8;">
+            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        </div>
+
+        <!-- BACK SIDE -->
+        <div class="side-label">&bull; BACK SIDE &bull; (CR80 SMART CARD)</div>
+        <div class="card-box">
+            <!-- Header Bar -->
+            <div class="header-bar-back">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <!-- Badges on Left -->
+                        <td style="width: 10mm; vertical-align: middle; padding: 0;">
+                            <span class="badge-nt">{{ $data['isTransport'] ?? 'NT' }}</span><span class="badge-st">{{ $data['stateCode'] ?? 'IND' }}</span>
+                        </td>
+                        <!-- Vehicle Class -->
+                        <td style="text-align: center; vertical-align: middle; padding: 0 1mm;">
+                            <div style="font-size: 5.4pt; font-weight: 900; color: #0f172a; text-transform: uppercase;">
+                                Vehicle Class: {{ strtoupper($data['vehicleClass'] ?? 'MOTOR CAR (LMV)') }}
+                            </div>
+                        </td>
+                        <td style="width: 10mm; padding: 0;"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Back Card Body -->
+            <div style="padding: 0.8mm 3.2mm 0.4mm 2mm;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <!-- LEFT COLUMN: Reg No, QR Code, Mfg Month-Year, Cylinders -->
+                        <td style="width: 32%; vertical-align: top; padding: 0 1mm 0 0;">
+                            <div class="t-lbl">Regn. Number</div>
+                            <div class="t-val" style="font-family: monospace; font-size: 5.6pt; color: #000000; margin-bottom: 0.4mm;">{{ $data['regNo'] ?? 'N/A' }}</div>
+
+                            <!-- Large Density QR Code -->
+                            @if(!empty($data['qrCodeSvg']))
+                                <img src="{{ $data['qrCodeSvg'] }}" width="48" height="48" style="display: block; border: 0.5px solid #cbd5e1; margin-bottom: 0.4mm;" />
+                            @else
+                                <div style="width: 48px; height: 48px; border: 0.5px solid #cbd5e1; text-align: center; font-size: 4pt; color: #94a3b8; padding-top: 16px;">QR CODE</div>
+                            @endif
+
+                            <div class="t-lbl">Month-Year of Mfg.</div>
+                            <div class="t-val" style="margin-bottom: 0.3mm;">{{ $data['mfgMonthYear'] ?? '01-2021' }}</div>
+
+                            <div class="t-lbl">No. of Cylinders &nbsp; <span style="font-weight: bold; color: #0f172a;">{{ $data['cylinders'] ?? '4' }}</span></div>
+                        </td>
+
+                        <!-- RIGHT COLUMN: Maker, Model, Colour, Seating, Weight, Engine specs, Financier, Signature -->
+                        <td style="width: 68%; vertical-align: top; padding: 0 0 0 1.2mm; border-left: 0.5px solid #cbd5e1;">
+                            <div class="t-lbl">Maker's Name:</div>
+                            <div class="t-val">{{ Str::limit($data['vehicleManufacturerName'] ?? 'N/A', 32) }}</div>
+
+                            <div class="t-lbl">Model Name:</div>
+                            <div class="t-val">{{ Str::limit($data['model'] ?? 'N/A', 32) }}</div>
+
+                            <!-- Colour & Body Type Row -->
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 0.25mm;">
                                 <tr>
-                                    <td style="width: 17mm; vertical-align: middle; padding: 0;">
-                                        <!-- Realistic Base64 SVG Smart Card Chip -->
-                                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjgiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA2OCA1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iNjYiIGhlaWdodD0iNDgiIHJ4PSI2IiByeT0iNiIgZmlsbD0iI2ZhY2MxNSIgc3Ryb2tlPSIjOTI0MDBlIiBzdHJva2Utd2lkdGg9IjIiIC8+PGxpbmUgeDE9IjEiIHkxPSIxNyIgeDI9IjI0IiB5Mj0iMTciIHN0cm9rZT0iIzkyNDAwZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIC8+PGxpbmUgeDE9IjEiIHkxPSIzMyIgeDI9IjI0IiB5Mj0iMzMiIHN0cm9rZT0iIzkyNDAwZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIC8+PGxpbmUgeDE9IjQ0IiB5MT0iMTciIHgyPSI2NyIgeTI9IjE3IiBzdHJva2U9IiM5MjQwMGUiIHN0cm9rZS13aWR0aD0iMS41IiAvPjxsaW5lIHgxPSI0NCIgeTE9IjMzIiB4Mj0iNjciIHkyPSIzMyIgc3Ryb2tlPSIjOTI0MDBlIiBzdHJva2Utd2lkdGg9IjEuNSIgLz48bGluZSB4MT0iMjQiIHkxPSIxIiB4Mj0iMjQiIHkyPSI0OSIgc3Ryb2tlPSIjOTI0MDBlIiBzdHJva2Utd2lkdGg9IjEuNSIgLz48bGluZSB4MT0iNDQiIHkxPSIxIiB4Mj0iNDQiIHkyPSI0OSIgc3Ryb2tlPSIjOTI0MDBlIiBzdHJva2Utd2lkdGg9IjEuNSIgLz48cmVjdCB4PSIyNyIgeTE9IjE3IiB3aWR0aD0iMTQiIGhlaWdodD0iMTYiIHJ4PSIyIiByeT0iMiIgZmlsbD0iI2ZlZjA4YSIgc3Ryb2tlPSIjOTI0MDBlIiBzdHJva2Utd2lkdGg9IjEuNSIgLz48L3N2Zz4=" width="54" height="38" style="display: block; border-radius: 1.5mm;" />
+                                    <td style="width: 50%; vertical-align: top; padding: 0;">
+                                        <div class="t-lbl">Colour:</div>
+                                        <div class="t-val" style="margin: 0;">{{ Str::limit($data['vehicleColour'] ?? 'N/A', 15) }}</div>
                                     </td>
-                                    <td style="vertical-align: middle; padding-left: 1.8mm;">
-                                        <div class="reg-badge">
-                                            <div style="font-size: 4.2pt; color: #475569; font-weight: bold; text-transform: uppercase; margin-bottom: 0.3px;">
-                                                REGISTRATION NO.
-                                                <span class="status-badge">{{ $data['status'] ?? 'ACTIVE' }}</span>
+                                    <td style="width: 50%; vertical-align: top; padding: 0;">
+                                        <div class="t-lbl">/ Body Type:</div>
+                                        <div class="t-val" style="margin: 0;">/ {{ Str::limit($data['bodyType'] ?? 'N/A', 15) }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="t-lbl">Seating(in all) Capacity</div>
+                            <div class="t-val">{{ $data['vehicleSeatCapacity'] ?? '5' }}</div>
+
+                            <div class="t-lbl">Unladen Weight (Kg)</div>
+                            <div class="t-val">{{ $data['unladenWeight'] ?? 'N/A' }}</div>
+
+                            <!-- Cubic Cap / Horse Power / Wheelbase -->
+                            <div class="t-lbl">Cubic Cap. / Horse Power (BHP/Kw) / Wheel Base(mm)</div>
+                            <div class="t-val">
+                                {{ $data['vehicleCubicCapacity'] ?? 'N/A' }} &nbsp; / {{ $data['horsePower'] ?? 'N/A' }} &nbsp; / {{ $data['wheelbase'] ?? 'N/A' }}
+                            </div>
+
+                            <div class="t-lbl">Financier:</div>
+                            <div class="t-val">{{ Str::limit($data['rcFinancer'] ?? 'NONE', 28) }}</div>
+
+                            <!-- Authority Signature & Stamp -->
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 0.2mm;">
+                                <tr>
+                                    <td style="text-align: right; padding: 0;">
+                                        <div style="display: inline-block; text-align: center;">
+                                            <div style="font-family: cursive, sans-serif; font-size: 5pt; color: #1e3a8a; border-bottom: 0.6px solid #0f172a; padding: 0 3mm;">
+                                                <em>Signature</em>
                                             </div>
-                                            <div class="reg-number">{{ $data['regNo'] ?? 'N/A' }}</div>
+                                            <div style="font-size: 3.6pt; color: #475569; margin-top: 0.1mm;">Registration Authority</div>
+                                            <div style="font-size: 3.9pt; font-weight: bold; color: #0f172a;">{{ Str::limit($data['regAuthority'] ?? 'N/A', 40) }}</div>
                                         </div>
                                     </td>
                                 </tr>
                             </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-                            <!-- Owner & Vehicle Info in 2 mini columns -->
-                            <table style="width: 100%; border-collapse: collapse; font-size: 4.9pt; line-height: 1.15;">
-                                <tr>
-                                    <!-- Left Sub-Column: Owner particulars -->
-                                    <td style="width: 53%; vertical-align: top; padding: 0 1mm 0 0;">
-                                        <div><span class="lbl">Owner:</span> <span class="val" style="font-size: 5.4pt; color: #0c4a6e;">{{ Str::limit($data['owner'] ?? 'N/A', 23) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">S/W/D of:</span> <span class="val">{{ Str::limit($data['ownerFatherName'] ?? 'N/A', 22) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Owner Serial:</span> <span class="val">{{ $data['ownerCount'] ?? '1' }}</span> &bull; <span class="lbl">Fuel:</span> <span class="val">{{ $data['type'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Address:</span> <span class="val" style="font-size: 4.5pt;">{{ Str::limit($data['presentAddress'] ?? 'N/A', 56) }}</span></div>
-                                    </td>
-                                    <!-- Right Sub-Column: Vehicle specs -->
-                                    <td style="width: 47%; vertical-align: top; padding: 0 0 0 1mm; border-left: 0.5px solid #e2e8f0;">
-                                        <div><span class="lbl">Class:</span> <span class="val">{{ Str::limit($data['vehicleClass'] ?? 'N/A', 19) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Maker/Model:</span> <span class="val">{{ Str::limit(($data['vehicleManufacturerName'] ?? '') . ' ' . ($data['model'] ?? ''), 21) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Reg Date:</span> <span class="val">{{ $data['regDate'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">RC Valid:</span> <span class="val" style="color: #15803d;">{{ $data['rcExpiryDate'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Chassis:</span> <span class="val" style="font-family: monospace; font-size: 4.7pt;">{{ Str::limit($data['chassis'] ?? 'N/A', 17) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Engine:</span> <span class="val" style="font-family: monospace; font-size: 4.7pt;">{{ Str::limit($data['engine'] ?? 'N/A', 15) }}</span></div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+            <!-- Rotated Form 23A on Right Edge -->
+            <div class="rot-text-back">Form 23A</div>
+        </div>
 
-                        <!-- Footer -->
-                        <div class="card-footer">
-                            Certificate of Registration &bull; Motor Vehicles Act 1988 &bull; Rule 48
-                        </div>
-                    </div>
-                </div>
-            </td>
+    </div>
 
-            <!-- BACK SIDE -->
-            <td class="pvc-col">
-                <div class="card-label">&#9986; BACK SIDE &bull; CR80 PVC (85.6 mm &times; 54.0 mm)</div>
-                <div class="card-cut-wrapper">
-                    <div class="pvc-card">
-                        <!-- Subtle Watermark -->
-                        <div class="card-watermark">INDIA</div>
-
-                        <!-- Tricolor Ribbon -->
-                        <div class="tricolor-bar">
-                            <span class="tricolor-orange"></span><span class="tricolor-white"></span><span class="tricolor-green"></span>
-                        </div>
-
-                        <!-- Header -->
-                        <div class="card-header">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="text-align: left; padding: 0;">
-                                        <div class="title-gov" style="font-size: 6.2pt;">VEHICLE TECHNICAL PARTICULARS</div>
-                                    </td>
-                                    <td style="text-align: right; padding: 0;">
-                                        <div style="font-size: 5.5pt; font-weight: bold; color: #fde047;">{{ $data['regNo'] ?? '' }}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Card Body -->
-                        <div style="padding: 1.1mm 1.8mm 0 1.8mm; position: relative; z-index: 2;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 4.9pt; line-height: 1.15;">
-                                <tr>
-                                    <!-- Left Column: Technical Specifications -->
-                                    <td style="width: 50%; vertical-align: top; padding-right: 1mm;">
-                                        <div><span class="lbl">Seating Cap:</span> <span class="val">{{ $data['vehicleSeatCapacity'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Cubic Cap:</span> <span class="val">{{ $data['vehicleCubicCapacity'] ?? 'N/A' }} CC</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Unladen Wt:</span> <span class="val">{{ $data['unladenWeight'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Gross Wt:</span> <span class="val">{{ $data['grossVehicleWeight'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Wheelbase:</span> <span class="val">{{ $data['wheelbase'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Norms:</span> <span class="val">{{ Str::limit($data['normsType'] ?? 'N/A', 14) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Color:</span> <span class="val">{{ Str::limit($data['vehicleColour'] ?? 'N/A', 14) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Tax Valid:</span> <span class="val">{{ $data['vehicleTaxUpto'] ?? 'N/A' }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">PUCC Valid:</span> <span class="val">{{ $data['puccUpto'] ?? 'N/A' }}</span></div>
-                                    </td>
-
-                                    <!-- Right Column: Financier, Insurance & QR / Authority -->
-                                    <td style="width: 50%; vertical-align: top; padding-left: 1mm; border-left: 0.5px solid #e2e8f0;">
-                                        <div><span class="lbl">HPA (Financier):</span> <span class="val">{{ Str::limit($data['rcFinancer'] ?? 'NONE', 18) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Insurance Co:</span> <span class="val">{{ Str::limit($data['vehicleInsuranceCompanyName'] ?? 'N/A', 18) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Policy No:</span> <span class="val">{{ Str::limit($data['vehicleInsurancePolicyNumber'] ?? 'N/A', 18) }}</span></div>
-                                        <div style="margin-top: 0.3mm;"><span class="lbl">Ins. Valid:</span> <span class="val">{{ $data['vehicleInsuranceUpto'] ?? 'N/A' }}</span></div>
-
-                                        <!-- QR Code & Issuing Authority Box -->
-                                        <table style="width: 100%; border-collapse: collapse; margin-top: 0.6mm;">
-                                            <tr>
-                                                <td style="width: 16mm; vertical-align: top; padding: 0;">
-                                                    @if(!empty($data['qrCodeSvg']))
-                                                        <img src="{{ $data['qrCodeSvg'] }}" width="48" height="48" style="border: 0.5px solid #cbd5e1; border-radius: 1mm; display: block;" />
-                                                    @else
-                                                        <div style="width: 48px; height: 48px; border: 0.5px solid #cbd5e1; text-align: center; font-size: 4pt; color: #94a3b8; padding-top: 15px;">QR CODE</div>
-                                                    @endif
-                                                </td>
-                                                <td style="vertical-align: top; padding-left: 1.2mm;">
-                                                    <div style="font-size: 4.3pt; color: #475569;"><span class="lbl">RTO:</span> <span class="val">{{ Str::limit($data['regAuthority'] ?? 'N/A', 22) }}</span></div>
-                                                    <div style="margin-top: 1mm; border: 0.6px dashed #1e40af; border-radius: 1mm; padding: 0.6mm; text-align: center; background: #eff6ff;">
-                                                        <div style="font-size: 3.6pt; font-weight: bold; color: #1e40af; text-transform: uppercase;">REGISTERING AUTHORITY</div>
-                                                        <div style="font-size: 3.2pt; color: #16a34a; font-weight: bold;">DIGITALLY VERIFIED</div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="card-footer">
-                            Keep this Smart Card in the vehicle. If found, please return to nearest RTO.
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
-
-    <!-- Scissors / Cutting Guide -->
+    <!-- Scissor Cut / Fold Guide -->
     <div class="cut-guide-container">
         <div class="cut-line"></div>
-        <div class="cut-badge">&#9986; CUT HERE FOR PVC SMART CARD PRINTING (85.6 mm &times; 54.0 mm) &#9986;</div>
+        <div class="cut-badge">&bull; &bull; &bull; CUT HERE FOR PVC SMART CARD (85.6 mm &times; 54.0 mm) &bull; FOLD IN MIDDLE &bull; &bull; &bull;</div>
     </div>
 
-    <!-- PVC Print Instruction Box -->
+    <!-- Instructions Box -->
     <div class="instruction-box">
-        <strong>PVC Print Instructions:</strong> Set printer scaling to <strong>100% (Actual Size / Do Not Fit)</strong>. Cut along the card borders for standard CR80 thermal PVC card printer, PVC card tray (Epson/Canon), or laminating pouches.
+        <strong>PVC Print Instructions:</strong> Select <strong>100% Scale (Actual Size / Do Not Scale)</strong> in your printer settings. Cut along card borders for direct PVC card tray printing or fold back-to-back for thermal pouch lamination.
     </div>
 
-    <!-- Official Vehicle Registration Particulars Sheet (Full Record) -->
+    <!-- Official Record Summary Table (Bottom of A4 sheet) -->
     <div class="summary-header">
-        Vehicle Registration Details &bull; Official Record Summary
+        Vehicle Registration Details &bull; Complete Public Record
     </div>
 
     <table class="details-table">
         <tr>
             <th>Registration Number</th>
-            <td><strong style="color: #0c4a6e; font-size: 7.5pt;">{{ $data['regNo'] ?? 'N/A' }}</strong></td>
+            <td><strong style="color: #0c4a6e; font-size: 7pt;">{{ $data['regNo'] ?? 'N/A' }}</strong></td>
             <th>Registration Authority</th>
             <td>{{ $data['regAuthority'] ?? 'N/A' }}</td>
         </tr>
@@ -549,11 +571,9 @@
         </tr>
     </table>
 
-    <!-- Official Portal Footer -->
     <div class="official-footer">
-        Generated on: {{ now()->format('d M Y, h:i A') }} &bull; This is a computer generated document based on official Parivahan/State Transport Department records &bull; Provided by CSP Jaankari Portal
+        Generated on: {{ now()->format('d M Y, h:i A') }} &bull; Official Computer Generated Parivahan e-RC Record &bull; Provided by CSP Jaankari Portal
     </div>
-
 </body>
 </html>
 
