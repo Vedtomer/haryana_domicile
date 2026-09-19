@@ -9,6 +9,7 @@ import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
 import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
 import ReferralFloatingButton from '../Components/ReferralFloatingButton';
+import ThemeToggle from '../Components/ThemeToggle';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash } = usePage().props;
@@ -70,7 +71,7 @@ export default function AdminLayout({ header, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex font-sans text-slate-800">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-200">
             <Toast />
             
             {/* Sidebar — hidden on the dashboard itself, and hidden for regular users */}
@@ -151,7 +152,7 @@ export default function AdminLayout({ header, children }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <TopDisclaimerTicker />
-                <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative">
+                <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-xs h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative transition-colors duration-200">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">
                         {showSidebar && (
@@ -184,14 +185,11 @@ export default function AdminLayout({ header, children }) {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     
-
-
                     {/* Coin balance + Buy Coins — only for user type */}
                     {auth?.user?.type === 'user' && (
                         <>
-
                             <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
                                 🪙 {auth.user.coins}
                             </span>
@@ -216,8 +214,12 @@ export default function AdminLayout({ header, children }) {
                          </Link>
                      )}
 
+                     {/* Dark Mode Toggle */}
+                     <ThemeToggle variant="icon" />
+
                      <NotificationBell />
 
+                     {/* Profile Dropdown */}
                      <div className="relative z-50">
                          <button
                              onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -289,20 +291,32 @@ export default function AdminLayout({ header, children }) {
                                     PDF Coordinates
                                 </Link>
                             )}
-                            <div className="border-t border-gray-100 my-1"></div>
+                            <div className="border-t border-gray-100 dark:border-slate-800 my-1"></div>
                             <Link
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                                className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                             >
                                 Sign Out
                             </Link>
                         </div>
                     </div>
+
+                    {/* Direct Logout Button on Top Header Bar */}
+                    <Link
+                        href="/logout"
+                        method="post"
+                        as="button"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-xs transition-all cursor-pointer select-none"
+                        title="Logout / Sign Out"
+                    >
+                        <span className="material-symbols-outlined text-[17px]">logout</span>
+                        <span className="hidden sm:inline">Logout</span>
+                    </Link>
                     </div>
                 </header>
-                <main className="flex-1 p-8 overflow-y-auto bg-gray-50 text-slate-800">
+                <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
                     {showSpellingWarning && (
                         <div className="mb-6 max-w-6xl mx-auto bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
                             <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">

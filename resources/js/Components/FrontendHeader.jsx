@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import FooterParticles from './FooterParticles';
 import WaveCanvas from './WaveCanvas';
 import TopDisclaimerTicker from './TopDisclaimerTicker';
+import ThemeToggle from './ThemeToggle';
 
 const navLinks = [
     { label: 'HOME', href: '/' },
@@ -12,6 +13,8 @@ const navLinks = [
 ];
 
 export default function FrontendHeader() {
+    const { auth } = usePage().props;
+
     return (
         <header
             className="fixed top-0 left-0 w-full z-50 overflow-hidden"
@@ -34,7 +37,7 @@ export default function FrontendHeader() {
             <TopDisclaimerTicker />
 
             {/* Main nav row */}
-            <div className="relative flex justify-center items-center px-6 py-1.5">
+            <div className="relative flex justify-center items-center px-4 sm:px-6 py-1.5">
                 <div className="flex w-full max-w-[1280px] justify-between items-center">
 
                     {/* Logo */}
@@ -59,88 +62,144 @@ export default function FrontendHeader() {
                         />
                     </Link>
 
-                    {/* Nav Links */}
-                    <div className="hidden md:flex items-center gap-1">
-                        {navLinks.map(({ label, href }) => (
-                            <Link
-                                key={label}
-                                href={href}
-                                style={{
-                                    fontSize: 13, fontWeight: 600, color: '#e0eeff',
-                                    padding: '8px 14px', borderRadius: 6,
-                                    letterSpacing: '0.04em',
-                                    transition: 'all 0.2s',
-                                    textDecoration: 'none',
-                                    position: 'relative',
-                                }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.color = '#fff';
-                                    e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
-                                    e.currentTarget.style.transform = 'translateY(-1px)';
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.color = '#e0eeff';
-                                    e.currentTarget.style.background = 'transparent';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                }}
-                            >
-                                {label}
-                            </Link>
-                        ))}
+                    {/* Nav Links & Action Buttons */}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                        {/* Desktop Nav Links */}
+                        <div className="hidden md:flex items-center gap-1">
+                            {navLinks.map(({ label, href }) => (
+                                <Link
+                                    key={label}
+                                    href={href}
+                                    style={{
+                                        fontSize: 13, fontWeight: 600, color: '#e0eeff',
+                                        padding: '8px 14px', borderRadius: 6,
+                                        letterSpacing: '0.04em',
+                                        transition: 'all 0.2s',
+                                        textDecoration: 'none',
+                                        position: 'relative',
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.color = '#e0eeff';
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    {label}
+                                </Link>
+                            ))}
+                        </div>
 
-                        {/* Login link */}
-                        <Link
-                            href="/login"
-                            style={{
-                                fontSize: 13, fontWeight: 600, color: '#e0eeff',
-                                padding: '8px 14px', borderRadius: 6,
-                                letterSpacing: '0.04em',
-                                transition: 'all 0.2s',
-                                textDecoration: 'none',
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.color = '#fff';
-                                e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.color = '#e0eeff';
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                        >
-                            LOGIN
-                        </Link>
+                        {/* Dark Mode Toggle */}
+                        <ThemeToggle 
+                            variant="icon" 
+                            className="border-blue-400/40 bg-white/10 dark:bg-slate-800/80 text-white hover:bg-white/20 !w-8 !h-8 sm:!w-9 sm:!h-9" 
+                        />
 
-                        {/* Register CTA button */}
-                        <Link
-                            href="/register"
-                            style={{
-                                fontSize: 13, fontWeight: 700, color: '#0a1628',
-                                background: 'linear-gradient(135deg, #93c5fd, #60a5fa)',
-                                padding: '8px 20px', borderRadius: 50,
-                                letterSpacing: '0.03em',
-                                transition: 'all 0.2s',
-                                textDecoration: 'none',
-                                marginLeft: 8,
-                                boxShadow: '0 2px 10px rgba(96,165,250,0.4)',
-                                whiteSpace: 'nowrap',
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
-                                e.currentTarget.style.color = '#fff';
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(96,165,250,0.55)';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.background = 'linear-gradient(135deg, #93c5fd, #60a5fa)';
-                                e.currentTarget.style.color = '#0a1628';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 10px rgba(96,165,250,0.4)';
-                            }}
-                        >
-                            REGISTER NOW ↗
-                        </Link>
+                        {auth?.user ? (
+                            <>
+                                {/* Dashboard Link */}
+                                <Link
+                                    href="/dashboard"
+                                    style={{
+                                        fontSize: 12, fontWeight: 700, color: '#ffffff',
+                                        background: 'linear-gradient(135deg, #2563eb, #4f46e5)',
+                                        padding: '7px 14px', borderRadius: 8,
+                                        letterSpacing: '0.03em',
+                                        transition: 'all 0.2s',
+                                        textDecoration: 'none',
+                                        whiteSpace: 'nowrap',
+                                        boxShadow: '0 2px 8px rgba(37,99,235,0.4)',
+                                    }}
+                                    className="flex items-center gap-1 hover:brightness-110"
+                                >
+                                    <span className="material-symbols-outlined text-[15px]">dashboard</span>
+                                    <span>DASHBOARD</span>
+                                </Link>
+
+                                {/* Direct Logout Button on Top Header */}
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    style={{
+                                        fontSize: 12, fontWeight: 700, color: '#fca5a5',
+                                        background: 'rgba(239, 68, 68, 0.15)',
+                                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                                        padding: '6px 12px', borderRadius: 8,
+                                        letterSpacing: '0.03em',
+                                        transition: 'all 0.2s',
+                                        whiteSpace: 'nowrap',
+                                        cursor: 'pointer',
+                                    }}
+                                    className="flex items-center gap-1 hover:bg-red-600 hover:text-white"
+                                    title="Logout / Sign Out"
+                                >
+                                    <span className="material-symbols-outlined text-[15px]">logout</span>
+                                    <span className="hidden sm:inline">LOGOUT</span>
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                {/* Login link */}
+                                <Link
+                                    href="/login"
+                                    style={{
+                                        fontSize: 13, fontWeight: 600, color: '#e0eeff',
+                                        padding: '7px 12px', borderRadius: 6,
+                                        letterSpacing: '0.04em',
+                                        transition: 'all 0.2s',
+                                        textDecoration: 'none',
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.background = 'rgba(96,165,250,0.15)';
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.color = '#e0eeff';
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    LOGIN
+                                </Link>
+
+                                {/* Register CTA button */}
+                                <Link
+                                    href="/register"
+                                    style={{
+                                        fontSize: 12, fontWeight: 700, color: '#0a1628',
+                                        background: 'linear-gradient(135deg, #93c5fd, #60a5fa)',
+                                        padding: '7px 16px', borderRadius: 50,
+                                        letterSpacing: '0.03em',
+                                        transition: 'all 0.2s',
+                                        textDecoration: 'none',
+                                        boxShadow: '0 2px 10px rgba(96,165,250,0.4)',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                    className="hidden sm:inline-block"
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(96,165,250,0.55)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'linear-gradient(135deg, #93c5fd, #60a5fa)';
+                                        e.currentTarget.style.color = '#0a1628';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 2px 10px rgba(96,165,250,0.4)';
+                                    }}
+                                >
+                                    REGISTER NOW ↗
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

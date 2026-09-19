@@ -22,7 +22,7 @@ export default function FrontendLayout({ children }) {
     }, [auth?.user?.id]);
 
     return (
-        <div className="min-h-screen flex flex-col font-body-md text-on-background bg-background selection:bg-primary-container selection:text-on-primary-container">
+        <div className="min-h-screen flex flex-col font-body-md text-on-background bg-background dark:bg-slate-950 dark:text-slate-100 selection:bg-primary-container selection:text-on-primary-container transition-colors duration-200">
             <Toast />
             <FrontendHeader />
             <main className="flex-grow pt-[60px]">
