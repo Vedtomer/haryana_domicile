@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm, Head, Link, usePage } from '@inertiajs/react';
 import FrontendLayout from '../../Layouts/FrontendLayout';
 import FooterParticles from '../../Components/FooterParticles';
@@ -16,6 +16,8 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
     const [showPassword, setShowPassword] = useState(false);
     const [captchaSvg, setCaptchaSvg] = useState(initialCaptchaSvg);
     const [refreshingCaptcha, setRefreshingCaptcha] = useState(false);
+    const [autoSubmitting, setAutoSubmitting] = useState(false);
+    const autoSubmitTimerRef = useRef(null);
 
     const isCaptchaComplete = data.captcha?.trim().length === 5;
 
@@ -43,13 +45,57 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
     }, []);
 
     const submit = (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
+        if (autoSubmitTimerRef.current) {
+            clearTimeout(autoSubmitTimerRef.current);
+            autoSubmitTimerRef.current = null;
+        }
+        if (processing) return;
+        setAutoSubmitting(true);
         post('/login', {
             onError: () => {
+                setAutoSubmitting(false);
                 handleRefreshCaptcha();
+            },
+            onFinish: () => {
+                setAutoSubmitting(false);
             },
         });
     };
+
+    // Auto-login automatically when 5-digit captcha is typed and credentials are filled
+    useEffect(() => {
+        const cleanCaptcha = data.captcha?.trim() || '';
+        if (
+            cleanCaptcha.length === 5 &&
+            data.login?.trim() &&
+            data.password &&
+            !processing &&
+            !autoSubmitting
+        ) {
+            setAutoSubmitting(true);
+            if (autoSubmitTimerRef.current) {
+                clearTimeout(autoSubmitTimerRef.current);
+            }
+            autoSubmitTimerRef.current = setTimeout(() => {
+                post('/login', {
+                    onError: () => {
+                        setAutoSubmitting(false);
+                        handleRefreshCaptcha();
+                    },
+                    onFinish: () => {
+                        setAutoSubmitting(false);
+                    },
+                });
+            }, 300);
+        }
+
+        return () => {
+            if (autoSubmitTimerRef.current) {
+                clearTimeout(autoSubmitTimerRef.current);
+            }
+        };
+    }, [data.captcha]);
 
     return (
         <FrontendLayout>
@@ -149,7 +195,7 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                             )}
                             
                             {/* Full Frosted Glass Loading Overlay during Processing */}
-                            {processing && (
+                            {(processing || autoSubmitting) && (
                                 <div className="absolute inset-0 z-30 backdrop-blur-md bg-slate-950/60 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
                                     <div 
                                         className="p-6 rounded-2xl border border-white/40 shadow-2xl flex flex-col items-center gap-4 text-center max-w-[280px]"
@@ -166,8 +212,12 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                             <span className="material-symbols-outlined text-white text-2xl animate-pulse">lock_open</span>
                                         </div>
                                         <div>
-                                            <h4 className="text-white text-base font-bold tracking-wide drop-shadow-sm">Verifying & Signing In</h4>
-                                            <p className="text-blue-100 text-xs mt-1 drop-shadow-sm">Checking captcha & credentials...</p>
+                                            <h4 className="text-white text-base font-bold tracking-wide drop-shadow-sm">
+                                                {autoSubmitting ? 'Auto Signing In' : 'Verifying & Signing In'}
+                                            </h4>
+                                            <p className="text-blue-100 text-xs mt-1 drop-shadow-sm">
+                                                {autoSubmitting ? 'Captcha verified! Auto-logging in...' : 'Checking captcha & credentials...'}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -237,9 +287,13 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                         <label className="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" htmlFor="captcha">
                                             <span>Security Captcha</span>
                                             {isCaptchaComplete && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-sm shadow-emerald-500/40 animate-in fade-in zoom-in duration-200">
-                                                    <span className="material-symbols-outlined text-[12px]">verified</span>
-                                                    <span>Verified</span>
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                                    autoSubmitting
+                                                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/40 animate-pulse'
+                                                        : 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/40 animate-in fade-in zoom-in duration-200'
+                                                }`}>
+                                                    <span className="material-symbols-outlined text-[12px]">{autoSubmitting ? 'sync' : 'verified'}</span>
+                                                    <span>{autoSubmitting ? 'Auto Logging In...' : 'Verified'}</span>
                                                 </span>
                                             )}
                                         </label>
@@ -287,11 +341,18 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                                 autoComplete="off"
                                                 required
                                             />
-                                            {isCaptchaComplete && (
+                                            {autoSubmitting ? (
+                                                <div className="absolute right-2.5 flex items-center pointer-events-none text-blue-600">
+                                                    <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                </div>
+                                            ) : isCaptchaComplete ? (
                                                 <div className="absolute right-2.5 flex items-center pointer-events-none text-emerald-600 animate-in zoom-in duration-200">
                                                     <span className="material-symbols-outlined text-xl">check_circle</span>
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </div>
 
                                         {/* Captcha SVG Preview */}
@@ -338,7 +399,7 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                 {/* Glassy Animated Login Button */}
                                 <button 
                                     type="submit"
-                                    disabled={processing}
+                                    disabled={processing || autoSubmitting}
                                     className={`relative w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 mt-4 overflow-hidden disabled:opacity-50 select-none cursor-pointer ${
                                         isCaptchaComplete
                                             ? 'text-white border border-white/70 shadow-2xl glass-btn-active'
@@ -365,7 +426,7 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                     )}
 
                                     {/* Bright Glass Reflection Beam Sweep */}
-                                    {isCaptchaComplete && !processing && (
+                                    {isCaptchaComplete && !processing && !autoSubmitting && (
                                         <span className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
                                             <span 
                                                 className="absolute top-0 bottom-0 pointer-events-none glass-beam-anim"
@@ -377,13 +438,13 @@ export default function Login({ captchaSvg: initialCaptchaSvg = '' }) {
                                         </span>
                                     )}
 
-                                    {processing ? (
+                                    {processing || autoSubmitting ? (
                                         <span className="flex items-center justify-center gap-2 relative z-10">
                                             <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            Signing In...
+                                            {autoSubmitting ? 'Auto Signing In...' : 'Signing In...'}
                                         </span>
                                     ) : (
                                         <span className="relative z-10 flex items-center justify-center gap-2">
