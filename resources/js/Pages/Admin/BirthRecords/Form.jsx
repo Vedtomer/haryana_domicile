@@ -217,31 +217,6 @@ export default function BirthRecordFields({ data, setData, errors, processing, o
                 </CardContent>
             </Card>
 
-            {/* Quick Action: Document Merger (Single PDF) */}
-            <Box sx={{ mb: 4, p: 2, bgcolor: '#eff6ff', borderRadius: 2, border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <PictureAsPdfIcon sx={{ color: '#2563eb' }} />
-                    <Box>
-                        <Typography variant="subtitle2" fontWeight="700" color="#1e40af">
-                            Need to Merge Documents (Old Birth Cert + Aadhaar) into a Single PDF?
-                        </Typography>
-                        <Typography variant="caption" color="#3b82f6">
-                            पुराना जन्म प्रमाण पत्र और माता-पिता का आधार कार्ड जोड़कर 1 सिंगल PDF बनाने के लिए मर्जर टूल खोलें।
-                        </Typography>
-                    </Box>
-                </Box>
-                <Button
-                    component={Link}
-                    href="/utilities/birth-certificate"
-                    variant="contained"
-                    size="small"
-                    startIcon={<PictureAsPdfIcon />}
-                    sx={{ textTransform: 'none', bgcolor: '#2563eb', fontWeight: 'bold', '&:hover': { bgcolor: '#1d4ed8' } }}
-                >
-                    Open Document Merger
-                </Button>
-            </Box>
-
             {/* 1. Search Details */}
             <SectionHeader title="Search Details" />
             <Grid container spacing={3} sx={{ mb: 2 }}>
