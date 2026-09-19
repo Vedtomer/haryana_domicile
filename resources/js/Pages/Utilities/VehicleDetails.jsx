@@ -7,10 +7,11 @@ export default function VehicleDetails() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleDownload = (e) => {
+    const handleDownload = async (e) => {
         e.preventDefault();
         
-        if (!regNo.trim()) {
+        const cleanNo = regNo.trim().toUpperCase().replace(/[\s-]/g, '');
+        if (!cleanNo) {
             setError('Please enter a valid vehicle registration number.');
             return;
         }
@@ -18,33 +19,30 @@ export default function VehicleDetails() {
         setError(null);
         setIsLoading(true);
 
-        const url = `/utilities/vehicle-details/download?reg_no=${encodeURIComponent(regNo.trim())}`;
-        
-        // Use an iframe to trigger the download so it doesn't navigate away
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = url;
-        
-        // Handle iframe load event to remove it and stop loading state
-        iframe.onload = () => {
-            setIsLoading(false);
-            // If the iframe loads, it means the server returned a page (like an error back()->with('error'))
-            // If it was a PDF attachment, the browser handles the download and onload might not fire reliably 
-            // depending on the browser, so we also set a timeout.
-            
-            // To properly handle errors from the backend, we can check if the iframe content contains an error,
-            // but due to cross-origin or same-origin policies on attachments, the best approach is to clear loading after a delay.
-        };
+        try {
+            const url = `/utilities/vehicle-details/download?reg_no=${encodeURIComponent(cleanNo)}`;
+            const response = await fetch(url);
 
-        document.body.appendChild(iframe);
-
-        // Fallback to stop loading spinner after 5 seconds assuming download started
-        setTimeout(() => {
-            setIsLoading(false);
-            if (document.body.contains(iframe)) {
-                document.body.removeChild(iframe);
+            const contentType = response.headers.get('content-type') || '';
+            if (response.ok && contentType.includes('application/pdf')) {
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `Vehicle_Details_${cleanNo}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 3000);
+            } else {
+                setError('Vehicle details not found. Please check the Registration Number or your coin balance.');
             }
-        }, 5000);
+        } catch (err) {
+            console.error('Download error:', err);
+            setError('An error occurred while downloading vehicle details. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

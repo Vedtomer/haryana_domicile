@@ -11,6 +11,8 @@ use Filament\Notifications\Notification;
 use App\Models\CoinTransaction;
 use App\Models\ServiceRequest;
 
+use Illuminate\Support\Facades\Http;
+
 class VehicleDetail extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -73,19 +75,61 @@ class VehicleDetail extends Page implements HasForms
                 "Vehicle Detail Request - No: " . $vehicleNumber
             );
 
+            $cleanRegNo = strtoupper(trim(str_replace([' ', '-'], '', $vehicleNumber)));
+            $url = "https://api.paanel.shop/api/gateway.php?key=SamXverma&Policy=" . urlencode($cleanRegNo);
+            $response = Http::connectTimeout(10)->timeout(30)->get($url);
+
+            $adminResponse = null;
+            $status = 'pending';
+            $completedAt = null;
+
+            if ($response->successful()) {
+                $json = $response->json();
+                $rawData = $json['data'] ?? [];
+                $vData = $rawData['meta_data']['signzy_response']['result'] ?? $rawData;
+                $regFound = $vData['regNo'] ?? $vData['vehicleNumber'] ?? $rawData['registration_number'] ?? null;
+
+                if ($regFound) {
+                    $owner = $vData['owner'] ?? ($rawData['customer_details']['full_name'] ?? 'N/A');
+                    $model = $vData['model'] ?? 'N/A';
+                    $mfg = $vData['vehicleManufacturerName'] ?? 'N/A';
+                    $regDate = $vData['regDate'] ?? 'N/A';
+                    $insurance = $vData['vehicleInsuranceCompanyName'] ?? 'N/A';
+                    $policyNo = $vData['vehicleInsurancePolicyNumber'] ?? 'N/A';
+                    $insUpto = $vData['vehicleInsuranceUpto'] ?? 'N/A';
+                    $rcExpiry = $vData['rcExpiryDate'] ?? 'N/A';
+                    $chassis = $vData['chassis'] ?? ($rawData['chassis_number'] ?? 'N/A');
+                    $engine = $vData['engine'] ?? ($rawData['engine_number'] ?? 'N/A');
+                    $rto = $vData['regAuthority'] ?? 'N/A';
+
+                    $adminResponse = "Owner: {$owner}\nMaker/Model: {$mfg} - {$model}\nReg Date: {$regDate}\nRC Expiry: {$rcExpiry}\nRTO: {$rto}\nChassis: {$chassis}\nEngine: {$engine}\nInsurance: {$insurance}\nPolicy: {$policyNo} (Valid: {$insUpto})";
+                    $status = 'completed';
+                    $completedAt = now();
+                }
+            }
+
             ServiceRequest::create([
                 'user_id' => auth()->id(),
                 'service_name' => 'Vehicle Detail',
                 'input_data' => ['vehicle_number' => $vehicleNumber],
-                'status' => 'pending',
-                'completed_at' => null,
+                'status' => $status,
+                'admin_response' => $adminResponse,
+                'completed_at' => $completedAt,
             ]);
 
-            Notification::make()
-                ->title('Request Submitted')
-                ->body('Your Vehicle Detail request has been sent to the admin.')
-                ->success()
-                ->send();
+            if ($status === 'completed') {
+                Notification::make()
+                    ->title('Vehicle Details Retrieved')
+                    ->body('Details found and displayed below in your history.')
+                    ->success()
+                    ->send();
+            } else {
+                Notification::make()
+                    ->title('Request Submitted')
+                    ->body('Your Vehicle Detail request has been recorded.')
+                    ->info()
+                    ->send();
+            }
 
             $this->form->fill();
         } catch (\Exception $e) {
