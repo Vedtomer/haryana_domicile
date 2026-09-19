@@ -1102,31 +1102,56 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
             return back()->with('error', "Insufficient coins. This service requires {$coinCost} coins.");
         }
 
-        $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&DJ=" . urlencode($regNo);
-        $response = \Illuminate\Support\Facades\Http::get($url);
+        $cleanRegNo = strtoupper(trim(str_replace([' ', '-'], '', $regNo)));
+        $url = "https://api.paanel.shop/api/gateway.php?key=SamXverma&Policy=" . urlencode($cleanRegNo);
+        $response = \Illuminate\Support\Facades\Http::connectTimeout(10)->timeout(30)->get($url);
 
-        if ($response->successful() && $response->json('data') && $response->json('data.regNo')) {
-            $data = $response->json('data');
-            
-            // Deduct coins only if successful
-            if (!$user->isAdmin() && !$user->hasRole('super_admin')) {
-                $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle Details Download: ' . strtoupper($regNo));
+        if ($response->successful()) {
+            $json = $response->json();
+            $rawData = $json['data'] ?? [];
+            $data = $rawData['meta_data']['signzy_response']['result'] ?? $rawData;
+
+            $regFound = $data['regNo'] ?? $data['vehicleNumber'] ?? $rawData['registration_number'] ?? $rawData['vehicle_details']['registration_no'] ?? null;
+
+            if ($regFound) {
+                $data['regNo'] = $data['regNo'] ?? $regFound;
+                $data['vehicleClass'] = $data['vehicleClass'] ?? ($data['class'] ?? 'N/A');
+                $data['owner'] = !empty($data['owner']) ? $data['owner'] : ($rawData['customer_details']['full_name'] ?? 'N/A');
+                $data['chassis'] = !empty($data['chassis']) ? $data['chassis'] : ($rawData['chassis_number'] ?? ($rawData['vehicle_details']['chassis_no'] ?? 'N/A'));
+                $data['engine'] = !empty($data['engine']) ? $data['engine'] : ($rawData['engine_number'] ?? ($rawData['vehicle_details']['engine_no'] ?? 'N/A'));
+                $data['presentAddress'] = !empty($data['presentAddress']) ? $data['presentAddress'] : ($rawData['customer_details']['communication_address']['address_line'] ?? 'N/A');
+                $data['vehicleInsurancePolicyNumber'] = !empty($data['vehicleInsurancePolicyNumber']) ? $data['vehicleInsurancePolicyNumber'] : ($rawData['previous_policy_number'] ?? 'N/A');
+                $data['vehicleInsuranceUpto'] = !empty($data['vehicleInsuranceUpto']) ? $data['vehicleInsuranceUpto'] : ($rawData['previous_policy_exp_date'] ?? 'N/A');
+                $data['vehicleInsuranceCompanyName'] = !empty($data['vehicleInsuranceCompanyName']) ? $data['vehicleInsuranceCompanyName'] : ($rawData['previous_insurer_code'] ?? 'N/A');
+                $data['vehicleColour'] = !empty($data['vehicleColour']) ? $data['vehicleColour'] : ($rawData['vehicle_details']['vehicle_color'] ?? 'N/A');
+                $data['regDate'] = !empty($data['regDate']) ? $data['regDate'] : ($rawData['vehicle_details']['registration_date'] ?? 'N/A');
+
+                foreach ($data as $k => $v) {
+                    if (is_string($v) && trim($v) === '') {
+                        $data[$k] = 'N/A';
+                    }
+                }
+
+                // Deduct coins only if successful
+                if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                    $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle Details Download: ' . strtoupper($cleanRegNo));
+                }
+
+                \App\Models\ServiceRequest::create([
+                    'user_id' => $user->id,
+                    'service_id' => $service ? $service->id : null,
+                    'service_name' => $service ? $service->name : 'Vehicle Details (RC)',
+                    'input_data' => ['Vehicle Registration Number' => strtoupper($cleanRegNo)],
+                    'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                    'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
+                    'completed_at' => now(),
+                ]);
+                
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
+                return response($pdf->output())
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="Vehicle_Details_' . strtoupper($cleanRegNo) . '.pdf"');
             }
-
-            \App\Models\ServiceRequest::create([
-                'user_id' => $user->id,
-                'service_id' => $service ? $service->id : null,
-                'service_name' => $service ? $service->name : 'Vehicle Details (RC)',
-                'input_data' => ['Vehicle Registration Number' => strtoupper($regNo)],
-                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-                'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
-                'completed_at' => now(),
-            ]);
-            
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vehicle_details', ['data' => $data]);
-            return response($pdf->output())
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="Vehicle_Details_' . strtoupper($regNo) . '.pdf"');
         }
 
         return back()->with('error', 'Vehicle details not found. Please check the Registration Number.');
