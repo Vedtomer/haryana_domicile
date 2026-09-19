@@ -766,6 +766,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/birth-certificate', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'index'])->name('utilities.birth-certificate');
     Route::post('/utilities/birth-certificate/search', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'search'])->name('utilities.birth-certificate.search');
     Route::post('/utilities/birth-certificate/quick-generate', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'quickGenerate'])->name('utilities.birth-certificate.quick-generate');
+    Route::post('/utilities/birth-certificate/merge-documents', [\App\Http\Controllers\BirthCertificateDownloadController::class, 'mergeDocuments'])->name('utilities.birth-certificate.merge-documents');
     Route::get('/utilities/birth-certificate/download', function (Request $request) {
         $regNo = trim($request->query('registration_no', ''));
         $color = $request->query('color', 'blue');
