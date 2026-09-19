@@ -937,6 +937,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.aadhar-to-info');
 
     Route::post('/utilities/aadhar-to-info/search', [\App\Http\Controllers\AadharToInfoController::class, 'search'])->name('utilities.aadhar-to-info.search');
+    Route::get('/utilities/aadhar-to-info/download-pdf', [\App\Http\Controllers\AadharToInfoController::class, 'downloadPdf'])->name('utilities.aadhar-to-info.download-pdf');
+    Route::post('/utilities/aadhar-to-info/download-pdf', [\App\Http\Controllers\AadharToInfoController::class, 'downloadPdf'])->name('utilities.aadhar-to-info.download-pdf.post');
 
     Route::get('/utilities/pan-details-instant', function () {
         $service = \App\Models\Service::where('slug', 'pan-details-instant')->first();
