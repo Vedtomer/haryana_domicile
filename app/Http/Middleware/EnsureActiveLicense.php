@@ -16,8 +16,14 @@ class EnsureActiveLicense
     {
         $user = $request->user();
 
-        // If no user or user is admin/super_admin, bypass
-        if (!$user || $user->isAdmin() || $user->hasRole('super_admin')) {
+        // If no user, reject
+        if (!$user) {
+            return $next($request);
+        }
+
+        // Admin (whitedevilkiler) cannot use services — only vandnadigigraphics can
+        // super_admin still bypasses for system management
+        if ($user->hasRole('super_admin') && !$user->isAdmin()) {
             return $next($request);
         }
 
@@ -166,10 +172,8 @@ class EnsureActiveLicense
         }
 
         if ($targetService) {
-            $isStaff = (method_exists($user, 'isAdmin') && $user->isAdmin()) 
-                || (method_exists($user, 'isStaff') && $user->isStaff());
             $isPublic = $targetService->visibility === \App\Models\Service::VISIBILITY_PUBLIC;
-            $hasAccess = $isStaff || $isPublic || $targetService->users()->where('user_id', $user->id)->exists();
+            $hasAccess = $isPublic || $targetService->users()->where('user_id', $user->id)->exists();
             if (!$hasAccess) {
                 $errorMsg = "🔒 Service Permission Required: Aapke account par '{$targetService->name}' service activate nahi hai. Kripya Admin se permission activate karwayein.";
 

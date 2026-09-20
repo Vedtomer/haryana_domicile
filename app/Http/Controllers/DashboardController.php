@@ -15,16 +15,17 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
+        // Admin users see ONLY their explicitly assigned services (same as regular users)
         $rawServices = Service::query()
             ->with('users')
-            ->when(!$isAdmin, fn ($q) => $q->visibleTo($user))
+            ->visibleTo($user)
             ->ordered()
             ->get();
 
         // Pre-aggregate ServiceRequest counts in 2 bulk queries instead of 50+ sequential queries
         try {
             $reqByServiceId = ServiceRequest::query()
-                ->when(!$isAdmin, fn ($q) => $q->where('user_id', $user->id))
+                ->where('user_id', $user->id)
                 ->whereNotNull('service_id')
                 ->groupBy('service_id')
                 ->selectRaw('service_id, count(*) as aggregate')
@@ -36,7 +37,7 @@ class DashboardController extends Controller
 
         try {
             $reqByServiceName = ServiceRequest::query()
-                ->when(!$isAdmin, fn ($q) => $q->where('user_id', $user->id))
+                ->where('user_id', $user->id)
                 ->whereNull('service_id')
                 ->whereNotNull('service_name')
                 ->groupBy('service_name')
@@ -75,9 +76,7 @@ class DashboardController extends Controller
             if (class_exists($modelClass)) {
                 try {
                     $q = $modelClass::query();
-                    if (!$isAdmin) {
-                        $q->where('user_id', $user->id);
-                    }
+                    $q->where('user_id', $user->id);
                     $modelCounts[$modelClass] = $q->count();
                 } catch (\Throwable $e) {
                     $modelCounts[$modelClass] = 0;
@@ -115,7 +114,7 @@ class DashboardController extends Controller
                 'kind' => $service->kind,
                 'is_premium' => $service->is_premium,
                 'unlock_cost' => $service->unlock_cost,
-                'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
+                'is_unlocked' => $service->users->contains('id', $user->id),
                 'is_active' => (bool) $service->is_active,
                 'url' => $service->targetUrl(),
                 'count' => $count,
