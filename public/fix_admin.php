@@ -1,43 +1,51 @@
 <?php
 if (($_GET['key'] ?? '') !== 'fix2024') { http_response_code(403); die(); }
 
-// Auto-find project root
 $bases = [
     '/home/u960828787/domains/cspjaankari.in/public_html',
-    __DIR__ . '/..',
+    realpath(__DIR__ . '/..'),
 ];
 $base = '';
 foreach ($bases as $b) {
     if (file_exists("$b/app/Filament/Resources/HaryanaDomicileResource.php")) {
-        $base = realpath($b);
-        break;
+        $base = realpath($b); break;
     }
 }
 
 echo "<pre style='background:#111;color:#eee;padding:20px;font-size:13px;'>";
 echo "Base: $base\n\n";
 
-// Target all Filament resources - remove confirmation from ALL delete actions
 $resources = glob("$base/app/Filament/Resources/*.php");
 
 foreach ($resources as $file) {
     $content = file_get_contents($file);
     $orig = $content;
-    
-    // Regex: add ->requiresConfirmation(false) after DeleteAction::make() if not already present
+
+    // 1. Remove confirmation from DeleteAction (no popup)
     $content = preg_replace(
-        '/Tables\\\\Actions\\\\DeleteAction::make\(\)(?!\s*->requiresConfirmation)/',
-        "Tables\\\\Actions\\\\DeleteAction::make()\n                    ->requiresConfirmation(false)",
+        '/(Tables\\\\Actions\\\\DeleteAction::make\(\))(?!\s*->requiresConfirmation)/',
+        "$1\n                    ->requiresConfirmation(false)\n                    ->hidden(fn() => auth()->user()->isAdmin())",
         $content
     );
-    
-    // Regex: add ->requiresConfirmation(false) after DeleteBulkAction::make() if not already present
+
+    // 2. Remove confirmation from DeleteBulkAction (no popup)
     $content = preg_replace(
-        '/Tables\\\\Actions\\\\DeleteBulkAction::make\(\)(?!\s*->requiresConfirmation)/',
-        "Tables\\\\Actions\\\\DeleteBulkAction::make()\n                        ->requiresConfirmation(false)",
+        '/(Tables\\\\Actions\\\\DeleteBulkAction::make\(\))(?!\s*->requiresConfirmation)/',
+        "$1\n                        ->requiresConfirmation(false)",
         $content
     );
-    
+
+    // 3. If already has requiresConfirmation but no hidden — add hidden for admin
+    if (str_contains($content, 'DeleteAction::make()') 
+        && str_contains($content, 'requiresConfirmation(false)')
+        && !str_contains($content, "->hidden(fn() => auth()->user()->isAdmin())")) {
+        $content = str_replace(
+            "->requiresConfirmation(false),\n            ])\n            ->bulkActions",
+            "->requiresConfirmation(false)\n                    ->hidden(fn() => auth()->user()->isAdmin()),\n            ])\n            ->bulkActions",
+            $content
+        );
+    }
+
     if ($content !== $orig) {
         file_put_contents($file, $content);
         echo "✅ PATCHED: " . basename($file) . "\n";
@@ -46,10 +54,9 @@ foreach ($resources as $file) {
     }
 }
 
-// Clear OPcache + view cache
+// Clear caches
 if (function_exists('opcache_reset')) { opcache_reset(); }
 foreach (glob("$base/storage/framework/views/*.php") as $f) { @unlink($f); }
-
-echo "\n✅ Done! OPcache & view cache cleared.";
+echo "\n✅ OPcache + View cache cleared!";
 echo "\n⚠️ DELETE: /public/fix_admin.php";
 echo "</pre>";
