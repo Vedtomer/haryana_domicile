@@ -1,76 +1,55 @@
 <?php
 if (($_GET['key'] ?? '') !== 'fix2024') { http_response_code(403); die(); }
 
-$base = '/home/u960828787/domains/cspjaankari.in/public_html';
-$file = "$base/app/Filament/Resources/HaryanaDomicileResource.php";
+// Auto-find project root
+$bases = [
+    '/home/u960828787/domains/cspjaankari.in/public_html',
+    __DIR__ . '/..',
+];
+$base = '';
+foreach ($bases as $b) {
+    if (file_exists("$b/app/Filament/Resources/HaryanaDomicileResource.php")) {
+        $base = realpath($b);
+        break;
+    }
+}
 
 echo "<pre style='background:#111;color:#eee;padding:20px;font-size:13px;'>";
+echo "Base: $base\n\n";
 
-if (!file_exists($file)) {
-    echo "ERROR: File not found at $file\n";
-    // Try relative path
-    $file = __DIR__ . '/../app/Filament/Resources/HaryanaDomicileResource.php';
-    echo "Trying: $file\n";
+// Target all Filament resources - remove confirmation from ALL delete actions
+$resources = glob("$base/app/Filament/Resources/*.php");
+
+foreach ($resources as $file) {
+    $content = file_get_contents($file);
+    $orig = $content;
+    
+    // Regex: add ->requiresConfirmation(false) after DeleteAction::make() if not already present
+    $content = preg_replace(
+        '/Tables\\\\Actions\\\\DeleteAction::make\(\)(?!\s*->requiresConfirmation)/',
+        "Tables\\\\Actions\\\\DeleteAction::make()\n                    ->requiresConfirmation(false)",
+        $content
+    );
+    
+    // Regex: add ->requiresConfirmation(false) after DeleteBulkAction::make() if not already present
+    $content = preg_replace(
+        '/Tables\\\\Actions\\\\DeleteBulkAction::make\(\)(?!\s*->requiresConfirmation)/',
+        "Tables\\\\Actions\\\\DeleteBulkAction::make()\n                        ->requiresConfirmation(false)",
+        $content
+    );
+    
+    if ($content !== $orig) {
+        file_put_contents($file, $content);
+        echo "✅ PATCHED: " . basename($file) . "\n";
+    } else {
+        echo "— Already OK: " . basename($file) . "\n";
+    }
 }
 
-$content = file_get_contents($file);
+// Clear OPcache + view cache
+if (function_exists('opcache_reset')) { opcache_reset(); }
+foreach (glob("$base/storage/framework/views/*.php") as $f) { @unlink($f); }
 
-// Remove old actions block and replace with no-confirm delete
-$old = "            ->actions([
-                Tables\\Actions\\Action::make('print')
-                    ->label('Print')
-                    ->icon('heroicon-o-printer')
-                    ->color('success')
-                    ->url(fn (HaryanaDomicile \$record): string => HaryanaDomicileResource::getUrl('print', ['record' => \$record]))
-                    ->openUrlInNewTab(),
-                Tables\\Actions\\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\\Actions\\BulkActionGroup::make([
-                    Tables\\Actions\\DeleteBulkAction::make(),
-                ]),
-            ]);";
-
-$new = "            ->actions([
-                Tables\\Actions\\Action::make('print')
-                    ->label('Print')
-                    ->icon('heroicon-o-printer')
-                    ->color('success')
-                    ->url(fn (HaryanaDomicile \$record): string => HaryanaDomicileResource::getUrl('print', ['record' => \$record]))
-                    ->openUrlInNewTab(),
-                Tables\\Actions\\EditAction::make(),
-                Tables\\Actions\\DeleteAction::make()
-                    ->requiresConfirmation(false),
-            ])
-            ->bulkActions([
-                Tables\\Actions\\BulkActionGroup::make([
-                    Tables\\Actions\\DeleteBulkAction::make()
-                        ->requiresConfirmation(false),
-                ]),
-            ]);";
-
-if (str_contains($content, $old)) {
-    $content = str_replace($old, $new, $content);
-    file_put_contents($file, $content);
-    echo "✅ PATCHED: Delete confirmation removed!\n";
-} elseif (str_contains($content, 'requiresConfirmation(false)')) {
-    echo "⚠️ Already patched!\n";
-} else {
-    echo "❌ Pattern not found. Current actions block:\n";
-    preg_match('/->actions\(\[(.*?)\]\)/s', $content, $m);
-    echo htmlspecialchars($m[0] ?? 'NOT FOUND') . "\n";
-}
-
-// Clear OPcache
-if (function_exists('opcache_reset')) { opcache_reset(); echo "✅ OPcache cleared\n"; }
-
-// Also delete Laravel view cache
-$viewCache = $base . '/storage/framework/views';
-if (is_dir($viewCache)) {
-    $files = glob($viewCache . '/*.php');
-    foreach ($files as $f) { @unlink($f); }
-    echo "✅ View cache cleared: " . count($files) . " files\n";
-}
-
+echo "\n✅ Done! OPcache & view cache cleared.";
 echo "\n⚠️ DELETE: /public/fix_admin.php";
 echo "</pre>";
