@@ -1,86 +1,82 @@
 <?php
-if (($_GET['key'] ?? '') !== 'fix2024') { http_response_code(403); die('Forbidden'); }
+if (($_GET['key'] ?? '') !== 'fix2024') { http_response_code(403); die(); }
 
-$results = [];
+$base = '/home/u960828787/domains/cspjaankari.in/public_html';
 
-// Files to patch - remove isAdmin() bypass from getEloquentQuery
-$resources = [
-    __DIR__ . '/../app/Filament/Resources/HaryanaDomicileResource.php',
-    __DIR__ . '/../app/Filament/Resources/BirthRecordResource.php',
-    __DIR__ . '/../app/Filament/Resources/ServiceRequestResource.php',
-    __DIR__ . '/../app/Filament/Resources/MarriageFormResource.php',
-    __DIR__ . '/../app/Filament/Resources/PanRequestResource.php',
-    __DIR__ . '/../app/Filament/Resources/CoinPurchaseRequestResource.php',
-];
+echo "<pre style='background:#111;color:#eee;padding:20px;font-size:13px;'>";
 
-$patterns = [
-    // Pattern 1
-    "        if (auth()->user()->isAdmin()) {\n            return \$query;\n        }\n        \n        return \$query->where('user_id', auth()->id());" =>
-    "        // All users (including admin) see only their own records\n        return \$query->where('user_id', auth()->id());",
-    // Pattern 2
-    "        if (auth()->user()->isAdmin()) {\n            return \$query;\n        }\n        return \$query->where('user_id', auth()->id());" =>
-    "        // All users (including admin) see only their own records\n        return \$query->where('user_id', auth()->id());",
-    // Pattern 3 (MarriageForm)
-    "        if (auth()->user()->hasRole('super_admin') || auth()->user()->isAdmin()) {\n            return \$query;\n        }\n        return \$query->where('user_id', auth()->id());" =>
-    "        // All users (including admin) see only their own records\n        return \$query->where('user_id', auth()->id());",
-];
-
-foreach ($resources as $file) {
-    if (!file_exists($file)) {
-        $results[basename($file)] = 'NOT FOUND';
-        continue;
-    }
+// 1. Check actual file content
+$file = "$base/app/Filament/Resources/HaryanaDomicileResource.php";
+echo "=== HaryanaDomicileResource getEloquentQuery ===\n";
+if (file_exists($file)) {
     $content = file_get_contents($file);
-    $original = $content;
-    foreach ($patterns as $old => $new) {
-        $content = str_replace($old, $new, $content);
-    }
-    if ($content !== $original) {
-        file_put_contents($file, $content);
-        $results[basename($file)] = '✅ PATCHED';
-    } else {
-        $results[basename($file)] = '⚠️ Already patched or pattern not found';
-    }
-}
-
-// Also patch DashboardController
-$dc = __DIR__ . '/../app/Http/Controllers/DashboardController.php';
-if (file_exists($dc)) {
-    $content = file_get_contents($dc);
-    $orig = $content;
-    $content = str_replace(
-        "->when(!$isAdmin, fn (\$q) => \$q->visibleTo(\$user))",
-        "->visibleTo(\$user)",
-        $content
-    );
-    $content = str_replace(
-        "->when(!\$isAdmin, fn (\$q) => \$q->visibleTo(\$user))",
-        "->visibleTo(\$user)",
-        $content
-    );
-    $content = str_replace(
-        "'is_unlocked' => \$isAdmin || \$service->users->contains('id', \$user->id),",
-        "'is_unlocked' => \$service->users->contains('id', \$user->id),",
-        $content
-    );
-    if ($content !== $orig) {
-        file_put_contents($dc, $content);
-        $results['DashboardController.php'] = '✅ PATCHED';
-    } else {
-        $results['DashboardController.php'] = '⚠️ Already patched';
-    }
-}
-
-// Clear OPcache if available
-if (function_exists('opcache_reset')) {
-    opcache_reset();
-    $results['OPcache'] = '✅ CLEARED';
+    // Extract getEloquentQuery function
+    preg_match('/getEloquentQuery.*?(?=\n    (public|protected|private|\}))/s', $content, $m);
+    echo ($m[0] ?? 'NOT FOUND') . "\n\n";
 } else {
-    $results['OPcache'] = 'Not available';
+    echo "FILE NOT FOUND at: $file\n";
+    // Try alternate paths
+    $alt = __DIR__ . '/../app/Filament/Resources/HaryanaDomicileResource.php';
+    echo "Trying: $alt\n";
+    if (file_exists($alt)) {
+        $content = file_get_contents($alt);
+        preg_match('/getEloquentQuery.*?(?=\n    (public|protected|private|\}))/s', $content, $m);
+        echo ($m[0] ?? 'NOT FOUND') . "\n";
+    }
 }
 
-echo "<pre style='background:#111;color:#eee;padding:20px;font-size:14px;'>";
-echo "=== PRODUCTION FIX RESULTS ===\n\n";
-foreach ($results as $k => $v) echo "$k: $v\n";
-echo "\n⚠️  DELETE THIS FILE: /public/fix_admin.php";
+// 2. Clear all caches
+echo "\n=== CLEARING CACHES ===\n";
+
+// OPcache
+if (function_exists('opcache_reset')) { opcache_reset(); echo "OPcache: CLEARED\n"; }
+
+// Laravel cache files
+$cachePaths = [
+    "$base/bootstrap/cache/config.php",
+    "$base/bootstrap/cache/routes-v7.php",
+    "$base/bootstrap/cache/packages.php",
+    __DIR__ . '/../bootstrap/cache/config.php',
+    __DIR__ . '/../bootstrap/cache/routes-v7.php',
+];
+foreach ($cachePaths as $cp) {
+    if (file_exists($cp)) {
+        unlink($cp);
+        echo "Deleted: " . basename($cp) . "\n";
+    }
+}
+
+// 3. Direct DB fix - change user_id of ALL haryana_domicile records
+echo "\n=== DB: Ensure all haryana_domicile records belong to vandana (ID=9) ===\n";
+$envFile = __DIR__ . '/../.env';
+$env = [];
+foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+    if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) continue;
+    [$k, $v] = explode('=', $line, 2);
+    $env[trim($k)] = trim($v, " \t\"'");
+}
+try {
+    $pdo = new PDO("mysql:host={$env['DB_HOST']};port={$env['DB_PORT']};dbname={$env['DB_DATABASE']};charset=utf8mb4", $env['DB_USERNAME'], $env['DB_PASSWORD']);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Count before
+    $total = $pdo->query("SELECT COUNT(*) FROM haryana_domiciles")->fetchColumn();
+    $vandana = $pdo->query("SELECT COUNT(*) FROM haryana_domiciles WHERE user_id=9")->fetchColumn();
+    $other = $pdo->query("SELECT COUNT(*) FROM haryana_domiciles WHERE user_id!=9")->fetchColumn();
+    echo "Total: $total | Vandana(9): $vandana | Other: $other\n";
+    
+    // Force all to vandana
+    $stmt = $pdo->prepare("UPDATE haryana_domiciles SET user_id=9");
+    $stmt->execute();
+    echo "Updated all to user_id=9: " . $stmt->rowCount() . " rows\n";
+    
+    // Verify admin(1) has 0
+    $adminCount = $pdo->query("SELECT COUNT(*) FROM haryana_domiciles WHERE user_id=1")->fetchColumn();
+    echo "Admin(1) records remaining: $adminCount\n";
+    
+} catch(Exception $e) {
+    echo "DB Error: " . $e->getMessage() . "\n";
+}
+
+echo "\n⚠️ DELETE: /public/fix_admin.php";
 echo "</pre>";
