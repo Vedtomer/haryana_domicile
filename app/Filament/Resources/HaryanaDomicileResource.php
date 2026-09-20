@@ -123,10 +123,13 @@ class HaryanaDomicileResource extends Resource
                     ->url(fn (HaryanaDomicile $record): string => HaryanaDomicileResource::getUrl('print', ['record' => $record]))
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->requiresConfirmation(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->requiresConfirmation(false),
                 ]),
             ]);
     }
