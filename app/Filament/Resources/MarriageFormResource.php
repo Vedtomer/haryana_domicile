@@ -24,9 +24,7 @@ class MarriageFormResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        if (auth()->user()->hasRole('super_admin') || auth()->user()->isAdmin()) {
-            return $query;
-        }
+        // All users (including admin) see only their own records
         return $query->where('user_id', auth()->id());
     }
 

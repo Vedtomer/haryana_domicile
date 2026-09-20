@@ -25,10 +25,7 @@ class CoinPurchaseRequestResource extends Resource
     {
         $query = parent::getEloquentQuery();
         
-        if (auth()->user()->isAdmin()) {
-            return $query;
-        }
-        
+        // All users (including admin) see only their own records
         return $query->where('user_id', auth()->id());
     }
 
