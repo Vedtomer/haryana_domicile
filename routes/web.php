@@ -1302,20 +1302,21 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.ppp-to-bank-details');
     Route::post('/utilities/ppp-to-bank-details/search', [\App\Http\Controllers\PppToBankDetailsController::class, 'search'])->name('utilities.ppp-to-bank-details.search');
 
-    // 5. Vehicle PUC (Without OTP)
+    // 5. Vehicle PUC (Without OTP - Instant)
     Route::get('/utilities/vehicle-puc-without-otp', function () {
         return Inertia::render('Utilities/VehiclePucWithoutOtp');
     })->name('utilities.vehicle-puc-without-otp');
     Route::post('/utilities/vehicle-puc-without-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-without-otp.search');
 
-    // 6. Vehicle PUC (With OTP)
+    // 6. Vehicle PUC (Without OTP alias & redirect)
     Route::get('/utilities/vehicle-puc-with-otp', function () {
-        return Inertia::render('Utilities/VehiclePucWithOtp');
+        return redirect()->route('utilities.vehicle-puc-without-otp');
     })->name('utilities.vehicle-puc-with-otp');
-    Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'sendOtp'])->name('utilities.vehicle-puc-with-otp.send-otp');
-    Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'verifyOtp'])->name('utilities.vehicle-puc-with-otp.verify-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.search');
+    Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.send-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.verify-otp');
 
-    // PUC PDF Download (Both With OTP & Without OTP)
+    // PUC PDF Download
     Route::match(['get', 'post'], '/utilities/vehicle-puc/download-pdf', [\App\Http\Controllers\VehiclePucPdfController::class, 'downloadPdf'])->name('utilities.vehicle-puc.download-pdf');
 
     // 7. S.I.R Voter Card List

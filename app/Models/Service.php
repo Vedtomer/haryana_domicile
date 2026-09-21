@@ -364,18 +364,18 @@ class Service extends Model
             'create' => '/utilities/ppp-to-bank-details',
         ],
         'vehicle_puc_without_otp' => [
-            'label' => 'Vehicle PUC (Without OTP)',
+            'label' => 'Vehicle PUC Certificate Download',
             'icon' => '🚗',
             'model' => null,
             'index' => '/utilities/vehicle-puc-without-otp',
             'create' => '/utilities/vehicle-puc-without-otp',
         ],
         'vehicle_puc_with_otp' => [
-            'label' => 'Vehicle PUC (With OTP)',
-            'icon' => '🔐',
+            'label' => 'Vehicle PUC Certificate Download',
+            'icon' => '🚗',
             'model' => null,
-            'index' => '/utilities/vehicle-puc-with-otp',
-            'create' => '/utilities/vehicle-puc-with-otp',
+            'index' => '/utilities/vehicle-puc-without-otp',
+            'create' => '/utilities/vehicle-puc-without-otp',
         ],
         'sir_voter_card_list' => [
             'label' => 'S.I.R Voter Card List',

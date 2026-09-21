@@ -35,5 +35,29 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Silently fail if DB is not ready
         }
+
+        // Ensure Vehicle PUC is instant without OTP
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('services')) {
+                \Illuminate\Support\Facades\Cache::remember('sync_puc_service_v2', 86400, function () {
+                    \App\Models\Service::where('slug', 'vehicle-puc-without-otp')->update([
+                        'name' => 'Vehicle PUC Certificate Download',
+                        'description' => 'Download Vehicle Pollution Under Control (PUC) certificate details instantly by Car / Vehicle Number without OTP.',
+                        'icon' => '🚗',
+                        'is_active' => true,
+                        'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+                    ]);
+                    \App\Models\Service::where('slug', 'vehicle-puc-with-otp')->update([
+                        'name' => 'Vehicle PUC Certificate Download',
+                        'description' => 'Download Vehicle Pollution Under Control (PUC) certificate details instantly by Car / Vehicle Number without OTP.',
+                        'icon' => '🚗',
+                        'is_active' => false,
+                    ]);
+                    return true;
+                });
+            }
+        } catch (\Throwable $e) {
+            // Silently fail if DB is not ready
+        }
     }
 }

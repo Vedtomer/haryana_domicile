@@ -38,17 +38,33 @@ class VehiclePucWithoutOtpController extends Controller
 
         try {
             if (!empty($apiUrl)) {
-                $response = Http::connectTimeout(10)
-                    ->timeout(30)
-                    ->withHeaders([
-                        'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
-                        'X-API-KEY' => $apiKey,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($apiUrl, [
-                        'reg_no' => $vehicleNo,
-                        'key' => $apiKey,
-                    ]);
+                if (str_contains($apiUrl, '{')) {
+                    $resolvedUrl = str_replace(
+                        ['{reg_no}', '{vehicle_no}', '{key}', '{api_key}'],
+                        [urlencode($vehicleNo), urlencode($vehicleNo), urlencode($apiKey), urlencode($apiKey)],
+                        $apiUrl
+                    );
+                    $response = Http::connectTimeout(10)->timeout(30)
+                        ->withHeaders([
+                            'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
+                            'X-API-KEY' => $apiKey,
+                            'Accept' => 'application/json',
+                        ])
+                        ->get($resolvedUrl);
+                } else {
+                    $response = Http::connectTimeout(10)
+                        ->timeout(30)
+                        ->withHeaders([
+                            'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
+                            'X-API-KEY' => $apiKey,
+                            'Accept' => 'application/json',
+                        ])
+                        ->get($apiUrl, [
+                            'reg_no' => $vehicleNo,
+                            'vehicle_number' => $vehicleNo,
+                            'key' => $apiKey,
+                        ]);
+                }
 
                 if ($response->successful()) {
                     $data = $response->json();
