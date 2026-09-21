@@ -199,6 +199,7 @@ class DashboardController extends Controller
 
         return [
             ['label' => 'Manage Users', 'value' => $userCount, 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
+            ['label' => 'API Settings', 'value' => 'Configure Keys', 'tone' => 'dark-green', 'url' => '/admin/api-settings', 'icon' => 'key'],
             ['label' => 'Manage License Keys', 'value' => "{$activeKeys} Active", 'tone' => 'dark-indigo', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
             ['label' => 'Manage Services', 'value' => $serviceCount, 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],

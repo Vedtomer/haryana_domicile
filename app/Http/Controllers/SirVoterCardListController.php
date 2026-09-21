@@ -51,8 +51,8 @@ class SirVoterCardListController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your Voter Card List API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.voter.sir_voter_list_url') ?: env('SIR_VOTER_LIST_API_URL', '');
-        $apiKey = config('services.voter.api_key') ?: env('VOTER_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('voter_sir_voter_list_url') ?: (config('services.voter.sir_voter_list_url') ?: env('SIR_VOTER_LIST_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('voter_api_key') ?: (config('services.voter.api_key') ?: env('VOTER_API_KEY', '')));
         // =========================================================================
 
         try {

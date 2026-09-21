@@ -29,8 +29,8 @@ class PdfEditorController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your PDF Editor API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.pdf.editor_api_url') ?: env('PDF_EDITOR_API_URL', '');
-        $apiKey = config('services.pdf.api_key') ?: env('PDF_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('pdf_editor_api_url') ?: (config('services.pdf.editor_api_url') ?: env('PDF_EDITOR_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('pdf_api_key') ?: (config('services.pdf.api_key') ?: env('PDF_API_KEY', '')));
         // =========================================================================
 
         try {

@@ -37,8 +37,8 @@ class AadharMobileUpdateController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your Aadhaar Mobile Update API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.aadhar_update.mobile_update_url') ?: env('AADHAR_MOBILE_UPDATE_API_URL', '');
-        $apiKey = config('services.aadhar_update.api_key') ?: env('AADHAR_UPDATE_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('aadhar_update_mobile_update_url') ?: (config('services.aadhar_update.mobile_update_url') ?: env('AADHAR_MOBILE_UPDATE_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('aadhar_update_api_key') ?: (config('services.aadhar_update.api_key') ?: env('AADHAR_UPDATE_API_KEY', '')));
         // =========================================================================
 
         try {

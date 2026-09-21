@@ -40,8 +40,8 @@ class VoterCardManualAddressChangeController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your Voter Address Change API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.card_maker.voter_address_change_url') ?: env('VOTER_ADDRESS_CHANGE_API_URL', '');
-        $apiKey = config('services.card_maker.api_key') ?: env('CARD_MAKER_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('card_maker_voter_address_change_url') ?: (config('services.card_maker.voter_address_change_url') ?: env('VOTER_ADDRESS_CHANGE_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('card_maker_api_key') ?: (config('services.card_maker.api_key') ?: env('CARD_MAKER_API_KEY', '')));
         // =========================================================================
 
         try {

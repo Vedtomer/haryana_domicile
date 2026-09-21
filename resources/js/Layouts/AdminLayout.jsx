@@ -122,6 +122,11 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 Manage Services
                             </NavItem>
+                            <NavItem href="/admin/api-settings" icon={
+                                <span className="material-symbols-outlined text-[20px]">key</span>
+                            }>
+                                API Settings
+                            </NavItem>
                             <NavItem href="/admin/service-requests" icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                             }>
@@ -204,14 +209,24 @@ export default function AdminLayout({ header, children }) {
                     )}
 
                      {isAdmin && (
-                         <Link
-                             href="/admin/license-keys"
-                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
-                             title="Manage Portal License Keys & Desktop Locks"
-                         >
-                             <span className="material-symbols-outlined text-[15px]">vpn_key</span>
-                             <span className="hidden sm:inline">License Keys</span>
-                         </Link>
+                         <>
+                             <Link
+                                 href="/admin/api-settings"
+                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all shadow-2xs"
+                                 title="Configure API Keys & Services"
+                             >
+                                 <span className="material-symbols-outlined text-[15px]">key</span>
+                                 <span className="hidden sm:inline">API Settings</span>
+                             </Link>
+                             <Link
+                                 href="/admin/license-keys"
+                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
+                                 title="Manage Portal License Keys & Desktop Locks"
+                             >
+                                 <span className="material-symbols-outlined text-[15px]">vpn_key</span>
+                                 <span className="hidden sm:inline">License Keys</span>
+                             </Link>
+                         </>
                      )}
 
                      {/* Dark Mode Toggle */}
@@ -265,6 +280,13 @@ export default function AdminLayout({ header, children }) {
                             )}
                             {auth?.user?.type === 'admin' && (
                                 <>
+                                    <Link
+                                        href="/admin/api-settings"
+                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">key</span>
+                                        API Settings
+                                    </Link>
                                     <Link
                                         href="/admin/license-keys"
                                         className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"

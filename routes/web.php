@@ -1505,6 +1505,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
 
+        // API Settings — admin only
+        Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit');
+        Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update');
+
 
 
         // Haryana Domicile PDF Coordinates — admin only

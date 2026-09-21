@@ -34,9 +34,9 @@ class AadharToPppIdController extends Controller
         // =========================================================================
         // API CONFIGURATION (Edit your API URL & Key here when you receive the API)
         // =========================================================================
-        $apiUrl = config('services.ppp.aadhar_to_ppp_url') 
-            ?: "https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum=" . urlencode($aadhar);
-        $apiKey = config('services.ppp.api_key', '');
+        $apiUrl = \App\Models\Setting::get('ppp_aadhar_to_ppp_url') ?: (config('services.ppp.aadhar_to_ppp_url')
+            ?: "https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum=" . urlencode($aadhar));
+        $apiKey = trim(\App\Models\Setting::get('ppp_api_key') ?: config('services.ppp.api_key', ''));
         // =========================================================================
 
         try {

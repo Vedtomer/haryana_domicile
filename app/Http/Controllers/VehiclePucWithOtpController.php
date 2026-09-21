@@ -27,8 +27,8 @@ class VehiclePucWithOtpController extends Controller
         // =========================================================================
         // API CONFIGURATION: SEND OTP (Put your OTP Gateway API URL & Key here)
         // =========================================================================
-        $apiUrl = config('services.vahan.puc_send_otp_url') ?: env('PUC_SEND_OTP_API_URL', '');
-        $apiKey = config('services.vahan.api_key') ?: env('PUC_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('vahan_puc_send_otp_url') ?: (config('services.vahan.puc_send_otp_url') ?: env('PUC_SEND_OTP_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('vahan_api_key') ?: (config('services.vahan.api_key') ?: env('PUC_API_KEY', '')));
         // =========================================================================
 
         try {
@@ -103,8 +103,8 @@ class VehiclePucWithOtpController extends Controller
         // =========================================================================
         // API CONFIGURATION: VERIFY OTP (Put your OTP Verify API URL & Key here)
         // =========================================================================
-        $apiUrl = config('services.vahan.puc_verify_otp_url') ?: env('PUC_VERIFY_OTP_API_URL', '');
-        $apiKey = config('services.vahan.api_key') ?: env('PUC_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('vahan_puc_verify_otp_url') ?: (config('services.vahan.puc_verify_otp_url') ?: env('PUC_VERIFY_OTP_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('vahan_api_key') ?: (config('services.vahan.api_key') ?: env('PUC_API_KEY', '')));
         // =========================================================================
 
         try {

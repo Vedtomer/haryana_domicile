@@ -26,7 +26,7 @@ class AadharToPanController extends Controller
         }
 
         $aadhar = $request->input('aadhar');
-        $apiKey = config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386');
+        $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
         $url = "https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php?apiKey=" . urlencode($apiKey) . "&uidNumber=" . urlencode($aadhar);
 
         try {

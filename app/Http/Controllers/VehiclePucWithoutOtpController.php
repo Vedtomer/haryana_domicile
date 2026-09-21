@@ -32,8 +32,8 @@ class VehiclePucWithoutOtpController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your Vehicle PUC API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.vahan.puc_without_otp_url') ?: env('PUC_WITHOUT_OTP_API_URL', '');
-        $apiKey = config('services.vahan.api_key') ?: env('PUC_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('vahan_puc_without_otp_url') ?: (config('services.vahan.puc_without_otp_url') ?: env('PUC_WITHOUT_OTP_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('vahan_api_key') ?: (config('services.vahan.api_key') ?: env('PUC_API_KEY', '')));
         // =========================================================================
 
         try {

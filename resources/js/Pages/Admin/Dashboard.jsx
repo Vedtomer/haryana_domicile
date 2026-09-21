@@ -19,6 +19,7 @@ const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-ambe
 const ICON_MAP = {
     'Total Services': 'home_repair_service',
     'Manage Users': 'group',
+    'API Settings': 'key',
     'User Permissions': 'admin_panel_settings',
     'Pending Requests': 'hourglass_top',
     'Add Service': 'add_circle',

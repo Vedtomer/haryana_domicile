@@ -32,8 +32,8 @@ class PppToMobileAllMembersController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.ppp.ppp_to_mobile_url') ?: env('PPP_TO_MOBILE_API_URL', '');
-        $apiKey = config('services.ppp.api_key') ?: env('PPP_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('ppp_to_mobile_url') ?: (config('services.ppp.ppp_to_mobile_url') ?: env('PPP_TO_MOBILE_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('ppp_api_key') ?: (config('services.ppp.api_key') ?: env('PPP_API_KEY', '')));
         // =========================================================================
 
         try {

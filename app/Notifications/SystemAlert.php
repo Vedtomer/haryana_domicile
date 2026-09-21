@@ -46,8 +46,8 @@ class SystemAlert extends Notification
         }
 
         // Send WhatsApp Alert via CallMeBot
-        $phone = config('services.callmebot.phone');
-        $apiKey = config('services.callmebot.api_key');
+        $phone = \App\Models\Setting::get('callmebot_phone') ?: config('services.callmebot.phone');
+        $apiKey = \App\Models\Setting::get('callmebot_api_key') ?: config('services.callmebot.api_key');
 
         \Illuminate\Support\Facades\Log::info("CallMeBot Attempt:", ['phone' => $phone, 'apiKey' => $apiKey]);
 

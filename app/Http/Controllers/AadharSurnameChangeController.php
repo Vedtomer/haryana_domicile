@@ -40,8 +40,8 @@ class AadharSurnameChangeController extends Controller
         // =========================================================================
         // API CONFIGURATION (Put your Aadhaar Surname Change API URL & Key here when provided)
         // =========================================================================
-        $apiUrl = config('services.aadhar_update.surname_change_url') ?: env('AADHAR_SURNAME_CHANGE_API_URL', '');
-        $apiKey = config('services.aadhar_update.api_key') ?: env('AADHAR_UPDATE_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('aadhar_update_surname_change_url') ?: (config('services.aadhar_update.surname_change_url') ?: env('AADHAR_SURNAME_CHANGE_API_URL', ''));
+        $apiKey = trim(\App\Models\Setting::get('aadhar_update_api_key') ?: (config('services.aadhar_update.api_key') ?: env('AADHAR_UPDATE_API_KEY', '')));
         // =========================================================================
 
         try {
