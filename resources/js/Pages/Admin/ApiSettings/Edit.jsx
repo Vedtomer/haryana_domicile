@@ -532,7 +532,7 @@ export default function Edit({ settings = {} }) {
                                                 type="text"
                                                 value={data.vahan_puc_send_otp_url}
                                                 onChange={e => setData('vahan_puc_send_otp_url', e.target.value)}
-                                                placeholder="https://..."
+                                                placeholder="https://... or api?mobile={mobile}&otp={otp}"
                                                 className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white"
                                             />
                                         </div>
@@ -547,6 +547,9 @@ export default function Edit({ settings = {} }) {
                                             />
                                         </div>
                                     </div>
+                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 leading-relaxed">
+                                        💡 <strong>Tip:</strong> Live SMS bhejne ke liye apne Vahan ya SMS Gateway ka endpoint yahan enter karein. Agar URL me <code className="text-blue-500 font-mono">{"{mobile}"}</code>, <code className="text-blue-500 font-mono">{"{otp}"}</code>, <code className="text-blue-500 font-mono">{"{reg_no}"}</code> placeholders hain to system unhe auto-replace karega. Agar URL khali rahega to service safe Demo Mode (OTP: 1234) me chalegi.
+                                    </p>
                                 </div>
                             </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
@@ -9,6 +9,10 @@ export default function VehiclePucWithOtp() {
     const [mobileNo, setMobileNo] = useState('');
     const [otp, setOtp] = useState('');
     const [sessionId, setSessionId] = useState('');
+
+    const [isDemo, setIsDemo] = useState(false);
+    const [demoOtp, setDemoOtp] = useState('1234');
+    const [serverMessage, setServerMessage] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -54,6 +58,9 @@ export default function VehiclePucWithOtp() {
 
             if (response.data.success) {
                 setSessionId(response.data.session_id || '');
+                setIsDemo(Boolean(response.data.is_demo));
+                setDemoOtp(response.data.demo_otp || '1234');
+                setServerMessage(response.data.message || '');
                 setStep(2);
                 setTimer(60);
                 setTimerActive(true);
@@ -138,6 +145,9 @@ export default function VehiclePucWithOtp() {
         setOtp('');
         setError(null);
         setResult(null);
+        setIsDemo(false);
+        setDemoOtp('1234');
+        setServerMessage('');
     };
 
     return (
@@ -193,7 +203,7 @@ export default function VehiclePucWithOtp() {
                                 Enter Vehicle &amp; Mobile
                             </h2>
                             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                                An OTP will be sent to the entered mobile number to verify and fetch the PUC certificate.
+                                An OTP will be sent to verify and fetch the PUC certificate.
                             </p>
                         </div>
 
@@ -235,6 +245,14 @@ export default function VehiclePucWithOtp() {
                             </button>
                         </form>
 
+                        {/* Helper notice */}
+                        <div className="mt-5 p-3.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-2xl flex items-start gap-2.5 text-xs text-blue-800 dark:text-blue-300">
+                            <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-lg shrink-0 mt-0.5">info</span>
+                            <div className="leading-relaxed">
+                                <span className="font-bold">Live SMS &amp; Demo Notice:</span> Mobile par real SMS OTP aane ke liye Admin Settings me Vahan OTP API URL configure honi chahiye. Agar API set nahi hai to test karne ke liye safe Demo Mode me OTP <strong className="font-mono bg-blue-100 dark:bg-blue-900 px-1.5 py-0.5 rounded">1234</strong> se certificate dekh sakte hain.
+                            </div>
+                        </div>
+
                         {error && (
                             <div className="mt-5 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-2">
                                 <span className="material-symbols-outlined text-red-600 text-lg">error</span>
@@ -248,16 +266,58 @@ export default function VehiclePucWithOtp() {
                 {step === 2 && (
                     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 max-w-md mx-auto">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <span className="material-symbols-outlined text-3xl">mark_email_read</span>
+                            <div className={`w-16 h-16 ${isDemo ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                                <span className="material-symbols-outlined text-3xl">
+                                    {isDemo ? 'info' : 'mark_email_read'}
+                                </span>
                             </div>
                             <h2 className="text-2xl font-black text-slate-800 dark:text-white">
                                 Verify OTP
                             </h2>
                             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                                Enter the OTP sent to <strong className="text-slate-800 dark:text-white">+91 {mobileNo}</strong>
+                                {isDemo ? (
+                                    <span>Demo verification for <strong className="text-slate-800 dark:text-white">{vehicleNo}</strong></span>
+                                ) : (
+                                    <span>Enter the OTP sent to <strong className="text-slate-800 dark:text-white">+91 {mobileNo}</strong></span>
+                                )}
                             </p>
                         </div>
+
+                        {/* Demo Mode Notice */}
+                        {isDemo && (
+                            <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-800/80 rounded-2xl">
+                                <div className="flex items-start gap-3">
+                                    <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-xl shrink-0 mt-0.5">warning</span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="text-xs font-black text-amber-900 dark:text-amber-200 uppercase tracking-wide">
+                                                Live SMS API Not Connected
+                                            </h4>
+                                        </div>
+                                        <p className="text-xs text-amber-800 dark:text-amber-300 mt-1 leading-relaxed">
+                                            Server par live SMS Gateway API configure nahi hai, isliye mobile par SMS nahi gaya. Testing ke liye demo OTP <strong>{demoOtp}</strong> enter karein:
+                                        </p>
+                                        <div className="mt-3 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setOtp(demoOtp)}
+                                                className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">touch_app</span>
+                                                Auto-Fill Demo OTP ({demoOtp})
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {!isDemo && serverMessage && (
+                            <div className="mb-5 p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-emerald-600 text-lg shrink-0">check_circle</span>
+                                <span>{serverMessage}</span>
+                            </div>
+                        )}
 
                         <form onSubmit={handleVerifyOtp} className="space-y-4">
                             <div>
@@ -319,7 +379,7 @@ export default function VehiclePucWithOtp() {
                             <div>
                                 <span className="inline-flex items-center gap-1 text-xs font-black px-2.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 mb-1">
                                     <span className="material-symbols-outlined text-sm">verified</span>
-                                    OTP VERIFIED • {result.status || 'ACTIVE & VALID'}
+                                    {result.is_demo ? 'DEMO TEST VERIFIED • ' : 'OTP VERIFIED • '} {result.status || 'ACTIVE & VALID'}
                                 </span>
                                 <h3 className="text-3xl font-black font-mono text-slate-900 dark:text-white">
                                     {result.reg_no || vehicleNo}
