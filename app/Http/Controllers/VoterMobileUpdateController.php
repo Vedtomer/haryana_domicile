@@ -24,7 +24,20 @@ class VoterMobileUpdateController extends Controller
 
         $epic = strtoupper(trim($request->input('epic')));
         $mobile = trim($request->input('mobile'));
-        $url = "https://nexus-dashboard.space/api/v1/voter_card_api/voter_mobile_link.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&epic=" . urlencode($epic) . "&mobile=" . urlencode($mobile);
+
+        $baseUrl = trim(\App\Models\Setting::get('voter_mobile_update_url') ?: 'https://nexus-dashboard.space/api/v1/voter_card_api/voter_mobile_link.php');
+        $apiKey = trim(\App\Models\Setting::get('voter_mobile_update_key') ?: (\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{epic}') || str_contains($baseUrl, '{mobile}')) {
+            $url = str_replace(
+                ['{apiKey}', '{epic}', '{mobile}'],
+                [urlencode($apiKey), urlencode($epic), urlencode($mobile)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&epic=" . urlencode($epic) . "&mobile=" . urlencode($mobile);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(20)->get($url);

@@ -27,7 +27,19 @@ class MobileToPanController extends Controller
         $firstName = trim($request->input('first_name'));
         $lastName = trim($request->input('last_name'));
         
-        $url = "https://nexus-dashboard.space/api/v1/telecom_api/mobile_to_pan.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&mobile_number=" . urlencode($mobile) . "&first_name=" . urlencode($firstName) . "&last_name=" . urlencode($lastName);
+        $baseUrl = trim(\App\Models\Setting::get('nexus_mobile_to_pan_url') ?: 'https://nexus-dashboard.space/api/v1/telecom_api/mobile_to_pan.php');
+        $apiKey = trim(\App\Models\Setting::get('nexus_mobile_to_pan_key') ?: (\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{mobile}') || str_contains($baseUrl, '{first_name}')) {
+            $url = str_replace(
+                ['{apiKey}', '{mobile}', '{mobile_number}', '{first_name}', '{last_name}'],
+                [urlencode($apiKey), urlencode($mobile), urlencode($mobile), urlencode($firstName), urlencode($lastName)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&mobile_number=" . urlencode($mobile) . "&first_name=" . urlencode($firstName) . "&last_name=" . urlencode($lastName);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(20)->get($url);

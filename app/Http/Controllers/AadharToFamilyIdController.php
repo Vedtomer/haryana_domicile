@@ -17,14 +17,26 @@ class AadharToFamilyIdController extends Controller
         $user = auth()->user();
 
         $aadhar = $request->input('aadhar');
-        $url = "https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum=" . $aadhar;
+        $baseUrl = trim(\App\Models\Setting::get('ppp_aadhar_to_ppp_url') ?: (config('services.ppp.aadhar_to_ppp_url') ?: 'https://fasal.haryana.gov.in/Home/GetFDbyAadhar'));
+        $apiKey = trim(\App\Models\Setting::get('ppp_api_key') ?: config('services.ppp.api_key', ''));
+
+        if (str_contains($baseUrl, '{aadhar}') || str_contains($baseUrl, '{aadharnum}')) {
+            $url = str_replace(['{aadhar}', '{aadharnum}'], [urlencode($aadhar), urlencode($aadhar)], $baseUrl);
+        } elseif (str_ends_with($baseUrl, '=')) {
+            $url = $baseUrl . urlencode($aadhar);
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "aadharnum=" . urlencode($aadhar);
+        }
 
         try {
+            $headers = ['X-Requested-With' => 'XMLHttpRequest'];
+            if (!empty($apiKey)) {
+                $headers['Authorization'] = 'Bearer ' . $apiKey;
+            }
             $response = Http::connectTimeout(5)
                 ->timeout(15)
-                ->withHeaders([
-                    'X-Requested-With' => 'XMLHttpRequest'
-                ])->post($url);
+                ->withHeaders($headers)->post($url);
 
             if ($response->successful()) {
                 $data = $response->json();

@@ -32,17 +32,26 @@ class LearningLicenceController extends Controller
         $applNum = strtoupper(trim($request->input('applNum')));
         $dob = trim($request->input('dob', ''));
 
-        $apiKey = trim(Setting::get('nexus_api_key') ?: config('services.nexus.api_key', env('NEXUS_API_KEY', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')));
+        $apiKey = trim(Setting::get('vahan_learning_licence_key') ?: (Setting::get('nexus_api_key') ?: config('services.nexus.api_key', env('NEXUS_API_KEY', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'))));
+        $baseUrl = trim(Setting::get('vahan_learning_licence_url') ?: 'https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php');
 
-        $queryParams = [
-            'apiKey'  => $apiKey,
-            'applNum' => $applNum,
-        ];
-        if (!empty($dob)) {
-            $queryParams['dob'] = $dob;
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{applNum}')) {
+            $url = str_replace(
+                ['{apiKey}', '{applNum}', '{dob}'],
+                [urlencode($apiKey), urlencode($applNum), urlencode($dob)],
+                $baseUrl
+            );
+        } else {
+            $queryParams = [
+                'apiKey'  => $apiKey,
+                'applNum' => $applNum,
+            ];
+            if (!empty($dob)) {
+                $queryParams['dob'] = $dob;
+            }
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . http_build_query($queryParams);
         }
-
-        $url = "https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php?" . http_build_query($queryParams);
 
         try {
             $response = Http::withHeaders([

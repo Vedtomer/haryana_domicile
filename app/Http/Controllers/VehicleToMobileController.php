@@ -24,7 +24,19 @@ class VehicleToMobileController extends Controller
         $vehicleNo = $request->input('vehicle_number');
         $vehicleNo = strtoupper(trim(str_replace([' ', '-'], '', $vehicleNo)));
         
-        $url = "https://api.paanel.shop/api/gateway.php?key=DuXxZxX&v2num=" . urlencode($vehicleNo);
+        $baseUrl = trim(\App\Models\Setting::get('vehicle_to_mobile_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_to_mobile_api_key') ?: 'DuXxZxX');
+
+        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{v2num}') || str_contains($baseUrl, '{vehicle_number}')) {
+            $url = str_replace(
+                ['{key}', '{v2num}', '{vehicle_number}', '{reg_no}'],
+                [urlencode($apiKey), urlencode($vehicleNo), urlencode($vehicleNo), urlencode($vehicleNo)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&v2num=" . urlencode($vehicleNo);
+        }
 
         try {
             $response = Http::connectTimeout(10)->timeout(30)->get($url);

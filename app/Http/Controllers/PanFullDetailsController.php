@@ -22,7 +22,15 @@ class PanFullDetailsController extends Controller
         }
 
         $pan = strtoupper(trim($request->input('pan')));
-        $url = "https://nexus-dashboard.space/api/v1/pan_card_api/pan_full_details.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&pan_no=" . urlencode($pan);
+        $baseUrl = trim(\App\Models\Setting::get('nexus_pan_full_details_url') ?: 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_full_details.php');
+        $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{pan_no}') || str_contains($baseUrl, '{pan}')) {
+            $url = str_replace(['{apiKey}', '{pan_no}', '{pan}'], [urlencode($apiKey), urlencode($pan), urlencode($pan)], $baseUrl);
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&pan_no=" . urlencode($pan);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(20)->get($url);

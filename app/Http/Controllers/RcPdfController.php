@@ -22,7 +22,20 @@ class RcPdfController extends Controller
         }
 
         $vechilNo = strtoupper(trim(str_replace([' ', '-'], '', $request->input('vechil_no'))));
-        $url = "https://nexus-dashboard.space/api/v1/vahan_service_api/vechil_rc_pdf.php?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386&vechil_no=" . urlencode($vechilNo);
+
+        $baseUrl = trim(\App\Models\Setting::get('vahan_rc_pdf_url') ?: 'https://nexus-dashboard.space/api/v1/vahan_service_api/vechil_rc_pdf.php');
+        $apiKey = trim(\App\Models\Setting::get('vahan_rc_pdf_key') ?: (\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{vechil_no}') || str_contains($baseUrl, '{vehicle_no}')) {
+            $url = str_replace(
+                ['{apiKey}', '{vechil_no}', '{vehicle_no}', '{reg_no}'],
+                [urlencode($apiKey), urlencode($vechilNo), urlencode($vechilNo), urlencode($vechilNo)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&vechil_no=" . urlencode($vechilNo);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(25)->get($url);

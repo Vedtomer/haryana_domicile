@@ -22,8 +22,15 @@ class AadharToMaskPanController extends Controller
         }
 
         $aadhar = $request->input('aadhar');
+        $baseUrl = trim(\App\Models\Setting::get('nexus_aadhar_to_mask_pan_url') ?: 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_mask_pan.php');
         $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
-        $url = "https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_mask_pan.php?apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($aadhar);
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{uid}') || str_contains($baseUrl, '{aadhar}')) {
+            $url = str_replace(['{apiKey}', '{uid}', '{aadhar}'], [urlencode($apiKey), urlencode($aadhar), urlencode($aadhar)], $baseUrl);
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($aadhar);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(15)->get($url);

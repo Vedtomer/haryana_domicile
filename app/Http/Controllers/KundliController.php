@@ -46,7 +46,13 @@ class KundliController extends Controller
         }
 
         try {
-            $url = 'https://kundli.amd64.workers.dev/AstroChat/cities/allcountries/autocomplete?limit=10&key=' . urlencode($query);
+            $baseUrl = trim(\App\Models\Setting::get('kundli_city_autocomplete_url') ?: 'https://kundli.amd64.workers.dev/AstroChat/cities/allcountries/autocomplete');
+            if (str_contains($baseUrl, '{query}') || str_contains($baseUrl, '{key}')) {
+                $url = str_replace(['{query}', '{key}'], [urlencode($query), urlencode($query)], $baseUrl);
+            } else {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                $url = $baseUrl . $separator . "limit=10&key=" . urlencode($query);
+            }
             $response = Http::timeout(8)->get($url);
 
             if ($response->successful()) {

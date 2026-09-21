@@ -58,8 +58,10 @@ class IfscVerificationController extends Controller
         }
 
         try {
-            // Razorpay IFSC API - Open, official RBI-backed data
-            $response = Http::connectTimeout(6)->timeout(12)->get("https://ifsc.razorpay.com/{$ifsc}");
+            $baseUrl = rtrim(trim(\App\Models\Setting::get('ifsc_api_url') ?: 'https://ifsc.razorpay.com'), '/');
+            $url = str_contains($baseUrl, '{ifsc}') ? str_replace('{ifsc}', urlencode($ifsc), $baseUrl) : "{$baseUrl}/{$ifsc}";
+            // Razorpay / Custom IFSC API
+            $response = Http::connectTimeout(6)->timeout(12)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

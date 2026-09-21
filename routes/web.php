@@ -804,7 +804,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         $uid = trim($request->query('uid', ''));
         if (!$uid) return response()->json(['error' => 'Account number is required'], 400);
 
-        $url = "https://dhbvn.org.in/Rapdrp/BD?UID=" . $uid;
+        $baseUrl = trim(\App\Models\Setting::get('dhbvn_bill_url') ?: 'https://dhbvn.org.in/Rapdrp/BD?UID=');
+        $url = str_contains($baseUrl, '{uid}') ? str_replace('{uid}', urlencode($uid), $baseUrl) : $baseUrl . urlencode($uid);
         try {
             $response = \Illuminate\Support\Facades\Http::withoutVerifying()
                 ->timeout(15)
@@ -847,7 +848,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         $uid = trim($request->query('uid', ''));
         if (!$uid) return response()->json(['error' => 'Account number is required'], 400);
 
-        $url = "https://uhbvn.org.in/Rapdrp/BD?UID=" . $uid;
+        $baseUrl = trim(\App\Models\Setting::get('uhbvn_bill_url') ?: 'https://uhbvn.org.in/Rapdrp/BD?UID=');
+        $url = str_contains($baseUrl, '{uid}') ? str_replace('{uid}', urlencode($uid), $baseUrl) : $baseUrl . urlencode($uid);
         try {
             $response = \Illuminate\Support\Facades\Http::withoutVerifying()
                 ->timeout(15)
@@ -1141,7 +1143,19 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         }
 
         $cleanRegNo = strtoupper(trim(str_replace([' ', '-'], '', $regNo)));
-        $url = "https://api.paanel.shop/api/gateway.php?key=SamXverma&Policy=" . urlencode($cleanRegNo);
+        $baseUrl = trim(\App\Models\Setting::get('vehicle_details_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_details_api_key') ?: 'SamXverma');
+
+        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{reg_no}')) {
+            $url = str_replace(
+                ['{key}', '{Policy}', '{reg_no}', '{vehicle_number}'],
+                [urlencode($apiKey), urlencode($cleanRegNo), urlencode($cleanRegNo), urlencode($cleanRegNo)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&Policy=" . urlencode($cleanRegNo);
+        }
         $response = \Illuminate\Support\Facades\Http::connectTimeout(10)->timeout(30)->get($url);
 
         if ($response->successful()) {

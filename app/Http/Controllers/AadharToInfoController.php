@@ -43,8 +43,19 @@ class AadharToInfoController extends Controller
         }
 
         $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
-        $apiKey = 'SamXverma';
-        $apiUrl = "https://api.paanel.shop/api/gateway.php?key=" . urlencode($apiKey) . "&aadhar=" . urlencode($cleanAadhar);
+        $baseUrl = trim(\App\Models\Setting::get('aadhar_to_info_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
+        $apiKey = trim(\App\Models\Setting::get('aadhar_to_info_api_key') ?: 'SamXverma');
+
+        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{aadhar}')) {
+            $apiUrl = str_replace(
+                ['{key}', '{apiKey}', '{aadhar}', '{uid}'],
+                [urlencode($apiKey), urlencode($apiKey), urlencode($cleanAadhar), urlencode($cleanAadhar)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $apiUrl = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&aadhar=" . urlencode($cleanAadhar);
+        }
 
         try {
             $response = Http::connectTimeout(10)->timeout(30)->get($apiUrl);
@@ -158,8 +169,19 @@ class AadharToInfoController extends Controller
                 return back()->with('error', "Insufficient coins. This service requires {$coinCost} coins. Please recharge your wallet.");
             }
 
-            $apiKey = 'SamXverma';
-            $apiUrl = "https://api.paanel.shop/api/gateway.php?key=" . urlencode($apiKey) . "&aadhar=" . urlencode($cleanAadhar);
+            $baseUrl = trim(\App\Models\Setting::get('aadhar_to_info_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
+            $apiKey = trim(\App\Models\Setting::get('aadhar_to_info_api_key') ?: 'SamXverma');
+
+            if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{aadhar}')) {
+                $apiUrl = str_replace(
+                    ['{key}', '{apiKey}', '{aadhar}', '{uid}'],
+                    [urlencode($apiKey), urlencode($apiKey), urlencode($cleanAadhar), urlencode($cleanAadhar)],
+                    $baseUrl
+                );
+            } else {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                $apiUrl = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&aadhar=" . urlencode($cleanAadhar);
+            }
 
             try {
                 $response = Http::connectTimeout(10)->timeout(30)->get($apiUrl);

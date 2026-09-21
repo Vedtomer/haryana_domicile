@@ -31,11 +31,19 @@ class PanToAadharController extends Controller
         // Let's pass it exactly as user typed (they should enter DD/MM/YYYY usually)
         $dob = trim($request->input('dob'));
 
-        $url = "https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_aadhar.php" .
-               "?apiKey=38cc07892c07c566e3ce1a3289c589e284954d7c0e593386" .
-               "&pan=" . urlencode($pan) .
-               "&name=" . urlencode($name) .
-               "&dob=" . urlencode($dob);
+        $baseUrl = trim(\App\Models\Setting::get('nexus_pan_to_aadhar_url') ?: 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_aadhar.php');
+        $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{pan}') || str_contains($baseUrl, '{name}')) {
+            $url = str_replace(
+                ['{apiKey}', '{pan}', '{name}', '{dob}'],
+                [urlencode($apiKey), urlencode($pan), urlencode($name), urlencode($dob)],
+                $baseUrl
+            );
+        } else {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&pan=" . urlencode($pan) . "&name=" . urlencode($name) . "&dob=" . urlencode($dob);
+        }
 
         try {
             $response = Http::connectTimeout(5)->timeout(20)->get($url);

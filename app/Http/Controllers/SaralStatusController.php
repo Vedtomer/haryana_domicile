@@ -29,6 +29,7 @@ class SaralStatusController extends Controller
 
         $user = auth()->user();
 
+        $portalUrl = trim(\App\Models\Setting::get('saral_status_url') ?: 'https://edisha.gov.in/eForms/Status');
         $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36';
 
         try {
@@ -37,7 +38,7 @@ class SaralStatusController extends Controller
                 'User-Agent' => $userAgent,
                 'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
                 'Accept-Language' => 'en-US,en;q=0.9',
-            ])->get('https://edisha.gov.in/eForms/Status');
+            ])->get($portalUrl);
             
             if (!$response->successful()) {
                 return response()->json([
@@ -68,10 +69,10 @@ class SaralStatusController extends Controller
             'User-Agent' => $userAgent,
             'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
             'Accept-Language' => 'en-US,en;q=0.9',
-            'Referer' => 'https://edisha.gov.in/eForms/Status',
-            'Origin' => 'https://edisha.gov.in',
+            'Referer' => $portalUrl,
+            'Origin' => parse_url($portalUrl, PHP_URL_SCHEME) . '://' . parse_url($portalUrl, PHP_URL_HOST),
             'Content-Type' => 'application/x-www-form-urlencoded'
-        ])->asForm()->post('https://edisha.gov.in/eForms/Status', [
+        ])->asForm()->post($portalUrl, [
             '__VIEWSTATE' => $viewstateMatch[1],
             '__VIEWSTATEGENERATOR' => $generatorMatch[1],
             'txtETranID' => $saralId,
@@ -92,8 +93,8 @@ class SaralStatusController extends Controller
                 'Cookie' => $postCookies,
                 'User-Agent' => $userAgent,
                 'Content-Type' => 'application/x-www-form-urlencoded',
-                'Referer' => 'https://edisha.gov.in/eForms/Status'
-            ])->asForm()->post('https://edisha.gov.in/eForms/Status', [
+                'Referer' => $portalUrl
+            ])->asForm()->post($portalUrl, [
                 '__VIEWSTATE' => $postViewstateMatch[1] ?? '',
                 '__VIEWSTATEGENERATOR' => $postGeneratorMatch[1] ?? '',
                 'txtEtranId' => $saralId,

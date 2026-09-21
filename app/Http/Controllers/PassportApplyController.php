@@ -62,7 +62,9 @@ class PassportApplyController extends Controller
         }
 
         try {
-            $response = Http::timeout(5)->get("https://api.postalpincode.in/pincode/{$cleanPincode}");
+            $baseUrl = rtrim(trim(\App\Models\Setting::get('pincode_api_url') ?: 'https://api.postalpincode.in/pincode'), '/');
+            $url = str_contains($baseUrl, '{pincode}') ? str_replace('{pincode}', urlencode($cleanPincode), $baseUrl) : "{$baseUrl}/{$cleanPincode}";
+            $response = Http::timeout(5)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

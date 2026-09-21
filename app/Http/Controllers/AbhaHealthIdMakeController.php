@@ -65,10 +65,10 @@ class AbhaHealthIdMakeController extends Controller
         // ABDM v3 API CONFIGURATION (Put your ABDM / ABHA v3 Gateway Credentials here)
         // Official Portal: https://abha.abdm.gov.in/abha/v3
         // =========================================================================
-        $apiUrl = config('services.abha.api_url') ?: env('ABHA_API_URL', 'https://abha.abdm.gov.in/abha/v3');
-        $apiKey = config('services.abha.api_key') ?: env('ABHA_API_KEY', '');
-        $clientId = config('services.abha.client_id') ?: env('ABHA_CLIENT_ID', '');
-        $clientSecret = config('services.abha.client_secret') ?: env('ABHA_CLIENT_SECRET', '');
+        $apiUrl = \App\Models\Setting::get('abha_api_url') ?: (config('services.abha.api_url') ?: env('ABHA_API_URL', 'https://abha.abdm.gov.in/abha/v3'));
+        $apiKey = \App\Models\Setting::get('abha_api_key') ?: (config('services.abha.api_key') ?: env('ABHA_API_KEY', ''));
+        $clientId = \App\Models\Setting::get('abha_client_id') ?: (config('services.abha.client_id') ?: env('ABHA_CLIENT_ID', ''));
+        $clientSecret = \App\Models\Setting::get('abha_client_secret') ?: (config('services.abha.client_secret') ?: env('ABHA_CLIENT_SECRET', ''));
         // =========================================================================
 
         try {
@@ -158,8 +158,8 @@ class AbhaHealthIdMakeController extends Controller
         // =========================================================================
         // ABDM v3 API CONFIGURATION
         // =========================================================================
-        $apiUrl = config('services.abha.api_url') ?: env('ABHA_API_URL', 'https://abha.abdm.gov.in/abha/v3');
-        $apiKey = config('services.abha.api_key') ?: env('ABHA_API_KEY', '');
+        $apiUrl = \App\Models\Setting::get('abha_api_url') ?: (config('services.abha.api_url') ?: env('ABHA_API_URL', 'https://abha.abdm.gov.in/abha/v3'));
+        $apiKey = \App\Models\Setting::get('abha_api_key') ?: (config('services.abha.api_key') ?: env('ABHA_API_KEY', ''));
         // =========================================================================
 
         try {

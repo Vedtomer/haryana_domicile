@@ -18,10 +18,13 @@ class PincodeLookupController extends Controller
             return response()->json(['message' => 'Invalid pincode.'], 422);
         }
 
+        $baseUrl = rtrim(trim(\App\Models\Setting::get('pincode_api_url') ?: 'https://api.postalpincode.in/pincode'), '/');
+        $url = str_contains($baseUrl, '{pincode}') ? str_replace('{pincode}', urlencode($pincode), $baseUrl) : "{$baseUrl}/{$pincode}";
+
         // The API rejects requests without a browser-like User-Agent.
         $response = Http::withHeaders(['User-Agent' => 'Mozilla/5.0'])
             ->timeout(5)
-            ->get("https://api.postalpincode.in/pincode/{$pincode}");
+            ->get($url);
         $result = $response->json()[0] ?? null;
         $postOffice = $result['PostOffice'][0] ?? null;
 
