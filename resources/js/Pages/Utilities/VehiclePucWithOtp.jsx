@@ -13,6 +13,7 @@ export default function VehiclePucWithOtp() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [timer, setTimer] = useState(60);
     const [timerActive, setTimerActive] = useState(false);
 
@@ -96,6 +97,39 @@ export default function VehiclePucWithOtp() {
             setError(err.response?.data?.message || 'Error occurred during OTP verification.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownloadPdf = async (pucData) => {
+        if (!pucData) return;
+        if (pucData.pdf_url) {
+            window.open(pucData.pdf_url, '_blank');
+            return;
+        }
+
+        setDownloadingPdf(true);
+        try {
+            const res = await axios.post('/utilities/vehicle-puc/download-pdf', {
+                puc: pucData,
+                reg_no: pucData.reg_no || vehicleNo,
+            }, {
+                responseType: 'blob'
+            });
+
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', `PUC_Certificate_${(pucData.reg_no || vehicleNo).replace(/\s+/g, '')}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (err) {
+            console.error('PUC PDF Download Error:', err);
+            alert('Failed to generate/download PDF. Please try again.');
+        } finally {
+            setDownloadingPdf(false);
         }
     };
 
@@ -292,14 +326,25 @@ export default function VehiclePucWithOtp() {
                                 </h3>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => handleDownloadPdf(result)}
+                                    disabled={downloadingPdf}
+                                    className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl text-sm font-extrabold flex items-center gap-2 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    <span className="material-symbols-outlined text-lg">
+                                        {downloadingPdf ? 'hourglass_top' : 'download'}
+                                    </span>
+                                    <span>{downloadingPdf ? 'Generating PDF...' : 'Download PDF'}</span>
+                                </button>
                                 <button
                                     type="button"
                                     onClick={() => window.print()}
-                                    className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-md transition-all cursor-pointer"
+                                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold flex items-center gap-2 transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
                                 >
                                     <span className="material-symbols-outlined text-lg">print</span>
-                                    Print Certificate
+                                    Print
                                 </button>
                                 <button
                                     type="button"

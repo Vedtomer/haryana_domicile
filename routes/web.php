@@ -1315,6 +1315,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'sendOtp'])->name('utilities.vehicle-puc-with-otp.send-otp');
     Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithOtpController::class, 'verifyOtp'])->name('utilities.vehicle-puc-with-otp.verify-otp');
 
+    // PUC PDF Download (Both With OTP & Without OTP)
+    Route::match(['get', 'post'], '/utilities/vehicle-puc/download-pdf', [\App\Http\Controllers\VehiclePucPdfController::class, 'downloadPdf'])->name('utilities.vehicle-puc.download-pdf');
+
     // 7. S.I.R Voter Card List
     Route::get('/utilities/sir-voter-card-list', function () {
         return Inertia::render('Utilities/SirVoterCardList');

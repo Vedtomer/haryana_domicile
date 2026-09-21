@@ -124,6 +124,10 @@ class VehiclePucWithOtpController extends Controller
                     if (!empty($pucData['puc_no']) || !empty($pucData['valid_upto'])) {
                         $this->deductCoinsAndLogRequest($user, $service, $coinCost, $vehicleNo, $pucData['puc_no'] ?? 'VERIFIED');
 
+                        if (!empty($data['pdf_url']) && empty($pucData['pdf_url'])) {
+                            $pucData['pdf_url'] = $data['pdf_url'];
+                        }
+
                         return response()->json([
                             'success' => true,
                             'data' => $pucData,
