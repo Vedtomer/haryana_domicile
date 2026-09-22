@@ -1304,10 +1304,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.vehicle-details.download');
 
     // 1. Aadhar Card to PPP ID Instant
-    Route::get('/utilities/aadhar-to-ppp-id', function () {
-        return Inertia::render('Utilities/AadharToPppId');
-    })->name('utilities.aadhar-to-ppp-id');
+    Route::get('/utilities/aadhar-to-ppp-id', [\App\Http\Controllers\AadharToPppIdController::class, 'index'])->name('utilities.aadhar-to-ppp-id');
     Route::post('/utilities/aadhar-to-ppp-id/search', [\App\Http\Controllers\AadharToPppIdController::class, 'search'])->name('utilities.aadhar-to-ppp-id.search');
+    Route::post('/utilities/aadhar-to-ppp-id/update-api', [\App\Http\Controllers\AadharToPppIdController::class, 'updateApi'])->name('utilities.aadhar-to-ppp-id.update-api');
 
     // 2. PPP ID to Aadhar Number (All Members - Without OTP)
     Route::get('/utilities/ppp-to-aadhar-all-members', function () {

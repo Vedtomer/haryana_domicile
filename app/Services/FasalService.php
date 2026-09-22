@@ -2,89 +2,120 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Support\Facades\Log;
 
 class FasalService
 {
-    protected $baseUrl = 'https://fasal.haryana.gov.in';
+    protected string $baseUrl = 'https://fasal.haryana.gov.in';
 
-    public function initSession()
+    /**
+     * Search Family ID (PPP ID) by Aadhaar Number directly from fasal.haryana.gov.in
+     *
+     * Flow:
+     * 1. Initialize session on https://fasal.haryana.gov.in/home/login to capture live ASP.NET & BIG-IP cookies.
+     * 2. Post to /Home/GetFDbyAadhar with the authenticated cookie jar and headers.
+     *
+     * @param string $aadharNumber 12-digit Aadhaar number
+     * @return array
+     */
+    public function searchByAadhar(string $aadharNumber): array
     {
-        $response = Http::withoutVerifying()
-            ->withHeaders([
-                'Host' => 'fasal.haryana.gov.in',
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0',
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language' => 'en-US,en;q=0.9',
-                'Connection' => 'keep-alive',
-                'Upgrade-Insecure-Requests' => '1',
-            ])
-            ->withCookies([
-                '_ga_2MLFLNJ7PY' => 'GS2.1.s1778588831$o18$g0$t1778588831$j60$l0$h0',
-                '_ga' => 'GA1.1.244193634.1773492724',
-                '_ga_MGQ7MJM17H' => 'GS2.3.s1778582634$o16$g1$t1778582929$j60$l0$h0',
-                '_gid' => 'GA1.3.1162409138.1778582634',
-            ], 'fasal.haryana.gov.in')
-            ->get("{$this->baseUrl}/home/login");
-
-        return $response->successful();
-    }
-
-    public function generateCaptcha()
-    {
-        $response = Http::withoutVerifying()
-            ->withHeaders([
-                'Host' => 'fasal.haryana.gov.in',
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0',
-                'Accept' => '*/*',
-                'Accept-Language' => 'en-US,en;q=0.9',
-                'X-Requested-With' => 'XMLHttpRequest',
-                'Origin' => 'https://fasal.haryana.gov.in',
-                'Referer' => 'https://fasal.haryana.gov.in/home/login',
-                'Sec-Fetch-Dest' => 'empty',
-                'Sec-Fetch-Mode' => 'cors',
-                'Sec-Fetch-Site' => 'same-origin',
-                'Connection' => 'keep-alive',
-            ])
-            ->withCookies([
-                '_ga_2MLFLNJ7PY' => 'GS2.1.s1778588831$o18$g0$t1778588831$j60$l0$h0',
-                '_ga' => 'GA1.1.244193634.1773492724',
-                '_ga_MGQ7MJM17H' => 'GS2.3.s1778582634$o16$g1$t1778582929$j60$l0$h0',
-                '_gid' => 'GA1.3.1162409138.1778582634',
-                'ASP.NET_SessionId' => '5s5pph5id1ps5yadxqsf3ld0',
-                'BIGipServerMFMB_80_fasal' => '!HSJqW8WPYr0kgP4SIP2SvHzGXFPW1lUTSPOr2KP+ui91ALYS8VZFVAecjNg88GAa3GO3JpkcSjDxUjgIuvapQNFEgqKtUCu7N42Dmtg=',
-            ], 'fasal.haryana.gov.in')
-            ->post("{$this->baseUrl}/Officers/GenerateCaptcha");
-
-        if ($response->successful()) {
-            return $response->body(); // This should be the captcha data (binary or base64)
+        $cleanAadhar = preg_replace('/\D/', '', $aadharNumber);
+        if (strlen($cleanAadhar) !== 12) {
+            return [
+                'success' => false,
+                'message' => 'Please enter a valid 12-digit Aadhaar number.',
+            ];
         }
 
-        Log::error('Fasal Captcha API failed', [
-            'status' => $response->status(),
-            'body' => $response->body(),
+        $cookieJar = new CookieJar();
+        $client = new Client([
+            'cookies' => $cookieJar,
+            'verify' => false,
+            'timeout' => 20,
+            'connect_timeout' => 8,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language' => 'en-US,en;q=0.9,hi;q=0.8',
+            ],
         ]);
 
-        return null;
+        try {
+            // 1. Visit /home/login to initialize cookies and establish session
+            $loginUrl = "{$this->baseUrl}/home/login";
+            $client->get($loginUrl);
+
+            // 2. Query GetFDbyAadhar endpoint with active session
+            $endpoint = "{$this->baseUrl}/Home/GetFDbyAadhar?aadharnum=" . urlencode($cleanAadhar);
+
+            $response = $client->post($endpoint, [
+                'headers' => [
+                    'X-Requested-With' => 'XMLHttpRequest',
+                    'Origin' => $this->baseUrl,
+                    'Referer' => $loginUrl,
+                    'Accept' => 'application/json, text/javascript, */*; q=0.01',
+                    'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+                ],
+                'body' => 'Aadhar=' . urlencode($cleanAadhar),
+            ]);
+
+            $body = (string) $response->getBody();
+            $data = json_decode($body, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
+                Log::warning('FasalService: Non-JSON response from portal: ' . substr($body, 0, 200));
+                return [
+                    'success' => false,
+                    'message' => 'Haryana Fasal portal responded with an invalid format. Please try again.',
+                ];
+            }
+
+            // Success case: Payload contains familyID
+            if (!empty($data['success']) && isset($data['Payload'][0]['familyID'])) {
+                $familyId = trim((string) $data['Payload'][0]['familyID']);
+                $memberName = $data['Payload'][0]['memberName'] ?? null;
+
+                return [
+                    'success' => true,
+                    'family_id' => $familyId,
+                    'member_name' => $memberName,
+                    'message' => 'Family ID found successfully.',
+                    'raw' => $data,
+                ];
+            }
+
+            // Informative error from portal
+            $msg = $data['message'] ?? null;
+            if (empty($msg) || $msg === '1' || $data['Payload'] == '1') {
+                $msg = 'कृपया मान्य आधार नंबर दर्ज करें या इस आधार से कोई Family ID (PPP) लिंक नहीं है।';
+            }
+
+            return [
+                'success' => false,
+                'message' => $msg,
+                'raw' => $data,
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('FasalService::searchByAadhar Exception: ' . $e->getMessage());
+
+            return [
+                'success' => false,
+                'message' => 'Haryana Fasal Portal server is currently busy or unreachable. Please try again in a few moments.',
+            ];
+        }
     }
 
-    public function searchByAadhar($aadharNumber)
+    public function initSession(): bool
     {
-        // TODO: Implement actual search endpoint once identified
-        // This will likely be a POST request to a search endpoint with Aadhar and Captcha
-        
-        /*
-        $response = Http::withoutVerifying()
-            ->withHeaders([...])
-            ->withCookies([...])
-            ->asForm()
-            ->post("{$this->baseUrl}/Path/To/Search", [
-                'Aadhar' => $aadharNumber,
-                'Captcha' => $captcha,
-            ]);
-        */
-
-        return null;
+        try {
+            $client = new Client(['verify' => false, 'timeout' => 10]);
+            $response = $client->get("{$this->baseUrl}/home/login");
+            return $response->getStatusCode() === 200;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 }
