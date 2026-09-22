@@ -1,1 +1,0 @@
-import{j as r}from"./app-BPq4LQnp.js";import o from"./Create-oIxfcVjB.js";import"./app-jwYps_xk.js";import"./AdminLayout-irTlbKms.js";import"./ThemeToggle-iZifvtKF.js";import"./FloatingInput-7uiFWCD1.js";function f(t){return r.jsx(o,{...t})}export{f as default};
