@@ -62,6 +62,7 @@ class UserController extends Controller
 
         $data['raw_password'] = $data['password'];
         $data['password'] = Hash::make($data['password']);
+        $data['allowed_devices'] = $data['allowed_devices'] ?? 0;
         
         if (auth()->user()->type === 'admin' && $data['type'] !== 'user') {
             abort(403, 'You can only create regular users.');

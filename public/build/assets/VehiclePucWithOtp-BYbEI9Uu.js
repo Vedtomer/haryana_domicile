@@ -1,0 +1,1 @@
+import{j as i}from"./app-C-9IYDnY.js";import o from"./VehiclePucWithoutOtp-BkqngG5y.js";import"./app-CnOtTPxI.js";import"./AdminLayout-CJtqERQ2.js";import"./ThemeToggle-CSIPFmZA.js";function c(t){return i.jsx(o,{...t})}export{c as default};

@@ -126,7 +126,7 @@ class LicenseController extends Controller
         }
 
         // 2. If user is already bound to desktop(s), ensure they are redeeming from an allowed desktop slot
-        $allowedDevices = (int) ($user->allowed_devices ?? 1);
+        $allowedDevices = (int) ($user->allowed_devices ?? 0);
         if ($allowedDevices > 0 && !empty($deviceToken)) {
             $matchesSlot1 = !empty($user->license_device_id) && ($user->license_device_id === $deviceToken);
             $matchesSlot2 = ($allowedDevices >= 2) && !empty($user->license_device_id_2) && ($user->license_device_id_2 === $deviceToken);

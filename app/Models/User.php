@@ -170,7 +170,7 @@ class User extends Authenticatable implements FilamentUser
         $data = ['license_expires_at' => $newExpiry];
 
         if ($deviceId) {
-            $allowed = (int) ($this->allowed_devices ?? 1);
+            $allowed = (int) ($this->allowed_devices ?? 0);
             if ($allowed > 0) {
                 if (empty($this->license_device_id) || $this->license_device_id === $deviceId) {
                     $data['license_device_id'] = $deviceId;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, Link, useForm, router } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import FloatingInput from '../../../Components/FloatingInput';
 
@@ -13,7 +13,7 @@ export default function Create({ user = null }) {
         password: '',
         type: user?.type || 'user',
         coins: user?.coins || 0,
-        allowed_devices: user !== null && user?.allowed_devices !== undefined ? user.allowed_devices : 1,
+        allowed_devices: 0,
         is_active: user !== null ? !!user.is_active : true,
     });
 
@@ -91,95 +91,7 @@ export default function Create({ user = null }) {
                                     error={errors.password}
                                 />
                             </div>
-                            
-                            {/* Desktop / PC Limit Setting */}
-                            <div className="pt-2">
-                                <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
-                                    Desktop / PC Access Limit (कंप्यूटर लिमिट)
-                                </label>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setData('allowed_devices', 1)}
-                                        className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                                            Number(data.allowed_devices) === 1
-                                                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 dark:border-blue-500 ring-2 ring-blue-500'
-                                                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="font-bold text-sm text-slate-800 dark:text-slate-100">1 PC (Default)</span>
-                                            <span className="text-blue-600 text-xs font-semibold">Standard</span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Sirf 1 desktop computer par access rahega.</p>
-                                    </button>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setData('allowed_devices', 2)}
-                                        className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                                            Number(data.allowed_devices) === 2
-                                                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 dark:border-blue-500 ring-2 ring-blue-500'
-                                                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="font-bold text-sm text-slate-800 dark:text-slate-100">2 PCs (Dual Access)</span>
-                                            <span className="text-emerald-600 text-xs font-semibold">2 PC Access</span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">2 alag-alag PCs/laptops par use kar sakte hain.</p>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setData('allowed_devices', 0)}
-                                        className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                                            Number(data.allowed_devices) === 0
-                                                ? 'border-purple-600 bg-purple-50/70 dark:bg-purple-950/40 dark:border-purple-500 ring-2 ring-purple-500'
-                                                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="font-bold text-sm text-slate-800 dark:text-slate-100">No Lock (Unlimited)</span>
-                                            <span className="text-purple-600 text-xs font-semibold">Open</span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Koi PC lock nahi hoga, kisi bhi computer par login hoga.</p>
-                                    </button>
-                                </div>
-                                {errors.allowed_devices && <p className="text-red-500 text-xs mt-1">{errors.allowed_devices}</p>}
-                            </div>
-
-                            {/* If Edit mode and user has bound devices */}
-                            {isEdit && (user.license_device_id || user.license_device_id_2) && (
-                                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div className="space-y-1">
-                                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Currently Bound PCs</div>
-                                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex flex-wrap items-center gap-3">
-                                            {user.license_device_name && (
-                                                <span className="inline-flex items-center gap-1">
-                                                    💻 PC 1: <span className="font-normal text-slate-600 dark:text-slate-400">{user.license_device_name}</span>
-                                                </span>
-                                            )}
-                                            {user.license_device_name_2 && (
-                                                <span className="inline-flex items-center gap-1">
-                                                    💻 PC 2: <span className="font-normal text-slate-600 dark:text-slate-400">{user.license_device_name_2}</span>
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            if (confirm(`Reset PC hardware lock for ${user.name || 'this user'}? Bound PCs will be unlinked.`)) {
-                                                router.post(`/admin/users/${user.id}/reset-device-lock`);
-                                            }
-                                        }}
-                                        className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors self-start sm:self-auto cursor-pointer"
-                                    >
-                                        Reset Device Bindings
-                                    </button>
-                                </div>
-                            )}
 
                             <div className="pt-4 flex items-center">
                                 <label className="relative flex cursor-pointer items-center rounded-full p-3" htmlFor="is_active">

@@ -51,14 +51,6 @@ export default function Index({ users }) {
         router.post(`/admin/users/${user.id}/clear-coins`, {}, { preserveScroll: true });
     };
 
-    const handleDeviceLimitChange = (userId, limit) => {
-        router.patch(`/admin/users/${userId}/update-device-limit`, { allowed_devices: limit }, { preserveScroll: true });
-    };
-
-    const handleResetDeviceLock = (user) => {
-        if (!confirm(`Reset PC hardware lock for ${user.name || user.phone || 'this user'}? Bound PCs will be unlinked.`)) return;
-        router.post(`/admin/users/${user.id}/reset-device-lock`, {}, { preserveScroll: true });
-    };
 
     const handleDelete = (user) => {
         if (!confirm(`Delete ${user.name || user.email || user.phone || 'this user'}? This cannot be undone.`)) {
@@ -93,7 +85,6 @@ export default function Index({ users }) {
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral & Coins</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
-                                    <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">PC Access</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -163,63 +154,7 @@ export default function Index({ users }) {
                                             {new Date(user.created_at).toLocaleDateString()}
                                         </div>
                                     </td>
-                                    <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap">
-                                        <div className="flex flex-col gap-1.5">
-                                            <div className="flex items-center gap-1.5">
-                                                <select
-                                                    value={user.allowed_devices ?? 1}
-                                                    onChange={(e) => handleDeviceLimitChange(user.id, parseInt(e.target.value))}
-                                                    className={`text-xs font-semibold rounded-lg px-2 py-1 border shadow-sm transition-colors cursor-pointer ${
-                                                        (user.allowed_devices === 2)
-                                                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800'
-                                                            : (user.allowed_devices === 0)
-                                                            ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800'
-                                                            : 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
-                                                    }`}
-                                                    title="Change PC limit for this user"
-                                                >
-                                                    <option value={1}>1 PC (Default)</option>
-                                                    <option value={2}>2 PCs</option>
-                                                    <option value={0}>No Lock (Any PC)</option>
-                                                </select>
 
-                                                {(user.license_device_id || user.license_device_id_2) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleResetDeviceLock(user)}
-                                                        className="inline-flex items-center gap-0.5 text-[10px] font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-950/50 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-900 px-1.5 py-0.5 rounded transition-colors"
-                                                        title="Reset bound PC hardware lock"
-                                                    >
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                                                        Reset
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
-                                                {user.allowed_devices === 0 ? (
-                                                    <span className="text-purple-600 dark:text-purple-400 font-medium">Unlimited PCs</span>
-                                                ) : (!user.license_device_id && !user.license_device_id_2) ? (
-                                                    <span className="text-slate-400 italic">Not bound yet</span>
-                                                ) : (
-                                                    <>
-                                                        {user.license_device_name && (
-                                                            <div className="flex items-center gap-1 truncate max-w-[170px]" title={`PC 1: ${user.license_device_name}`}>
-                                                                <span className="font-bold text-[10px] text-slate-600 dark:text-slate-300">PC 1:</span>
-                                                                <span className="truncate">{user.license_device_name}</span>
-                                                            </div>
-                                                        )}
-                                                        {user.license_device_name_2 && (
-                                                            <div className="flex items-center gap-1 truncate max-w-[170px]" title={`PC 2: ${user.license_device_name_2}`}>
-                                                                <span className="font-bold text-[10px] text-blue-600 dark:text-blue-400">PC 2:</span>
-                                                                <span className="truncate">{user.license_device_name_2}</span>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </td>
                                     <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap text-center">
                                         <button
                                             onClick={() => handleToggleStatus(user.id)}

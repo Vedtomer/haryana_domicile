@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'allowed_devices')) {
-                $table->unsignedTinyInteger('allowed_devices')->default(1)->after('is_active');
+                $table->unsignedTinyInteger('allowed_devices')->default(0)->after('is_active');
             }
             if (!Schema::hasColumn('users', 'license_device_id_2')) {
                 $table->string('license_device_id_2')->nullable()->after('license_device_bound_at');
