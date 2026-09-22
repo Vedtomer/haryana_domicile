@@ -19,22 +19,17 @@ const DARK_TONES = new Set(['dark-blue', 'dark-green', 'dark-purple', 'dark-ambe
 const ICON_MAP = {
     'Total Services': 'home_repair_service',
     'Manage Users': 'group',
-    'API Settings': 'key',
     'User Permissions': 'admin_panel_settings',
     'Pending Requests': 'hourglass_top',
     'Add Service': 'add_circle',
     'Manage Service': 'home_repair_service',
     'Manage Services': 'home_repair_service',
     'Service Requests': 'assignment',
-    'Reactivation Requests': 'how_to_reg',
     'My Coin Balance': 'monetization_on',
     'Coin Requests': 'monetization_on',
     'History & My Requests': 'history',
     'Pending': 'pending_actions',
     'Completed': 'check_circle',
-    'Portal License Keys': 'vpn_key',
-    'Manage License Keys': 'vpn_key',
-    '6M Portal License': 'vpn_key',
 };
 
 
@@ -340,10 +335,10 @@ export default function Dashboard({ services, stats, isAdmin }) {
                                 <span className="material-symbols-outlined text-3xl">lock_person</span>
                             </div>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">
-                                No Services Activated Yet
+                                No Services Assigned Yet
                             </h3>
                             <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed mb-4">
-                                Aapke account par abhi koi service activate nahi hai. Services access karne ke liye kripya Admin se permission activate karwayein.
+                                Aapke account par abhi koi service assign nahi hai. Services access karne ke liye kripya Admin se permission configure karwayein.
                             </p>
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300">
                                 <span className="material-symbols-outlined text-[16px]">verified_user</span>

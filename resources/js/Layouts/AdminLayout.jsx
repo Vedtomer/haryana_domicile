@@ -4,7 +4,6 @@ import axios from 'axios';
 import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
-import LicenseModal from '../Components/LicenseModal';
 import SwitchAccountModal from '../Components/SwitchAccountModal';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
@@ -16,10 +15,7 @@ export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash, switchAccount } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [licenseModalOpen, setLicenseModalOpen] = useState(false);
     const [switchAccountModalOpen, setSwitchAccountModalOpen] = useState(false);
-    const [licenseModalTab, setLicenseModalTab] = useState('direct');
-    const [licensePromptService, setLicensePromptService] = useState(null);
 
     // Global Presence Heartbeat
     useEffect(() => {
@@ -31,22 +27,6 @@ export default function AdminLayout({ header, children }) {
         const timer = setInterval(sendPing, 45000);
         return () => clearInterval(timer);
     }, [auth?.user?.id]);
-
-    useEffect(() => {
-        const handleOpenLicense = (e) => {
-            setLicenseModalTab(e.detail?.tab || 'direct');
-            setLicensePromptService(e.detail?.service || null);
-            setLicenseModalOpen(true);
-        };
-        window.addEventListener('open-license-modal', handleOpenLicense);
-        return () => window.removeEventListener('open-license-modal', handleOpenLicense);
-    }, []);
-
-    const openLicense = (tab = 'direct') => {
-        setLicensePromptService(null);
-        setLicenseModalTab(tab);
-        setLicenseModalOpen(true);
-    };
 
     const { url } = usePage();
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
@@ -139,11 +119,6 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 Coin Requests
                             </NavItem>
-                            <NavItem href="/admin/license-keys" icon={
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
-                            }>
-                                License Keys
-                            </NavItem>
                             <NavItem href="/admin/referrals" icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
                             }>
@@ -229,28 +204,7 @@ export default function AdminLayout({ header, children }) {
                         </>
                     )}
 
-                     {isAdmin && (
-                         <>
-                             <Link
-                                 href="/admin/api-settings"
-                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all shadow-2xs"
-                                 title="Configure API Keys & Services"
-                             >
-                                 <span className="material-symbols-outlined text-[15px]">key</span>
-                                 <span className="hidden sm:inline">API Settings</span>
-                             </Link>
-                             <Link
-                                 href="/admin/license-keys"
-                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all shadow-2xs"
-                                 title="Manage Portal License Keys & Desktop Locks"
-                             >
-                                 <span className="material-symbols-outlined text-[15px]">vpn_key</span>
-                                 <span className="hidden sm:inline">License Keys</span>
-                             </Link>
-                         </>
-                     )}
-
-                     {/* Dark Mode Toggle */}
+                    {/* Dark Mode Toggle */}
                      <ThemeToggle variant="icon" />
 
                      <NotificationBell />
@@ -320,13 +274,6 @@ export default function AdminLayout({ header, children }) {
                                         API Settings
                                     </Link>
                                     <Link
-                                        href="/admin/license-keys"
-                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">vpn_key</span>
-                                        License Keys
-                                    </Link>
-                                    <Link
                                         href="/admin/payment-settings"
                                         className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                     >
@@ -383,13 +330,6 @@ export default function AdminLayout({ header, children }) {
             {dropdownOpen && (
                 <div className="fixed inset-0 z-20" onClick={() => setDropdownOpen(false)}></div>
             )}
-
-            <LicenseModal
-                isOpen={licenseModalOpen}
-                onClose={() => setLicenseModalOpen(false)}
-                initialTab={licenseModalTab}
-                promptService={licensePromptService}
-            />
 
             <SwitchAccountModal
                 isOpen={switchAccountModalOpen}

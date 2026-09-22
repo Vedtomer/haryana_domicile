@@ -76,15 +76,7 @@ class AuthController extends Controller
 
             if (!$user->is_active) {
                 Auth::logout();
-
-                // Inactivity-deactivated users get a special reactivation page
-                if ($user->deactivated_reason === 'inactivity') {
-                    return redirect('/reactivate?user_id=' . $user->id)
-                        ->with('info', 'Aapki ID inactive ho gayi hai. ₹99 reactivation fee de kar dobara activate karein.');
-                }
-
-                // Admin-banned users get generic error
-                return back()->withErrors(['login' => 'Your account has been deactivated by admin.'])->onlyInput('login');
+                return back()->withErrors(['login' => 'Your account has been deactivated. Please contact administrator.'])->onlyInput('login');
             }
 
             $request->session()->regenerate();

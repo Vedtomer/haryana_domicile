@@ -160,12 +160,6 @@ class DashboardController extends Controller
     private function adminStats(): array
     {
         try {
-            $activeKeys = \App\Models\LicenseKey::where('status', \App\Models\LicenseKey::STATUS_ACTIVE)->count();
-        } catch (\Throwable $e) {
-            $activeKeys = 0;
-        }
-
-        try {
             $userCount = User::where('type', 'user')->count();
         } catch (\Throwable $e) {
             $userCount = 0;
@@ -186,12 +180,6 @@ class DashboardController extends Controller
         }
 
         try {
-            $pendingReactivations = \App\Models\ReactivationRequest::where('status', 'pending')->count();
-        } catch (\Throwable $e) {
-            $pendingReactivations = 0;
-        }
-
-        try {
             $pendingCoins = \App\Models\CoinPurchaseRequest::where('status', 'pending')->count();
         } catch (\Throwable $e) {
             $pendingCoins = 0;
@@ -199,13 +187,10 @@ class DashboardController extends Controller
 
         return [
             ['label' => 'Manage Users', 'value' => $userCount, 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
-            ['label' => 'API Settings', 'value' => 'Configure Keys', 'tone' => 'dark-green', 'url' => '/admin/api-settings', 'icon' => 'key'],
-            ['label' => 'Manage License Keys', 'value' => "{$activeKeys} Active", 'tone' => 'dark-indigo', 'url' => '/admin/license-keys', 'icon' => 'vpn_key'],
             ['label' => 'Manage Services', 'value' => $serviceCount, 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
             ['label' => 'Pending Requests', 'value' => $pendingRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
             ['label' => 'Service Requests', 'value' => $totalRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests', 'icon' => 'assignment'],
-            ['label' => 'Reactivation Requests', 'value' => "{$pendingReactivations} Pending", 'tone' => 'dark-amber', 'url' => '/admin/reactivation-requests', 'icon' => 'how_to_reg'],
             ['label' => 'Coin Requests', 'value' => "{$pendingCoins} Pending", 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
         ];
     }
