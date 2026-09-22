@@ -49,6 +49,8 @@ class ApiSettingController extends Controller
                 'vehicle_details_api_key'     => Setting::get('vehicle_details_api_key', 'SamXverma'),
 
                 // Aadhaar Info & Updates
+                'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210'),
+                'mobile_to_info_api_key'             => Setting::get('mobile_to_info_api_key', '48hrs'),
                 'aadhar_to_info_api_url'             => Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'aadhar_to_info_api_key'             => Setting::get('aadhar_to_info_api_key', 'SamXverma'),
                 'aadhar_update_api_key'              => Setting::get('aadhar_update_api_key', config('services.aadhar_update.api_key', '')),
@@ -138,6 +140,8 @@ class ApiSettingController extends Controller
             'vehicle_details_api_key',
 
             // Aadhaar Info & Updates
+            'mobile_to_info_api_url',
+            'mobile_to_info_api_key',
             'aadhar_to_info_api_url',
             'aadhar_to_info_api_key',
             'aadhar_update_api_key',

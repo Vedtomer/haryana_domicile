@@ -178,4 +178,77 @@ class MobileToInfoTest extends TestCase
             'user_id' => $admin->id,
         ]);
     }
+
+    public function test_admin_can_update_mobile_to_info_api_settings(): void
+    {
+        $admin = User::factory()->create(['type' => 'admin', 'is_active' => true]);
+
+        $response = $this->actingAs($admin)
+            ->postJson('/utilities/mobile-to-info/update-api', [
+                'api_url' => 'https://custom-gateway.test/lookup',
+                'api_key' => 'newSecretKey123',
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'api_url' => 'https://custom-gateway.test/lookup',
+            'api_key' => 'newSecretKey123',
+        ]);
+
+        $this->assertEquals('https://custom-gateway.test/lookup', \App\Models\Setting::get('mobile_to_info_api_url'));
+        $this->assertEquals('newSecretKey123', \App\Models\Setting::get('mobile_to_info_api_key'));
+    }
+
+    public function test_regular_user_cannot_update_mobile_to_info_api_settings(): void
+    {
+        $user = User::factory()->create(['type' => 'user', 'is_active' => true]);
+
+        $response = $this->actingAs($user)
+            ->postJson('/utilities/mobile-to-info/update-api', [
+                'api_url' => 'https://hacker.test/api',
+                'api_key' => 'hack',
+            ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_search_uses_configured_custom_api(): void
+    {
+        \App\Models\Setting::set('mobile_to_info_api_url', 'https://mycustomapi.test/find?apikey={key}&phone={mobile}');
+        \App\Models\Setting::set('mobile_to_info_api_key', 'myKey999');
+
+        Http::fake([
+            'https://mycustomapi.test/find?apikey=myKey999&phone=9998887776' => Http::response([
+                'success' => true,
+                'results' => [
+                    [
+                        'mobile' => '9998887776',
+                        'name' => 'CUSTOM API RESULT',
+                        'circle' => 'JIO GUJARAT',
+                    ]
+                ],
+            ], 200),
+        ]);
+
+        $admin = User::factory()->create(['type' => 'admin', 'is_active' => true]);
+
+        $response = $this->actingAs($admin)
+            ->postJson('/utilities/mobile-to-info/search', [
+                'mobile' => '9998887776',
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'total' => 1,
+            'records' => [
+                [
+                    'name' => 'CUSTOM API RESULT',
+                    'circle' => 'JIO GUJARAT',
+                ]
+            ],
+        ]);
+    }
 }
+

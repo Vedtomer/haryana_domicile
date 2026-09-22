@@ -22,9 +22,46 @@ class MobileToInfoController extends Controller
         }
         $coinCost = $service ? $service->coin_cost : 149;
 
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
         return Inertia::render('Utilities/MobileToInfo', [
             'coinCost' => $coinCost,
             'service' => $service,
+            'isAdmin' => (bool) $isStaff,
+            'apiUrl' => $isStaff ? Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210') : null,
+            'apiKey' => $isStaff ? Setting::get('mobile_to_info_api_key', '48hrs') : null,
+        ]);
+    }
+
+    public function updateApi(Request $request)
+    {
+        $user = auth()->user();
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+        if (!$isStaff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized action. Only admins can configure API settings.',
+            ], 403);
+        }
+
+        $request->validate([
+            'api_url' => ['required', 'string'],
+            'api_key' => ['nullable', 'string'],
+        ], [
+            'api_url.required' => 'Please enter the API URL.',
+        ]);
+
+        $url = trim($request->input('api_url'));
+        $key = trim((string) $request->input('api_key', ''));
+
+        Setting::set('mobile_to_info_api_url', $url);
+        Setting::set('mobile_to_info_api_key', $key);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mobile to Info API configuration successfully saved!',
+            'api_url' => $url,
+            'api_key' => $key,
         ]);
     }
 
@@ -51,18 +88,34 @@ class MobileToInfoController extends Controller
         }
 
         $cleanMobile = preg_replace('/\D/', '', $request->input('mobile'));
-        $baseUrl = trim(Setting::get('mobile_to_info_api_url') ?: 'https://maikyaladledarlinggggg.watchwere19.workers.dev/');
+        $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210');
         $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: '48hrs');
 
-        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{q}') || str_contains($baseUrl, '{mobile}')) {
+        if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}')) {
             $apiUrl = str_replace(
                 ['{key}', '{apiKey}', '{q}', '{mobile}', '{number}'],
                 [urlencode($apiKey), urlencode($apiKey), urlencode($cleanMobile), urlencode($cleanMobile), urlencode($cleanMobile)],
-                $baseUrl
+                $rawUrl
             );
         } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $apiUrl = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&q=" . urlencode($cleanMobile);
+            $parts = parse_url($rawUrl);
+            $query = [];
+            if (!empty($parts['query'])) {
+                parse_str($parts['query'], $query);
+            }
+
+            $query['q'] = $cleanMobile;
+            if (!empty($apiKey)) {
+                $query['key'] = $apiKey;
+            } elseif (!isset($query['key'])) {
+                $query['key'] = '48hrs';
+            }
+
+            $scheme = isset($parts['scheme']) ? $parts['scheme'] . '://' : 'https://';
+            $host = $parts['host'] ?? '';
+            $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+            $path = $parts['path'] ?? '';
+            $apiUrl = $scheme . $host . $port . $path . '?' . http_build_query($query);
         }
 
         try {

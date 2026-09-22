@@ -1036,6 +1036,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::get('/utilities/mobile-to-info', [\App\Http\Controllers\MobileToInfoController::class, 'index'])->name('utilities.mobile-to-info');
     Route::post('/utilities/mobile-to-info/search', [\App\Http\Controllers\MobileToInfoController::class, 'search'])->name('utilities.mobile-to-info.search');
+    Route::post('/utilities/mobile-to-info/update-api', [\App\Http\Controllers\MobileToInfoController::class, 'updateApi'])->name('utilities.mobile-to-info.update-api');
 
     Route::get('/utilities/rc-pdf-instant', function () {
         $service = \App\Models\Service::where('slug', 'rc-pdf-instant')->first();

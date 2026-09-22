@@ -37,6 +37,10 @@ export default function Edit({ settings = {} }) {
         vehicle_details_api_url: settings.vehicle_details_api_url || '',
         vehicle_details_api_key: settings.vehicle_details_api_key || '',
 
+        // Mobile to Info API
+        mobile_to_info_api_url: settings.mobile_to_info_api_url || '',
+        mobile_to_info_api_key: settings.mobile_to_info_api_key || '',
+
         // Aadhaar Info & Updates
         aadhar_to_info_api_url: settings.aadhar_to_info_api_url || '',
         aadhar_to_info_api_key: settings.aadhar_to_info_api_key || '',
@@ -392,6 +396,20 @@ export default function Edit({ settings = {} }) {
                             </div>
 
                             <div className="space-y-6">
+                                {/* Mobile To Info */}
+                                <div className="p-4 bg-blue-50/40 dark:bg-blue-950/20 rounded-2xl border border-blue-200/60 dark:border-blue-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-blue-900 dark:text-blue-300 uppercase tracking-wider">
+                                            Mobile To Info (10-Digit Mobile to Name, Address & Aadhaar)
+                                        </h4>
+                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">Gateway: Custom Cloudflare Worker</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('mobile_to_info_api_url', 'Mobile To Info API URL', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210', 'Full URL with query or template {key} and {mobile}')}
+                                        {renderKeyInput('mobile_to_info_api_key', 'Mobile To Info API Key', '48hrs', 'Default key: 48hrs')}
+                                    </div>
+                                </div>
+
                                 {/* Aadhaar To Info */}
                                 <div className="p-4 bg-amber-50/40 dark:bg-amber-950/20 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 space-y-4">
                                     <div className="flex items-center justify-between">
