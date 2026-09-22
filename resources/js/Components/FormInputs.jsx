@@ -46,10 +46,12 @@ export const InputField = ({
                 },
                 '& input': {
                     color: '#0f172a !important',
+                    WebkitTextFillColor: '#0f172a !important',
                     bgcolor: 'transparent !important',
                 },
                 '& textarea': {
                     color: '#0f172a !important',
+                    WebkitTextFillColor: '#0f172a !important',
                     bgcolor: 'transparent !important',
                 },
             },
@@ -107,6 +109,7 @@ export const SelectField = ({
                 },
                 '& .MuiSelect-select': {
                     color: '#0f172a !important',
+                    WebkitTextFillColor: '#0f172a !important',
                     bgcolor: 'transparent !important',
                 },
             },

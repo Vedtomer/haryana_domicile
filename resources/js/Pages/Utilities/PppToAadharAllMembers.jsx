@@ -85,7 +85,7 @@ export default function PppToAadharAllMembers() {
                                         value={familyId}
                                         onChange={(e) => setFamilyId(e.target.value.toUpperCase())}
                                         placeholder="Enter PPP ID (e.g. 1ABC2345)"
-                                        className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl font-black transition-all text-center dark:text-white tracking-widest uppercase font-mono placeholder:font-sans placeholder:tracking-normal placeholder:text-base placeholder:text-slate-400"
+                                        className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl font-black transition-all text-center text-slate-900 tracking-widest uppercase font-mono placeholder:font-sans placeholder:tracking-normal placeholder:text-base placeholder:text-slate-400"
                                     />
                                 </div>
 

@@ -146,7 +146,7 @@ export default function AadharSurnameChange() {
                                         onChange={(e) => setFirstName(e.target.value.toUpperCase())}
                                         placeholder="e.g. PRIYA"
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     />
                                 </div>
 
@@ -160,7 +160,7 @@ export default function AadharSurnameChange() {
                                             value={oldSurname}
                                             onChange={(e) => setOldSurname(e.target.value.toUpperCase())}
                                             placeholder="e.g. SHARMA"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                     <div>
@@ -173,7 +173,7 @@ export default function AadharSurnameChange() {
                                             onChange={(e) => setNewSurname(e.target.value.toUpperCase())}
                                             placeholder="e.g. VERMA"
                                             required
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@ export default function AadharSurnameChange() {
                                     <select
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     >
                                         <option value="After Marriage">After Marriage (शादी के बाद)</option>
                                         <option value="Legal Correction">Spelling / Legal Correction</option>

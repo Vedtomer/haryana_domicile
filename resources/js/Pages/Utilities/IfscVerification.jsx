@@ -97,7 +97,7 @@ export default function IfscVerification({ service, coinCost = 9 }) {
                         <div className="relative flex-1">
                             <input
                                 type="text"
-                                className="block w-full px-4 py-3.5 bg-slate-50/70 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-mono text-base uppercase tracking-wider placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-xs"
+                                className="block w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-mono text-base uppercase tracking-wider placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-xs"
                                 placeholder="HDFC0002707"
                                 value={ifsc}
                                 maxLength={11}

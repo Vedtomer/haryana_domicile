@@ -134,7 +134,7 @@ export default function AadharCardManual() {
                                             value={formData.name_en}
                                             onChange={handleChange}
                                             required
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -146,7 +146,7 @@ export default function AadharCardManual() {
                                             name="name_local"
                                             value={formData.name_local}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -163,7 +163,7 @@ export default function AadharCardManual() {
                                             onChange={handleChange}
                                             placeholder="DD/MM/YYYY"
                                             required
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -174,7 +174,7 @@ export default function AadharCardManual() {
                                             name="gender"
                                             value={formData.gender}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         >
                                             <option value="Male">MALE / पुरुष</option>
                                             <option value="Female">FEMALE / महिला</option>
@@ -192,7 +192,7 @@ export default function AadharCardManual() {
                                             name="care_of_type"
                                             value={formData.care_of_type}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         >
                                             <option value="S/O">S/O (Son of)</option>
                                             <option value="D/O">D/O (Daughter of)</option>
@@ -209,7 +209,7 @@ export default function AadharCardManual() {
                                             name="care_of_name_en"
                                             value={formData.care_of_name_en}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -221,7 +221,7 @@ export default function AadharCardManual() {
                                             name="care_of_name_local"
                                             value={formData.care_of_name_local}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -236,7 +236,7 @@ export default function AadharCardManual() {
                                         value={formData.address_en}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                     ></textarea>
                                 </div>
 
@@ -249,7 +249,7 @@ export default function AadharCardManual() {
                                         name="address_local"
                                         value={formData.address_local}
                                         onChange={handleChange}
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                     ></textarea>
                                 </div>
 
@@ -263,7 +263,7 @@ export default function AadharCardManual() {
                                             name="pincode"
                                             value={formData.pincode}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">

@@ -63,7 +63,7 @@ export default function Create({ blocker, cost }) {
                                     onChange={e => setData('pan_number', e.target.value.toUpperCase())}
                                     required
                                     placeholder="ABCDE1234F"
-                                    className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500"
                                 />
                                 {errors.pan_number && <div className="text-red-500 text-sm mt-1">{errors.pan_number}</div>}
                             </div>
@@ -75,7 +75,7 @@ export default function Create({ blocker, cost }) {
                                     value={data.name}
                                     onChange={e => setData('name', e.target.value.toUpperCase())}
                                     required
-                                    className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500"
                                 />
                                 {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
                             </div>
@@ -87,7 +87,7 @@ export default function Create({ blocker, cost }) {
                                     value={data.father_name}
                                     onChange={e => setData('father_name', e.target.value.toUpperCase())}
                                     required
-                                    className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500"
                                 />
                                 {errors.father_name && <div className="text-red-500 text-sm mt-1">{errors.father_name}</div>}
                             </div>
@@ -100,7 +100,7 @@ export default function Create({ blocker, cost }) {
                                     onChange={e => setData('dob', e.target.value)}
                                     placeholder="DD/MM/YYYY"
                                     required
-                                    className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500"
                                 />
                                 {errors.dob && <div className="text-red-500 text-sm mt-1">{errors.dob}</div>}
                             </div>

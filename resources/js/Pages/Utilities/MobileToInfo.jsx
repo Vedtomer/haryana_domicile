@@ -274,7 +274,7 @@ export default function MobileToInfo({ coinCost = 149, service, isAdmin = false,
                                     <input
                                         type="text"
                                         maxLength="10"
-                                        className="block w-full pl-16 pr-12 py-4 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white font-bold text-2xl placeholder-slate-400 dark:placeholder-slate-500 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-center tracking-[0.2em] font-mono"
+                                        className="block w-full pl-16 pr-12 py-4 bg-white border-2 border-slate-300 rounded-2xl text-slate-900 font-bold text-2xl placeholder-slate-400 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-center tracking-[0.2em] font-mono"
                                         placeholder="9876543210"
                                         value={mobile}
                                         onChange={handleMobileChange}

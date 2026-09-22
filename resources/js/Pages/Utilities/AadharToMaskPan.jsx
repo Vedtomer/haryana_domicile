@@ -74,7 +74,7 @@ export default function AadharToMaskPan() {
                                         setAadhar(val);
                                     }}
                                     placeholder="e.g. 123456789012"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 outline-none text-lg tracking-widest font-bold transition-all text-center dark:text-white"
+                                    className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 outline-none text-lg tracking-widest font-bold transition-all text-center text-slate-900"
                                 />
                             </div>
 

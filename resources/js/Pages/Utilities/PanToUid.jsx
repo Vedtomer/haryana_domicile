@@ -90,7 +90,7 @@ export default function PanToUid() {
                                         setPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10));
                                     }}
                                     placeholder="e.g. ABCDE1234F"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-[0.3em] font-black transition-all text-center dark:text-white uppercase"
+                                    className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-[0.3em] font-black transition-all text-center text-slate-900 uppercase"
                                 />
                             </div>
 

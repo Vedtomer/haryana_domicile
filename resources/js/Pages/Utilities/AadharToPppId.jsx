@@ -250,7 +250,7 @@ export default function AadharToPppId({ coinCost = 0, service, isAdmin = false, 
                                             setAadhar(formatted);
                                         }}
                                         placeholder="1234 5678 9012"
-                                        className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-2xl tracking-widest font-black transition-all text-center dark:text-white placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 font-mono"
+                                        className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-2xl tracking-widest font-black transition-all text-center text-slate-900 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 font-mono"
                                         autoFocus
                                     />
                                     {aadhar.replace(/\D/g, '').length === 12 && (

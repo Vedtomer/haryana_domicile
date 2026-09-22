@@ -79,4 +79,76 @@
   animation: glass-pulse-glow 2s ease-in-out infinite;
 }
 
+/* ==========================================================================
+   Universal Form Controls & Service Forms: Crisp Black Text
+   Ensure that words typed in any input, textarea, or select are always black
+   ========================================================================== */
+
+input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+textarea,
+select {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"])::placeholder,
+textarea::placeholder {
+    color: #64748b !important;
+    -webkit-text-fill-color: #64748b !important;
+    opacity: 0.8 !important;
+}
+
+/* Ensure inputs on white or light backgrounds have pure black text */
+.bg-white input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+.bg-white textarea,
+.bg-white select,
+.bg-slate-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+.bg-slate-50 textarea,
+.bg-slate-50 select,
+.bg-gray-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+.bg-gray-50 textarea,
+.bg-gray-50 select,
+.MuiPaper-root input,
+.MuiPaper-root textarea,
+.MuiPaper-root select {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Text in white/light service cards should be crisp dark slate / black, never white */
+.bg-white,
+.bg-slate-50,
+.bg-gray-50,
+.MuiPaper-root {
+    color: #0f172a;
+}
+
+.bg-white label,
+.bg-slate-50 label,
+.bg-gray-50 label,
+.MuiPaper-root label {
+    color: #1e293b;
+}
+
+/* Exceptions: Dark configuration panels (e.g. Admin API Settings modal/banner) */
+.from-slate-900 input:not([type="submit"]):not([type="button"]),
+.bg-slate-950 input:not([type="submit"]):not([type="button"]),
+.bg-slate-900 input:not([type="submit"]):not([type="button"]),
+.from-slate-900 textarea,
+.bg-slate-950 textarea,
+.bg-slate-900 textarea,
+.from-slate-900 select,
+.bg-slate-950 select,
+.bg-slate-900 select {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.from-slate-900 input::placeholder,
+.bg-slate-950 input::placeholder,
+.bg-slate-900 input::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+}
+
 

@@ -3,10 +3,7 @@ const STORAGE_KEY = 'theme';
 export function getStoredTheme() {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored === 'dark' || stored === 'light') {
-            return stored;
-        }
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (stored === 'dark') {
             return 'dark';
         }
     } catch (e) {

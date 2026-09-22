@@ -146,7 +146,7 @@ export default function VoterCardManualMaker() {
                                             value={formData.name_en}
                                             onChange={handleChange}
                                             required
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -158,7 +158,7 @@ export default function VoterCardManualMaker() {
                                             name="name_hi"
                                             value={formData.name_hi}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -172,7 +172,7 @@ export default function VoterCardManualMaker() {
                                             name="relation_type"
                                             value={formData.relation_type}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         >
                                             <option value="Father">Father / पिता</option>
                                             <option value="Husband">Husband / पति</option>
@@ -190,7 +190,7 @@ export default function VoterCardManualMaker() {
                                             value={formData.relation_name_en}
                                             onChange={handleChange}
                                             required
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -202,7 +202,7 @@ export default function VoterCardManualMaker() {
                                             name="relation_name_hi"
                                             value={formData.relation_name_hi}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@ export default function VoterCardManualMaker() {
                                             name="gender"
                                             value={formData.gender}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         >
                                             <option value="Male">Male / पुरुष</option>
                                             <option value="Female">Female / महिला</option>
@@ -234,7 +234,7 @@ export default function VoterCardManualMaker() {
                                             onChange={handleChange}
                                             placeholder="DD/MM/YYYY"
                                             required
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -249,7 +249,7 @@ export default function VoterCardManualMaker() {
                                             name="house_no_en"
                                             value={formData.house_no_en}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -261,7 +261,7 @@ export default function VoterCardManualMaker() {
                                             name="house_no_hi"
                                             value={formData.house_no_hi}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>
@@ -275,7 +275,7 @@ export default function VoterCardManualMaker() {
                                         name="address_en"
                                         value={formData.address_en}
                                         onChange={handleChange}
-                                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                        className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                     />
                                 </div>
 
@@ -288,7 +288,7 @@ export default function VoterCardManualMaker() {
                                         name="address_hi"
                                         value={formData.address_hi}
                                         onChange={handleChange}
-                                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                        className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                     />
                                 </div>
 
@@ -302,7 +302,7 @@ export default function VoterCardManualMaker() {
                                             name="ac_name_en"
                                             value={formData.ac_name_en}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                     <div>
@@ -314,7 +314,7 @@ export default function VoterCardManualMaker() {
                                             name="part_name_en"
                                             value={formData.part_name_en}
                                             onChange={handleChange}
-                                            className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"
+                                            className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900"
                                         />
                                     </div>
                                 </div>

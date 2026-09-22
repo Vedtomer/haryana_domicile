@@ -132,7 +132,7 @@ export default function LearningLicencePdf() {
                                     }}
                                     placeholder="e.g. 12345678"
                                     required
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-wider font-black transition-all text-center dark:text-white uppercase"
+                                    className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-wider font-black transition-all text-center text-slate-900 uppercase"
                                 />
                             </div>
 
@@ -144,7 +144,7 @@ export default function LearningLicencePdf() {
                                     type="date"
                                     value={dob}
                                     onChange={(e) => setDob(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-semibold text-center dark:text-white"
+                                    className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-semibold text-center text-slate-900"
                                 />
                             </div>
 

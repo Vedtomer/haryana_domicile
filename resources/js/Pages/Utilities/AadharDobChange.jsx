@@ -131,7 +131,7 @@ export default function AadharDobChange() {
                                         onChange={(e) => setName(e.target.value.toUpperCase())}
                                         placeholder="e.g. AMIT KUMAR"
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     />
                                 </div>
 
@@ -160,7 +160,7 @@ export default function AadharDobChange() {
                                             value={currentDob}
                                             onChange={(e) => setCurrentDob(e.target.value)}
                                             placeholder="DD/MM/YYYY or YYYY"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                     <div>
@@ -173,7 +173,7 @@ export default function AadharDobChange() {
                                             onChange={(e) => setNewDob(e.target.value)}
                                             placeholder="DD/MM/YYYY"
                                             required
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@ export default function AadharDobChange() {
                                     <select
                                         value={docType}
                                         onChange={(e) => setDocType(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     >
                                         <option value="Birth Certificate">Birth Certificate (जन्म प्रमाण पत्र)</option>
                                         <option value="Class 10th / Secondary Marksheet">Class 10th / Secondary Certificate / Marksheet</option>

@@ -145,7 +145,7 @@ export default function AadharFullNameChange() {
                                         onChange={(e) => setOldName(e.target.value.toUpperCase())}
                                         placeholder="e.g. MOHAN LAL SHARMA"
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     />
                                 </div>
 
@@ -160,7 +160,7 @@ export default function AadharFullNameChange() {
                                             onChange={(e) => setNewName(e.target.value.toUpperCase())}
                                             placeholder="e.g. MOHAN SHARMA"
                                             required
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                     <div>
@@ -172,7 +172,7 @@ export default function AadharFullNameChange() {
                                             value={newNameHi}
                                             onChange={(e) => setNewNameHi(e.target.value)}
                                             placeholder="e.g. मोहन शर्मा"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                         />
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@ export default function AadharFullNameChange() {
                                     <select
                                         value={docType}
                                         onChange={(e) => setDocType(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white text-sm"
+                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
                                     >
                                         <option value="PAN Card">PAN Card / e-PAN</option>
                                         <option value="Passport">Indian Passport</option>
