@@ -495,14 +495,15 @@ class Service extends Model
 
     /**
      * Services visible to this user:
-     * Regular users only see services they have been granted permission for (via User Permissions).
+     * Admin/staff see all services. Regular users only see services they have been granted permission for by admin.
      */
     public function scopeVisibleTo($query, User $user)
     {
-        return $query->where(function ($q) use ($user) {
-            $q->where('visibility', self::VISIBILITY_PUBLIC)
-              ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
-        });
+        if ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin'])) {
+            return $query;
+        }
+
+        return $query->whereHas('users', fn ($u) => $u->where('users.id', $user->id));
     }
 
     public function scopeOrdered($query)

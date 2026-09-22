@@ -11,17 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \App\Models\Service::firstOrCreate(['slug' => 'manual-pan-card'], [
-            'name' => 'Manual PAN Card',
-            'description' => 'Generate PAN Card instantly with uploaded photo and signature.',
-            'coin_cost' => 10,
-            'kind' => 'module',
-            'module_key' => 'manual_pan_card',
-            'is_premium' => false,
-            'unlock_cost' => 0,
-            'is_active' => true,
-            'visibility' => 'public',
-        ]);
+        $exists = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'manual-pan-card')->exists();
+        if (!$exists) {
+            \Illuminate\Support\Facades\DB::table('services')->insert([
+                'name' => 'Manual PAN Card',
+                'slug' => 'manual-pan-card',
+                'description' => 'Generate PAN Card instantly with uploaded photo and signature.',
+                'coin_cost' => 10,
+                'kind' => 'module',
+                'module_key' => 'manual_pan_card',
+                'is_premium' => false,
+                'unlock_cost' => 0,
+                'is_active' => true,
+                'visibility' => 'public',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
@@ -29,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \App\Models\Service::where('slug', 'manual-pan-card')->delete();
+        \Illuminate\Support\Facades\DB::table('services')->where('slug', 'manual-pan-card')->delete();
     }
 };

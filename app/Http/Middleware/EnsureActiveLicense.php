@@ -172,8 +172,8 @@ class EnsureActiveLicense
         }
 
         if ($targetService) {
-            $isPublic = $targetService->visibility === \App\Models\Service::VISIBILITY_PUBLIC;
-            $hasAccess = $isPublic || $targetService->users()->where('user_id', $user->id)->exists();
+            $isStaff = $user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']);
+            $hasAccess = $isStaff || $targetService->users()->where('user_id', $user->id)->exists();
             if (!$hasAccess) {
                 $errorMsg = "🔒 Service Permission Required: Aapke account par '{$targetService->name}' service activate nahi hai. Kripya Admin se permission activate karwayein.";
 

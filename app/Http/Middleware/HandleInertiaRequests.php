@@ -103,6 +103,27 @@ class HandleInertiaRequests extends Middleware
                         'ago' => $n->created_at->diffForHumans(),
                     ]),
             ] : null,
+
+            'switchAccount' => fn () => $request->user() ? [
+                'is_switched_from_admin' => (bool) $request->session()->has('original_admin_id'),
+                'original_admin_name' => $request->session()->has('original_admin_id')
+                    ? \App\Models\User::find($request->session()->get('original_admin_id'))?->name
+                    : null,
+                'authenticated_accounts' => \App\Models\User::whereIn('id', array_unique(array_merge(
+                    [$request->user()->id],
+                    $request->session()->get('switched_accounts', [])
+                )))
+                    ->get(['id', 'name', 'email', 'phone', 'type', 'coins'])
+                    ->map(fn ($u) => [
+                        'id' => $u->id,
+                        'name' => $u->name,
+                        'email' => $u->email,
+                        'phone' => $u->phone,
+                        'type' => $u->type,
+                        'coins' => $u->coins,
+                        'is_current' => $u->id === $request->user()->id,
+                    ])->values()->all(),
+            ] : null,
         ];
     }
 }

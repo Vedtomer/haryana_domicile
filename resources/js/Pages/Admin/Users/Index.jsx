@@ -267,6 +267,15 @@ export default function Index({ users }) {
                                                 </svg>
                                             </button>
 
+                                            {/* Configure Services & Permissions */}
+                                            <Link
+                                                href={`/admin/user-permissions?user=${user.id}`}
+                                                title="Configure Services & Permissions"
+                                                className="p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">shield_person</span>
+                                            </Link>
+
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"

@@ -12,10 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Service::firstOrCreate(
-            ['slug' => 'passport-maker'],
-            [
+        $exists = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'passport-maker')->exists();
+        if (!$exists) {
+            \Illuminate\Support\Facades\DB::table('services')->insert([
                 'name' => 'Passport Photo Maker',
+                'slug' => 'passport-maker',
                 'description' => 'Create passport size photos with AI background removal and print-ready layouts.',
                 'icon' => 'fas fa-id-badge',
                 'is_active' => true,
@@ -24,9 +25,11 @@ return new class extends Migration
                 'unlock_cost' => 0,
                 'kind' => 'module',
                 'module_key' => 'passport_maker',
-                'visibility' => 'private'
-            ]
-        );
+                'visibility' => 'private',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
@@ -34,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Service::where('slug', 'passport-maker')->delete();
+        \Illuminate\Support\Facades\DB::table('services')->where('slug', 'passport-maker')->delete();
     }
 };

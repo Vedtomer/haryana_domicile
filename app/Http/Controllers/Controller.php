@@ -56,11 +56,15 @@ abstract class Controller
             return "{$service->name} is currently unavailable. Please try again later.";
         }
 
+        $user = auth()->user();
+
+        if (!$user->services()->where('services.id', $service->id)->exists()) {
+            return "Aapke account par {$service->name} service activate nahi hai. Kripya Admin se sampark karein.";
+        }
+
         if ($service->isFree()) {
             return null;
         }
-
-        $user = auth()->user();
         if ($user->hasEnoughCoins($service->coin_cost)) {
             return null;
         }

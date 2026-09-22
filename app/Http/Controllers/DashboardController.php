@@ -114,7 +114,7 @@ class DashboardController extends Controller
                 'kind' => $service->kind,
                 'is_premium' => $service->is_premium,
                 'unlock_cost' => $service->unlock_cost,
-                'is_unlocked' => $service->users->contains('id', $user->id),
+                'is_unlocked' => $isAdmin || $service->users->contains('id', $user->id),
                 'is_active' => (bool) $service->is_active,
                 'url' => $service->targetUrl(),
                 'count' => $count,

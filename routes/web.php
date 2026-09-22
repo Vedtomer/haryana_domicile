@@ -741,6 +741,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/license/buy', [\App\Http\Controllers\LicenseController::class, 'buy'])->name('license.buy');
         Route::post('/license/activate', [\App\Http\Controllers\LicenseController::class, 'activate'])->name('license.activate');
 
+        // Account Switching Routes
+        Route::post('/switch-account/login', [\App\Http\Controllers\SwitchAccountController::class, 'login'])->name('switch-account.login');
+        Route::post('/switch-account/switch', [\App\Http\Controllers\SwitchAccountController::class, 'switch'])->name('switch-account.switch');
+        Route::post('/switch-account/back-to-admin', [\App\Http\Controllers\SwitchAccountController::class, 'switchBackAdmin'])->name('switch-account.back-to-admin');
+        Route::post('/switch-account/remove', [\App\Http\Controllers\SwitchAccountController::class, 'remove'])->name('switch-account.remove');
+        Route::get('/switch-account/search-users', [\App\Http\Controllers\SwitchAccountController::class, 'searchUsers'])->name('switch-account.search-users');
+
         // Real-Time Online Presence & Chat Routes
         Route::post('/chat/heartbeat', [\App\Http\Controllers\ChatController::class, 'heartbeat'])->name('chat.heartbeat');
         Route::get('/chat/unread-count', [\App\Http\Controllers\ChatController::class, 'getUnreadCount'])->name('chat.unread-count');

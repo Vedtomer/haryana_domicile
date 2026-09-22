@@ -18,9 +18,9 @@ return new class extends Migration
 
         // Seed last_activity_at for all existing active users so they don't get
         // instantly deactivated when the scheduler first runs
-        \Illuminate\Support\Facades\DB::statement(
-            "UPDATE users SET last_activity_at = NOW() WHERE last_activity_at IS NULL"
-        );
+        \Illuminate\Support\Facades\DB::table('users')
+            ->whereNull('last_activity_at')
+            ->update(['last_activity_at' => now()]);
     }
 
     public function down(): void

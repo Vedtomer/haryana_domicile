@@ -5,6 +5,7 @@ import Toast from '../Components/Toast';
 import NotificationBell from '../Components/NotificationBell';
 import WhatsAppButton from '../Components/WhatsAppButton';
 import LicenseModal from '../Components/LicenseModal';
+import SwitchAccountModal from '../Components/SwitchAccountModal';
 import UserChatWidget from '../Components/UserChatWidget';
 import UserScreenShareListener from '../Components/UserScreenShareListener';
 import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
@@ -12,10 +13,11 @@ import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 import ThemeToggle from '../Components/ThemeToggle';
 
 export default function AdminLayout({ header, children }) {
-    const { auth, navServices = [], flash } = usePage().props;
+    const { auth, navServices = [], flash, switchAccount } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [licenseModalOpen, setLicenseModalOpen] = useState(false);
+    const [switchAccountModalOpen, setSwitchAccountModalOpen] = useState(false);
     const [licenseModalTab, setLicenseModalTab] = useState('direct');
     const [licensePromptService, setLicensePromptService] = useState(null);
 
@@ -157,6 +159,25 @@ export default function AdminLayout({ header, children }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <TopDisclaimerTicker />
+
+                {/* Switch from Admin Banner */}
+                {switchAccount?.is_switched_from_admin && (
+                    <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 px-4 py-2 text-xs flex items-center justify-between shadow-md z-40">
+                        <div className="flex items-center gap-2 font-medium">
+                            <span className="material-symbols-outlined text-base">admin_panel_settings</span>
+                            <span>Aap currently <strong>{auth?.user?.name}</strong> ki ID me switch hain (Logged as Admin {switchAccount?.original_admin_name || 'Admin'})</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => router.post('/switch-account/back-to-admin')}
+                            className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+                        >
+                            <span className="material-symbols-outlined text-xs">undo</span>
+                            Switch Back to Admin
+                        </button>
+                    </div>
+                )}
+
                 <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-xs h-16 flex items-center justify-between px-4 lg:px-8 z-30 relative transition-colors duration-200">
                     
                     <div className="flex-1 min-w-0 flex items-center gap-3">
@@ -253,6 +274,17 @@ export default function AdminLayout({ header, children }) {
                             >
                                 My Profile
                             </Link>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setDropdownOpen(false);
+                                    setSwitchAccountModalOpen(true);
+                                }}
+                                className="w-full text-left flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400">switch_account</span>
+                                Switch Account
+                            </button>
                             <Link
                                 href="/admin/profile#coin-ledger"
                                 className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -357,6 +389,11 @@ export default function AdminLayout({ header, children }) {
                 onClose={() => setLicenseModalOpen(false)}
                 initialTab={licenseModalTab}
                 promptService={licensePromptService}
+            />
+
+            <SwitchAccountModal
+                isOpen={switchAccountModalOpen}
+                onClose={() => setSwitchAccountModalOpen(false)}
             />
 
             <WhatsAppButton />
