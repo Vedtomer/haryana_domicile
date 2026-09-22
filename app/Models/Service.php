@@ -146,6 +146,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-info',
             'create' => '/utilities/aadhar-to-info',
         ],
+        'mobile_to_info' => [
+            'label' => 'Mobile to Info',
+            'icon' => '📱',
+            'model' => null,
+            'index' => '/utilities/mobile-to-info',
+            'create' => '/utilities/mobile-to-info',
+        ],
         'bihar_ration_card_maker' => [
             'label' => 'Bihar Ration Card Maker',
             'icon' => '📜',
