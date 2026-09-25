@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
@@ -19,6 +19,7 @@ const InfoRow = ({ label, value, icon }) => {
 };
 
 export default function LearningLicencePdf() {
+    const { currentService } = usePage().props;
     const [applNum, setApplNum] = useState('');
     const [dob, setDob] = useState('');
     const [loading, setLoading] = useState(false);
@@ -164,7 +165,7 @@ export default function LearningLicencePdf() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">cloud_download</span>
-                                        Get LL PDF (19 Coins)
+                                        Get LL PDF ({currentService?.coin_cost ?? 19} Coins)
                                     </>
                                 )}
                             </button>
@@ -206,7 +207,7 @@ export default function LearningLicencePdf() {
                         </a>
                         <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            19 Coins
+                            {currentService?.coin_cost ?? 19} Coins
                         </div>
                     </div>
                 </div>

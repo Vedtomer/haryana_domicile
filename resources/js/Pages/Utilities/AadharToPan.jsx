@@ -4,6 +4,7 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function AadharToPan() {
+    const { currentService } = usePage().props;
     const { auth } = usePage().props;
     const [aadhar, setAadhar] = useState('');
     const [loading, setLoading] = useState(false);
@@ -18,12 +19,12 @@ export default function AadharToPan() {
             return;
         }
 
-        if (!auth.user.is_admin && auth.user.coins < 69) {
-            setError('Insufficient coins. This service requires 69 coins.');
+        if (!auth.user.is_admin && auth.user.coins < (currentService?.coin_cost ?? 69)) {
+            setError(`Insufficient coins. This service requires ${currentService?.coin_cost ?? 69} Coins.`);
             return;
         }
 
-        if (!confirm('This action will deduct 69 coins from your wallet. Do you want to proceed?')) {
+        if (!confirm(`This action will deduct ${currentService?.coin_cost ?? 69} Coins from your wallet. Do you want to proceed?`)) {
             return;
         }
 
@@ -38,7 +39,7 @@ export default function AadharToPan() {
                 
                 // Update local auth coin state roughly if not admin
                 if (!auth.user.is_admin) {
-                    auth.user.coins -= 69;
+                    auth.user.coins -= (currentService?.coin_cost ?? 69);
                 }
             } else {
                 setError(response.data.message || 'PAN number not found for this Aadhar number.');
@@ -125,7 +126,7 @@ export default function AadharToPan() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined">search</span>
-                                        Find PAN (Cost: 69 Coins)
+                                        Find PAN (Cost: {currentService?.coin_cost ?? 69} Coins)
                                     </>
                                 )}
                             </button>

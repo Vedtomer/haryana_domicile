@@ -4,6 +4,7 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function AadharToName() {
+    const { currentService } = usePage().props;
     const { auth } = usePage().props;
     const [aadhar, setAadhar] = useState('');
     const [loading, setLoading] = useState(false);
@@ -98,7 +99,7 @@ export default function AadharToName() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">search</span>
-                                        Find Details (19 Coins)
+                                        Find Details ({currentService?.coin_cost ?? 19} Coins)
                                     </>
                                 )}
                             </button>
@@ -145,7 +146,7 @@ export default function AadharToName() {
                         </p>
                         <div className="flex items-center gap-1.5 text-sm font-bold text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            19 Coins
+                            {currentService?.coin_cost ?? 19} Coins
                         </div>
                     </div>
                 </div>

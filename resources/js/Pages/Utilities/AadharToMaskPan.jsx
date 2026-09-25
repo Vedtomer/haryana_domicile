@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function AadharToMaskPan() {
+    const { currentService } = usePage().props;
     const [aadhar, setAadhar] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
@@ -94,7 +95,7 @@ export default function AadharToMaskPan() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">search</span>
-                                        Find Masked PAN (19 Coins)
+                                        Find Masked PAN ({currentService?.coin_cost ?? 19} Coins)
                                     </>
                                 )}
                             </button>
@@ -135,7 +136,7 @@ export default function AadharToMaskPan() {
                         </p>
                         <div className="flex items-center gap-1.5 text-sm font-bold text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            19 Coins
+                            {currentService?.coin_cost ?? 19} Coins
                         </div>
                     </div>
                 </div>

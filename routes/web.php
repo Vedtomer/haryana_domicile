@@ -295,7 +295,7 @@ Route::get('/force-add-service', function () {
             'name' => 'Voter Mobile Update Instant',
             'description' => 'Link mobile number to Voter ID (EPIC) instantly.',
             'icon' => 'contact_phone',
-            'coin_cost' => 19,
+            'coin_cost' => 149,
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'voter_mobile_update',
             'sort_order' => 15,

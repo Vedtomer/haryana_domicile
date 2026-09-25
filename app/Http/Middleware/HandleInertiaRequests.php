@@ -124,6 +124,9 @@ class HandleInertiaRequests extends Middleware
                         'is_current' => $u->id === $request->user()->id,
                     ])->values()->all(),
             ] : null,
+            'currentService' => fn () => $request->route() 
+                ? \App\Models\Service::where('slug', str_replace('utilities.', '', $request->route()->getName()))->first() 
+                : null,
         ];
     }
 }

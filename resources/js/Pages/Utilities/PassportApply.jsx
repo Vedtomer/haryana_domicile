@@ -14,6 +14,7 @@ const INDIAN_STATES = [
 ];
 
 export default function PassportApply({ service, userCoins = 0, recentRequests = [] }) {
+    const { currentService } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         father_name: '',
@@ -136,7 +137,7 @@ export default function PassportApply({ service, userCoins = 0, recentRequests =
                                 🪙 {currentFee} Coins
                             </span>
                             <span className="text-[11px] text-blue-200/80 block mt-1">
-                                {data.document_type === '10th_marksheet' ? '10th Marksheet: 2750 Coins' : 'PAN Card: 2950 Coins'}
+                                {data.document_type === '10th_marksheet' ? `10th Marksheet: ${currentService?.coin_cost ?? 2750} Coins` : `PAN Card: ${currentService?.coin_cost ?? 2950} Coins`}
                             </span>
                         </div>
                     </div>
@@ -207,7 +208,7 @@ export default function PassportApply({ service, userCoins = 0, recentRequests =
                                     </span>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200/60 dark:border-slate-800">
-                                    <span>Fee: <strong>2,750 Coins</strong></span>
+                                    <span>Fee: <strong>{currentService?.coin_cost ?? 2750} Coins</strong></span>
                                     <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                                         data.document_type === '10th_marksheet' ? 'border-blue-600 bg-blue-600' : 'border-slate-300'
                                     }`}>
@@ -244,7 +245,7 @@ export default function PassportApply({ service, userCoins = 0, recentRequests =
                                     </span>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200/60 dark:border-slate-800">
-                                    <span>Fee: <strong>2,950 Coins</strong></span>
+                                    <span>Fee: <strong>{currentService?.coin_cost ?? 2950} Coins</strong></span>
                                     <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                                         data.document_type === 'pan_card' ? 'border-blue-600 bg-blue-600' : 'border-slate-300'
                                     }`}>

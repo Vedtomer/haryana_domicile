@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { 
     Box, 
@@ -15,6 +15,7 @@ import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 export default function ElectricityBill({ defaultDiscom = 'dhbvn' }) {
+    const { currentService } = usePage().props;
     const [discom, setDiscom] = useState(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -219,7 +220,7 @@ export default function ElectricityBill({ defaultDiscom = 'dhbvn' }) {
                                 <span className="font-semibold text-slate-800 dark:text-slate-200 text-sm">Direct Discom Portal Service</span>
                             </div>
                             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                This service fetches current bill copies directly from Haryana Electricity portals ({discom.toUpperCase()}). It is completely free of cost (0 Coins).
+                                This service fetches current bill copies directly from Haryana Electricity portals ({discom.toUpperCase()}). It is completely free of cost ({currentService?.coin_cost ?? 0} Coins).
                             </p>
                         </div>
                     </div>

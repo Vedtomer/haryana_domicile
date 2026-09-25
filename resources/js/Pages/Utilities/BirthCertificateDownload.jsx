@@ -20,7 +20,8 @@ import axios from 'axios';
 import BilingualInputField from '../../Components/BilingualInputField';
 
 export default function BirthCertificateDownload({ defaultRegNo = '', userCoins = 0, isStaff = false }) {
-    // Service Type: 'color_pdf' (300 coins) | 'name_add' (400 coins)
+    const { currentService } = usePage().props;
+    // Service Type: 'color_pdf` (${currentService?.coin_cost ?? 300} Coins) | `name_add' ({currentService?.coin_cost ?? 400} Coins)
     const [serviceType, setServiceType] = useState('color_pdf');
     const [childName, setChildName] = useState('');
     const [mergeRegNo, setMergeRegNo] = useState(defaultRegNo);
@@ -388,7 +389,7 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
                             </Typography>
 
                             <Grid container spacing={2}>
-                                {/* Option A: Color PDF Download (300 Coins) */}
+                                {/* Option A: Color PDF Download ({currentService?.coin_cost ?? 300} Coins) */}
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <Paper
                                         variant="outlined"
@@ -421,7 +422,7 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
 
                                             <Chip
                                                 size="small"
-                                                label="🪙 300 Coins"
+                                                label={`🪙 ${currentService?.coin_cost ?? 300} Coins`}
                                                 sx={{
                                                     fontWeight: 'bold',
                                                     bgcolor: '#fef3c7',
@@ -444,7 +445,7 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
                                     </Paper>
                                 </Grid>
 
-                                {/* Option B: Name Add (400 Coins) */}
+                                {/* Option B: Name Add ({currentService?.coin_cost ?? 400} Coins) */}
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <Paper
                                         variant="outlined"
@@ -477,7 +478,7 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
 
                                             <Chip
                                                 size="small"
-                                                label="🪙 400 Coins"
+                                                label={`🪙 ${currentService?.coin_cost ?? 400} Coins`}
                                                 sx={{
                                                     fontWeight: 'bold',
                                                     bgcolor: '#fef3c7',
@@ -526,7 +527,7 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
                             <Box sx={{ p: 1.5, bgcolor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <CheckCircleIcon sx={{ fontSize: 18, color: '#16a34a' }} />
                                 <Typography variant="caption" color="#166534" fontWeight="600">
-                                    चयनित सेवा: <strong>{serviceType === 'name_add' ? 'Name Add (400 Coins)' : 'Color PDF (300 Coins)'}</strong> | कार्य समय: <strong>15 Min - 24 Hours</strong>
+                                    चयनित सेवा: <strong>{serviceType === 'name_add' ? `Name Add (${currentService?.coin_cost ?? 400} Coins)` : `Color PDF (${currentService?.coin_cost ?? 300} Coins)`}</strong> | कार्य समय: <strong>15 Min - 24 Hours</strong>
                                 </Typography>
                             </Box>
                         )}

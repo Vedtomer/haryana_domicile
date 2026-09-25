@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
@@ -19,6 +19,7 @@ const InfoRow = ({ label, value, icon }) => {
 };
 
 export default function VoterMobileUpdate() {
+    const { currentService } = usePage().props;
     const [epic, setEpic] = useState('');
     const [mobile, setMobile] = useState('');
     const [loading, setLoading] = useState(false);
@@ -136,7 +137,7 @@ export default function VoterMobileUpdate() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">system_update_alt</span>
-                                        Update Mobile (19 Coins)
+                                        Update Mobile ({currentService?.coin_cost ?? 19} Coins)
                                     </>
                                 )}
                             </button>
@@ -157,7 +158,7 @@ export default function VoterMobileUpdate() {
                         </p>
                         <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            19 Coins
+                            {currentService?.coin_cost ?? 19} Coins
                         </div>
                     </div>
                 </div>

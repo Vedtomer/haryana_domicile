@@ -4,6 +4,7 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function DrivingLicenceCard({ service, coinCost, userCoins, isAdmin }) {
+    const { currentService } = usePage().props;
     const { auth } = usePage().props;
     const [relation, setRelation] = useState('DL No'); // 'DL No' or 'LL No'
     const [dl, setDl] = useState('');
@@ -17,7 +18,7 @@ export default function DrivingLicenceCard({ service, coinCost, userCoins, isAdm
     const [activeTab, setActiveTab] = useState('cards'); // 'cards' or 'a4'
 
     const currentBalance = auth?.user?.coins ?? userCoins ?? 0;
-    const cost = coinCost || 20;
+    const cost = (currentService?.coin_cost ?? 20);
 
     const handleGenerate = async (e) => {
         e.preventDefault();
