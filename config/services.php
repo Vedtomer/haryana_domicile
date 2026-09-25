@@ -91,4 +91,13 @@ return [
         'full_name_change_url' => env('AADHAR_FULL_NAME_CHANGE_API_URL', ''),
     ],
 
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY', ''),
+        'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
+    ],
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY', ''),
+    ],
+
 ];
