@@ -53,11 +53,19 @@ export default function Index({ requests, isAdmin, statuses, filters }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {requests.data.map((item) => (
+                        {requests.data.map((item, index) => (
                             <tr key={item.id} className="border-t border-gray-100 hover:bg-gray-50">
-                                <td className="px-4 py-3 text-gray-500">{item.id}</td>
+                                <td className="px-4 py-3 text-gray-500 font-medium">
+                                    {(requests.from || 1) + index}
+                                </td>
                                 <td className="px-4 py-3 font-semibold text-gray-800">
-                                    {item.service?.icon} {item.service_name}
+                                    <div className="flex items-center gap-1.5">
+                                        <span>{item.service?.icon}</span>
+                                        <span>{item.service_name}</span>
+                                    </div>
+                                    <div className="text-xs text-gray-400 font-normal mt-0.5">
+                                        ID: #{item.id}
+                                    </div>
                                 </td>
                                 {isAdmin && (
                                     <td className="px-4 py-3">

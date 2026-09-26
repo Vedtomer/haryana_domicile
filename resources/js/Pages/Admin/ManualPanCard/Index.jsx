@@ -30,7 +30,7 @@ export default function Index({ records }) {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                                    <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">ID</th>
+                                    <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">#</th>
                                     <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Applicant</th>
                                     <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">PAN Number</th>
                                     <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
@@ -38,12 +38,12 @@ export default function Index({ records }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                                {records.data.map(record => (
+                                {records.data.map((record, index) => (
                                     <tr key={record.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td className="p-4 text-sm font-medium text-slate-900 dark:text-white">#{record.id}</td>
+                                        <td className="p-4 text-sm font-medium text-slate-500 dark:text-slate-400">{(records.from || 1) + index}</td>
                                         <td className="p-4">
                                             <div className="text-sm font-medium text-slate-900 dark:text-white">{record.name}</div>
-                                            <div className="text-sm text-slate-500 dark:text-slate-400">S/o {record.father_name}</div>
+                                            <div className="text-xs text-slate-500 dark:text-slate-400">ID: #{record.id} • S/o {record.father_name}</div>
                                         </td>
                                         <td className="p-4 text-sm font-mono text-slate-600 dark:text-slate-300">
                                             {record.pan_number}
