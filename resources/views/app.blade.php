@@ -4,9 +4,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
         <meta name="theme-color" content="#ffffff">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-        <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="0">
         <link rel="manifest" href="/manifest.json">
         <link rel="apple-touch-icon" href="/logo.png">
         
@@ -31,11 +28,15 @@
         <meta name="twitter:description" content="CSP Jaankari Portal - Quick registration, instant print services, and all online portal utilities.">
         <meta name="twitter:image" content="{{ asset('og-image.jpg') }}">
 
-        <!-- Fonts -->
+        <!-- Fonts - preconnect for faster DNS resolution -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <!-- Inter: preload for critical text rendering -->
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" onload="this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+        <!-- Material Symbols: loaded async (non-render-blocking) -->
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" onload="this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"></noscript>
 
         <!-- Theme Initialization Script -->
         <script>
@@ -112,16 +113,6 @@
                     triggerLogout();
                 }
             });
-
-            // Debugger trap to freeze page and logout if they bypass shortcuts
-            setInterval(function() {
-                let before = new Date().getTime();
-                (function() { debugger; })();
-                let after = new Date().getTime();
-                if (after - before > 100) {
-                    triggerLogout();
-                }
-            }, 1000);
         </script>
         <script type="module">
             import devtools from '/devtools-detect.js';

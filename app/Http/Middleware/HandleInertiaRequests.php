@@ -26,9 +26,11 @@ class HandleInertiaRequests extends Middleware
 
         if ($response instanceof Response) {
             $response->headers->set('Vary', 'X-Inertia');
-            $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
+            // Only Inertia XHR requests need no-cache; HTML full-page loads can use bfcache
+            if ($request->inertia()) {
+                $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+                $response->headers->set('Pragma', 'no-cache');
+            }
         }
 
         return $response;
@@ -53,79 +55,88 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? array_merge($request->user()->toArray(), [
-                    'has_active_license' => $request->user()->hasActiveLicense(),
-                    'license_expires_at' => $request->user()->license_expires_at ? $request->user()->license_expires_at->format('d M Y') : null,
-                    'license_days_left' => $request->user()->licenseDaysLeft(),
-                    'referral_code' => $request->user()->getActiveReferralCode(),
-                    'referral_link' => $request->user()->referral_link,
+                'user' => $user ? array_merge($user->toArray(), [
+                    'has_active_license' => $user->hasActiveLicense(),
+                    'license_expires_at' => $user->license_expires_at ? $user->license_expires_at->format('d M Y') : null,
+                    'license_days_left'  => $user->licenseDaysLeft(),
+                    'referral_code'      => $user->getActiveReferralCode(),
+                    'referral_link'      => $user->referral_link,
                 ]) : null,
             ],
             'flash' => [
-                'success' => $request->session()->get('success'),
-                'error' => $request->session()->get('error'),
+                'success'           => $request->session()->get('success'),
+                'error'             => $request->session()->get('error'),
                 'submitted_request' => $request->session()->get('submitted_request'),
-                'generated_key' => $request->session()->get('generated_key'),
+                'generated_key'     => $request->session()->get('generated_key'),
             ],
 
-            'whatsappNumber' => fn () => \App\Models\Setting::get('whatsapp_number', '380630323112'),
-            // Sidebar service links — kept in sync with what the admin has switched on,
-            // and filtered by the same visibility rule the dashboard cards use.
-            'navServices' => fn () => $request->user()
-                ? \App\Models\Service::active()
-                    ->when(
-                        !($request->user()->isAdmin() || $request->user()->hasRole('super_admin')),
-                        fn ($q) => $q->visibleTo($request->user())
-                    )
-                    ->ordered()->get()
-                    ->map(fn ($s) => [
-                        'id' => $s->id,
-                        'name' => $s->name,
-                        'icon' => $s->icon ?: '📄',
-                        'logo_url' => $s->logoUrl(),
-                        'url' => $s->targetUrl(),
-                    ])
+            // once() ensures one DB hit per request even if accessed multiple times
+            'whatsappNumber' => fn () => once(fn () => \App\Models\Setting::get('whatsapp_number', '380630323112')),
+
+            // Sidebar service links — cached per-request with once()
+            'navServices' => fn () => $user
+                ? once(function () use ($user) {
+                    return \App\Models\Service::active()
+                        ->when(
+                            !($user->isAdmin() || $user->hasRole('super_admin')),
+                            fn ($q) => $q->visibleTo($user)
+                        )
+                        ->ordered()
+                        ->select(['id', 'name', 'icon', 'logo', 'module_key', 'kind', 'slug'])
+                        ->get()
+                        ->map(fn ($s) => [
+                            'id'       => $s->id,
+                            'name'     => $s->name,
+                            'icon'     => $s->icon ?: '📄',
+                            'logo_url' => $s->logoUrl(),
+                            'url'      => $s->targetUrl(),
+                        ]);
+                })
                 : [],
-            // Powers the bell in the header on every authenticated page.
-            'notifications' => fn () => $request->user() ? [
-                'unread' => $request->user()->unreadNotifications()->count(),
-                'recent' => $request->user()->notifications()->take(8)->get()
+
+            // Notification bell data
+            'notifications' => fn () => $user ? [
+                'unread' => $user->unreadNotifications()->count(),
+                'recent' => $user->notifications()->take(8)->get()
                     ->map(fn ($n) => [
-                        'id' => $n->id,
+                        'id'    => $n->id,
                         'title' => $n->data['title'] ?? '',
-                        'body' => $n->data['body'] ?? '',
-                        'url' => $n->data['url'] ?? null,
+                        'body'  => $n->data['body'] ?? '',
+                        'url'   => $n->data['url'] ?? null,
                         'level' => $n->data['level'] ?? 'info',
-                        'read' => (bool) $n->read_at,
-                        'ago' => $n->created_at->diffForHumans(),
+                        'read'  => (bool) $n->read_at,
+                        'ago'   => $n->created_at->diffForHumans(),
                     ]),
             ] : null,
 
-            'switchAccount' => fn () => $request->user() ? [
+            'switchAccount' => fn () => $user ? [
                 'is_switched_from_admin' => (bool) $request->session()->has('original_admin_id'),
-                'original_admin_name' => $request->session()->has('original_admin_id')
+                'original_admin_name'    => $request->session()->has('original_admin_id')
                     ? \App\Models\User::find($request->session()->get('original_admin_id'))?->name
                     : null,
                 'authenticated_accounts' => \App\Models\User::whereIn('id', array_unique(array_merge(
-                    [$request->user()->id],
+                    [$user->id],
                     $request->session()->get('switched_accounts', [])
                 )))
                     ->get(['id', 'name', 'email', 'phone', 'type', 'coins'])
                     ->map(fn ($u) => [
-                        'id' => $u->id,
-                        'name' => $u->name,
-                        'email' => $u->email,
-                        'phone' => $u->phone,
-                        'type' => $u->type,
-                        'coins' => $u->coins,
-                        'is_current' => $u->id === $request->user()->id,
+                        'id'         => $u->id,
+                        'name'       => $u->name,
+                        'email'      => $u->email,
+                        'phone'      => $u->phone,
+                        'type'       => $u->type,
+                        'coins'      => $u->coins,
+                        'is_current' => $u->id === $user->id,
                     ])->values()->all(),
             ] : null,
-            'currentService' => fn () => $request->route() 
-                ? \App\Models\Service::where('slug', str_replace('utilities.', '', $request->route()->getName()))->first() 
+
+            'currentService' => fn () => $request->route()
+                ? \App\Models\Service::where('slug', str_replace('utilities.', '', $request->route()->getName()))->first()
                 : null,
         ];
     }
