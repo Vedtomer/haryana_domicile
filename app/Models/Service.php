@@ -370,6 +370,13 @@ class Service extends Model
             'index' => '/utilities/ppp-to-bank-details',
             'create' => '/utilities/ppp-to-bank-details',
         ],
+        'ppp_to_number' => [
+            'label' => 'PPP to Number',
+            'icon' => '📱',
+            'model' => null,
+            'index' => '/utilities/ppp-to-number',
+            'create' => '/utilities/ppp-to-number',
+        ],
         'vehicle_puc_without_otp' => [
             'label' => 'Vehicle PUC Certificate Download',
             'icon' => '🚗',

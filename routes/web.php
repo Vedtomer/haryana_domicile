@@ -396,6 +396,20 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ],
         [
+            'name' => 'PPP to Number',
+            'slug' => 'ppp-to-number',
+            'description' => 'Search registered mobile numbers by Family ID (PPP ID) & Official Haryana PPP Office Portal (https://ppp-office.haryana.gov.in/).',
+            'icon' => '📱',
+            'coin_cost' => 0,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ppp_to_number',
+            'sort_order' => 35,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
             'name' => 'Vehicle PUC (Without OTP)',
             'slug' => 'vehicle-puc-without-otp',
             'description' => 'Download Vehicle Pollution Under Control (PUC) certificate details instantly without OTP.',
@@ -1325,6 +1339,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/PppToBankDetails');
     })->name('utilities.ppp-to-bank-details');
     Route::post('/utilities/ppp-to-bank-details/search', [\App\Http\Controllers\PppToBankDetailsController::class, 'search'])->name('utilities.ppp-to-bank-details.search');
+
+    // PPP to Number (Search & Official Portal https://ppp-office.haryana.gov.in/)
+    Route::get('/utilities/ppp-to-number', [\App\Http\Controllers\PppToNumberController::class, 'index'])->name('utilities.ppp-to-number');
+    Route::post('/utilities/ppp-to-number/search', [\App\Http\Controllers\PppToNumberController::class, 'search'])->name('utilities.ppp-to-number.search');
+    Route::post('/utilities/ppp-to-number/update-api', [\App\Http\Controllers\PppToNumberController::class, 'updateApi'])->name('utilities.ppp-to-number.update-api');
 
     // 5. Vehicle PUC (Without OTP - Instant)
     Route::get('/utilities/vehicle-puc-without-otp', function () {
