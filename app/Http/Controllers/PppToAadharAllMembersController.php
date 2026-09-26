@@ -39,44 +39,52 @@ class PppToAadharAllMembersController extends Controller
         try {
             // If user has set an API endpoint, make the HTTP request
             if (!empty($apiUrl)) {
-                $response = Http::connectTimeout(10)
-                    ->timeout(30)
-                    ->withHeaders([
-                        'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
-                        'X-API-KEY' => $apiKey,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($apiUrl, [
-                        'family_id' => $familyId,
-                        'key' => $apiKey,
-                    ]);
+                try {
+                    $response = Http::withoutVerifying()
+                        ->connectTimeout(8)
+                        ->timeout(20)
+                        ->withHeaders([
+                            'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
+                            'X-API-KEY' => $apiKey,
+                            'Accept' => 'application/json',
+                        ])
+                        ->get($apiUrl, [
+                            'family_id' => $familyId,
+                            'key' => $apiKey,
+                        ]);
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $members = $data['members'] ?? $data['data']['members'] ?? $data['data'] ?? [];
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        $members = $data['members'] ?? $data['data']['members'] ?? $data['data'] ?? [];
 
-                    if (!empty($members) && is_array($members)) {
-                        $this->deductCoinsAndLogRequest($user, $service, $coinCost, $familyId, count($members));
+                        if (!empty($members) && is_array($members)) {
+                            $this->deductCoinsAndLogRequest($user, $service, $coinCost, $familyId, count($members));
+
+                            return response()->json([
+                                'success' => true,
+                                'family_id' => $familyId,
+                                'total_members' => count($members),
+                                'members' => $members,
+                                'message' => 'Family members Aadhaar details fetched successfully.'
+                            ]);
+                        }
 
                         return response()->json([
-                            'success' => true,
-                            'family_id' => $familyId,
-                            'total_members' => count($members),
-                            'members' => $members,
-                            'message' => 'Family members Aadhaar details fetched successfully.'
+                            'success' => false,
+                            'message' => $data['message'] ?? 'No members found for this Family ID.'
                         ]);
                     }
 
                     return response()->json([
                         'success' => false,
-                        'message' => $data['message'] ?? 'No members found for this Family ID.'
+                        'message' => 'External service error (HTTP ' . $response->status() . '). Please try again.'
+                    ]);
+                } catch (\Throwable $netEx) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unable to connect to external Aadhaar lookup service (' . $netEx->getMessage() . ').'
                     ]);
                 }
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to retrieve data from external API.'
-                ]);
             }
 
             // =====================================================================
@@ -141,18 +149,22 @@ class PppToAadharAllMembersController extends Controller
 
     private function deductCoinsAndLogRequest($user, $service, int $coinCost, string $familyId, int $memberCount): void
     {
-        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
-            $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Aadhaar (All Members): ' . $familyId);
-        }
+        try {
+            if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Aadhaar (All Members): ' . $familyId);
+            }
 
-        ServiceRequest::create([
-            'user_id' => $user->id,
-            'service_id' => $service ? $service->id : null,
-            'service_name' => $service ? $service->name : 'PPP ID To Aadhaar Card (All Members)',
-            'input_data' => ['Family ID (PPP)' => $familyId, 'Total Members' => $memberCount],
-            'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-            'status' => ServiceRequest::STATUS_COMPLETED,
-            'completed_at' => now(),
-        ]);
+            ServiceRequest::create([
+                'user_id' => $user->id,
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'PPP ID To Aadhaar Card (All Members)',
+                'input_data' => ['Family ID (PPP)' => $familyId, 'Total Members' => $memberCount],
+                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                'status' => ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('PppToAadharAllMembers deduct/log error: ' . $e->getMessage());
+        }
     }
 }

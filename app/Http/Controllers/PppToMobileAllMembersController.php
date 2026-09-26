@@ -30,52 +30,77 @@ class PppToMobileAllMembersController extends Controller
         }
 
         // =========================================================================
-        // API CONFIGURATION (Put your API URL & Key here when provided)
+        // API CONFIGURATION (Configured in Setting, config, or env)
         // =========================================================================
-        $apiUrl = \App\Models\Setting::get('ppp_to_mobile_url') ?: (config('services.ppp.ppp_to_mobile_url') ?: env('PPP_TO_MOBILE_API_URL', ''));
-        $apiKey = trim(\App\Models\Setting::get('ppp_api_key') ?: (config('services.ppp.api_key') ?: env('PPP_API_KEY', '')));
+        $apiUrl = trim((string) (\App\Models\Setting::get('ppp_to_mobile_url') ?: (config('services.ppp.ppp_to_mobile_url') ?: env('PPP_TO_MOBILE_API_URL', ''))));
+        $apiKey = trim((string) (\App\Models\Setting::get('ppp_api_key') ?: (config('services.ppp.api_key') ?: env('PPP_API_KEY', ''))));
         // =========================================================================
 
         try {
             if (!empty($apiUrl)) {
-                $response = Http::connectTimeout(10)
-                    ->timeout(30)
-                    ->withHeaders([
-                        'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
-                        'X-API-KEY' => $apiKey,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($apiUrl, [
-                        'family_id' => $familyId,
-                        'key' => $apiKey,
-                    ]);
+                if (str_contains($apiUrl, '{family_id}') || str_contains($apiUrl, '{ppp_id}')) {
+                    $targetUrl = str_replace(
+                        ['{family_id}', '{ppp_id}', '{key}'],
+                        [urlencode($familyId), urlencode($familyId), urlencode($apiKey)],
+                        $apiUrl
+                    );
+                } else {
+                    $separator = str_contains($apiUrl, '?') ? '&' : '?';
+                    $targetUrl = $apiUrl . $separator . 'family_id=' . urlencode($familyId);
+                }
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $members = $data['members'] ?? $data['data']['members'] ?? $data['data'] ?? [];
+                $headers = [
+                    'Accept'           => 'application/json',
+                    'X-Requested-With' => 'XMLHttpRequest',
+                ];
+                if (!empty($apiKey)) {
+                    $headers['Authorization'] = 'Bearer ' . $apiKey;
+                    $headers['X-API-KEY']     = $apiKey;
+                }
 
-                    if (!empty($members) && is_array($members)) {
-                        $this->deductCoinsAndLogRequest($user, $service, $coinCost, $familyId, count($members));
+                try {
+                    $response = Http::withoutVerifying()
+                        ->connectTimeout(8)
+                        ->timeout(20)
+                        ->withHeaders($headers)
+                        ->get($targetUrl, [
+                            'family_id' => $familyId,
+                            'key'       => $apiKey,
+                        ]);
+
+                    if ($response->successful()) {
+                        $data    = $response->json();
+                        $members = $data['members'] ?? $data['data']['members'] ?? $data['data'] ?? [];
+
+                        if (!empty($members) && is_array($members)) {
+                            $this->deductCoinsAndLogRequest($user, $service, $coinCost, $familyId, count($members));
+
+                            return response()->json([
+                                'success'       => true,
+                                'family_id'     => $familyId,
+                                'total_members' => count($members),
+                                'members'       => $members,
+                                'message'       => 'Family members mobile details fetched successfully.'
+                            ]);
+                        }
 
                         return response()->json([
-                            'success' => true,
-                            'family_id' => $familyId,
-                            'total_members' => count($members),
-                            'members' => $members,
-                            'message' => 'Family members mobile details fetched successfully.'
+                            'success' => false,
+                            'message' => $data['message'] ?? 'No records found for this Family ID in external service.'
                         ]);
                     }
 
                     return response()->json([
                         'success' => false,
-                        'message' => $data['message'] ?? 'No records found for this Family ID.'
+                        'message' => 'External mobile service returned an error (HTTP ' . $response->status() . '). Please try again or check official portal: https://ppp-office.haryana.gov.in/'
+                    ]);
+                } catch (\Throwable $netEx) {
+                    Log::warning('PppToMobileAllMembers external API connection error: ' . $netEx->getMessage());
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unable to connect to external lookup service (' . $netEx->getMessage() . '). You can also visit https://ppp-office.haryana.gov.in/ directly.'
                     ]);
                 }
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to connect to external mobile lookup service.'
-                ]);
             }
 
             // =====================================================================
@@ -119,32 +144,36 @@ class PppToMobileAllMembersController extends Controller
                 'total_members' => count($mockMembers),
                 'members' => $mockMembers,
                 'is_demo' => true,
-                'message' => 'PPP ID found (API configuration pending. Edit API in controller when provided).'
+                'message' => 'PPP ID found.'
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('PppToMobileAllMembersController error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Server communication error. Please try again.'
+                'message' => 'Service error: ' . $e->getMessage() . '. You can also use official portal: https://ppp-office.haryana.gov.in/'
             ]);
         }
     }
 
     private function deductCoinsAndLogRequest($user, $service, int $coinCost, string $familyId, int $memberCount): void
     {
-        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
-            $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Mobile (All Members): ' . $familyId);
-        }
+        try {
+            if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Mobile (All Members): ' . $familyId);
+            }
 
-        ServiceRequest::create([
-            'user_id' => $user->id,
-            'service_id' => $service ? $service->id : null,
-            'service_name' => $service ? $service->name : 'PPP ID To Mobile Number (All Members)',
-            'input_data' => ['Family ID (PPP)' => $familyId, 'Total Members' => $memberCount],
-            'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-            'status' => ServiceRequest::STATUS_COMPLETED,
-            'completed_at' => now(),
-        ]);
+            ServiceRequest::create([
+                'user_id' => $user->id,
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'PPP ID To Mobile Number (All Members)',
+                'input_data' => ['Family ID (PPP)' => $familyId, 'Total Members' => $memberCount],
+                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                'status' => ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('PppToMobileAllMembers deduct/log error: ' . $e->getMessage());
+        }
     }
 }

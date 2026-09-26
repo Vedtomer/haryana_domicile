@@ -38,17 +38,19 @@ class PppToBankDetailsController extends Controller
 
         try {
             if (!empty($apiUrl)) {
-                $response = Http::connectTimeout(10)
-                    ->timeout(30)
-                    ->withHeaders([
-                        'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
-                        'X-API-KEY' => $apiKey,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($apiUrl, [
-                        'family_id' => $familyId,
-                        'key' => $apiKey,
-                    ]);
+                try {
+                    $response = Http::withoutVerifying()
+                        ->connectTimeout(8)
+                        ->timeout(20)
+                        ->withHeaders([
+                            'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
+                            'X-API-KEY' => $apiKey,
+                            'Accept' => 'application/json',
+                        ])
+                        ->get($apiUrl, [
+                            'family_id' => $familyId,
+                            'key' => $apiKey,
+                        ]);
 
                 if ($response->successful()) {
                     $data = $response->json();
@@ -72,10 +74,12 @@ class PppToBankDetailsController extends Controller
                     ]);
                 }
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to connect to bank lookup API.'
-                ]);
+                } catch (\Throwable $netEx) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unable to connect to external bank lookup service (' . $netEx->getMessage() . ').'
+                    ]);
+                }
             }
 
             // =====================================================================
@@ -136,18 +140,22 @@ class PppToBankDetailsController extends Controller
 
     private function deductCoinsAndLogRequest($user, $service, int $coinCost, string $familyId, int $memberCount): void
     {
-        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
-            $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Bank Details: ' . $familyId);
-        }
+        try {
+            if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'PPP to Bank Details: ' . $familyId);
+            }
 
-        ServiceRequest::create([
-            'user_id' => $user->id,
-            'service_id' => $service ? $service->id : null,
-            'service_name' => $service ? $service->name : 'PPP ID To Bank Account & IFSC Code',
-            'input_data' => ['Family ID (PPP)' => $familyId, 'Total Accounts' => $memberCount],
-            'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-            'status' => ServiceRequest::STATUS_COMPLETED,
-            'completed_at' => now(),
-        ]);
+            ServiceRequest::create([
+                'user_id' => $user->id,
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'PPP ID To Bank Account & IFSC Code',
+                'input_data' => ['Family ID (PPP)' => $familyId, 'Total Accounts' => $memberCount],
+                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                'status' => ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('PppToBankDetails deduct/log error: ' . $e->getMessage());
+        }
     }
 }

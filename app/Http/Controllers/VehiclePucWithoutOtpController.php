@@ -44,7 +44,8 @@ class VehiclePucWithoutOtpController extends Controller
                         [urlencode($vehicleNo), urlencode($vehicleNo), urlencode($apiKey), urlencode($apiKey)],
                         $apiUrl
                     );
-                    $response = Http::connectTimeout(10)->timeout(30)
+                    $response = Http::withoutVerifying()
+                        ->connectTimeout(8)->timeout(20)
                         ->withHeaders([
                             'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
                             'X-API-KEY' => $apiKey,
@@ -52,8 +53,8 @@ class VehiclePucWithoutOtpController extends Controller
                         ])
                         ->get($resolvedUrl);
                 } else {
-                    $response = Http::connectTimeout(10)
-                        ->timeout(30)
+                    $response = Http::withoutVerifying()
+                        ->connectTimeout(8)->timeout(20)
                         ->withHeaders([
                             'Authorization' => $apiKey ? 'Bearer ' . $apiKey : '',
                             'X-API-KEY' => $apiKey,
@@ -138,18 +139,22 @@ class VehiclePucWithoutOtpController extends Controller
 
     private function deductCoinsAndLogRequest($user, $service, int $coinCost, string $vehicleNo, string $pucNo): void
     {
-        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
-            $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle PUC (Without OTP): ' . $vehicleNo);
-        }
+        try {
+            if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Vehicle PUC (Without OTP): ' . $vehicleNo);
+            }
 
-        ServiceRequest::create([
-            'user_id' => $user->id,
-            'service_id' => $service ? $service->id : null,
-            'service_name' => $service ? $service->name : 'Vehicle PUC (Without OTP)',
-            'input_data' => ['Vehicle Registration Number' => $vehicleNo, 'PUC Number' => $pucNo],
-            'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-            'status' => ServiceRequest::STATUS_COMPLETED,
-            'completed_at' => now(),
-        ]);
+            ServiceRequest::create([
+                'user_id' => $user->id,
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $service ? $service->name : 'Vehicle PUC (Without OTP)',
+                'input_data' => ['Vehicle Registration Number' => $vehicleNo, 'PUC Number' => $pucNo],
+                'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                'status' => ServiceRequest::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('VehiclePucWithoutOtp deduct/log error: ' . $e->getMessage());
+        }
     }
 }
