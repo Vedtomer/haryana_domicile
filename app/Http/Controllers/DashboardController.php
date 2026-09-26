@@ -169,32 +169,6 @@ class DashboardController extends Controller
             $totalRequests   = 0;
         }
 
-        // Add counts from all module-based request tables
-        $moduleRequestModels = [
-            \App\Models\PanRequest::class,
-            \App\Models\HaryanaDomicile::class,
-            \App\Models\BirthRecord::class,
-            \App\Models\MarriageForm::class,
-            \App\Models\MarriageAffidavit::class,
-            \App\Models\ManualPanCard::class,
-            \App\Models\AirtelPassbook::class,
-            \App\Models\TenthPassbook::class,
-            \App\Models\PanDetailsRequest::class,
-        ];
-
-        foreach ($moduleRequestModels as $modelClass) {
-            if (!class_exists($modelClass)) continue;
-            try {
-                $totalRequests   += $modelClass::count();
-                // Count pending from models that have a status column
-                if (in_array('status', (new $modelClass)->getFillable())) {
-                    $pendingRequests += $modelClass::where('status', 'pending')->count();
-                }
-            } catch (\Throwable $e) {
-                // skip if table doesn't exist
-            }
-        }
-
         try {
             $pendingCoins = \App\Models\CoinPurchaseRequest::where('status', 'pending')->count();
         } catch (\Throwable $e) {
@@ -202,12 +176,12 @@ class DashboardController extends Controller
         }
 
         return [
-            ['label' => 'Manage Users',      'value' => $userCount,                  'tone' => 'dark-blue',   'url' => '/admin/users',                                  'icon' => 'group'],
-            ['label' => 'Manage Services',   'value' => $servicesCount,              'tone' => 'dark-blue',   'url' => '/admin/services',                               'icon' => 'home_repair_service'],
-            ['label' => 'User Permissions',  'value' => 'Assign Services',           'tone' => 'dark-purple', 'url' => '/admin/user-permissions',                       'icon' => 'admin_panel_settings'],
-            ['label' => 'Pending Requests',  'value' => $pendingRequests,            'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending',        'icon' => 'hourglass_top'],
-            ['label' => 'Service Requests',  'value' => $totalRequests,              'tone' => 'dark-purple', 'url' => '/admin/service-requests',                       'icon' => 'assignment'],
-            ['label' => 'Coin Requests',     'value' => "{$pendingCoins} Pending",   'tone' => 'dark-amber',  'url' => '/admin/coin-requests',                          'icon' => 'monetization_on'],
+            ['label' => 'Manage Users',     'value' => $userCount,                'tone' => 'dark-blue',   'url' => '/admin/users',                           'icon' => 'group'],
+            ['label' => 'Manage Services',  'value' => $servicesCount,            'tone' => 'dark-blue',   'url' => '/admin/services',                        'icon' => 'home_repair_service'],
+            ['label' => 'User Permissions', 'value' => 'Assign Services',         'tone' => 'dark-purple', 'url' => '/admin/user-permissions',                'icon' => 'admin_panel_settings'],
+            ['label' => 'Pending Requests', 'value' => $pendingRequests,          'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
+            ['label' => 'Service Requests', 'value' => $totalRequests,            'tone' => 'dark-purple', 'url' => '/admin/service-requests',                'icon' => 'assignment'],
+            ['label' => 'Coin Requests',    'value' => "{$pendingCoins} Pending", 'tone' => 'dark-amber',  'url' => '/admin/coin-requests',                   'icon' => 'monetization_on'],
         ];
     }
 }
