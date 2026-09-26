@@ -38,9 +38,13 @@ export default function Index({ records }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                                {records.data.map((record, index) => (
-                                    <tr key={record.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td className="p-4 text-sm font-medium text-slate-500 dark:text-slate-400">{(records.from || 1) + index}</td>
+                                {records.data.map((record, index) => {
+                                    const totalCount = records.total ?? records.data.length;
+                                    const offset = records.from ? (records.from - 1 + index) : index;
+                                    const rowNumber = totalCount - offset;
+                                    return (
+                                        <tr key={record.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <td className="p-4 text-sm font-medium text-slate-500 dark:text-slate-400">{rowNumber}</td>
                                         <td className="p-4">
                                             <div className="text-sm font-medium text-slate-900 dark:text-white">{record.name}</div>
                                             <div className="text-xs text-slate-500 dark:text-slate-400">ID: #{record.id} • S/o {record.father_name}</div>
@@ -74,7 +78,8 @@ export default function Index({ records }) {
                                             </button>
                                         </td>
                                     </tr>
-                                ))}
+                                    );
+                                })}
                                 {records.data.length === 0 && (
                                     <tr>
                                         <td colSpan="5" className="p-8 text-center text-slate-500 dark:text-slate-400">

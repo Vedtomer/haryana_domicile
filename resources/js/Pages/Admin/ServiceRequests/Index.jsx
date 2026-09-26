@@ -53,20 +53,24 @@ export default function Index({ requests, isAdmin, statuses, filters }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {requests.data.map((item, index) => (
-                            <tr key={item.id} className="border-t border-gray-100 hover:bg-gray-50">
-                                <td className="px-4 py-3 text-gray-500 font-medium">
-                                    {(requests.from || 1) + index}
-                                </td>
-                                <td className="px-4 py-3 font-semibold text-gray-800">
-                                    <div className="flex items-center gap-1.5">
-                                        <span>{item.service?.icon}</span>
-                                        <span>{item.service_name}</span>
-                                    </div>
-                                    <div className="text-xs text-gray-400 font-normal mt-0.5">
-                                        ID: #{item.id}
-                                    </div>
-                                </td>
+                        {requests.data.map((item, index) => {
+                            const totalCount = requests.total ?? requests.data.length;
+                            const offset = requests.from ? (requests.from - 1 + index) : index;
+                            const rowNumber = totalCount - offset;
+                            return (
+                                <tr key={item.id} className="border-t border-gray-100 hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-gray-500 font-medium">
+                                        {rowNumber}
+                                    </td>
+                                    <td className="px-4 py-3 font-semibold text-gray-800">
+                                        <div className="flex items-center gap-1.5">
+                                            <span>{item.service?.icon}</span>
+                                            <span>{item.service_name}</span>
+                                        </div>
+                                        <div className="text-xs text-gray-400 font-normal mt-0.5">
+                                            ID: #{item.id}
+                                        </div>
+                                    </td>
                                 {isAdmin && (
                                     <td className="px-4 py-3">
                                         <p className="text-gray-800">{item.user?.name}</p>
@@ -93,7 +97,8 @@ export default function Index({ requests, isAdmin, statuses, filters }) {
                                     </Link>
                                 </td>
                             </tr>
-                        ))}
+                            );
+                        })}
                         {requests.data.length === 0 && (
                             <tr>
                                 <td colSpan={isAdmin ? 7 : 6} className="px-4 py-10 text-center text-gray-400">
