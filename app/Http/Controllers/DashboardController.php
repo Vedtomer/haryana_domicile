@@ -122,16 +122,18 @@ class DashboardController extends Controller
             ];
         });
 
+        $servicesCount = $rawServices->count();
+
         return Inertia::render('Admin/Dashboard', [
             'services' => $services,
             'isAdmin' => $isAdmin,
-            'stats' => $isAdmin ? $this->adminStats() : $this->userStats($user),
+            'stats' => $isAdmin ? $this->adminStats($servicesCount) : $this->userStats($user, $servicesCount),
             'referralCode' => $user->getActiveReferralCode(),
             'referralLink' => $user->referral_link,
         ]);
     }
 
-    private function userStats(User $user): array
+    private function userStats(User $user, int $servicesCount = 0): array
     {
         try {
             $requests = ServiceRequest::where('user_id', $user->id);
@@ -142,14 +144,8 @@ class DashboardController extends Controller
             $completedCount = 0;
         }
 
-        try {
-            $totalServices = Service::visibleTo($user)->count();
-        } catch (\Throwable $e) {
-            $totalServices = 0;
-        }
-
         return [
-            ['label' => 'Total Services', 'value' => $totalServices, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
+            ['label' => 'Total Services', 'value' => $servicesCount, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
             ['label' => 'History & My Requests', 'value' => $pendingCount + $completedCount, 'tone' => 'dark-indigo', 'url' => '/admin/service-requests', 'icon' => 'history'],
             ['label' => 'Pending', 'value' => $pendingCount, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
@@ -157,18 +153,12 @@ class DashboardController extends Controller
         ];
     }
 
-    private function adminStats(): array
+    private function adminStats(int $servicesCount = 0): array
     {
         try {
             $userCount = User::where('type', 'user')->count();
         } catch (\Throwable $e) {
             $userCount = 0;
-        }
-
-        try {
-            $serviceCount = Service::count();
-        } catch (\Throwable $e) {
-            $serviceCount = 0;
         }
 
         try {
@@ -187,7 +177,7 @@ class DashboardController extends Controller
 
         return [
             ['label' => 'Manage Users', 'value' => $userCount, 'tone' => 'dark-blue', 'url' => '/admin/users', 'icon' => 'group'],
-            ['label' => 'Manage Services', 'value' => $serviceCount, 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
+            ['label' => 'Manage Services', 'value' => $servicesCount, 'tone' => 'dark-blue', 'url' => '/admin/services', 'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services', 'tone' => 'dark-purple', 'url' => '/admin/user-permissions', 'icon' => 'admin_panel_settings'],
             ['label' => 'Pending Requests', 'value' => $pendingRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'hourglass_top'],
             ['label' => 'Service Requests', 'value' => $totalRequests, 'tone' => 'dark-purple', 'url' => '/admin/service-requests', 'icon' => 'assignment'],
