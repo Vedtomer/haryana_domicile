@@ -36,6 +36,16 @@ class PppToMobileAllMembersController extends Controller
         $apiKey = trim((string) (\App\Models\Setting::get('ppp_api_key') ?: (config('services.ppp.api_key') ?: env('PPP_API_KEY', ''))));
         // =========================================================================
 
+        // Detect if admin accidentally set the official government website URL as a background API
+        if (!empty($apiUrl) && (str_contains($apiUrl, 'ppp-office.haryana.gov.in') || str_contains($apiUrl, 'meraparivar.haryana.gov.in'))) {
+            return response()->json([
+                'success'    => false,
+                'is_portal'  => true,
+                'portal_url' => 'https://ppp-office.haryana.gov.in/Family/UpdateMobileNo',
+                'message'    => 'https://ppp-office.haryana.gov.in/ official Haryana government portal (HTML website) hai, automated REST API nahi hai. Mobile number check ya update karne ke liye niche diye gaye button se direct official portal open karein. Apne portal par automated search chalane ke liye ek 3rd-party B2B API gateway URL chahiye.'
+            ]);
+        }
+
         try {
             if (!empty($apiUrl)) {
                 if (str_contains($apiUrl, '{family_id}') || str_contains($apiUrl, '{ppp_id}')) {

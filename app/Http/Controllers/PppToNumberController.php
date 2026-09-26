@@ -53,6 +53,16 @@ class PppToNumberController extends Controller
         $apiUrl = trim((string) Setting::get('ppp_to_number_url', Setting::get('family_id_to_mobile_url', '')));
         $apiKey = trim((string) Setting::get('ppp_to_number_key', Setting::get('family_id_to_mobile_key', '')));
 
+        // If admin set government portal URL as API, do not call it via cURL (prevent timeout)
+        if (!empty($apiUrl) && (str_contains($apiUrl, 'ppp-office.haryana.gov.in') || str_contains($apiUrl, 'meraparivar.haryana.gov.in'))) {
+            return response()->json([
+                'success'    => false,
+                'is_portal'  => true,
+                'portal_url' => 'https://ppp-office.haryana.gov.in/Family/UpdateMobileNo',
+                'message'    => 'https://ppp-office.haryana.gov.in/ ek official Haryana government portal (HTML website) hai, background REST API nahi hai. Mobile number check ya update karne ke liye "Official Portal" tab use karein, ya 3rd-party vendor API endpoint configure karein.'
+            ]);
+        }
+
         if (!empty($apiUrl)) {
             try {
                 if (str_contains($apiUrl, '{family_id}') || str_contains($apiUrl, '{ppp_id}')) {
