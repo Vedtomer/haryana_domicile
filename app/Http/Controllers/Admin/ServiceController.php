@@ -70,6 +70,13 @@ class ServiceController extends Controller
 
         $service->update($data);
 
+        try {
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $e) {}
+
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');
     }
 
@@ -128,6 +135,13 @@ class ServiceController extends Controller
     {
         $service->is_active = !$service->is_active;
         $service->save();
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $e) {}
 
         $statusText = $service->is_active ? 'Active' : 'Unavailable (Inactive)';
 

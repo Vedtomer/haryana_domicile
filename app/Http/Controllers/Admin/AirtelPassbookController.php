@@ -21,6 +21,11 @@ class AirtelPassbookController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('airtel_passbook');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/AirtelPassbook/Create');
     }
 

@@ -22,6 +22,11 @@ class TenthPassbookController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('tenth_passbook');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/TenthPassbook/Create');
     }
 

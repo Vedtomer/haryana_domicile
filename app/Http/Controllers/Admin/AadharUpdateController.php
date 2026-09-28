@@ -22,6 +22,11 @@ class AadharUpdateController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('aadhar_update');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/AadharUpdate/Create');
     }
 

@@ -22,6 +22,11 @@ class MarriageAffidavitController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('marriage_affidavit');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/MarriageAffidavits/Create');
     }
 

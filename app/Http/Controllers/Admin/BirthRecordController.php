@@ -21,6 +21,11 @@ class BirthRecordController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('birth_record');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/BirthRecords/Create');
     }
 

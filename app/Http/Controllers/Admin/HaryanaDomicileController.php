@@ -22,6 +22,11 @@ class HaryanaDomicileController extends Controller
 
     public function create()
     {
+        $service = $this->moduleService('haryana_domicile');
+        if ($error = $this->serviceBlocker($service)) {
+            return redirect()->route('dashboard')->with('error', $error);
+        }
+
         return Inertia::render('Admin/HaryanaDomicile/Create');
     }
 

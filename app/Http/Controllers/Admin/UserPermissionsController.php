@@ -13,7 +13,10 @@ class UserPermissionsController extends Controller
     public function index()
     {
         // Get all regular users with their assigned services (in a single bulk query)
-        $users = User::where('type', 'user')
+        $users = User::where(function ($q) {
+                $q->where('type', 'user')->orWhereNull('type');
+            })
+            ->whereNotIn('type', ['admin', 'super_admin'])
             ->with('services:id')
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'phone'])
@@ -27,9 +30,9 @@ class UserPermissionsController extends Controller
                 ];
             });
 
-        // Get all services
+        // Get all services with active status
         $services = Service::ordered()
-            ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo'])
+            ->get(['id', 'name', 'icon', 'slug', 'description', 'coin_cost', 'logo', 'is_active'])
             ->map(function ($service) {
                 return [
                     'id' => (int) $service->id,
@@ -39,6 +42,7 @@ class UserPermissionsController extends Controller
                     'description' => $service->description,
                     'coin_cost' => $service->coin_cost,
                     'logo_url' => $service->logoUrl(),
+                    'is_active' => (bool) $service->is_active,
                 ];
             });
 
@@ -57,6 +61,13 @@ class UserPermissionsController extends Controller
 
         $user->services()->sync($data['service_ids']);
 
-        return back()->with('success', "Permissions updated for {$user->name}.");
+        try {
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $e) {}
+
+        return back()->with('success', "Permissions updated successfully for {$user->name}.");
     }
 }

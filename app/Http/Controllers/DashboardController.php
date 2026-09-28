@@ -15,9 +15,11 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isAdmin = $this->isStaff();
 
-        // Admin users see ONLY their explicitly assigned services (same as regular users)
+        // Admin staff see all services in the catalog.
+        // Regular users see ONLY services that are BOTH globally active AND explicitly assigned to them.
         $rawServices = Service::query()
             ->with('users')
+            ->when(!$isAdmin, fn ($q) => $q->where('is_active', true))
             ->visibleTo($user)
             ->ordered()
             ->get();
