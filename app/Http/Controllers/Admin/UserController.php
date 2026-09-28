@@ -258,4 +258,157 @@ class UserController extends Controller
 
         return back()->with('success', "PC device lock for {$user->name} has been reset.");
     }
+
+    public function clearAllWorkData(Request $request)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        $scope = $request->input('scope', 'users'); // 'users' or 'all'
+        $resetCoins = $request->boolean('reset_coins', false);
+        $clearTransactions = $request->boolean('clear_transactions', false);
+        $resetDevices = $request->boolean('reset_devices', false);
+        $clearChat = $request->boolean('clear_chat', false);
+
+        $query = User::query();
+        if ($scope === 'users') {
+            $query->where('type', 'user');
+        } elseif (auth()->user()->type === 'admin') {
+            $query->where('type', 'user');
+        } else {
+            $query->where('id', '!=', auth()->id());
+        }
+
+        $userIds = $query->pluck('id')->toArray();
+
+        $stats = $this->purgeWorkDataForUserIds($userIds, [
+            'reset_coins' => $resetCoins,
+            'clear_transactions' => $clearTransactions,
+            'reset_devices' => $resetDevices,
+            'clear_chat' => $clearChat,
+            'also_orphans' => ($scope === 'all' && auth()->user()->type === 'super_admin'),
+        ]);
+
+        return back()->with('success', "All work data cleared successfully! ({$stats['deleted_records']} service records deleted across {$stats['user_count']} users).");
+    }
+
+    public function clearUserWorkData(Request $request, User $user)
+    {
+        if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
+            abort(403);
+        }
+
+        if (auth()->user()->type === 'admin' && $user->type !== 'user') {
+            abort(403, 'You can only clear work data for regular users.');
+        }
+
+        $resetCoins = $request->boolean('reset_coins', false);
+        $clearTransactions = $request->boolean('clear_transactions', false);
+        $resetDevices = $request->boolean('reset_devices', false);
+        $clearChat = $request->boolean('clear_chat', false);
+
+        $stats = $this->purgeWorkDataForUserIds([$user->id], [
+            'reset_coins' => $resetCoins,
+            'clear_transactions' => $clearTransactions,
+            'reset_devices' => $resetDevices,
+            'clear_chat' => $clearChat,
+            'also_orphans' => false,
+        ]);
+
+        return back()->with('success', "Work data for {$user->name} has been cleared! ({$stats['deleted_records']} records removed).");
+    }
+
+    private function purgeWorkDataForUserIds(array $userIds, array $options): array
+    {
+        if (empty($userIds) && empty($options['also_orphans'])) {
+            return ['deleted_records' => 0, 'user_count' => 0];
+        }
+
+        $totalDeleted = 0;
+
+        // Clean up files and records for TenthPassbook
+        if (class_exists(\App\Models\TenthPassbook::class)) {
+            $query = \App\Models\TenthPassbook::whereIn('user_id', $userIds);
+            foreach ($query->get() as $item) {
+                if ($item->image_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($item->image_path);
+                }
+            }
+            $totalDeleted += $query->delete();
+        }
+
+        // Clean up files and records for ManualPanCard
+        if (class_exists(\App\Models\ManualPanCard::class)) {
+            $query = \App\Models\ManualPanCard::whereIn('user_id', $userIds);
+            foreach ($query->get() as $item) {
+                if ($item->photo_path) \Illuminate\Support\Facades\Storage::disk('public')->delete($item->photo_path);
+                if ($item->signature_path) \Illuminate\Support\Facades\Storage::disk('public')->delete($item->signature_path);
+            }
+            $totalDeleted += $query->delete();
+        }
+
+        // Delete from all service work tables
+        $workModels = [
+            \App\Models\AadharUpdate::class,
+            \App\Models\RentAgreement::class,
+            \App\Models\BobAffidavit::class,
+            \App\Models\HaryanaDomicile::class,
+            \App\Models\BirthRecord::class,
+            \App\Models\MarriageForm::class,
+            \App\Models\MarriageAffidavit::class,
+            \App\Models\AirtelPassbook::class,
+            \App\Models\PanRequest::class,
+            \App\Models\PanDetailsRequest::class,
+            \App\Models\ServiceRequest::class,
+            \App\Models\PdfConverter::class,
+            \App\Models\PrintJob::class,
+            \App\Models\ReactivationRequest::class,
+        ];
+
+        foreach ($workModels as $modelClass) {
+            if (class_exists($modelClass)) {
+                try {
+                    $q = $modelClass::whereIn('user_id', $userIds);
+                    if (!empty($options['also_orphans'])) {
+                        $q->orWhereNull('user_id');
+                    }
+                    $totalDeleted += $q->delete();
+                } catch (\Throwable $e) {
+                    // Ignore if table does not exist
+                }
+            }
+        }
+
+        if (!empty($options['reset_coins'])) {
+            User::whereIn('id', $userIds)->update(['coins' => 0]);
+        }
+
+        if (!empty($options['clear_transactions'])) {
+            if (class_exists(\App\Models\CoinTransaction::class)) {
+                $totalDeleted += \App\Models\CoinTransaction::whereIn('user_id', $userIds)->delete();
+            }
+            if (class_exists(\App\Models\CoinPurchaseRequest::class)) {
+                $totalDeleted += \App\Models\CoinPurchaseRequest::whereIn('user_id', $userIds)->delete();
+            }
+        }
+
+        if (!empty($options['reset_devices'])) {
+            $users = User::whereIn('id', $userIds)->get();
+            foreach ($users as $u) {
+                $u->resetDesktopLock();
+            }
+        }
+
+        if (!empty($options['clear_chat'])) {
+            if (class_exists(\App\Models\ChatMessage::class)) {
+                $totalDeleted += \App\Models\ChatMessage::whereIn('user_id', $userIds)->delete();
+            }
+        }
+
+        return [
+            'deleted_records' => $totalDeleted,
+            'user_count' => count($userIds),
+        ];
+    }
 }

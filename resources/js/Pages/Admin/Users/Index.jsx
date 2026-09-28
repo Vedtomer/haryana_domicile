@@ -12,6 +12,55 @@ export default function Index({ users }) {
     const [coinType, setCoinType] = useState('trial'); // 'trial' or 'paid'
     const [copiedCode, setCopiedCode] = useState(null);
 
+    // Clear Work Data states
+    const [showClearAllModal, setShowClearAllModal] = useState(false);
+    const [clearAllScope, setClearAllScope] = useState('users');
+    const [clearAllResetCoins, setClearAllResetCoins] = useState(false);
+    const [clearAllTransactions, setClearAllTransactions] = useState(false);
+    const [isClearingAll, setIsClearingAll] = useState(false);
+
+    const [clearingUserWork, setClearingUserWork] = useState(null);
+    const [singleResetCoins, setSingleResetCoins] = useState(false);
+    const [singleClearTransactions, setSingleClearTransactions] = useState(false);
+    const [isClearingSingle, setIsClearingSingle] = useState(false);
+
+    const handleClearAllSubmit = (e) => {
+        e.preventDefault();
+        setIsClearingAll(true);
+        router.post('/admin/users/clear-all-work-data', {
+            target: clearAllScope,
+            reset_coins: clearAllResetCoins,
+            clear_transactions: clearAllTransactions,
+        }, {
+            preserveScroll: true,
+            onFinish: () => setIsClearingAll(false),
+            onSuccess: () => {
+                setShowClearAllModal(false);
+                setClearAllScope('users');
+                setClearAllResetCoins(false);
+                setClearAllTransactions(false);
+            }
+        });
+    };
+
+    const handleClearSingleSubmit = (e) => {
+        e.preventDefault();
+        if (!clearingUserWork) return;
+        setIsClearingSingle(true);
+        router.post(`/admin/users/${clearingUserWork.id}/clear-work-data`, {
+            reset_coins: singleResetCoins,
+            clear_transactions: singleClearTransactions,
+        }, {
+            preserveScroll: true,
+            onFinish: () => setIsClearingSingle(false),
+            onSuccess: () => {
+                setClearingUserWork(null);
+                setSingleResetCoins(false);
+                setSingleClearTransactions(false);
+            }
+        });
+    };
+
     const handleCopyCode = (code) => {
         if (!code) return;
         navigator.clipboard.writeText(code);
@@ -70,6 +119,16 @@ export default function Index({ users }) {
                         <p className="mt-1 text-sm text-slate-500">Manage all registered user accounts.</p>
                     </div>
                     <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setShowClearAllModal(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-sm font-bold rounded-xl shadow-sm hover:shadow transition-all cursor-pointer"
+                        >
+                            <svg className="w-4 h-4 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Clear All Work Data
+                        </button>
                         <Link href="/admin/users/create" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                             Create User
@@ -225,6 +284,20 @@ export default function Index({ users }) {
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                             </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setClearingUserWork(user);
+                                                    setSingleResetCoins(false);
+                                                    setSingleClearTransactions(false);
+                                                }}
+                                                title="Clear User Work Data"
+                                                className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 hover:text-rose-600 transition-colors cursor-pointer"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
                                             <Link
                                                 href={`/admin/users/${user.id}/edit`}
                                                 title="Edit User"
@@ -361,6 +434,163 @@ export default function Index({ users }) {
                     router.reload({ only: ['users'], preserveScroll: true });
                 }}
             />
+
+            {/* Clear All Work Data Modal */}
+            {showClearAllModal && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <form onSubmit={handleClearAllSubmit} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Clear All Users' Work Data</h3>
+                                <p className="text-xs text-slate-500">Delete created forms, certificates, & history</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-4 text-xs text-amber-800 dark:text-amber-300">
+                            <strong>Warning:</strong> This will permanently delete work records created across all services (Aadhaar updates, agreements, certificates, passbooks, PAN records, domicile forms, print jobs, and uploaded files).
+                        </div>
+
+                        {/* Target Selection */}
+                        <div className="mb-4">
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2 uppercase tracking-wide">Target Users</label>
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="target"
+                                        value="users"
+                                        checked={clearAllScope === 'users'}
+                                        onChange={() => setClearAllScope('users')}
+                                        className="text-rose-600 focus:ring-rose-500"
+                                    />
+                                    <span>Regular Users only (Preserves admin/staff accounts)</span>
+                                </label>
+                                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="target"
+                                        value="all"
+                                        checked={clearAllScope === 'all'}
+                                        onChange={() => setClearAllScope('all')}
+                                        className="text-rose-600 focus:ring-rose-500"
+                                    />
+                                    <span>All Users (Includes sub-admins / all roles)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Optional checkboxes */}
+                        <div className="space-y-2 mb-6 pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={clearAllResetCoins}
+                                    onChange={(e) => setClearAllResetCoins(e.target.checked)}
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                />
+                                <span>Also reset user coins to 0</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={clearAllTransactions}
+                                    onChange={(e) => setClearAllTransactions(e.target.checked)}
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                />
+                                <span>Also clear coin transaction history logs</span>
+                            </label>
+                        </div>
+
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                disabled={isClearingAll}
+                                onClick={() => setShowClearAllModal(false)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isClearingAll}
+                                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {isClearingAll ? 'Clearing...' : 'Yes, Delete Work Data'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Clear Single User Work Data Modal */}
+            {clearingUserWork && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <form onSubmit={handleClearSingleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Clear User Work Data</h3>
+                                <p className="text-xs text-slate-500">
+                                    {clearingUserWork.name || clearingUserWork.phone || clearingUserWork.email || 'Selected User'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-4 text-xs text-amber-800 dark:text-amber-300">
+                            Are you sure you want to permanently delete all work records created by <strong>{clearingUserWork.name || 'this user'}</strong>? All generated certificates, forms, PAN records, and passbooks will be removed.
+                        </div>
+
+                        {/* Optional checkboxes */}
+                        <div className="space-y-2 mb-6 pt-1">
+                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={singleResetCoins}
+                                    onChange={(e) => setSingleResetCoins(e.target.checked)}
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                />
+                                <span>Also reset this user's coins to 0</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={singleClearTransactions}
+                                    onChange={(e) => setSingleClearTransactions(e.target.checked)}
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                />
+                                <span>Also clear this user's transaction history logs</span>
+                            </label>
+                        </div>
+
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                disabled={isClearingSingle}
+                                onClick={() => setClearingUserWork(null)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isClearingSingle}
+                                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {isClearingSingle ? 'Clearing...' : 'Delete Work Data'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
         </AdminLayout>
     );
 }
