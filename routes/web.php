@@ -168,34 +168,95 @@ Route::get('/migrate-db', function () {
             $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
         }
 
-        // Ensure BOB Affidavit service is configured as module and assigned to users
+        // Ensure Rent Agreement and BOB Affidavit services are configured as module and assigned to users
         try {
-            \Illuminate\Support\Facades\DB::table('services')
-                ->where('slug', 'bob-affidavit')
-                ->update([
-                    'name' => 'BOB Affidavit',
+            $allUserIds = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
+
+            // 1. Rent Agreement
+            $rentService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'rent-agreement')->first();
+            if ($rentService) {
+                \Illuminate\Support\Facades\DB::table('services')->where('id', $rentService->id)->update([
+                    'name' => 'Rent Agreement',
                     'kind' => 'module',
-                    'module_key' => 'bob_affidavit',
+                    'module_key' => 'rent_agreement',
                     'coin_cost' => 149,
                     'is_active' => true,
                     'visibility' => 'public',
                     'fields' => null,
                     'updated_at' => now(),
                 ]);
+                $rentId = $rentService->id;
+            } else {
+                $rentId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
+                    'name' => 'Rent Agreement',
+                    'slug' => 'rent-agreement',
+                    'description' => 'Official Rent Agreement Generator - Generate, edit and print authentic 2-page Rent Agreements with adhesive stamps and notary seals.',
+                    'icon' => '📜',
+                    'coin_cost' => 149,
+                    'kind' => 'module',
+                    'module_key' => 'rent_agreement',
+                    'fields' => null,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
 
+            // 2. BOB Affidavit
             $bobService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'bob-affidavit')->first();
             if ($bobService) {
-                $allUserIds = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
+                \Illuminate\Support\Facades\DB::table('services')->where('id', $bobService->id)->update([
+                    'name' => 'BOB Affidavit',
+                    'kind' => 'module',
+                    'module_key' => 'rent_agreement',
+                    'coin_cost' => 149,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'fields' => null,
+                    'updated_at' => now(),
+                ]);
+                $bobId = $bobService->id;
+            } else {
+                $bobId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
+                    'name' => 'BOB Affidavit',
+                    'slug' => 'bob-affidavit',
+                    'description' => 'Bank of Baroda (BOB) Affidavit / Rent Agreement Generator - Generate, edit and print authentic 2-page documents with adhesive stamps and notary seals.',
+                    'icon' => '📜',
+                    'coin_cost' => 149,
+                    'kind' => 'module',
+                    'module_key' => 'rent_agreement',
+                    'fields' => null,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            foreach ([$rentId, $bobId] as $sId) {
+                if (!$sId) continue;
                 foreach ($allUserIds as $uId) {
                     \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
-                        ['service_id' => $bobService->id, 'user_id' => $uId],
+                        ['service_id' => $sId, 'user_id' => $uId],
                         ['created_at' => now(), 'updated_at' => now()]
                     );
                 }
             }
-            $output .= "=== BOB AFFIDAVIT SERVICE MODULE VERIFIED ===\n\n";
+
+            $currentServices = \Illuminate\Support\Facades\DB::table('services')
+                ->whereIn('slug', ['rent-agreement', 'bob-affidavit'])
+                ->select(['id', 'name', 'slug', 'module_key', 'coin_cost', 'is_active', 'visibility'])
+                ->get();
+            $output .= "=== RENT AGREEMENT & BOB AFFIDAVIT VERIFIED ===\n" . json_encode($currentServices, JSON_PRETTY_PRINT) . "\n\n";
         } catch (\Throwable $be) {
-            $output .= "BOB Affidavit Notice: " . $be->getMessage() . "\n\n";
+            $output .= "Rent Agreement Notice: " . $be->getMessage() . "\n\n";
         }
 
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
