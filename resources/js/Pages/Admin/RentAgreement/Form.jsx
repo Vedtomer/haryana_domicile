@@ -101,7 +101,7 @@ export default function RentAgreementForm({
                         value={data.first_party_name}
                         onChange={handleChange}
                         error={errors.first_party_name}
-                        placeholder="e.g. Varun Arora"
+                        placeholder="e.g. Satyal"
                         required
                     />
                 </Grid>
@@ -112,7 +112,7 @@ export default function RentAgreementForm({
                         value={data.first_party_aadhar}
                         onChange={handleAadharChange}
                         error={errors.first_party_aadhar}
-                        placeholder="e.g. 6082 9385 1788"
+                        placeholder="e.g. XXXX XXXX 2430"
                         required
                     />
                 </Grid>
@@ -123,7 +123,7 @@ export default function RentAgreementForm({
                         value={data.first_party_father_name}
                         onChange={handleChange}
                         error={errors.first_party_father_name}
-                        placeholder="e.g. Adarsh Arora"
+                        placeholder="e.g. Chunni Lal"
                         required
                     />
                 </Grid>
@@ -134,7 +134,7 @@ export default function RentAgreementForm({
                         value={data.first_party_address}
                         onChange={handleChange}
                         error={errors.first_party_address}
-                        placeholder="e.g. House No. 23, Model Town, Panipat"
+                        placeholder="e.g. House No. 1998, Dhoop Singh Nagar, Ward 12, Panipat"
                         required
                     />
                 </Grid>
@@ -150,7 +150,7 @@ export default function RentAgreementForm({
                         value={data.second_party_name}
                         onChange={handleChange}
                         error={errors.second_party_name}
-                        placeholder="e.g. Satypal"
+                        placeholder="e.g. Ved Prkash"
                         required
                     />
                 </Grid>
@@ -161,7 +161,7 @@ export default function RentAgreementForm({
                         value={data.second_party_aadhar}
                         onChange={handleSecondPartyAadharChange}
                         error={errors.second_party_aadhar}
-                        placeholder="e.g. 1234 1234 1234"
+                        placeholder="e.g. 4044 5705 6996"
                         required={false}
                     />
                 </Grid>
@@ -172,7 +172,7 @@ export default function RentAgreementForm({
                         value={data.second_party_father_name}
                         onChange={handleChange}
                         error={errors.second_party_father_name}
-                        placeholder="e.g. Mohan Lal Bajaj"
+                        placeholder="e.g. Jograj"
                         required
                     />
                 </Grid>
@@ -194,7 +194,7 @@ export default function RentAgreementForm({
                         value={data.second_party_address}
                         onChange={handleChange}
                         error={errors.second_party_address}
-                        placeholder="e.g. House No. 463, Model Town, Panipat"
+                        placeholder="e.g. Village Bargwan, Bareilly, UP 293303"
                         required
                     />
                 </Grid>

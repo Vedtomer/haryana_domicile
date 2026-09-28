@@ -13,12 +13,12 @@
 <style>
     @page {
         size: A4 portrait;
-        margin: 10mm 20mm 10mm 20mm;
+        margin: 10mm 24mm 10mm 24mm;
     }
     body {
         font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif;
-        font-size: 10.3pt;
-        line-height: 1.36;
+        font-size: 10.2pt;
+        line-height: 1.34;
         color: #000;
         margin: 0;
         padding: 0;
@@ -33,7 +33,7 @@
         margin-bottom: 8px;
     }
     .stamp-img {
-        width: 135px;
+        width: 122px;
         height: auto;
     }
     h1.title {
@@ -102,13 +102,13 @@
     }
     .notary-wrapper {
         position: absolute;
-        bottom: 25px;
-        right: -10px;
-        width: 250px;
+        bottom: 12px;
+        right: 0px;
+        width: 140px;
         text-align: right;
     }
     .notary-img {
-        width: 215px;
+        width: 132px;
         height: auto;
     }
     b {
@@ -196,23 +196,23 @@
                 The First Party shall not consume alcohol, eggs, meat, etc., on the said premises.
             </div>
         </div>
-
-        <div class="spacer"></div>
-
-        <div class="term-item">
-            <span class="term-num">9.</span>
-            <div class="term-text">
-                The First Party resides in the said house; should any proceedings related to GST arise, the First Party shall be solely responsible for them. The Second Party shall bear no responsibility in this regard.
-            </div>
-        </div>
     </div>
 </div>
 
 <div class="page-break"></div>
 
 <!-- PAGE 2 -->
-<div class="page-2" style="position: relative; min-height: 800px;">
+<div class="page-2" style="position: relative; min-height: 800px; padding-top: 10mm;">
     <div class="terms-list" style="margin-top: 0; padding-left: 20px;">
+        <div class="term-item">
+            <span class="term-num">9.</span>
+            <div class="term-text">
+                The First Party resides in the said house; should any proceedings related to GST arise, the First Party shall be solely responsible for them. The Second Party shall bear no responsibility in this regard.
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+
         <div class="term-item">
             <span class="term-num">10.</span>
             <div class="term-text">
