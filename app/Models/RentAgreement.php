@@ -17,6 +17,7 @@ class RentAgreement extends Model
         'first_party_father_name',
         'first_party_address',
         'second_party_name',
+        'second_party_aadhar',
         'second_party_father_name',
         'second_party_address',
         'property_owner_title',

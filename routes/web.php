@@ -170,6 +170,12 @@ Route::get('/migrate-db', function () {
 
         // Ensure Rent Agreement and BOB Affidavit services are configured as module and assigned to users
         try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('rent_agreements') && !\Illuminate\Support\Facades\Schema::hasColumn('rent_agreements', 'second_party_aadhar')) {
+                \Illuminate\Support\Facades\Schema::table('rent_agreements', function ($table) {
+                    $table->string('second_party_aadhar', 50)->nullable()->after('second_party_name');
+                });
+            }
+
             $allUserIds = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
 
             // 1. Rent Agreement

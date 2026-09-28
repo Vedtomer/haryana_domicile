@@ -51,6 +51,13 @@ export default function RentAgreementForm({
         setData('first_party_aadhar', formatted);
     };
 
+    const handleSecondPartyAadharChange = (e) => {
+        const raw = e.target.value.replace(/\D/g, '').slice(0, 12);
+        // format as XXXX XXXX XXXX
+        const formatted = raw.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+        setData('second_party_aadhar', formatted);
+    };
+
     const handleRentChange = (e) => {
         const val = e.target.value;
         const words = numberToWordsINR(val);
@@ -136,18 +143,29 @@ export default function RentAgreementForm({
             {/* SECOND PARTY / LANDLORD DETAILS */}
             <SectionHeader title="2. Second Party (Landlord / मकान/दुकान मालिक) Details" />
             <Grid container spacing={2.5} sx={{ mb: 3 }}>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={3}>
                     <InputField
                         label="Landlord Full Name"
                         name="second_party_name"
                         value={data.second_party_name}
                         onChange={handleChange}
                         error={errors.second_party_name}
-                        placeholder="e.g. Ashish Bajaj"
+                        placeholder="e.g. Satypal"
                         required
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <InputField
+                        label="Landlord Aadhaar Number"
+                        name="second_party_aadhar"
+                        value={data.second_party_aadhar}
+                        onChange={handleSecondPartyAadharChange}
+                        error={errors.second_party_aadhar}
+                        placeholder="e.g. 1234 1234 1234"
+                        required={false}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
                     <InputField
                         label="Landlord Father Name"
                         name="second_party_father_name"
@@ -158,7 +176,7 @@ export default function RentAgreementForm({
                         required
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={3}>
                     <InputField
                         label="Owner Title / Role"
                         name="property_owner_title"

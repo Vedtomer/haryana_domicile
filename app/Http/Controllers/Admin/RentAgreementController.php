@@ -116,6 +116,7 @@ class RentAgreementController extends Controller
             'first_party_father_name' => 'required|string|max:255',
             'first_party_address' => 'required|string|max:1000',
             'second_party_name' => 'required|string|max:255',
+            'second_party_aadhar' => 'nullable|string|max:50',
             'second_party_father_name' => 'required|string|max:255',
             'second_party_address' => 'required|string|max:1000',
             'property_owner_title' => 'nullable|string|max:100',

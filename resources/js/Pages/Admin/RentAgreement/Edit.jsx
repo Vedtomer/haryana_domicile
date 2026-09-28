@@ -12,6 +12,7 @@ export default function Edit({ record }) {
         first_party_father_name: record.first_party_father_name || '',
         first_party_address: record.first_party_address || '',
         second_party_name: record.second_party_name || '',
+        second_party_aadhar: record.second_party_aadhar || '',
         second_party_father_name: record.second_party_father_name || '',
         second_party_address: record.second_party_address || '',
         property_owner_title: record.property_owner_title || 'Warehouse Owner',

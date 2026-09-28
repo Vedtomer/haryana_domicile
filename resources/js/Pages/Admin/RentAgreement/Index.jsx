@@ -71,7 +71,10 @@ export default function Index({ records }) {
                         render: (r) => (
                             <div>
                                 <div className="font-semibold text-slate-700">{r.second_party_name}</div>
-                                <div className="text-xs text-slate-500">{r.property_owner_title || 'Owner'}</div>
+                                {r.second_party_aadhar && (
+                                    <div className="text-xs text-slate-500 font-mono">UID: {r.second_party_aadhar}</div>
+                                )}
+                                <div className="text-xs text-slate-400">{r.property_owner_title || 'Owner'}</div>
                             </div>
                         ),
                     },
