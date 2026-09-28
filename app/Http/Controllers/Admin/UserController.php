@@ -32,7 +32,19 @@ class UserController extends Controller
         }
 
         $users = $query->paginate(10);
-        return Inertia::render('Admin/Users/Index', ['users' => $users]);
+
+        $allUsersQuery = User::select('id', 'name', 'phone', 'email', 'type');
+        if (auth()->user()->type === 'admin') {
+            $allUsersQuery->where('type', 'user');
+        } else {
+            $allUsersQuery->where('id', '!=', auth()->id());
+        }
+        $allUsers = $allUsersQuery->orderBy('name')->get();
+
+        return Inertia::render('Admin/Users/Index', [
+            'users' => $users,
+            'allUsers' => $allUsers,
+        ]);
     }
 
     public function create()
@@ -265,14 +277,24 @@ class UserController extends Controller
             abort(403);
         }
 
-        $scope = $request->input('scope', 'users'); // 'users' or 'all'
+        $target = $request->input('target', $request->input('scope', 'users')); // 'users', 'all', or 'selected'
+        $selectedUserIds = $request->input('user_ids', []);
+        if (is_string($selectedUserIds)) {
+            $selectedUserIds = array_filter(array_map('trim', explode(',', $selectedUserIds)));
+        }
+
         $resetCoins = $request->boolean('reset_coins', false);
         $clearTransactions = $request->boolean('clear_transactions', false);
         $resetDevices = $request->boolean('reset_devices', false);
         $clearChat = $request->boolean('clear_chat', false);
 
         $query = User::query();
-        if ($scope === 'users') {
+        if ($target === 'selected' && !empty($selectedUserIds)) {
+            $query->whereIn('id', (array)$selectedUserIds);
+            if (auth()->user()->type === 'admin') {
+                $query->where('type', 'user');
+            }
+        } elseif ($target === 'users') {
             $query->where('type', 'user');
         } elseif (auth()->user()->type === 'admin') {
             $query->where('type', 'user');
@@ -282,15 +304,19 @@ class UserController extends Controller
 
         $userIds = $query->pluck('id')->toArray();
 
+        if (empty($userIds)) {
+            return back()->with('error', 'No users selected or found to clear.');
+        }
+
         $stats = $this->purgeWorkDataForUserIds($userIds, [
             'reset_coins' => $resetCoins,
             'clear_transactions' => $clearTransactions,
             'reset_devices' => $resetDevices,
             'clear_chat' => $clearChat,
-            'also_orphans' => ($scope === 'all' && auth()->user()->type === 'super_admin'),
+            'also_orphans' => ($target === 'all' && auth()->user()->type === 'super_admin'),
         ]);
 
-        return back()->with('success', "All work data cleared successfully! ({$stats['deleted_records']} service records deleted across {$stats['user_count']} users).");
+        return back()->with('success', "Work data cleared successfully! ({$stats['deleted_records']} service records deleted across {$stats['user_count']} users).");
     }
 
     public function clearUserWorkData(Request $request, User $user)

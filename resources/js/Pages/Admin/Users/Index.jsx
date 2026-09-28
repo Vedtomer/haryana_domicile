@@ -4,7 +4,7 @@ import AdminLayout from '../../../Layouts/AdminLayout';
 import AdminChatModal from '../../../Components/AdminChatModal';
 import AdminScreenViewModal from '../../../Components/AdminScreenViewModal';
 
-export default function Index({ users }) {
+export default function Index({ users, allUsers = [] }) {
     const [addingCoinsTo, setAddingCoinsTo] = useState(null); // stores full user object
     const [chatUser, setChatUser] = useState(null); // user currently being chatted with
     const [screenUser, setScreenUser] = useState(null); // user currently having screen viewed
@@ -14,10 +14,17 @@ export default function Index({ users }) {
 
     // Clear Work Data states
     const [showClearAllModal, setShowClearAllModal] = useState(false);
-    const [clearAllScope, setClearAllScope] = useState('users');
+    const [clearAllScope, setClearAllScope] = useState('users'); // 'users', 'all', or 'selected'
     const [clearAllResetCoins, setClearAllResetCoins] = useState(false);
     const [clearAllTransactions, setClearAllTransactions] = useState(false);
     const [isClearingAll, setIsClearingAll] = useState(false);
+
+    // Selective user clearing states
+    const [selectedTableUserIds, setSelectedTableUserIds] = useState([]);
+    const [modalSelectedUserIds, setModalSelectedUserIds] = useState([]);
+    const [userSearchQuery, setUserSearchQuery] = useState('');
+
+    const availableUsersList = (allUsers && allUsers.length > 0) ? allUsers : (users?.data || []);
 
     const [clearingUserWork, setClearingUserWork] = useState(null);
     const [singleResetCoins, setSingleResetCoins] = useState(false);
@@ -26,9 +33,14 @@ export default function Index({ users }) {
 
     const handleClearAllSubmit = (e) => {
         e.preventDefault();
+        if (clearAllScope === 'selected' && modalSelectedUserIds.length === 0) {
+            alert('Please select at least one user to clear.');
+            return;
+        }
         setIsClearingAll(true);
         router.post('/admin/users/clear-all-work-data', {
             target: clearAllScope,
+            user_ids: modalSelectedUserIds,
             reset_coins: clearAllResetCoins,
             clear_transactions: clearAllTransactions,
         }, {
@@ -37,6 +49,9 @@ export default function Index({ users }) {
             onSuccess: () => {
                 setShowClearAllModal(false);
                 setClearAllScope('users');
+                setModalSelectedUserIds([]);
+                setSelectedTableUserIds([]);
+                setUserSearchQuery('');
                 setClearAllResetCoins(false);
                 setClearAllTransactions(false);
             }
@@ -136,11 +151,68 @@ export default function Index({ users }) {
                     </div>
                 </div>
 
+                {selectedTableUserIds.length > 0 && (
+                    <div className="bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-200 dark:border-rose-800 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-full bg-rose-600 text-white text-sm font-black flex items-center justify-center shadow-xs">
+                                {selectedTableUserIds.length}
+                            </span>
+                            <div>
+                                <span className="text-sm font-bold text-rose-950 dark:text-rose-100 block">
+                                    {selectedTableUserIds.length} User{selectedTableUserIds.length > 1 ? 's' : ''} Selected
+                                </span>
+                                <span className="text-xs text-rose-700 dark:text-rose-400">
+                                    Choose Clear Work Data to wipe all work history for these specific accounts.
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setModalSelectedUserIds([...selectedTableUserIds]);
+                                    setClearAllScope('selected');
+                                    setShowClearAllModal(true);
+                                }}
+                                className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Clear Work Data for Selected ({selectedTableUserIds.length})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedTableUserIds([])}
+                                className="px-3.5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 text-xs sm:text-sm font-semibold rounded-xl border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                            >
+                                Deselect All
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden mb-6">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                                    <th className="w-10 px-4 py-3.5 text-center">
+                                        <input
+                                            type="checkbox"
+                                            title="Select all users on this page"
+                                            className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                                            checked={users.data.length > 0 && users.data.every(u => selectedTableUserIds.includes(u.id))}
+                                            onChange={(e) => {
+                                                const pageIds = users.data.map(u => u.id);
+                                                if (e.target.checked) {
+                                                    setSelectedTableUserIds(prev => Array.from(new Set([...prev, ...pageIds])));
+                                                } else {
+                                                    setSelectedTableUserIds(prev => prev.filter(id => !pageIds.includes(id)));
+                                                }
+                                            }}
+                                        />
+                                    </th>
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referral & Coins</th>
                                     <th className="px-4 sm:px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
@@ -150,7 +222,21 @@ export default function Index({ users }) {
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {users.data.map((user) => (
-                                    <tr key={user.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                                    <tr key={user.id} className={`hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors ${selectedTableUserIds.includes(user.id) ? 'bg-rose-50/30 dark:bg-rose-950/20' : ''}`}>
+                                        <td className="w-10 px-4 py-3.5 text-center whitespace-nowrap">
+                                            <input
+                                                type="checkbox"
+                                                className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                                                checked={selectedTableUserIds.includes(user.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedTableUserIds(prev => [...prev, user.id]);
+                                                    } else {
+                                                        setSelectedTableUserIds(prev => prev.filter(id => id !== user.id));
+                                                    }
+                                                }}
+                                            />
+                                        </td>
                                         <td className="px-4 sm:px-5 py-3.5 whitespace-nowrap">
                                         <div className="text-sm font-semibold text-slate-800 dark:text-white mb-0.5">
                                             {user.name || <span className="text-slate-400 italic font-normal">No Name</span>}
@@ -438,7 +524,7 @@ export default function Index({ users }) {
             {/* Clear All Work Data Modal */}
             {showClearAllModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <form onSubmit={handleClearAllSubmit} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800">
+                    <form onSubmit={handleClearAllSubmit} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl w-full ${clearAllScope === 'selected' ? 'max-w-xl' : 'max-w-md'} border border-slate-200 dark:border-slate-800 transition-all`}>
                         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center flex-shrink-0">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -446,13 +532,13 @@ export default function Index({ users }) {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Clear All Users' Work Data</h3>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Clear Users' Work Data</h3>
                                 <p className="text-xs text-slate-500">Delete created forms, certificates, & history</p>
                             </div>
                         </div>
 
                         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-4 text-xs text-amber-800 dark:text-amber-300">
-                            <strong>Warning:</strong> This will permanently delete work records created across all services (Aadhaar updates, agreements, certificates, passbooks, PAN records, domicile forms, print jobs, and uploaded files).
+                            <strong>Warning:</strong> This permanently deletes work records across all services (Aadhaar updates, agreements, certificates, passbooks, PAN records, domicile forms, print jobs, and uploaded files).
                         </div>
 
                         {/* Target Selection */}
@@ -466,7 +552,7 @@ export default function Index({ users }) {
                                         value="users"
                                         checked={clearAllScope === 'users'}
                                         onChange={() => setClearAllScope('users')}
-                                        className="text-rose-600 focus:ring-rose-500"
+                                        className="text-rose-600 focus:ring-rose-500 cursor-pointer"
                                     />
                                     <span>Regular Users only (Preserves admin/staff accounts)</span>
                                 </label>
@@ -477,12 +563,130 @@ export default function Index({ users }) {
                                         value="all"
                                         checked={clearAllScope === 'all'}
                                         onChange={() => setClearAllScope('all')}
-                                        className="text-rose-600 focus:ring-rose-500"
+                                        className="text-rose-600 focus:ring-rose-500 cursor-pointer"
                                     />
                                     <span>All Users (Includes sub-admins / all roles)</span>
                                 </label>
+                                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="target"
+                                        value="selected"
+                                        checked={clearAllScope === 'selected'}
+                                        onChange={() => setClearAllScope('selected')}
+                                        className="text-rose-600 focus:ring-rose-500 cursor-pointer"
+                                    />
+                                    <span className="font-bold text-rose-600 dark:text-rose-400">
+                                        Select Specific Users ({modalSelectedUserIds.length} selected)
+                                    </span>
+                                </label>
                             </div>
                         </div>
+
+                        {/* User Selection Box if selected scope */}
+                        {clearAllScope === 'selected' && (
+                            <div className="mb-4 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">
+                                        Select Users ({modalSelectedUserIds.length} chosen)
+                                    </label>
+                                    <div className="flex items-center gap-2 text-xs">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const q = userSearchQuery.toLowerCase();
+                                                const filteredIds = availableUsersList
+                                                    .filter(u => {
+                                                        return !q ||
+                                                            (u.name && u.name.toLowerCase().includes(q)) ||
+                                                            (u.phone && u.phone.includes(q)) ||
+                                                            (u.email && u.email.toLowerCase().includes(q));
+                                                    })
+                                                    .map(u => u.id);
+                                                setModalSelectedUserIds(prev => Array.from(new Set([...prev, ...filteredIds])));
+                                            }}
+                                            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer"
+                                        >
+                                            Select All
+                                        </button>
+                                        <span className="text-slate-300">|</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setModalSelectedUserIds([])}
+                                            className="text-rose-600 dark:text-rose-400 hover:underline font-semibold cursor-pointer"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Search Bar */}
+                                <div className="relative mb-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name, phone, or email..."
+                                        value={userSearchQuery}
+                                        onChange={(e) => setUserSearchQuery(e.target.value)}
+                                        className="w-full text-xs pl-8 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:border-rose-500"
+                                    />
+                                    <svg className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+
+                                {/* Scrollable User List */}
+                                <div className="max-h-48 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                    {availableUsersList
+                                        .filter(u => {
+                                            const q = userSearchQuery.toLowerCase();
+                                            return !q ||
+                                                (u.name && u.name.toLowerCase().includes(q)) ||
+                                                (u.phone && u.phone.includes(q)) ||
+                                                (u.email && u.email.toLowerCase().includes(q));
+                                        })
+                                        .map(u => {
+                                            const isChecked = modalSelectedUserIds.includes(u.id);
+                                            return (
+                                                <label
+                                                    key={u.id}
+                                                    className={`flex items-center gap-2.5 px-3 py-2 text-xs cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors ${isChecked ? 'bg-rose-50/60 dark:bg-rose-950/20' : ''}`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isChecked}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setModalSelectedUserIds(prev => [...prev, u.id]);
+                                                            } else {
+                                                                setModalSelectedUserIds(prev => prev.filter(id => id !== u.id));
+                                                            }
+                                                        }}
+                                                        className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-semibold text-slate-800 dark:text-slate-100 truncate">
+                                                            {u.name || 'No Name'}
+                                                            {u.type !== 'user' && (
+                                                                <span className="ml-1.5 px-1.5 py-0.2 bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-500 rounded">
+                                                                    {u.type}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                                            {u.phone || u.email || 'No contact'}
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
+                                </div>
+                                {modalSelectedUserIds.length === 0 && (
+                                    <p className="mt-2 text-xs text-rose-500 font-medium">
+                                        * Please check at least one user from the list above.
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         {/* Optional checkboxes */}
                         <div className="space-y-2 mb-6 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -491,16 +695,16 @@ export default function Index({ users }) {
                                     type="checkbox"
                                     checked={clearAllResetCoins}
                                     onChange={(e) => setClearAllResetCoins(e.target.checked)}
-                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
                                 />
-                                <span>Also reset user coins to 0</span>
+                                <span>Also reset coins to 0 for these users</span>
                             </label>
                             <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={clearAllTransactions}
                                     onChange={(e) => setClearAllTransactions(e.target.checked)}
-                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
                                 />
                                 <span>Also clear coin transaction history logs</span>
                             </label>
@@ -511,16 +715,20 @@ export default function Index({ users }) {
                                 type="button"
                                 disabled={isClearingAll}
                                 onClick={() => setShowClearAllModal(false)}
-                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                disabled={isClearingAll}
-                                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+                                disabled={isClearingAll || (clearAllScope === 'selected' && modalSelectedUserIds.length === 0)}
+                                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
-                                {isClearingAll ? 'Clearing...' : 'Yes, Delete Work Data'}
+                                {isClearingAll ? 'Clearing...' : (
+                                    clearAllScope === 'selected'
+                                        ? `Delete Work Data (${modalSelectedUserIds.length} Users)`
+                                        : 'Yes, Delete Work Data'
+                                )}
                             </button>
                         </div>
                     </form>
