@@ -104,11 +104,11 @@
         position: absolute;
         bottom: 12px;
         right: 0px;
-        width: 140px;
+        width: 220px;
         text-align: right;
     }
     .notary-img {
-        width: 132px;
+        width: 185px;
         height: auto;
     }
     b {
