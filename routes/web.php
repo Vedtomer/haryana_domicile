@@ -168,6 +168,36 @@ Route::get('/migrate-db', function () {
             $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
         }
 
+        // Ensure BOB Affidavit service is configured as module and assigned to users
+        try {
+            \Illuminate\Support\Facades\DB::table('services')
+                ->where('slug', 'bob-affidavit')
+                ->update([
+                    'name' => 'BOB Affidavit',
+                    'kind' => 'module',
+                    'module_key' => 'bob_affidavit',
+                    'coin_cost' => 149,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'fields' => null,
+                    'updated_at' => now(),
+                ]);
+
+            $bobService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'bob-affidavit')->first();
+            if ($bobService) {
+                $allUserIds = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
+                foreach ($allUserIds as $uId) {
+                    \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
+                        ['service_id' => $bobService->id, 'user_id' => $uId],
+                        ['created_at' => now(), 'updated_at' => now()]
+                    );
+                }
+            }
+            $output .= "=== BOB AFFIDAVIT SERVICE MODULE VERIFIED ===\n\n";
+        } catch (\Throwable $be) {
+            $output .= "BOB Affidavit Notice: " . $be->getMessage() . "\n\n";
+        }
+
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
