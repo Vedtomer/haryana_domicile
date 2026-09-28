@@ -59,11 +59,17 @@ class Service extends Model
             'index' => '/admin/haryana-domicile',
             'create' => '/admin/haryana-domicile/create',
         ],
+        'rent_agreement' => [
+            'label' => 'Rent Agreement',
+            'model' => RentAgreement::class,
+            'index' => '/admin/rent-agreement',
+            'create' => '/admin/rent-agreement/create',
+        ],
         'bob_affidavit' => [
             'label' => 'BOB Affidavit',
-            'model' => BobAffidavit::class,
-            'index' => '/admin/bob-affidavit',
-            'create' => '/admin/bob-affidavit/create',
+            'model' => RentAgreement::class,
+            'index' => '/admin/rent-agreement',
+            'create' => '/admin/rent-agreement/create',
         ],
         'pan_request' => [
             'label' => 'PAN Card',

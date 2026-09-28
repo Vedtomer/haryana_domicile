@@ -1514,8 +1514,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class)->middleware('license.active');
         Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
 
-        Route::resource('bob-affidavit', \App\Http\Controllers\Admin\BobAffidavitController::class)->middleware('license.active');
-        Route::get('bob-affidavit/{bob_affidavit}/print', [\App\Http\Controllers\Admin\BobAffidavitController::class, 'print'])->name('bob-affidavit.print');
+        Route::resource('rent-agreement', \App\Http\Controllers\Admin\RentAgreementController::class)->middleware('license.active');
+        Route::get('rent-agreement/{rent_agreement}/print', [\App\Http\Controllers\Admin\RentAgreementController::class, 'print'])->name('rent-agreement.print');
+
+        Route::resource('bob-affidavit', \App\Http\Controllers\Admin\RentAgreementController::class)->middleware('license.active');
+        Route::get('bob-affidavit/{bob_affidavit}/print', [\App\Http\Controllers\Admin\RentAgreementController::class, 'print'])->name('bob-affidavit.print');
 
         
         Route::get('aadhar-update/grid', function () {
