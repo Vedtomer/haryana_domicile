@@ -10,6 +10,7 @@ import UserScreenShareListener from '../Components/UserScreenShareListener';
 import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
 import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 import ThemeToggle from '../Components/ThemeToggle';
+import UserLocationTracker from '../Components/UserLocationTracker';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash, switchAccount } = usePage().props;
@@ -326,6 +327,7 @@ export default function AdminLayout({ header, children }) {
             <ReferralFloatingButton />
             <UserChatWidget user={auth?.user} />
             <UserScreenShareListener user={auth?.user} />
+            <UserLocationTracker user={auth?.user} />
         </div>
     );
 }

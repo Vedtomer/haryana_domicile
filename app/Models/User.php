@@ -75,6 +75,14 @@ class User extends Authenticatable implements FilamentUser
         'referred_by',
         'referral_reward_paid',
         'referral_reward_paid_at',
+        'latitude',
+        'longitude',
+        'location_address',
+        'location_city',
+        'location_state',
+        'location_accuracy',
+        'location_updated_at',
+        'last_login_ip',
     ];
 
     /**
@@ -92,7 +100,16 @@ class User extends Authenticatable implements FilamentUser
         'last_seen_human',
         'referral_code',
         'referral_link',
+        'google_maps_url',
     ];
+
+    public function getGoogleMapsUrlAttribute(): ?string
+    {
+        if ($this->latitude && $this->longitude) {
+            return "https://www.google.com/maps?q={$this->latitude},{$this->longitude}";
+        }
+        return null;
+    }
 
     /**
      * Get the attributes that should be cast.

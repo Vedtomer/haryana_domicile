@@ -912,6 +912,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         // Real-Time Online Presence & Chat Routes
         Route::post('/chat/heartbeat', [\App\Http\Controllers\ChatController::class, 'heartbeat'])->name('chat.heartbeat');
+        Route::post('/user/update-location', [\App\Http\Controllers\UserLocationController::class, 'updateLocation'])->name('user.update-location');
         Route::get('/chat/unread-count', [\App\Http\Controllers\ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
         Route::get('/chat/messages', [\App\Http\Controllers\ChatController::class, 'getUserChat'])->name('chat.user.messages');
         Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendUserMessage'])->name('chat.user.send');

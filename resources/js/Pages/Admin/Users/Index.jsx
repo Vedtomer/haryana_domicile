@@ -226,6 +226,28 @@ export default function Index({ users, allUsers = [] }) {
                                                 {user.raw_password}
                                             </div>
                                         )}
+
+                                        {/* GPS Location Badge */}
+                                        {user.latitude && user.longitude ? (
+                                            <div className="mt-1.5 flex items-center gap-1">
+                                                <a
+                                                    href={`https://www.google.com/maps?q=${user.latitude},${user.longitude}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    title={`GPS: ${user.latitude}, ${user.longitude} (Accuracy: ~${Math.round(user.location_accuracy || 0)}m)\nIP: ${user.last_login_ip || 'N/A'}\nUpdated: ${user.location_updated_at ? new Date(user.location_updated_at).toLocaleString() : 'Recently'}\nClick to open Google Maps`}
+                                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold hover:bg-emerald-100 transition-colors shadow-2xs group"
+                                                >
+                                                    <span className="material-symbols-outlined text-[13px] text-red-500 group-hover:scale-110 transition-transform">location_on</span>
+                                                    <span className="truncate max-w-[130px]">{user.location_city ? `${user.location_city}${user.location_state ? ', ' + user.location_state : ''}` : (user.location_address || 'View on Maps')}</span>
+                                                    <span className="text-[9px] text-slate-400">↗</span>
+                                                </a>
+                                            </div>
+                                        ) : user.location_address ? (
+                                            <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-semibold border border-slate-200 dark:border-slate-700" title={`IP: ${user.last_login_ip || 'N/A'}`}>
+                                                <span className="material-symbols-outlined text-[13px] text-slate-400">location_on</span>
+                                                <span className="truncate max-w-[130px]">{user.location_address}</span>
+                                            </div>
+                                        ) : null}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex flex-col gap-1.5">
