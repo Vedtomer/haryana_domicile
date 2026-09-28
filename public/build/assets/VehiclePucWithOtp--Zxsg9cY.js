@@ -1,0 +1,1 @@
+import{j as i}from"./vendor-react-DNZ-wQbn.js";import o from"./VehiclePucWithoutOtp-V2dNL9_0.js";import"./vendor-inertia-CMSv1CFb.js";import"./AdminLayout-Z868cDwu.js";import"./vendor-axios-CzApALvg.js";import"./ThemeToggle-Cj6gjGQa.js";import"./app-CRmqUc50.js";import"./app-C_th4wJX.js";function h(t){return i.jsx(o,{...t})}export{h as default};

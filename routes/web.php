@@ -1484,6 +1484,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::resource('haryana-domicile', \App\Http\Controllers\Admin\HaryanaDomicileController::class)->middleware('license.active');
         Route::get('haryana-domicile/{haryana_domicile}/print', [\App\Http\Controllers\Admin\HaryanaDomicileController::class, 'print'])->name('haryana-domicile.print');
 
+        Route::resource('bob-affidavit', \App\Http\Controllers\Admin\BobAffidavitController::class)->middleware('license.active');
+        Route::get('bob-affidavit/{bob_affidavit}/print', [\App\Http\Controllers\Admin\BobAffidavitController::class, 'print'])->name('bob-affidavit.print');
+
         
         Route::get('aadhar-update/grid', function () {
         return response()->file(public_path('aadhar_update/grid.jpg'));

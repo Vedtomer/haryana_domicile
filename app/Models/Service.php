@@ -59,6 +59,12 @@ class Service extends Model
             'index' => '/admin/haryana-domicile',
             'create' => '/admin/haryana-domicile/create',
         ],
+        'bob_affidavit' => [
+            'label' => 'BOB Affidavit',
+            'model' => BobAffidavit::class,
+            'index' => '/admin/bob-affidavit',
+            'create' => '/admin/bob-affidavit/create',
+        ],
         'pan_request' => [
             'label' => 'PAN Card',
             'model' => PanRequest::class,

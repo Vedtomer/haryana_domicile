@@ -73,6 +73,7 @@ class DashboardController extends Controller
             \App\Models\PanRequest::class,
             \App\Models\ManualPanCard::class,
             \App\Models\AirtelPassbook::class,
+            \App\Models\BobAffidavit::class,
         ];
         foreach ($moduleModels as $modelClass) {
             if (class_exists($modelClass)) {
