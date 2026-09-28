@@ -26,11 +26,6 @@ export default function Index({ users, allUsers = [] }) {
 
     const availableUsersList = (allUsers && allUsers.length > 0) ? allUsers : (users?.data || []);
 
-    const [clearingUserWork, setClearingUserWork] = useState(null);
-    const [singleResetCoins, setSingleResetCoins] = useState(false);
-    const [singleClearTransactions, setSingleClearTransactions] = useState(false);
-    const [isClearingSingle, setIsClearingSingle] = useState(false);
-
     const handleClearAllSubmit = (e) => {
         e.preventDefault();
         if (clearAllScope === 'selected' && modalSelectedUserIds.length === 0) {
@@ -54,24 +49,6 @@ export default function Index({ users, allUsers = [] }) {
                 setUserSearchQuery('');
                 setClearAllResetCoins(false);
                 setClearAllTransactions(false);
-            }
-        });
-    };
-
-    const handleClearSingleSubmit = (e) => {
-        e.preventDefault();
-        if (!clearingUserWork) return;
-        setIsClearingSingle(true);
-        router.post(`/admin/users/${clearingUserWork.id}/clear-work-data`, {
-            reset_coins: singleResetCoins,
-            clear_transactions: singleClearTransactions,
-        }, {
-            preserveScroll: true,
-            onFinish: () => setIsClearingSingle(false),
-            onSuccess: () => {
-                setClearingUserWork(null);
-                setSingleResetCoins(false);
-                setSingleClearTransactions(false);
             }
         });
     };
@@ -347,15 +324,7 @@ export default function Index({ users, allUsers = [] }) {
                                                 </svg>
                                             </button>
 
-                                            {/* Configure Services & Permissions */}
-                                            <Link
-                                                href={`/admin/user-permissions?user=${user.id}`}
-                                                title="Configure Services & Permissions"
-                                                className="p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">shield_person</span>
-                                            </Link>
-
+                                            {/* Add Coins */}
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
                                                 title="Add Coins"
@@ -363,6 +332,8 @@ export default function Index({ users, allUsers = [] }) {
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             </button>
+
+                                            {/* Clear Coins to 0 */}
                                             <button
                                                 onClick={() => handleClearCoins(user)}
                                                 title="Clear Coins to 0"
@@ -370,27 +341,8 @@ export default function Index({ users, allUsers = [] }) {
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                             </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setClearingUserWork(user);
-                                                    setSingleResetCoins(false);
-                                                    setSingleClearTransactions(false);
-                                                }}
-                                                title="Clear User Work Data"
-                                                className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 hover:text-rose-600 transition-colors cursor-pointer"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                            <Link
-                                                href={`/admin/users/${user.id}/edit`}
-                                                title="Edit User"
-                                                className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                            </Link>
+
+                                            {/* Delete User */}
                                             <button
                                                 onClick={() => handleDelete(user)}
                                                 title="Delete User"
@@ -735,70 +687,6 @@ export default function Index({ users, allUsers = [] }) {
                 </div>
             )}
 
-            {/* Clear Single User Work Data Modal */}
-            {clearingUserWork && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <form onSubmit={handleClearSingleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800">
-                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center flex-shrink-0">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Clear User Work Data</h3>
-                                <p className="text-xs text-slate-500">
-                                    {clearingUserWork.name || clearingUserWork.phone || clearingUserWork.email || 'Selected User'}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-4 text-xs text-amber-800 dark:text-amber-300">
-                            Are you sure you want to permanently delete all work records created by <strong>{clearingUserWork.name || 'this user'}</strong>? All generated certificates, forms, PAN records, and passbooks will be removed.
-                        </div>
-
-                        {/* Optional checkboxes */}
-                        <div className="space-y-2 mb-6 pt-1">
-                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={singleResetCoins}
-                                    onChange={(e) => setSingleResetCoins(e.target.checked)}
-                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
-                                />
-                                <span>Also reset this user's coins to 0</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={singleClearTransactions}
-                                    onChange={(e) => setSingleClearTransactions(e.target.checked)}
-                                    className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
-                                />
-                                <span>Also clear this user's transaction history logs</span>
-                            </label>
-                        </div>
-
-                        <div className="flex justify-end gap-2">
-                            <button
-                                type="button"
-                                disabled={isClearingSingle}
-                                onClick={() => setClearingUserWork(null)}
-                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isClearingSingle}
-                                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
-                            >
-                                {isClearingSingle ? 'Clearing...' : 'Delete Work Data'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
         </AdminLayout>
     );
 }
