@@ -12,12 +12,6 @@ export default function FamilyIdToMobile({ service, isAdmin, apiUrl: initApiUrl,
     const [error, setError]            = useState('');
     const [copiedIndex, setCopiedIndex]= useState(null);
 
-    // Admin API settings
-    const [apiUrl, setApiUrl]          = useState(initApiUrl || '');
-    const [apiKey, setApiKey]          = useState(initApiKey || '');
-    const [savingApi, setSavingApi]    = useState(false);
-    const [apiMsg, setApiMsg]          = useState('');
-
     const coinCost = service?.coin_cost ?? 9;
     const userCoins = auth?.user?.coins ?? 0;
 
@@ -49,20 +43,6 @@ export default function FamilyIdToMobile({ service, isAdmin, apiUrl: initApiUrl,
             setCopiedIndex(idx);
             setTimeout(() => setCopiedIndex(null), 2000);
         });
-    };
-
-    const handleSaveApi = async (e) => {
-        e.preventDefault();
-        setSavingApi(true);
-        setApiMsg('');
-        try {
-            const res = await axios.post('/utilities/family-id-to-mobile/update-api', { api_url: apiUrl, api_key: apiKey });
-            setApiMsg(res.data.message || 'Saved!');
-        } catch {
-            setApiMsg('Failed to save. Check your input.');
-        } finally {
-            setSavingApi(false);
-        }
     };
 
     return (
@@ -236,54 +216,7 @@ export default function FamilyIdToMobile({ service, isAdmin, apiUrl: initApiUrl,
                     </div>
                 )}
 
-                {/* Admin API Settings */}
-                {isAdmin && (
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px]">settings</span>
-                            </div>
-                            <div>
-                                <h3 className="font-black text-slate-800 dark:text-white text-sm">API Configuration</h3>
-                                <p className="text-xs text-slate-500">Only admins can see this. Leave empty to use meraparivar.haryana.gov.in portal.</p>
-                            </div>
-                        </div>
-                        <form onSubmit={handleSaveApi} className="space-y-3">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">API URL</label>
-                                <input
-                                    type="text"
-                                    value={apiUrl}
-                                    onChange={e => setApiUrl(e.target.value)}
-                                    placeholder="https://yourapi.com/family-mobile?family_id={family_id}"
-                                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-mono text-slate-700 dark:text-slate-300"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">API Key (optional)</label>
-                                <input
-                                    type="text"
-                                    value={apiKey}
-                                    onChange={e => setApiKey(e.target.value)}
-                                    placeholder="Bearer token or API key"
-                                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-mono text-slate-700 dark:text-slate-300"
-                                />
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    type="submit"
-                                    disabled={savingApi}
-                                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition-colors disabled:opacity-50 cursor-pointer"
-                                >
-                                    {savingApi ? 'Saving...' : 'Save Settings'}
-                                </button>
-                                {apiMsg && (
-                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{apiMsg}</span>
-                                )}
-                            </div>
-                        </form>
-                    </div>
-                )}
+
             </div>
         </AdminLayout>
     );

@@ -18,6 +18,7 @@ class ApiSettings extends Page
     protected static ?string $slug = 'api-settings';
     protected static ?string $navigationGroup = 'Settings';
     protected static ?int $navigationSort = 10;
+    protected static bool $shouldRegisterNavigation = false;
     protected static string $view = 'filament.pages.api-settings';
 
     // ── IDCard.Store ─────────────────────────────────────────────────────────

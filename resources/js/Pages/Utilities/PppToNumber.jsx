@@ -18,11 +18,7 @@ export default function PppToNumber({ service, isAdmin, portalUrl = 'https://ppp
     const [iframeKey, setIframeKey]         = useState(Date.now());
     const iframeRef                         = useRef(null);
 
-    // Admin API settings
-    const [apiUrl, setApiUrl]            = useState(initApiUrl || '');
-    const [apiKey, setApiKey]            = useState(initApiKey || '');
-    const [savingApi, setSavingApi]      = useState(false);
-    const [apiMsg, setApiMsg]            = useState('');
+
 
     const coinCost = currentService?.coin_cost ?? service?.coin_cost ?? 0;
     const userCoins = auth?.user?.coins ?? 0;
@@ -66,19 +62,7 @@ export default function PppToNumber({ service, isAdmin, portalUrl = 'https://ppp
         setIframeKey(Date.now());
     };
 
-    const handleSaveApi = async (e) => {
-        e.preventDefault();
-        setSavingApi(true);
-        setApiMsg('');
-        try {
-            const res = await axios.post('/utilities/ppp-to-number/update-api', { api_url: apiUrl, api_key: apiKey });
-            setApiMsg(res.data.message || 'Saved successfully!');
-        } catch {
-            setApiMsg('Failed to save API settings.');
-        } finally {
-            setSavingApi(false);
-        }
-    };
+
 
     return (
         <AdminLayout
@@ -424,66 +408,7 @@ export default function PppToNumber({ service, isAdmin, portalUrl = 'https://ppp
                     </div>
                 )}
 
-                {/* Admin API Configuration */}
-                {isAdmin && (
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 mt-8">
-                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/40 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[18px]">settings</span>
-                            </div>
-                            <div>
-                                <h3 className="font-black text-slate-800 dark:text-white text-sm">Admin API Configuration (PPP to Number)</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Configure custom API URL for fetching PPP / Family ID mobile numbers if using a third-party gateway.
-                                </p>
-                            </div>
-                        </div>
 
-                        <form onSubmit={handleSaveApi} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1.5">
-                                    Custom API Endpoint URL
-                                </label>
-                                <input
-                                    type="text"
-                                    value={apiUrl}
-                                    onChange={(e) => setApiUrl(e.target.value)}
-                                    placeholder="https://api-provider.com/get-mobile?family_id={family_id}&key={key}"
-                                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:border-emerald-500 focus:outline-none font-mono text-slate-700 dark:text-slate-300"
-                                />
-                                <p className="text-[11px] text-slate-400 mt-1">
-                                    Use <code>{'{family_id}'}</code> and <code>{'{key}'}</code> placeholders in the URL.
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1.5">
-                                    API Key / Secret Token (Optional)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={apiKey}
-                                    onChange={(e) => setApiKey(e.target.value)}
-                                    placeholder="Enter Bearer Token or API Key"
-                                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:border-emerald-500 focus:outline-none font-mono text-slate-700 dark:text-slate-300"
-                                />
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                                <button
-                                    type="submit"
-                                    disabled={savingApi}
-                                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition-colors disabled:opacity-50 cursor-pointer"
-                                >
-                                    {savingApi ? 'Saving...' : 'Save API Settings'}
-                                </button>
-                                {apiMsg && (
-                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{apiMsg}</span>
-                                )}
-                            </div>
-                        </form>
-                    </div>
-                )}
 
             </div>
         </AdminLayout>

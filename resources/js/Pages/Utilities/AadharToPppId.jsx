@@ -11,43 +11,7 @@ export default function AadharToPppId({ coinCost = 0, service, isAdmin = false, 
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
 
-    // Admin API Settings State
-    const [showApiSettings, setShowApiSettings] = useState(false);
-    const [apiUrlInput, setApiUrlInput] = useState(initialApiUrl || 'https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum={aadhar}');
-    const [apiKeyInput, setApiKeyInput] = useState(initialApiKey || '');
-    const [savingApi, setSavingApi] = useState(false);
-    const [apiSuccessMsg, setApiSuccessMsg] = useState(null);
-    const [apiErrorMsg, setApiErrorMsg] = useState(null);
 
-    const handleSaveApi = async (e) => {
-        e?.preventDefault();
-        setSavingApi(true);
-        setApiSuccessMsg(null);
-        setApiErrorMsg(null);
-
-        try {
-            const res = await axios.post('/utilities/aadhar-to-ppp-id/update-api', {
-                api_url: apiUrlInput,
-                api_key: apiKeyInput,
-            });
-
-            if (res.data.success) {
-                setApiSuccessMsg('✅ Aadhar to PPP ID API settings successfully update ho gayi hain!');
-                setTimeout(() => setApiSuccessMsg(null), 4000);
-            } else {
-                setApiErrorMsg(res.data.message || 'API settings update karne me error aaya.');
-            }
-        } catch (err) {
-            setApiErrorMsg(err.response?.data?.message || 'API save karne me error aaya.');
-        } finally {
-            setSavingApi(false);
-        }
-    };
-
-    const handleResetApi = () => {
-        setApiUrlInput('https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum={aadhar}');
-        setApiKeyInput('');
-    };
 
     const handleCopy = (text) => {
         if (!text) return;
@@ -100,16 +64,6 @@ export default function AadharToPppId({ coinCost = 0, service, isAdmin = false, 
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => setShowApiSettings(!showApiSettings)}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all cursor-pointer shadow-xs"
-                            >
-                                <span className="material-symbols-outlined text-[17px]">tune</span>
-                                <span>API Settings</span>
-                            </button>
-                        )}
                         <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-700 shadow-xs">
                             <span>🪙</span>
                             <span>{coinCost > 0 ? `${coinCost} Coins Per Lookup` : 'Free Service'}</span>
@@ -122,105 +76,7 @@ export default function AadharToPppId({ coinCost = 0, service, isAdmin = false, 
 
             <div className="max-w-2xl mx-auto mt-6 px-4 pb-20">
 
-                {/* Admin API Configuration Panel */}
-                {isAdmin && showApiSettings && (
-                    <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-indigo-800/50 mb-6 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                                    <span className="material-symbols-outlined text-2xl">settings_ethernet</span>
-                                </div>
-                                <div>
-                                    <h3 className="text-base font-black tracking-tight text-white">PPP ID Lookup - API Configuration</h3>
-                                    <p className="text-xs text-indigo-200/70">Configure Haryana Fasal portal or custom third-party PPP gateway</p>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setShowApiSettings(false)}
-                                className="text-indigo-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-lg">close</span>
-                            </button>
-                        </div>
 
-                        {apiSuccessMsg && (
-                            <div className="p-3.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs font-bold flex items-center gap-2">
-                                <span className="material-symbols-outlined text-lg">check_circle</span>
-                                <span>{apiSuccessMsg}</span>
-                            </div>
-                        )}
-                        {apiErrorMsg && (
-                            <div className="p-3.5 bg-red-500/20 border border-red-500/40 text-red-300 rounded-2xl text-xs font-bold flex items-center gap-2">
-                                <span className="material-symbols-outlined text-lg">error</span>
-                                <span>{apiErrorMsg}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSaveApi} className="space-y-4 pt-1">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-indigo-200 mb-1.5">
-                                        API URL / Endpoint
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={apiUrlInput}
-                                        onChange={(e) => setApiUrlInput(e.target.value)}
-                                        placeholder="https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum={aadhar}"
-                                        className="w-full font-mono text-xs px-3.5 py-2.5 bg-slate-950/80 border border-indigo-700/60 rounded-xl text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20"
-                                    />
-                                    <p className="text-[11px] text-indigo-300/60 mt-1">
-                                        Default: <code>https://fasal.haryana.gov.in/Home/GetFDbyAadhar?aadharnum={'{aadhar}'}</code> (Live Fasal session integrated)
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-indigo-200 mb-1.5">
-                                        API Key (Optional for Custom Vendor)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={apiKeyInput}
-                                        onChange={(e) => setApiKeyInput(e.target.value)}
-                                        placeholder="Enter optional vendor API key if using paid API..."
-                                        className="w-full font-mono text-xs px-3.5 py-2.5 bg-slate-950/80 border border-indigo-700/60 rounded-xl text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20"
-                                    />
-                                    <p className="text-[11px] text-indigo-300/60 mt-1">
-                                        Haryana Fasal direct portal ke liye key ki zaroorat nahi hai (leave blank).
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-indigo-900/60">
-                                <button
-                                    type="button"
-                                    onClick={handleResetApi}
-                                    className="text-xs text-indigo-300 hover:text-white underline cursor-pointer self-start sm:self-auto"
-                                >
-                                    Reset to Fasal Portal Default
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={savingApi}
-                                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black shadow-md shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
-                                >
-                                    {savingApi ? (
-                                        <>
-                                            <span className="material-symbols-outlined text-base animate-spin">progress_activity</span>
-                                            <span>Saving Settings...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="material-symbols-outlined text-base">save</span>
-                                            <span>Save API Settings</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
 
                 <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="p-8 sm:p-10">

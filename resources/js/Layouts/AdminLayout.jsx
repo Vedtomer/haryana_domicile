@@ -104,11 +104,6 @@ export default function AdminLayout({ header, children }) {
                             }>
                                 Manage Services
                             </NavItem>
-                            <NavItem href="/admin/api-settings" icon={
-                                <span className="material-symbols-outlined text-[20px]">key</span>
-                            }>
-                                API Settings
-                            </NavItem>
                             <NavItem href="/admin/service-requests" icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                             }>
@@ -265,22 +260,13 @@ export default function AdminLayout({ header, children }) {
                                 </>
                             )}
                             {auth?.user?.type === 'admin' && (
-                                <>
-                                    <Link
-                                        href="/admin/api-settings"
-                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">key</span>
-                                        API Settings
-                                    </Link>
-                                    <Link
-                                        href="/admin/payment-settings"
-                                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
-                                        QR Settings
-                                    </Link>
-                                </>
+                                <Link
+                                    href="/admin/payment-settings"
+                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1m-5.657-1.636l.707-.707M4 12H3m2.343-5.657l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
+                                    QR Settings
+                                </Link>
                             )}
 
                             {auth?.user?.type === 'admin' && (
