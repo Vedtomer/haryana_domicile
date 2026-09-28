@@ -561,6 +561,8 @@ export default function BirthCertificateDownload({ defaultRegNo = '', userCoins 
                                             value={mergeRegNo}
                                             onChange={(e) => setMergeRegNo(e.target.value)}
                                             placeholder="B-2024:..."
+                                            InputLabelProps={{ shrink: true }}
+                                            slotProps={{ inputLabel: { shrink: true } }}
                                             sx={{ mt: { xs: 0, sm: 2.8 } }}
                                         />
                                     </Grid>

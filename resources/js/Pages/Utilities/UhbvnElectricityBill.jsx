@@ -110,6 +110,8 @@ export default function UhbvnElectricityBill() {
                                 }}
                                 required
                                 placeholder="e.g. 6894882000"
+                                InputLabelProps={{ shrink: true }}
+                                slotProps={{ inputLabel: { shrink: true } }}
                                 InputProps={{
                                     className: "bg-white dark:bg-slate-800",
                                     sx: { borderRadius: '12px' }

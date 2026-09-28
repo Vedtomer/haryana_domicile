@@ -13,60 +13,82 @@ export const InputField = ({
     required = true,
     size = "small",
     sx = {},
+    InputLabelProps,
+    slotProps,
     ...props
-}) => (
-    <TextField
-        fullWidth
-        size={size}
-        label={label}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        error={!!error}
-        helperText={error}
-        multiline={multiline}
-        rows={rows}
-        variant="outlined"
-        required={required}
-        sx={{
-            bgcolor: '#ffffff',
-            borderRadius: 1,
-            '& .MuiOutlinedInput-root': {
+}) => {
+    const shouldShrink = Boolean(
+        props.placeholder ||
+        type === 'date' ||
+        (value !== undefined && value !== null && value !== '') ||
+        InputLabelProps?.shrink ||
+        slotProps?.inputLabel?.shrink
+    );
+
+    return (
+        <TextField
+            fullWidth
+            size={size}
+            label={label}
+            name={name}
+            type={type}
+            value={value}
+            onChange={onChange}
+            error={!!error}
+            helperText={error}
+            multiline={multiline}
+            rows={rows}
+            variant="outlined"
+            required={required}
+            InputLabelProps={{
+                ...(shouldShrink ? { shrink: true } : {}),
+                ...(InputLabelProps || {}),
+            }}
+            slotProps={{
+                ...(slotProps || {}),
+                inputLabel: {
+                    ...(shouldShrink ? { shrink: true } : {}),
+                    ...(slotProps?.inputLabel || {}),
+                },
+            }}
+            sx={{
                 bgcolor: '#ffffff',
-                '& fieldset': {
-                    borderColor: '#cbd5e1',
+                borderRadius: 1,
+                '& .MuiOutlinedInput-root': {
+                    bgcolor: '#ffffff',
+                    '& fieldset': {
+                        borderColor: '#cbd5e1',
+                    },
+                    '&:hover fieldset': {
+                        borderColor: '#94a3b8',
+                    },
+                    '&.Mui-focused fieldset': {
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                    },
+                    '& input': {
+                        color: '#0f172a !important',
+                        WebkitTextFillColor: '#0f172a !important',
+                        bgcolor: 'transparent !important',
+                    },
+                    '& textarea': {
+                        color: '#0f172a !important',
+                        WebkitTextFillColor: '#0f172a !important',
+                        bgcolor: 'transparent !important',
+                    },
                 },
-                '&:hover fieldset': {
-                    borderColor: '#94a3b8',
+                '& .MuiInputLabel-root': {
+                    color: '#64748b',
+                    '&.Mui-focused': {
+                        color: '#2563eb',
+                    },
                 },
-                '&.Mui-focused fieldset': {
-                    borderColor: '#2563eb',
-                    borderWidth: 2,
-                },
-                '& input': {
-                    color: '#0f172a !important',
-                    WebkitTextFillColor: '#0f172a !important',
-                    bgcolor: 'transparent !important',
-                },
-                '& textarea': {
-                    color: '#0f172a !important',
-                    WebkitTextFillColor: '#0f172a !important',
-                    bgcolor: 'transparent !important',
-                },
-            },
-            '& .MuiInputLabel-root': {
-                color: '#64748b',
-                '&.Mui-focused': {
-                    color: '#2563eb',
-                },
-            },
-            ...sx,
-        }}
-        {...(type === 'date' ? { slotProps: { inputLabel: { shrink: true } } } : {})}
-        {...props}
-    />
-);
+                ...sx,
+            }}
+            {...props}
+        />
+    );
+};
 
 export const SelectField = ({
     label,
@@ -78,58 +100,80 @@ export const SelectField = ({
     options = [],
     size = "small",
     sx = {},
+    InputLabelProps,
+    slotProps,
     ...props
-}) => (
-    <TextField
-        select
-        fullWidth
-        size={size}
-        label={label}
-        name={name}
-        value={value}
-        onChange={onChange}
-        error={!!error}
-        helperText={error}
-        variant="outlined"
-        required={required}
-        sx={{
-            bgcolor: '#ffffff',
-            borderRadius: 1,
-            '& .MuiOutlinedInput-root': {
+}) => {
+    const shouldShrink = Boolean(
+        props.placeholder ||
+        (value !== undefined && value !== null && value !== '') ||
+        InputLabelProps?.shrink ||
+        slotProps?.inputLabel?.shrink
+    );
+
+    return (
+        <TextField
+            select
+            fullWidth
+            size={size}
+            label={label}
+            name={name}
+            value={value}
+            onChange={onChange}
+            error={!!error}
+            helperText={error}
+            variant="outlined"
+            required={required}
+            InputLabelProps={{
+                ...(shouldShrink ? { shrink: true } : {}),
+                ...(InputLabelProps || {}),
+            }}
+            slotProps={{
+                ...(slotProps || {}),
+                inputLabel: {
+                    ...(shouldShrink ? { shrink: true } : {}),
+                    ...(slotProps?.inputLabel || {}),
+                },
+            }}
+            sx={{
                 bgcolor: '#ffffff',
-                '& fieldset': {
-                    borderColor: '#cbd5e1',
+                borderRadius: 1,
+                '& .MuiOutlinedInput-root': {
+                    bgcolor: '#ffffff',
+                    '& fieldset': {
+                        borderColor: '#cbd5e1',
+                    },
+                    '&:hover fieldset': {
+                        borderColor: '#94a3b8',
+                    },
+                    '&.Mui-focused fieldset': {
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                    },
+                    '& .MuiSelect-select': {
+                        color: '#0f172a !important',
+                        WebkitTextFillColor: '#0f172a !important',
+                        bgcolor: 'transparent !important',
+                    },
                 },
-                '&:hover fieldset': {
-                    borderColor: '#94a3b8',
+                '& .MuiInputLabel-root': {
+                    color: '#64748b',
+                    '&.Mui-focused': {
+                        color: '#2563eb',
+                    },
                 },
-                '&.Mui-focused fieldset': {
-                    borderColor: '#2563eb',
-                    borderWidth: 2,
-                },
-                '& .MuiSelect-select': {
-                    color: '#0f172a !important',
-                    WebkitTextFillColor: '#0f172a !important',
-                    bgcolor: 'transparent !important',
-                },
-            },
-            '& .MuiInputLabel-root': {
-                color: '#64748b',
-                '&.Mui-focused': {
-                    color: '#2563eb',
-                },
-            },
-            ...sx,
-        }}
-        {...props}
-    >
-        {options.map((opt) => (
-            <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-            </MenuItem>
-        ))}
-    </TextField>
-);
+                ...sx,
+            }}
+            {...props}
+        >
+            {options.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                </MenuItem>
+            ))}
+        </TextField>
+    );
+};
 
 export const SectionHeader = ({ title, ...props }) => (
     <Box sx={{ mt: 4, mb: 2 }} {...props}>

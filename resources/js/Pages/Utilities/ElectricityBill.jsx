@@ -184,6 +184,8 @@ export default function ElectricityBill({ defaultDiscom = 'dhbvn' }) {
                                 required
                                 placeholder="e.g. 6894882000"
                                 helperText={`Enter your 10-digit ${discom.toUpperCase()} consumer account number`}
+                                InputLabelProps={{ shrink: true }}
+                                slotProps={{ inputLabel: { shrink: true } }}
                                 InputProps={{
                                     className: "bg-slate-50/50 dark:bg-slate-800/50",
                                     sx: { borderRadius: '12px' }
