@@ -16,7 +16,7 @@ Route::get('/', function () {
         ->get()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'bob-affidavit']);
 
             return [
                 'id' => $service->id,

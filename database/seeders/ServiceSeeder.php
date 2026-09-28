@@ -600,6 +600,30 @@ class ServiceSeeder extends Seeder
                 'is_premium' => false,
                 'unlock_cost' => 0,
             ],
+            [
+                'name' => 'BOB Affidavit',
+                'slug' => 'bob-affidavit',
+                'description' => 'Bank of Baroda (BOB) Affidavit Request - Submit customer details and documents for Bank of Baroda affidavit.',
+                'icon' => '🏦',
+                'coin_cost' => 149,
+                'kind' => Service::KIND_MANUAL,
+                'module_key' => null,
+                'sort_order' => 0,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+                'fields' => [
+                    ['label' => 'Account Holder Name', 'type' => 'text', 'required' => true],
+                    ['label' => 'Father / Husband Name', 'type' => 'text', 'required' => true],
+                    ['label' => 'BOB Account Number', 'type' => 'text', 'required' => true],
+                    ['label' => 'Mobile Number', 'type' => 'text', 'required' => true],
+                    ['label' => 'Aadhaar Number', 'type' => 'text', 'required' => false],
+                    ['label' => 'Branch Name / IFSC Code', 'type' => 'text', 'required' => false],
+                    ['label' => 'Affidavit Reason / Purpose', 'type' => 'textarea', 'required' => true],
+                    ['label' => 'Upload Passbook / ID Proof', 'type' => 'file', 'required' => false],
+                ],
+            ],
         ];
 
         foreach ($services as $service) {
@@ -623,7 +647,7 @@ class ServiceSeeder extends Seeder
             } else {
                 // Update only code-driven metadata.
                 // NEVER overwrite admin-controlled attributes: is_active, coin_cost, visibility, is_premium, unlock_cost!
-                $existing->update([
+                $updateData = [
                     'name' => $service['name'],
                     'slug' => $service['slug'],
                     'kind' => $service['kind'],
@@ -631,7 +655,11 @@ class ServiceSeeder extends Seeder
                     'icon' => $service['icon'],
                     'description' => $service['description'],
                     'sort_order' => $service['sort_order'],
-                ]);
+                ];
+                if (isset($service['fields'])) {
+                    $updateData['fields'] = $service['fields'];
+                }
+                $existing->update($updateData);
                 $targetService = $existing;
             }
         }
