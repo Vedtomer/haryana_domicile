@@ -253,13 +253,34 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                         alt="UPI QR Code"
                                         className="w-44 h-44 mx-auto rounded-xl border border-slate-200 object-contain"
                                     />
-                                    <div className="mt-3 space-y-0.5">
+                                    <div className="mt-3 space-y-1">
                                         <p className="text-xs text-slate-400">UPI ID</p>
-                                        <p className="text-sm font-black text-slate-800 tracking-wide">{upiId}</p>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <p className="text-sm font-black text-slate-800 tracking-wide">{upiId}</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(upiId);
+                                                    alert('UPI ID Copied: ' + upiId);
+                                                }}
+                                                className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-bold"
+                                            >
+                                                Copy
+                                            </button>
+                                        </div>
                                         <div className="mt-2 bg-blue-50 rounded-xl px-4 py-2">
                                             <p className="text-xs text-blue-500">Amount to Pay</p>
                                             <p className="text-2xl font-black text-blue-700">₹{selectedPackage.amount}</p>
                                         </div>
+
+                                        {/* Mobile Direct UPI Intent */}
+                                        <a
+                                            href={`upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${selectedPackage.amount}&cu=INR&tn=CoinPurchase`}
+                                            className="mt-3 w-full py-2.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white font-black rounded-xl shadow-md flex items-center justify-center gap-1.5 text-xs sm:hidden"
+                                        >
+                                            <span className="material-symbols-outlined text-sm">payments</span>
+                                            मोबाइल UPI App से सीधा Pay करें
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -293,6 +314,25 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                             ✕ Remove
                                         </button>
                                     )}
+                                </div>
+
+                                {/* UTR / Transaction ID */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5 flex items-center justify-between">
+                                        <span>UPI Ref / UTR Number (12 अंकों का UTR)</span>
+                                        <span className="text-[10px] text-blue-600 font-bold lowercase">optional / recommended</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        maxLength="22"
+                                        value={data.utr_number}
+                                        onChange={(e) => setData('utr_number', e.target.value.trim())}
+                                        placeholder="e.g. 428901849204"
+                                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white font-mono text-xs font-bold focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <p className="text-[10px] text-slate-400 mt-1">
+                                        UTR नंबर डालने से आपके कॉइन और भी तेज़ी से अप्रूव होते हैं।
+                                    </p>
                                 </div>
 
                                 {/* Submit */}

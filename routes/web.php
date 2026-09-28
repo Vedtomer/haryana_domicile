@@ -1263,6 +1263,25 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/PdfResizer');
     })->name('utilities.pdf-resizer');
 
+    Route::get('/utilities/photo-signature-resizer', function () {
+        return Inertia::render('Utilities/PhotoSignatureResizer');
+    })->name('utilities.photo-signature-resizer');
+
+    Route::get('/utilities/customer-whatsapp', function () {
+        return Inertia::render('Utilities/CustomerWhatsAppSender');
+    })->name('utilities.customer-whatsapp');
+
+    Route::get('/utilities/legal-affidavits', function () {
+        return Inertia::render('Utilities/LegalAffidavitMaker');
+    })->name('utilities.legal-affidavits');
+
+    Route::get('/utilities/khata-tracker', [\App\Http\Controllers\CyberCafeKhataController::class, 'index'])->name('utilities.khata-tracker');
+    Route::post('/utilities/khata-tracker/khata', [\App\Http\Controllers\CyberCafeKhataController::class, 'storeKhata'])->name('utilities.khata-tracker.store-khata');
+    Route::put('/utilities/khata-tracker/khata/{khata}', [\App\Http\Controllers\CyberCafeKhataController::class, 'updateKhata'])->name('utilities.khata-tracker.update-khata');
+    Route::delete('/utilities/khata-tracker/khata/{khata}', [\App\Http\Controllers\CyberCafeKhataController::class, 'destroyKhata'])->name('utilities.khata-tracker.destroy-khata');
+    Route::post('/utilities/khata-tracker/expense', [\App\Http\Controllers\CyberCafeKhataController::class, 'storeExpense'])->name('utilities.khata-tracker.store-expense');
+    Route::delete('/utilities/khata-tracker/expense/{expense}', [\App\Http\Controllers\CyberCafeKhataController::class, 'destroyExpense'])->name('utilities.khata-tracker.destroy-expense');
+
     Route::get('/utilities/vehicle-to-mobile', function () {
         $service = \App\Models\Service::where('slug', 'vehicle-to-mobile')->first();
         return Inertia::render('Utilities/VehicleToMobile');
@@ -1715,6 +1734,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // API Settings — admin only
         Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit');
         Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update');
+
+        // Broadcast Notices / Announcements
+        Route::resource('notices', \App\Http\Controllers\Admin\BroadcastNoticeController::class)->except(['create', 'show', 'edit']);
+        Route::patch('notices/{notice}/toggle-status', [\App\Http\Controllers\Admin\BroadcastNoticeController::class, 'toggleStatus'])->name('notices.toggle-status');
 
 
 

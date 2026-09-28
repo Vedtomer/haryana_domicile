@@ -83,6 +83,7 @@ class User extends Authenticatable implements FilamentUser
         'location_accuracy',
         'location_updated_at',
         'last_login_ip',
+        'last_daily_bonus_at',
     ];
 
     /**
@@ -130,7 +131,38 @@ class User extends Authenticatable implements FilamentUser
             'last_seen_at'            => 'datetime',
             'referral_reward_paid'    => 'boolean',
             'referral_reward_paid_at' => 'datetime',
+            'last_daily_bonus_at'     => 'datetime',
         ];
+    }
+
+    /**
+     * Award daily free login coin bonus once per calendar day
+     */
+    public function awardDailyLoginBonus(): bool
+    {
+        $today = now()->startOfDay();
+        if ($this->last_daily_bonus_at && $this->last_daily_bonus_at >= $today) {
+            return false;
+        }
+
+        $this->increment('coins', 1);
+        $this->update(['last_daily_bonus_at' => now()]);
+
+        try {
+            $this->notifications()->create([
+                'id' => \Illuminate\Support\Str::uuid(),
+                'type' => 'App\Notifications\DailyBonusAwarded',
+                'data' => [
+                    'title' => '🎉 Daily Login Bonus!',
+                    'body'  => 'Aapko aaj ka 1 Free Coin mila hai! Total Coins: ' . $this->coins,
+                    'level' => 'success',
+                ],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {}
+
+        return true;
     }
 
     public function getIsOnlineAttribute(): bool

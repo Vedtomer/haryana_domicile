@@ -57,10 +57,19 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
 
+        $dailyBonusAwarded = false;
+        if ($user && \Illuminate\Support\Facades\Schema::hasColumn('users', 'last_daily_bonus_at')) {
+            $today = now()->startOfDay();
+            if (!$user->last_daily_bonus_at || $user->last_daily_bonus_at < $today) {
+                $dailyBonusAwarded = $user->awardDailyLoginBonus();
+            }
+        }
+
         return [
             ...parent::share($request),
+            'dailyBonusAwarded' => $dailyBonusAwarded,
             'auth' => [
-                'user' => $user ? array_merge($user->toArray(), [
+                'user' => $user ? array_merge($user->fresh()->toArray(), [
                     'has_active_license' => $user->hasActiveLicense(),
                     'license_expires_at' => $user->license_expires_at ? $user->license_expires_at->format('d M Y') : null,
                     'license_days_left'  => $user->licenseDaysLeft(),
@@ -97,6 +106,11 @@ class HandleInertiaRequests extends Middleware
                             'url'      => $s->targetUrl(),
                         ]);
                 })
+                : [],
+
+            // Active broadcast notices
+            'activeBroadcastNotices' => fn () => \Illuminate\Support\Facades\Schema::hasTable('broadcast_notices')
+                ? \App\Models\BroadcastNotice::active()->latest()->take(5)->get()
                 : [],
 
             // Notification bell data

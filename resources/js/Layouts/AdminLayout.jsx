@@ -11,6 +11,8 @@ import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
 import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 import ThemeToggle from '../Components/ThemeToggle';
 import UserLocationTracker from '../Components/UserLocationTracker';
+import BroadcastNoticeBanner from '../Components/BroadcastNoticeBanner';
+import DailyBonusModal from '../Components/DailyBonusModal';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash, switchAccount } = usePage().props;
@@ -119,6 +121,11 @@ export default function AdminLayout({ header, children }) {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
                             }>
                                 Refer &amp; Earn
+                            </NavItem>
+                            <NavItem href="/admin/notices" icon={
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                            }>
+                                Broadcast Notices
                             </NavItem>
                         </>
                     )}
@@ -296,6 +303,9 @@ export default function AdminLayout({ header, children }) {
                     </div>
                 </header>
                 <main className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+                    <div className="max-w-7xl mx-auto">
+                        <BroadcastNoticeBanner />
+                    </div>
                     {showSpellingWarning && (
                         <div className="mb-6 max-w-6xl mx-auto bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-sm">
                             <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">
@@ -323,6 +333,7 @@ export default function AdminLayout({ header, children }) {
                 onClose={() => setSwitchAccountModalOpen(false)}
             />
 
+            <DailyBonusModal />
             <WhatsAppButton />
             <ReferralFloatingButton />
             <UserChatWidget user={auth?.user} />
