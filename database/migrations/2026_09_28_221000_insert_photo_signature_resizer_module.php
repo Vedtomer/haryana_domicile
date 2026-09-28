@@ -9,8 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $exists = DB::table('services')->where('slug', 'photo-signature-resizer')->exists();
-        if (!$exists) {
+        if (!DB::table('services')->where('slug', 'photo-signature-resizer')->exists()) {
             DB::table('services')->insert([
                 'name' => 'Sarkari Photo & Sign Resizer',
                 'slug' => 'photo-signature-resizer',
@@ -25,8 +24,9 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        $existsWhatsapp = DB::table('services')->where('slug', 'customer-whatsapp')->exists();
-        if (!$existsWhatsapp) {
+        }
+
+        if (!DB::table('services')->where('slug', 'customer-whatsapp')->exists()) {
             DB::table('services')->insert([
                 'name' => 'Customer WhatsApp Sender',
                 'slug' => 'customer-whatsapp',
@@ -41,8 +41,9 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        $existsAffidavit = DB::table('services')->where('slug', 'legal-affidavits')->exists();
-        if (!$existsAffidavit) {
+        }
+
+        if (!DB::table('services')->where('slug', 'legal-affidavits')->exists()) {
             DB::table('services')->insert([
                 'name' => 'Govt Affidavits & Legal Forms',
                 'slug' => 'legal-affidavits',
@@ -58,8 +59,8 @@ return new class extends Migration
                 'updated_at' => now(),
             ]);
         }
-        $existsKhata = DB::table('services')->where('slug', 'khata-tracker')->exists();
-        if (!$existsKhata) {
+
+        if (!DB::table('services')->where('slug', 'khata-tracker')->exists()) {
             DB::table('services')->insert([
                 'name' => 'Cyber Café Khata & Earning Tracker',
                 'slug' => 'khata-tracker',
