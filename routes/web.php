@@ -1706,6 +1706,9 @@ Route::get('/cc', function() {
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('route:clear');
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
+    }
     return 'All caches cleared successfully!';
 });
 
