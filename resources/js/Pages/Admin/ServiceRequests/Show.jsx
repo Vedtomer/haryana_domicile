@@ -3,6 +3,14 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import StatusBadge from '../../../Components/StatusBadge';
 
+const renderServiceIcon = (icon) => {
+    if (!icon) return '📄';
+    if (typeof icon === 'string' && (icon.startsWith('fa') || icon.includes('fa-'))) {
+        return '📸';
+    }
+    return icon;
+};
+
 export default function Show({ request, isAdmin, statuses }) {
     const { data, setData, patch, processing } = useForm({
         status: request.status,
@@ -22,7 +30,7 @@ export default function Show({ request, isAdmin, statuses }) {
 
             <div className="flex flex-wrap items-center gap-3 mt-2 mb-5">
                 <h1 className="text-2xl font-bold text-gray-800">
-                    {request.service?.icon} {request.service_name} <span className="text-gray-400">#{request.id}</span>
+                    {renderServiceIcon(request.service?.icon)} {request.service_name} <span className="text-gray-400">#{request.id}</span>
                 </h1>
                 <StatusBadge status={request.status} />
             </div>

@@ -136,10 +136,12 @@ class DashboardController extends Controller
     private function userStats(User $user, int $servicesCount = 0): array
     {
         try {
-            $requests = ServiceRequest::where('user_id', $user->id);
+            $requests = ServiceRequest::visibleTo($user);
+            $totalCount = (clone $requests)->count();
             $pendingCount = (clone $requests)->where('status', ServiceRequest::STATUS_PENDING)->count();
             $completedCount = (clone $requests)->whereIn('status', ['completed', 'accepted'])->count();
         } catch (\Throwable $e) {
+            $totalCount = 0;
             $pendingCount = 0;
             $completedCount = 0;
         }
@@ -147,7 +149,7 @@ class DashboardController extends Controller
         return [
             ['label' => 'Total Services', 'value' => $servicesCount, 'tone' => 'dark-blue', 'url' => '#services', 'icon' => 'home_repair_service'],
             ['label' => 'My Coin Balance', 'value' => $user->coins, 'tone' => 'dark-amber', 'url' => '/admin/coin-requests', 'icon' => 'monetization_on'],
-            ['label' => 'History & My Requests', 'value' => $pendingCount + $completedCount, 'tone' => 'dark-indigo', 'url' => '/admin/service-requests', 'icon' => 'history'],
+            ['label' => 'History & My Requests', 'value' => $totalCount, 'tone' => 'dark-indigo', 'url' => '/admin/service-requests', 'icon' => 'history'],
             ['label' => 'Pending', 'value' => $pendingCount, 'tone' => 'dark-purple', 'url' => '/admin/service-requests?status=pending', 'icon' => 'pending_actions'],
             ['label' => 'Completed', 'value' => $completedCount, 'tone' => 'dark-green', 'url' => '/admin/service-requests?status=completed', 'icon' => 'check_circle'],
         ];

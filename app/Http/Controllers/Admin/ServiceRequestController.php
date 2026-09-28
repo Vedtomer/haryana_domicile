@@ -25,7 +25,12 @@ class ServiceRequestController extends Controller
 
         $requests = ServiceRequest::with(['user:id,name,phone,email', 'service:id,name,icon'])
             ->visibleTo($user)
-            ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+            ->when($request->status, function ($q, $status) {
+                if ($status === 'completed') {
+                    return $q->whereIn('status', ['completed', 'accepted']);
+                }
+                return $q->where('status', $status);
+            })
             ->latest()
             ->paginate(15)
             ->withQueryString();

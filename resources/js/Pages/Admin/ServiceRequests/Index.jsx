@@ -3,6 +3,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import StatusBadge from '../../../Components/StatusBadge';
 
+const renderServiceIcon = (icon) => {
+    if (!icon) return '📄';
+    if (typeof icon === 'string' && (icon.startsWith('fa') || icon.includes('fa-'))) {
+        return '📸';
+    }
+    return icon;
+};
+
 export default function Index({ requests, isAdmin, statuses, filters }) {
     const filterBy = (status) =>
         router.get('/admin/service-requests', status ? { status } : {}, { preserveState: true });
@@ -64,7 +72,7 @@ export default function Index({ requests, isAdmin, statuses, filters }) {
                                     </td>
                                     <td className="px-4 py-3 font-semibold text-gray-800">
                                         <div className="flex items-center gap-1.5">
-                                            <span>{item.service?.icon}</span>
+                                            <span>{renderServiceIcon(item.service?.icon)}</span>
                                             <span>{item.service_name}</span>
                                         </div>
                                         <div className="text-xs text-gray-400 font-normal mt-0.5">
