@@ -1612,6 +1612,26 @@ Route::get('/cc', function() {
     return 'All caches cleared successfully!';
 });
 
+Route::get('/debug-user-info', function() {
+    $sam = \App\Models\User::where('name', 'like', '%SAM%')->orWhere('email', 'like', '%sam%')->first();
+    $admins = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->get(['id', 'name', 'email', 'type']);
+    $inactiveServices = \App\Models\Service::where('is_active', false)->get(['id', 'name', 'slug', 'is_active']);
+    return response()->json([
+        'sam' => $sam ? [
+            'id' => $sam->id,
+            'name' => $sam->name,
+            'email' => $sam->email,
+            'type' => $sam->type,
+            'is_admin_method' => $sam->isAdmin(),
+            'roles' => $sam->getRoleNames(),
+            'assigned_services_count' => $sam->services()->count(),
+            'visible_services_count' => \App\Models\Service::visibleTo($sam)->count(),
+        ] : null,
+        'admins' => $admins,
+        'inactive_services' => $inactiveServices,
+    ]);
+});
+
 Route::get('/test-login', function() {
     auth()->loginUsingId(1);
     return redirect('/dashboard');
