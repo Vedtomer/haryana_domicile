@@ -59,6 +59,18 @@ class Service extends Model
             'index' => '/admin/haryana-domicile',
             'create' => '/admin/haryana-domicile/create',
         ],
+        'aadhar_card_form' => [
+            'label' => 'Aadhar Card form',
+            'model' => AadharUpdate::class,
+            'index' => '/admin/aadhar-update',
+            'create' => '/admin/aadhar-update/create',
+        ],
+        'aadhar_update' => [
+            'label' => 'Aadhar Card form',
+            'model' => AadharUpdate::class,
+            'index' => '/admin/aadhar-update',
+            'create' => '/admin/aadhar-update/create',
+        ],
         'rent_agreement' => [
             'label' => 'Rent Agreement',
             'model' => RentAgreement::class,

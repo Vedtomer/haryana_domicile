@@ -7,6 +7,9 @@ import AadharUpdateFields from './Form';
 
 export default function Edit({ record }) {
     const { data, setData, put, processing, errors } = useForm({
+        date: record.date || '',
+        resident_status: record.resident_status || 'Resident',
+        request_type: record.request_type || 'Update Request',
         aadhar_number: record.aadhar_number || '',
         name: record.name || '',
         c_o: record.c_o || '',
@@ -22,7 +25,9 @@ export default function Edit({ record }) {
         certifier_name: record.certifier_name || '',
         certifier_designation: record.certifier_designation || '',
         certifier_address: record.certifier_address || '',
+        certifier_address2: record.certifier_address2 || '',
         certifier_contact: record.certifier_contact || '',
+        certifier_category: record.certifier_category || 'Village Panchayat Head',
     });
 
     const submit = (e) => {
@@ -31,18 +36,26 @@ export default function Edit({ record }) {
 
     return (
         <AdminLayout>
-            <Head title="Edit Aadhar Update Form" />
+            <Head title="Edit Aadhar Card Form" />
 
             <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
                 <IconButton component={Link} href="/admin/aadhar-update" sx={{ mr: 2 }}>
                     <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" fontWeight="bold" color="text.primary">
-                    Edit Aadhar Update Request
+                    Edit Aadhar Card Form
                 </Typography>
             </Box>
 
-            <AadharUpdateFields data={data} setData={setData} errors={errors} processing={processing} onSubmit={submit} submitLabel="Update Record" showSaveAndCreate={false} />
+            <AadharUpdateFields
+                data={data}
+                setData={setData}
+                errors={errors}
+                processing={processing}
+                onSubmit={submit}
+                submitLabel="Update & Save Changes"
+                showSaveAndCreate={false}
+            />
         </AdminLayout>
     );
 }

@@ -265,6 +265,57 @@ Route::get('/migrate-db', function () {
             $output .= "Rent Agreement Notice: " . $be->getMessage() . "\n\n";
         }
 
+        // 3. Aadhar Card Form
+        try {
+            $logoDir = storage_path('app/public/service-logos');
+            if (!file_exists($logoDir)) {
+                @mkdir($logoDir, 0777, true);
+            }
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+            $aadharService = \Illuminate\Support\Facades\DB::table('services')
+                ->where('slug', 'aadhar-card-form')
+                ->orWhere('slug', 'aadhar-update')
+                ->first();
+
+            $aadharData = [
+                'name' => 'Aadhar Card form',
+                'slug' => 'aadhar-card-form',
+                'description' => 'Certificate for Aadhaar Enrolment / Update (Proof of Address) Form Generator',
+                'icon' => '🪪',
+                'coin_cost' => 9,
+                'kind' => 'module',
+                'module_key' => 'aadhar_card_form',
+                'fields' => null,
+                'is_active' => true,
+                'visibility' => 'public',
+                'is_premium' => false,
+                'unlock_cost' => 0,
+                'sort_order' => 1,
+                'updated_at' => now(),
+            ];
+
+            if ($aadharService) {
+                \Illuminate\Support\Facades\DB::table('services')->where('id', $aadharService->id)->update($aadharData);
+                $aadharId = $aadharService->id;
+            } else {
+                $aadharData['created_at'] = now();
+                $aadharId = \Illuminate\Support\Facades\DB::table('services')->insertGetId($aadharData);
+            }
+
+            $allUsers = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
+            foreach ($allUsers as $uId) {
+                \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
+                    ['service_id' => $aadharId, 'user_id' => $uId],
+                    ['created_at' => now(), 'updated_at' => now()]
+                );
+            }
+
+            $output .= "=== AADHAR CARD FORM SERVICE VERIFIED ===\nID: {$aadharId}, Name: Aadhar Card form, Cost: 9 coins\n\n";
+        } catch (\Throwable $ae) {
+            $output .= "Aadhar Card Form Notice: " . $ae->getMessage() . "\n\n";
+        }
+
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
@@ -1592,10 +1643,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return response()->file(public_path('aadhar_update/grid.jpg'));
     })->name('aadhar-update.grid');
 
-    Route::resource('aadhar-update', \App\Http\Controllers\Admin\AadharUpdateController::class);
-        Route::get('aadhar-update/{aadhar_update}/print', [\App\Http\Controllers\Admin\AadharUpdateController::class, 'print'])->name('aadhar-update.print');
+    Route::resource('aadhar-update', \App\Http\Controllers\Admin\AadharUpdateController::class)->middleware('license.active');
+    Route::get('aadhar-update/{aadhar_update}/print', [\App\Http\Controllers\Admin\AadharUpdateController::class, 'print'])->name('aadhar-update.print');
 
-        Route::get('pincode-lookup/{pincode}', [\App\Http\Controllers\Admin\PincodeLookupController::class, 'lookup'])->name('pincode-lookup');
+    Route::resource('aadhar-card-form', \App\Http\Controllers\Admin\AadharUpdateController::class)->middleware('license.active');
+    Route::get('aadhar-card-form/{aadhar_update}/print', [\App\Http\Controllers\Admin\AadharUpdateController::class, 'print'])->name('aadhar-card-form.print');
+
+    Route::get('pincode-lookup/{pincode}', [\App\Http\Controllers\Admin\PincodeLookupController::class, 'lookup'])->name('pincode-lookup');
         Route::resource('pan-requests', \App\Http\Controllers\Admin\PanRequestController::class);
         
         Route::resource('manual-pan-cards', \App\Http\Controllers\Admin\ManualPanCardController::class);
@@ -1750,4 +1804,13 @@ Route::prefix('api/print-agent')->group(function () {
     Route::get('/engine', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'downloadEngine']);
     Route::get('/script', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'getLatestScript']);
 });
+
+// Storage fallback route - guarantees uploaded service logos and public files are always served
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    return response()->file($filePath);
+})->where('path', '.*')->name('storage.local');
 
