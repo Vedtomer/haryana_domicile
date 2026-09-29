@@ -1,10 +1,3 @@
-@php
-    $stampsPath = public_path('rent_agreement/stamps.jpg');
-    $stampsBase64 = file_exists($stampsPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($stampsPath)) : '';
-
-    $notaryPath = public_path('rent_agreement/notary.jpg');
-    $notaryBase64 = file_exists($notaryPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($notaryPath)) : '';
-@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,15 +19,6 @@
     .page-break {
         page-break-after: always;
         clear: both;
-    }
-    .stamp-container {
-        text-align: center;
-        margin-top: 0;
-        margin-bottom: 8px;
-    }
-    .stamp-img {
-        width: 122px;
-        height: auto;
     }
     h1.title {
         text-align: center;
@@ -100,17 +84,6 @@
         margin-top: 45px;
         font-size: 10.5pt;
     }
-    .notary-wrapper {
-        position: absolute;
-        bottom: 12px;
-        right: 0px;
-        width: 220px;
-        text-align: right;
-    }
-    .notary-img {
-        width: 185px;
-        height: auto;
-    }
     b {
         font-weight: bold;
     }
@@ -120,12 +93,6 @@
 
 <!-- PAGE 1 -->
 <div class="page-1">
-    <div class="stamp-container">
-        @if($stampsBase64)
-            <img src="{{ $stampsBase64 }}" class="stamp-img" alt="Revenue Stamps" />
-        @endif
-    </div>
-
     <h1 class="title">Rent Agreement</h1>
 
     <p>
@@ -264,12 +231,6 @@
 
     <div class="date-row">
         <b>Date :- &nbsp;{{ $record->agreement_date }}</b>.
-    </div>
-
-    <div class="notary-wrapper">
-        @if($notaryBase64)
-            <img src="{{ $notaryBase64 }}" class="notary-img" alt="Notary Seal" />
-        @endif
     </div>
 </div>
 
