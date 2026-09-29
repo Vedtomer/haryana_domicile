@@ -20,6 +20,9 @@
         page-break-after: always;
         clear: both;
     }
+    .page-1 {
+        padding-top: 80px; /* 4-5 lines blank space at the top */
+    }
     h1.title {
         text-align: center;
         font-size: 13.5pt;
@@ -92,7 +95,7 @@
 <body>
 
 <!-- PAGE 1 -->
-<div class="page-1">
+<div class="page-1" style="padding-top: 80px;">
     <h1 class="title">Rent Agreement</h1>
 
     <p>
