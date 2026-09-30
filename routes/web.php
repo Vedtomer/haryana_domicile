@@ -198,6 +198,20 @@ Route::get('/migrate-db', function () {
                     'unlock_cost' => 0,
                     'sort_order' => 0,
                 ],
+                [
+                    'slug' => 'resume-maker',
+                    'name' => 'Resume / CV Maker',
+                    'description' => 'Automated Professional Resume, CV & Bio-Data Generator - Create, customize and print authentic 1-page Resumes with photo.',
+                    'icon' => '📄',
+                    'coin_cost' => 20,
+                    'kind' => 'module',
+                    'module_key' => 'resume_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 1,
+                ],
             ];
 
             foreach ($defaultServices as $def) {
@@ -1599,6 +1613,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::resource('salary-slip', \App\Http\Controllers\Admin\SalarySlipController::class)->middleware('license.active');
         Route::get('salary-slip/{salary_slip}/print', [\App\Http\Controllers\Admin\SalarySlipController::class, 'print'])->name('salary-slip.print');
         Route::get('salary-slip/{salary_slip}/download', [\App\Http\Controllers\Admin\SalarySlipController::class, 'download'])->name('salary-slip.download');
+
+        Route::resource('resume-maker', \App\Http\Controllers\Admin\ResumeMakerController::class)->middleware('license.active');
+        Route::get('resume-maker/{resume}/print', [\App\Http\Controllers\Admin\ResumeMakerController::class, 'printView'])->name('resume-maker.print');
 
         
         Route::get('aadhar-update/grid', function () {

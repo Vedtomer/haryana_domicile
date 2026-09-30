@@ -89,6 +89,12 @@ class Service extends Model
             'index' => '/admin/salary-slip',
             'create' => '/admin/salary-slip/create',
         ],
+        'resume_maker' => [
+            'label' => 'Resume / CV Maker',
+            'model' => Resume::class,
+            'index' => '/admin/resume-maker',
+            'create' => '/admin/resume-maker/create',
+        ],
         'pan_request' => [
             'label' => 'PAN Card',
             'model' => PanRequest::class,
