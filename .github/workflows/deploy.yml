@@ -29,6 +29,8 @@ jobs:
             cd "${{ secrets.DEPLOY_PATH }}"
             git fetch origin main
             git reset --hard origin/main
+            mkdir -p build/assets
+            cp -rf public/build/* build/ || true
             $PHP /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
             mkdir -p storage/app/public/service-logos
             chmod 777 storage/app/public/service-logos || true
@@ -38,7 +40,6 @@ jobs:
             $PHP artisan optimize:clear
             $PHP artisan view:clear
             $PHP artisan cache:clear
-            $PHP artisan optimize
             mkdir -p tmp
             touch tmp/restart.txt
             git log -1 --oneline

@@ -389,22 +389,26 @@ Route::get('/migrate-db', function () {
             if (!file_exists($destBuild . '/assets')) {
                 @mkdir($destBuild . '/assets', 0755, true);
             }
-            // Copy manifest
+            // Copy manifest unconditionally
             if (file_exists($srcBuild . '/manifest.json')) {
                 @copy($srcBuild . '/manifest.json', $destBuild . '/manifest.json');
             }
-            // Copy all assets
+            // Copy all assets unconditionally
             $copied = 0;
             foreach (glob($srcBuild . '/assets/*.*') as $file) {
                 $targetFile = $destBuild . '/assets/' . basename($file);
-                if (!file_exists($targetFile) || filemtime($file) > filemtime($targetFile)) {
-                    @copy($file, $targetFile);
-                    $copied++;
-                }
+                @copy($file, $targetFile);
+                $copied++;
             }
             $output .= "Synced {$copied} assets from public/build to document root build!\n";
         }
         $output .= "Files now in base_path(build/assets): " . count(glob($destBuild . '/assets/*.*')) . "\n";
+
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
 
         return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
             . "<h2 style='margin-top:0;'>✓ Database Migrated & Seeded Successfully!</h2>"
