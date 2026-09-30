@@ -39,11 +39,23 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
-        $data['visibility'] = Service::VISIBILITY_PUBLIC;
+        $data['visibility'] = $request->input('visibility', Service::VISIBILITY_PUBLIC);
 
         $data = $this->handleLogo($request, $data);
 
         $service = Service::create($data);
+
+        if ($request->has('user_ids') && is_array($request->input('user_ids'))) {
+            $service->users()->sync($request->input('user_ids'));
+        }
+
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $e) {}
 
         return redirect()->route('admin.services.index')->with('success', 'Service added successfully.');
     }
@@ -64,13 +76,20 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         $data = $this->validated($request, $service);
-        $data['visibility'] = Service::VISIBILITY_PUBLIC;
+        if ($request->has('visibility')) {
+            $data['visibility'] = $request->input('visibility');
+        }
 
         $data = $this->handleLogo($request, $data, $service);
 
         $service->update($data);
 
+        if ($request->has('user_ids') && is_array($request->input('user_ids'))) {
+            $service->users()->sync($request->input('user_ids'));
+        }
+
         try {
+            \Illuminate\Support\Facades\Cache::flush();
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             if (function_exists('opcache_reset')) {
                 @opcache_reset();
@@ -126,7 +145,19 @@ class ServiceController extends Controller
 
         $service->users()->detach();
 
-        $service->delete();
+        // Nullify foreign references in requests so deletion succeeds cleanly
+        \App\Models\ServiceRequest::where('service_id', $service->id)->update(['service_id' => null]);
+
+        // Permanently delete so it cannot be revived by queries or migrations
+        $service->forceDelete();
+
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $e) {}
 
         return back()->with('success', "Service '{$name}' has been removed successfully.");
     }
@@ -137,6 +168,7 @@ class ServiceController extends Controller
         $service->save();
 
         try {
+            \Illuminate\Support\Facades\Cache::flush();
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             if (function_exists('opcache_reset')) {
                 @opcache_reset();
@@ -163,7 +195,10 @@ class ServiceController extends Controller
             'remove_logo' => 'nullable|boolean',
             'coin_cost' => 'required|integer|min:0|max:100000',
             'is_active' => 'required|boolean',
+            'visibility' => ['nullable', 'string', Rule::in([Service::VISIBILITY_PUBLIC, Service::VISIBILITY_PRIVATE])],
             'sort_order' => 'nullable|integer|min:0|max:9999',
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'integer|exists:users,id',
             'fields' => 'nullable|array',
             'fields.*.label' => 'required|string|max:120',
             'fields.*.type' => ['required', Rule::in(['text', 'number', 'date', 'textarea', 'file'])],
@@ -171,8 +206,9 @@ class ServiceController extends Controller
         ]);
 
         $data['sort_order'] = $data['sort_order'] ?? 0;
+        unset($data['user_ids']);
 
-        // Built-in modules keep their wiring; only the price/visibility is editable.
+        // Built-in modules keep their wiring; price, active status, name, icon, and visibility are editable.
         if ($service && $service->isModule()) {
             unset($data['fields']);
 

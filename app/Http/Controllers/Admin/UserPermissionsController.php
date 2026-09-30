@@ -62,6 +62,7 @@ class UserPermissionsController extends Controller
         $user->services()->sync($data['service_ids']);
 
         try {
+            \Illuminate\Support\Facades\Cache::flush();
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             if (function_exists('opcache_reset')) {
                 @opcache_reset();

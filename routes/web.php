@@ -65,110 +65,7 @@ Route::get('/migrate-db', function () {
             $output .= "Admin sync notice: " . $ue->getMessage() . "\n\n";
         }
 
-        // Ensure DHBVN and UHBVN are separate and assigned to ALL users
-        try {
-            $logo = 'service-logos/Yh61ZFPQAAE2Rfl7Jy4V0Lp3qzOTlu44eKCJUYuq.jpg';
-            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'dhbvn-electricity-bill')->update([
-                'name' => 'DHBVN Electricity Bill',
-                'description' => 'Dakshin Haryana Bijli Vitran Nigam (DHBVN) duplicate electricity bill instant PDF download.',
-                'icon' => '⚡',
-                'logo' => $logo,
-                'is_active' => true,
-                'visibility' => 'private',
-                'is_premium' => false,
-                'updated_at' => now(),
-            ]);
-
-            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'uhbvn-electricity-bill')->update([
-                'name' => 'UHBVN Electricity Bill',
-                'description' => 'Uttar Haryana Bijli Vitran Nigam (UHBVN) duplicate electricity bill instant PDF download.',
-                'icon' => '⚡',
-                'logo' => $logo,
-                'is_active' => true,
-                'visibility' => 'private',
-                'is_premium' => false,
-                'updated_at' => now(),
-            ]);
-
-            \Illuminate\Support\Facades\DB::table('services')->where('slug', 'electricity-bill')->update([
-                'is_active' => false,
-                'updated_at' => now(),
-            ]);
-
-            // 1. Birth Certificate Name Add (Form & Records)
-            \Illuminate\Support\Facades\DB::table('services')
-                ->where('slug', 'birth-certificate')
-                ->orWhere('module_key', 'birth_record')
-                ->update([
-                    'name' => 'Birth Certificate Name Add',
-                    'slug' => 'birth-certificate',
-                    'module_key' => 'birth_record',
-                    'description' => 'जन्म रिकार्ड में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Name Add Form & Records)',
-                    'icon' => '📝',
-                    'is_active' => true,
-                    'visibility' => 'public',
-                    'coin_cost' => 10,
-                    'deleted_at' => null,
-                    'updated_at' => now(),
-                ]);
-
-            // 2. Birth Certificate Document Merger (Single PDF Merger & Download)
-            $downloadService = \Illuminate\Support\Facades\DB::table('services')
-                ->where('slug', 'birth-certificate-download')
-                ->orWhere('slug', 'crs-birth-portal')
-                ->orWhere('module_key', 'birth_certificate_download')
-                ->first();
-
-            if ($downloadService) {
-                \Illuminate\Support\Facades\DB::table('services')
-                    ->where('id', $downloadService->id)
-                    ->update([
-                        'name' => 'Birth Certificate Document Merger',
-                        'slug' => 'birth-certificate-download',
-                        'module_key' => 'birth_certificate_download',
-                        'description' => 'पुराना जन्म प्रमाण पत्र और आधार कार्ड जोड़कर 1 सिंगल PDF बनाएं (Document Merger)',
-                        'icon' => '👶',
-                        'is_active' => true,
-                        'visibility' => 'public',
-                        'coin_cost' => 0,
-                        'kind' => 'module',
-                        'deleted_at' => null,
-                        'updated_at' => now(),
-                    ]);
-            } else {
-                \Illuminate\Support\Facades\DB::table('services')->insert([
-                    'name' => 'Birth Certificate Document Merger',
-                    'slug' => 'birth-certificate-download',
-                    'module_key' => 'birth_certificate_download',
-                    'description' => 'पुराना जन्म प्रमाण पत्र और आधार कार्ड जोड़कर 1 सिंगल PDF बनाएं (Document Merger)',
-                    'icon' => '👶',
-                    'is_active' => true,
-                    'visibility' => 'public',
-                    'coin_cost' => 0,
-                    'kind' => 'module',
-                    'sort_order' => 3,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            // Sync all target services to all users
-            $targetServiceIds = \Illuminate\Support\Facades\DB::table('services')
-                ->whereIn('slug', ['dhbvn-electricity-bill', 'uhbvn-electricity-bill', 'ayushman-3lakh-income-make', 'birth-certificate', 'birth-certificate-download'])
-                ->pluck('id')
-                ->toArray();
-
-            $allUsers = \App\Models\User::all();
-            foreach ($allUsers as $u) {
-                $u->services()->syncWithoutDetaching($targetServiceIds);
-            }
-
-            $output .= "=== BIRTH SERVICES STATUS ===\n" . json_encode(\App\Models\Service::whereIn('slug', ['birth-certificate', 'birth-certificate-download'])->get(['id', 'name', 'slug', 'module_key', 'is_active', 'visibility']), JSON_PRETTY_PRINT) . "\n\n";
-        } catch (\Throwable $se2) {
-            $output .= "Sync notice: " . $se2->getMessage() . "\n\n";
-        }
-
-        // Ensure Rent Agreement and BOB Affidavit services are configured as module and assigned to users
+        // Ensure necessary schema adjustments
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('rent_agreements') && !\Illuminate\Support\Facades\Schema::hasColumn('rent_agreements', 'second_party_aadhar')) {
                 \Illuminate\Support\Facades\Schema::table('rent_agreements', function ($table) {
@@ -176,207 +73,163 @@ Route::get('/migrate-db', function () {
                 });
             }
 
-            $allUserIds = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
+            $logoDir = storage_path('app/public/service-logos');
+            if (!file_exists($logoDir)) {
+                @mkdir($logoDir, 0777, true);
+            }
+        } catch (\Throwable $te) {
+            $output .= "Schema notice: " . $te->getMessage() . "\n\n";
+        }
 
-            // 1. Rent Agreement
-            $rentService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'rent-agreement')->first();
-            if ($rentService) {
-                \Illuminate\Support\Facades\DB::table('services')->where('id', $rentService->id)->update([
-                    'name' => 'Rent Agreement',
+        // Seed default services ONLY if they do not exist yet (never overwrite admin changes or deletions)
+        try {
+            $defaultServices = [
+                [
+                    'slug' => 'dhbvn-electricity-bill',
+                    'name' => 'DHBVN Electricity Bill',
+                    'description' => 'Dakshin Haryana Bijli Vitran Nigam (DHBVN) duplicate electricity bill instant PDF download.',
+                    'icon' => '⚡',
+                    'logo' => 'service-logos/Yh61ZFPQAAE2Rfl7Jy4V0Lp3qzOTlu44eKCJUYuq.jpg',
+                    'coin_cost' => 0,
                     'kind' => 'module',
-                    'module_key' => 'rent_agreement',
-                    'coin_cost' => 149,
+                    'module_key' => 'dhbvn_electricity_bill',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                ],
+                [
+                    'slug' => 'uhbvn-electricity-bill',
+                    'name' => 'UHBVN Electricity Bill',
+                    'description' => 'Uttar Haryana Bijli Vitran Nigam (UHBVN) duplicate electricity bill instant PDF download.',
+                    'icon' => '⚡',
+                    'logo' => 'service-logos/Yh61ZFPQAAE2Rfl7Jy4V0Lp3qzOTlu44eKCJUYuq.jpg',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'module_key' => 'uhbvn_electricity_bill',
+                    'is_active' => true,
+                    'visibility' => 'private',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                ],
+                [
+                    'slug' => 'birth-certificate',
+                    'name' => 'Birth Certificate Name Add',
+                    'description' => 'जन्म रिकार्ड में नाम जुड़वाने हेतु स्वंय सत्यापित घोषणा पत्र (Name Add Form & Records)',
+                    'icon' => '📝',
+                    'coin_cost' => 10,
+                    'kind' => 'module',
+                    'module_key' => 'birth_record',
                     'is_active' => true,
                     'visibility' => 'public',
-                    'fields' => null,
-                    'updated_at' => now(),
-                ]);
-                $rentId = $rentService->id;
-            } else {
-                $rentId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
-                    'name' => 'Rent Agreement',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                ],
+                [
+                    'slug' => 'birth-certificate-download',
+                    'name' => 'Birth Certificate Document Merger',
+                    'description' => 'पुराना जन्म प्रमाण पत्र और आधार कार्ड जोड़कर 1 सिंगल PDF बनाएं (Document Merger)',
+                    'icon' => '👶',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'module_key' => 'birth_certificate_download',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 3,
+                ],
+                [
                     'slug' => 'rent-agreement',
+                    'name' => 'Rent Agreement',
                     'description' => 'Official Rent Agreement Generator - Generate, edit and print authentic 2-page Rent Agreements with adhesive stamps and notary seals.',
                     'icon' => '📜',
                     'coin_cost' => 149,
                     'kind' => 'module',
                     'module_key' => 'rent_agreement',
-                    'fields' => null,
                     'is_active' => true,
                     'visibility' => 'public',
                     'is_premium' => false,
                     'unlock_cost' => 0,
                     'sort_order' => 0,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            // 2. BOB Affidavit
-            $bobService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'bob-affidavit')->first();
-            if ($bobService) {
-                \Illuminate\Support\Facades\DB::table('services')->where('id', $bobService->id)->update([
-                    'name' => 'BOB Affidavit',
-                    'kind' => 'module',
-                    'module_key' => 'rent_agreement',
-                    'coin_cost' => 149,
-                    'is_active' => true,
-                    'visibility' => 'public',
-                    'fields' => null,
-                    'updated_at' => now(),
-                ]);
-                $bobId = $bobService->id;
-            } else {
-                $bobId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
-                    'name' => 'BOB Affidavit',
+                ],
+                [
                     'slug' => 'bob-affidavit',
+                    'name' => 'BOB Affidavit',
                     'description' => 'Bank of Baroda (BOB) Affidavit / Rent Agreement Generator - Generate, edit and print authentic 2-page documents with adhesive stamps and notary seals.',
                     'icon' => '📜',
                     'coin_cost' => 149,
                     'kind' => 'module',
                     'module_key' => 'rent_agreement',
-                    'fields' => null,
                     'is_active' => true,
                     'visibility' => 'public',
                     'is_premium' => false,
                     'unlock_cost' => 0,
                     'sort_order' => 0,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            foreach ([$rentId, $bobId] as $sId) {
-                if (!$sId) continue;
-                foreach ($allUserIds as $uId) {
-                    \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
-                        ['service_id' => $sId, 'user_id' => $uId],
-                        ['created_at' => now(), 'updated_at' => now()]
-                    );
-                }
-            }
-
-            $currentServices = \Illuminate\Support\Facades\DB::table('services')
-                ->whereIn('slug', ['rent-agreement', 'bob-affidavit'])
-                ->select(['id', 'name', 'slug', 'module_key', 'coin_cost', 'is_active', 'visibility'])
-                ->get();
-            $output .= "=== RENT AGREEMENT & BOB AFFIDAVIT VERIFIED ===\n" . json_encode($currentServices, JSON_PRETTY_PRINT) . "\n\n";
-        } catch (\Throwable $be) {
-            $output .= "Rent Agreement Notice: " . $be->getMessage() . "\n\n";
-        }
-
-        // 3. Aadhar Card Form
-        try {
-            $logoDir = storage_path('app/public/service-logos');
-            if (!file_exists($logoDir)) {
-                @mkdir($logoDir, 0777, true);
-            }
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-
-            $aadharService = \Illuminate\Support\Facades\DB::table('services')
-                ->where('slug', 'aadhar-card-form')
-                ->orWhere('slug', 'aadhar-update')
-                ->first();
-
-            $aadharData = [
-                'name' => 'Aadhar Card form',
-                'slug' => 'aadhar-card-form',
-                'description' => 'Certificate for Aadhaar Enrolment / Update (Proof of Address) Form Generator',
-                'icon' => '🪪',
-                'coin_cost' => 9,
-                'kind' => 'module',
-                'module_key' => 'aadhar_card_form',
-                'fields' => null,
-                'is_active' => true,
-                'visibility' => 'public',
-                'is_premium' => false,
-                'unlock_cost' => 0,
-                'sort_order' => 1,
-                'updated_at' => now(),
-            ];
-
-            if ($aadharService) {
-                \Illuminate\Support\Facades\DB::table('services')->where('id', $aadharService->id)->update($aadharData);
-                $aadharId = $aadharService->id;
-            } else {
-                $aadharData['created_at'] = now();
-                $aadharId = \Illuminate\Support\Facades\DB::table('services')->insertGetId($aadharData);
-            }
-
-            $allUsers = \Illuminate\Support\Facades\DB::table('users')->pluck('id')->toArray();
-            foreach ($allUsers as $uId) {
-                \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
-                    ['service_id' => $aadharId, 'user_id' => $uId],
-                    ['created_at' => now(), 'updated_at' => now()]
-                );
-            }
-
-            $output .= "=== AADHAR CARD FORM SERVICE VERIFIED ===\nID: {$aadharId}, Name: Aadhar Card form, Cost: 9 coins\n\n";
-        } catch (\Throwable $ae) {
-            $output .= "Aadhar Card Form Notice: " . $ae->getMessage() . "\n\n";
-        }
-
-        \Illuminate\Support\Facades\Artisan::call('cache:clear');
-        \Illuminate\Support\Facades\Artisan::call('config:clear');
-        \Illuminate\Support\Facades\Artisan::call('view:clear');
-        \Illuminate\Support\Facades\Artisan::call('route:clear');
-        if (function_exists('opcache_reset')) {
-            @opcache_reset();
-        }
-        $output .= "=== ALL CACHES CLEARED ===\nDone.\n";
-
-        // 4. Salary Slip
-        try {
-            $salarySlipService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'salary-slip')->first();
-            if ($salarySlipService) {
-                \Illuminate\Support\Facades\DB::table('services')->where('id', $salarySlipService->id)->update([
-                    'name' => 'Salary Slip',
+                ],
+                [
+                    'slug' => 'aadhar-card-form',
+                    'name' => 'Aadhar Card form',
+                    'description' => 'Certificate for Aadhaar Enrolment / Update (Proof of Address) Form Generator',
+                    'icon' => '🪪',
+                    'coin_cost' => 9,
                     'kind' => 'module',
-                    'module_key' => 'salary_slip',
-                    'coin_cost' => 99,
+                    'module_key' => 'aadhar_card_form',
                     'is_active' => true,
                     'visibility' => 'public',
-                    'fields' => null,
-                    'updated_at' => now(),
-                ]);
-                $salarySlipId = $salarySlipService->id;
-            } else {
-                $salarySlipId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
-                    'name' => 'Salary Slip',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 1,
+                ],
+                [
                     'slug' => 'salary-slip',
+                    'name' => 'Salary Slip',
                     'description' => 'Official Salary Slip Generator - Create, edit and print authentic Salary Slips.',
                     'icon' => '💼',
                     'coin_cost' => 99,
                     'kind' => 'module',
                     'module_key' => 'salary_slip',
-                    'fields' => null,
                     'is_active' => true,
                     'visibility' => 'public',
                     'is_premium' => false,
                     'unlock_cost' => 0,
                     'sort_order' => 0,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+                ],
+            ];
 
-            if ($salarySlipId) {
-                foreach ($allUserIds as $uId) {
-                    \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
-                        ['service_id' => $salarySlipId, 'user_id' => $uId],
-                        ['created_at' => now(), 'updated_at' => now()]
-                    );
+            foreach ($defaultServices as $def) {
+                // If it already exists (even if trashed/deleted), do NOT overwrite or resurrect it!
+                $exists = \Illuminate\Support\Facades\DB::table('services')
+                    ->where('slug', $def['slug'])
+                    ->exists();
+
+                if (!$exists) {
+                    \Illuminate\Support\Facades\DB::table('services')->insert(array_merge($def, [
+                        'fields' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
                 }
             }
-
-            $currentSalaryService = \Illuminate\Support\Facades\DB::table('services')
-                ->where('slug', 'salary-slip')
-                ->select(['id', 'name', 'slug', 'module_key', 'coin_cost', 'is_active', 'visibility'])
-                ->first();
-            $output .= "=== SALARY SLIP SERVICE VERIFIED ===\n" . json_encode($currentSalaryService, JSON_PRETTY_PRINT) . "\n\n";
-        } catch (\Throwable $seSalary) {
-            $output .= "Salary Slip Notice: " . $seSalary->getMessage() . "\n\n";
+        } catch (\Throwable $seDefaults) {
+            $output .= "Defaults notice: " . $seDefaults->getMessage() . "\n\n";
         }
+
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+            \Illuminate\Support\Facades\Artisan::call('route:clear');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+        } catch (\Throwable $ce) {}
+
+        $output .= "=== ALL CACHES CLEARED ===\nDone.\n\n";
 
         $output .= "=== PATHS & BUILD SYNC ===\n";
         $srcBuild = public_path('build');
