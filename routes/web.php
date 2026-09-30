@@ -378,16 +378,33 @@ Route::get('/migrate-db', function () {
             $output .= "Salary Slip Notice: " . $seSalary->getMessage() . "\n\n";
         }
 
-        $output .= "=== PATHS & BUILD CHECK ===\n";
-        $output .= "public_path(): " . public_path() . "\n";
-        $output .= "base_path(): " . base_path() . "\n";
-        $output .= "is public_path(build) existing?: " . (file_exists(public_path('build')) ? 'YES' : 'NO') . "\n";
-        $output .= "glob public_path(build/assets/*.js): " . count(glob(public_path('build/assets/*.js'))) . "\n";
-        if (file_exists(base_path('../public_html'))) {
-            $output .= "../public_html exists!\n";
-            $output .= "glob ../public_html/build/assets/*.js: " . count(glob(base_path('../public_html/build/assets/*.js'))) . "\n";
+        $output .= "=== PATHS & BUILD SYNC ===\n";
+        $srcBuild = public_path('build');
+        $destBuild = base_path('build');
+
+        if (file_exists($srcBuild)) {
+            if (!file_exists($destBuild)) {
+                @mkdir($destBuild, 0755, true);
+            }
+            if (!file_exists($destBuild . '/assets')) {
+                @mkdir($destBuild . '/assets', 0755, true);
+            }
+            // Copy manifest
+            if (file_exists($srcBuild . '/manifest.json')) {
+                @copy($srcBuild . '/manifest.json', $destBuild . '/manifest.json');
+            }
+            // Copy all assets
+            $copied = 0;
+            foreach (glob($srcBuild . '/assets/*.*') as $file) {
+                $targetFile = $destBuild . '/assets/' . basename($file);
+                if (!file_exists($targetFile) || filemtime($file) > filemtime($targetFile)) {
+                    @copy($file, $targetFile);
+                    $copied++;
+                }
+            }
+            $output .= "Synced {$copied} assets from public/build to document root build!\n";
         }
-        $output .= "Sample files in public_path(build/assets):\n" . implode("\n", array_slice(glob(public_path('build/assets/*.js')), 0, 5)) . "\n";
+        $output .= "Files now in base_path(build/assets): " . count(glob($destBuild . '/assets/*.*')) . "\n";
 
         return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
             . "<h2 style='margin-top:0;'>✓ Database Migrated & Seeded Successfully!</h2>"
