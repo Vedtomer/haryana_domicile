@@ -1,11 +1,12 @@
 import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import SalarySlipForm from './Form';
-import { Box, Typography, Breadcrumbs, IconButton } from '@mui/material';
+import { Box, Typography, Breadcrumbs, IconButton, Alert } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Create({ coinCost = 99 }) {
+    const { flash } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
         // Employer
         employer_name: 'SUNIL MERCHANDISING',
@@ -85,6 +86,12 @@ export default function Create({ coinCost = 99 }) {
                     </div>
                 </Box>
             </Box>
+
+            {flash?.error && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                    {flash.error}
+                </Alert>
+            )}
 
             <SalarySlipForm
                 data={data}

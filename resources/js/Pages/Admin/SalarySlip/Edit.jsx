@@ -1,11 +1,12 @@
 import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import SalarySlipForm from './Form';
-import { Box, Typography, Breadcrumbs, IconButton } from '@mui/material';
+import { Box, Typography, Breadcrumbs, IconButton, Alert } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Edit({ record }) {
+    const { flash } = usePage().props;
     const { data, setData, put, processing, errors } = useForm({
         employer_name: record.employer_name || '',
         employer_address: record.employer_address || '',
@@ -80,6 +81,12 @@ export default function Edit({ record }) {
                     </div>
                 </Box>
             </Box>
+
+            {flash?.error && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                    {flash.error}
+                </Alert>
+            )}
 
             <SalarySlipForm
                 data={data}

@@ -57,6 +57,7 @@ export default function SalarySlipForm({
         <Paper
             component="form"
             onSubmit={handleFormSubmit}
+            noValidate
             elevation={0}
             sx={{
                 p: { xs: 2.5, md: 4 },
@@ -66,6 +67,17 @@ export default function SalarySlipForm({
                 boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)',
             }}
         >
+            {Object.keys(errors).length > 0 && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                    <strong>Please check the following error(s):</strong>
+                    <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
+                        {Object.entries(errors).map(([field, msg]) => (
+                            <li key={field}>{msg}</li>
+                        ))}
+                    </ul>
+                </Alert>
+            )}
+
             <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }} icon={<DescriptionIcon />}>
                 Only the bold fields from the official Salary Slip are editable below.
                 Upon saving, <strong>{coinCost} coins</strong> will be deducted and your complete Salary Slip will be ready to print instantly.
@@ -244,58 +256,61 @@ export default function SalarySlipForm({
                 <AccordionDetails>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="HRA Exemption" name="hra_exemption" value={data.hra_exemption} onChange={handleChange} />
+                            <InputField label="HRA Exemption" name="hra_exemption" value={data.hra_exemption} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Leave Salary Exemption" name="leave_salary_exemption" value={data.leave_salary_exemption} onChange={handleChange} />
+                            <InputField label="Leave Salary Exemption" name="leave_salary_exemption" value={data.leave_salary_exemption} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="3. Balance (1-2)" name="balance_3" value={data.balance_3} onChange={handleChange} />
+                            <InputField label="3. Balance (1-2)" name="balance_3" value={data.balance_3} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Entertainment Allowance" name="entertainment_allowance" value={data.entertainment_allowance} onChange={handleChange} />
+                            <InputField label="Entertainment Allowance" name="entertainment_allowance" value={data.entertainment_allowance} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Tax on Employment" name="tax_on_employment" value={data.tax_on_employment} onChange={handleChange} />
+                            <InputField label="Tax on Employment" name="tax_on_employment" value={data.tax_on_employment} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="5. Aggregate of 4(a) & 4(b)" name="aggregate_5" value={data.aggregate_5} onChange={handleChange} />
+                            <InputField label="5. Aggregate of 4(a) & 4(b)" name="aggregate_5" value={data.aggregate_5} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="6. Income Under Salary" name="income_salary_6" value={data.income_salary_6} onChange={handleChange} />
+                            <InputField label="6. Income Under Salary" name="income_salary_6" value={data.income_salary_6} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="7. Any Other Income" name="other_income_7" value={data.other_income_7 || ''} onChange={handleChange} />
+                            <InputField label="7. Any Other Income" name="other_income_7" value={data.other_income_7 || ''} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="9. Deduction 80C/CCC/CCD" name="deduction_80c" value={data.deduction_80c} onChange={handleChange} />
+                            <InputField label="9. Deduction 80C/CCC/CCD" name="deduction_80c" value={data.deduction_80c} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Home Loan Principal" name="home_loan_principal" value={data.home_loan_principal} onChange={handleChange} />
+                            <InputField label="Home Loan Principal" name="home_loan_principal" value={data.home_loan_principal} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Section 80C(01)" name="section_80c01" value={data.section_80c01} onChange={handleChange} />
+                            <InputField label="Note 1 Aggregate 80C" name="note_1_aggregate" value={data.note_1_aggregate || '0.00'} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="Section 80D" name="section_80d" value={data.section_80d} onChange={handleChange} />
+                            <InputField label="Section 80C(01)" name="section_80c01" value={data.section_80c01} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="10. Chapter VI-A Aggregate" name="aggregate_deductible_10" value={data.aggregate_deductible_10} onChange={handleChange} />
+                            <InputField label="Section 80D" name="section_80d" value={data.section_80d} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="12. Tax on Total Income" name="tax_on_total_income" value={data.tax_on_total_income} onChange={handleChange} />
+                            <InputField label="10. Chapter VI-A Aggregate" name="aggregate_deductible_10" value={data.aggregate_deductible_10} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="13. Education Cess @ 3%" name="education_cess" value={data.education_cess} onChange={handleChange} />
+                            <InputField label="12. Tax on Total Income" name="tax_on_total_income" value={data.tax_on_total_income} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="14. Tax Payable (12+13)" name="tax_payable_14" value={data.tax_payable_14} onChange={handleChange} />
+                            <InputField label="13. Education Cess @ 3%" name="education_cess" value={data.education_cess} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="15. Relief u/s 89" name="relief_89" value={data.relief_89} onChange={handleChange} />
+                            <InputField label="14. Tax Payable (12+13)" name="tax_payable_14" value={data.tax_payable_14} onChange={handleChange} required={false} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <InputField label="16. Tax Payable (14-15)" name="tax_payable_16" value={data.tax_payable_16} onChange={handleChange} />
+                            <InputField label="15. Relief u/s 89" name="relief_89" value={data.relief_89} onChange={handleChange} required={false} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <InputField label="16. Tax Payable (14-15)" name="tax_payable_16" value={data.tax_payable_16} onChange={handleChange} required={false} />
                         </Grid>
                     </Grid>
                 </AccordionDetails>
