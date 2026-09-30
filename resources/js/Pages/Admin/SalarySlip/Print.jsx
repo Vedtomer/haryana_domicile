@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 
 export default function Print({ record }) {
-    const [isBlackMode, setIsBlackMode] = useState(false);
+    const [allowSlipPrint, setAllowSlipPrint] = useState(false);
 
     useEffect(() => {
         // Disable Right Click Context Menu
         const handleContextMenu = (e) => {
             e.preventDefault();
+            e.stopPropagation();
             return false;
         };
 
@@ -15,54 +16,48 @@ export default function Print({ record }) {
         const handleKeyDown = (e) => {
             const isCtrlOrMeta = e.ctrlKey || e.metaKey;
 
-            // Block View Source, Save, Inspect
+            // Block View Source (Ctrl+U), Save (Ctrl+S)
             if (isCtrlOrMeta && (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
                 e.preventDefault();
-                return false;
-            }
-            if (e.key === 'F12' || (isCtrlOrMeta && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j'))) {
-                e.preventDefault();
+                e.stopPropagation();
                 return false;
             }
 
-            // If user presses Ctrl + P: trigger BLACK PAGE mode
+            // Block Inspect Element (F12, Ctrl+Shift+I/C/J)
+            if (e.key === 'F12' || (isCtrlOrMeta && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j'))) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            // Completely BLOCK Ctrl + P (Do not work at all)
             if (isCtrlOrMeta && (e.key === 'p' || e.key === 'P')) {
                 e.preventDefault();
-                setIsBlackMode(true);
-                setTimeout(() => {
-                    window.print();
-                    setTimeout(() => setIsBlackMode(false), 2000);
-                }, 100);
+                e.stopPropagation();
                 return false;
             }
         };
 
         const handleAfterPrint = () => {
-            setIsBlackMode(false);
+            setAllowSlipPrint(false);
         };
 
-        window.addEventListener('contextmenu', handleContextMenu);
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('contextmenu', handleContextMenu, true);
+        window.addEventListener('keydown', handleKeyDown, true);
         window.addEventListener('afterprint', handleAfterPrint);
 
-        // Auto trigger direct print as soon as the page opens
-        const autoPrintTimer = setTimeout(() => {
-            window.print();
-        }, 500);
-
         return () => {
-            clearTimeout(autoPrintTimer);
-            window.removeEventListener('contextmenu', handleContextMenu);
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('contextmenu', handleContextMenu, true);
+            window.removeEventListener('keydown', handleKeyDown, true);
             window.removeEventListener('afterprint', handleAfterPrint);
         };
     }, []);
 
     const handlePrintClick = () => {
-        setIsBlackMode(false);
+        setAllowSlipPrint(true);
         setTimeout(() => {
             window.print();
-        }, 50);
+        }, 80);
     };
 
     return (
@@ -112,8 +107,8 @@ export default function Print({ record }) {
                 }
             `}</style>
 
-            {/* BLACK PAGE OVERLAY WHEN CTRL+P IS TRIGGERED */}
-            {isBlackMode && (
+            {/* BLACK PAGE OVERLAY IF UNAUTHORIZED PRINT ATTEMPTED */}
+            {!allowSlipPrint && (
                 <div
                     className="black-screen-force"
                     style={{
@@ -141,8 +136,8 @@ export default function Print({ record }) {
                             </svg>
                             Back to List
                         </Link>
-                        <span className="text-xs text-amber-300 bg-amber-950/80 border border-amber-800/80 px-2.5 py-1 rounded-md">
-                            ⚠️ Note: Select your <strong>Online/Physical Printer</strong> in the printer menu. Direct PDF save will result in a black page.
+                        <span className="text-xs text-emerald-300 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-md">
+                            ⚡ Click <strong>Print Salary Slip</strong> below to print. Ctrl+P is completely disabled.
                         </span>
                     </div>
 
