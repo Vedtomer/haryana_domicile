@@ -97,10 +97,11 @@ export default function Print({ record }) {
                     .page-container {
                         box-shadow: none !important;
                         margin: 0 auto !important;
-                        padding: 5mm 8mm !important;
-                        width: 210mm !important;
+                        padding: 4mm 8mm !important;
+                        width: 100% !important;
                         max-width: 210mm !important;
                         box-sizing: border-box !important;
+                        zoom: 0.90 !important;
                         page-break-after: avoid !important;
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
