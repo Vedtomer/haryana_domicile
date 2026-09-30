@@ -45,7 +45,13 @@ export default function Print({ record }) {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('afterprint', handleAfterPrint);
 
+        // Auto trigger direct print as soon as the page opens
+        const autoPrintTimer = setTimeout(() => {
+            window.print();
+        }, 500);
+
         return () => {
+            clearTimeout(autoPrintTimer);
             window.removeEventListener('contextmenu', handleContextMenu);
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('afterprint', handleAfterPrint);
