@@ -40,11 +40,14 @@ jobs:
             $PHP artisan optimize:clear
             $PHP artisan view:clear
             $PHP artisan cache:clear
+            $PHP artisan config:cache
+            $PHP artisan route:cache
+            $PHP artisan view:cache
             mkdir -p tmp
             touch tmp/restart.txt
             git log -1 --oneline
             curl -s https://cspjaankari.in/migrate-db || true
-            curl -s https://cspjaankari.in/cc || true
+            curl -s https://cspjaankari.in/speedup || true
           ' 2>&1 | tee deploy.log
 
       - name: Publish Deployment Log

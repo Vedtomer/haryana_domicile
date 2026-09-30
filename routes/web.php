@@ -1887,6 +1887,19 @@ Route::get('/cc', function() {
     return 'All caches cleared successfully!';
 });
 
+Route::get('/speedup', function() {
+    \Illuminate\Support\Facades\Artisan::call('config:cache');
+    \Illuminate\Support\Facades\Artisan::call('route:cache');
+    \Illuminate\Support\Facades\Artisan::call('view:cache');
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
+    }
+    return '<div style="font-family:sans-serif;padding:30px;background:#f0fdf4;color:#166534;border:2px solid #22c55e;border-radius:12px;max-width:600px;margin:50px auto;">'
+        . '<h2>⚡ Site Speedup Activated!</h2>'
+        . '<p>Configuration, Routes and Views have been pre-compiled and cached for maximum loading speed.</p>'
+        . '</div>';
+});
+
 
 Route::get('/test-login', function() {
     auth()->loginUsingId(1);

@@ -58,7 +58,7 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
 
         $dailyBonusAwarded = false;
-        if ($user && \Illuminate\Support\Facades\Schema::hasColumn('users', 'last_daily_bonus_at')) {
+        if ($user && isset($user->last_daily_bonus_at)) {
             $today = now()->startOfDay();
             if (!$user->last_daily_bonus_at || $user->last_daily_bonus_at < $today) {
                 $dailyBonusAwarded = $user->awardDailyLoginBonus();
@@ -69,7 +69,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'dailyBonusAwarded' => $dailyBonusAwarded,
             'auth' => [
-                'user' => $user ? array_merge($user->fresh()->toArray(), [
+                'user' => $user ? array_merge($user->toArray(), [
                     'has_active_license' => $user->hasActiveLicense(),
                     'license_expires_at' => $user->license_expires_at ? $user->license_expires_at->format('d M Y') : null,
                     'license_days_left'  => $user->licenseDaysLeft(),
@@ -84,34 +84,50 @@ class HandleInertiaRequests extends Middleware
                 'generated_key'     => $request->session()->get('generated_key'),
             ],
 
-            // once() ensures one DB hit per request even if accessed multiple times
-            'whatsappNumber' => fn () => once(fn () => \App\Models\Setting::get('whatsapp_number', '380630323112')),
+            // Cached WhatsApp setting
+            'whatsappNumber' => fn () => \Illuminate\Support\Facades\Cache::remember(
+                'setting_whatsapp_number',
+                600,
+                fn () => \App\Models\Setting::get('whatsapp_number', '380630323112')
+            ),
 
-            // Sidebar service links — cached per-request with once()
+            // Sidebar service links — cached in cache store for 5 minutes
             'navServices' => fn () => $user
-                ? once(function () use ($user) {
-                    return \App\Models\Service::active()
-                        ->when(
-                            !($user->isAdmin() || $user->hasRole('super_admin')),
-                            fn ($q) => $q->visibleTo($user)
-                        )
-                        ->ordered()
-                        ->select(['id', 'name', 'icon', 'logo', 'module_key', 'kind', 'slug'])
-                        ->get()
-                        ->map(fn ($s) => [
-                            'id'       => $s->id,
-                            'name'     => $s->name,
-                            'icon'     => $s->icon ?: '📄',
-                            'logo_url' => $s->logoUrl(),
-                            'url'      => $s->targetUrl(),
-                        ]);
-                })
+                ? \Illuminate\Support\Facades\Cache::remember(
+                    'nav_services_user_' . ($user->isAdmin() || $user->hasRole('super_admin') ? 'admin' : $user->id),
+                    300,
+                    function () use ($user) {
+                        return \App\Models\Service::active()
+                            ->when(
+                                !($user->isAdmin() || $user->hasRole('super_admin')),
+                                fn ($q) => $q->visibleTo($user)
+                            )
+                            ->ordered()
+                            ->select(['id', 'name', 'icon', 'logo', 'module_key', 'kind', 'slug'])
+                            ->get()
+                            ->map(fn ($s) => [
+                                'id'       => $s->id,
+                                'name'     => $s->name,
+                                'icon'     => $s->icon ?: '📄',
+                                'logo_url' => $s->logoUrl(),
+                                'url'      => $s->targetUrl(),
+                            ]);
+                    }
+                )
                 : [],
 
-            // Active broadcast notices
-            'activeBroadcastNotices' => fn () => \Illuminate\Support\Facades\Schema::hasTable('broadcast_notices')
-                ? \App\Models\BroadcastNotice::active()->latest()->take(5)->get()
-                : [],
+            // Active broadcast notices — cached for 60 seconds
+            'activeBroadcastNotices' => fn () => \Illuminate\Support\Facades\Cache::remember(
+                'active_broadcast_notices',
+                60,
+                function () {
+                    try {
+                        return \App\Models\BroadcastNotice::active()->latest()->take(5)->get();
+                    } catch (\Throwable $e) {
+                        return [];
+                    }
+                }
+            ),
 
             // Notification bell data
             'notifications' => fn () => $user ? [
