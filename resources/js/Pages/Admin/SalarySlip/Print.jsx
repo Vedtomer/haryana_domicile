@@ -2,9 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 
 export default function Print({ record }) {
-    const [allowSlipPrint, setAllowSlipPrint] = useState(false);
+    const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
+    const isDirectParam = typeof window !== 'undefined' && window.location.search.includes('direct=1');
+    const isDirectMode = isInIframe || isDirectParam;
+
+    const [allowSlipPrint, setAllowSlipPrint] = useState(isDirectMode);
 
     useEffect(() => {
+        if (isDirectMode) {
+            setAllowSlipPrint(true);
+        }
+
         // Disable Right Click Context Menu
         const handleContextMenu = (e) => {
             e.preventDefault();
@@ -39,7 +47,9 @@ export default function Print({ record }) {
         };
 
         const handleAfterPrint = () => {
-            setAllowSlipPrint(false);
+            if (!isDirectMode) {
+                setAllowSlipPrint(false);
+            }
         };
 
         window.addEventListener('contextmenu', handleContextMenu, true);
@@ -51,7 +61,7 @@ export default function Print({ record }) {
             window.removeEventListener('keydown', handleKeyDown, true);
             window.removeEventListener('afterprint', handleAfterPrint);
         };
-    }, []);
+    }, [isDirectMode]);
 
     const handlePrintClick = () => {
         setAllowSlipPrint(true);
@@ -123,38 +133,40 @@ export default function Print({ record }) {
                 />
             )}
 
-            {/* TOP ACTION BAR (HIDDEN IN PRINT) */}
-            <div className="no-print bg-slate-900 border-b border-slate-800 text-white px-4 py-3 sticky top-0 z-50 shadow-md">
-                <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href="/admin/salary-slip"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back to List
-                        </Link>
-                        <span className="text-xs text-emerald-300 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-md">
-                            ⚡ Click <strong>Print Salary Slip</strong> below to print. Ctrl+P is completely disabled.
-                        </span>
-                    </div>
+            {/* TOP ACTION BAR (HIDDEN IN PRINT & DIRECT IFRAME) */}
+            {!isDirectMode && (
+                <div className="no-print bg-slate-900 border-b border-slate-800 text-white px-4 py-3 sticky top-0 z-50 shadow-md">
+                    <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <Link
+                                href="/admin/salary-slip"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back to List
+                            </Link>
+                            <span className="text-xs text-emerald-300 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-md">
+                                ⚡ Click <strong>Print Salary Slip</strong> below to print. Ctrl+P is completely disabled.
+                            </span>
+                        </div>
 
-                    <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={handlePrintClick}
-                            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            Print Salary Slip (Online Printer)
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={handlePrintClick}
+                                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                                Print Salary Slip (Online Printer)
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* MAIN SALARY SLIP A4 CONTAINER */}
             <div className="py-6 no-print-padding">

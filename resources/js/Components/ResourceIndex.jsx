@@ -31,6 +31,7 @@ export default function ResourceIndex({
     createHref,
     editHref,
     printHref,
+    onPrint,
     deleteHref,
     emptyLabel = 'No records found.',
     extraActions = null,
@@ -82,13 +83,19 @@ export default function ResourceIndex({
                                     ))}
                                     <TableCell align="right" sx={{ borderBottom: '1px solid #f1f5f9', py: 2 }}>
                                         <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                                            {printHref && (
+                                            {onPrint ? (
+                                                <Tooltip title="Direct Print">
+                                                    <IconButton onClick={() => onPrint(row)} color="success" size="small">
+                                                        <PrintIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            ) : printHref ? (
                                                 <Tooltip title="Print">
                                                     <IconButton component="a" href={printHref(row)} target="_blank" color="success" size="small">
                                                         <PrintIcon fontSize="small" />
                                                     </IconButton>
                                                 </Tooltip>
-                                            )}
+                                            ) : null}
                                             <Tooltip title="Edit">
                                                 <IconButton component={Link} href={editHref(row)} color="primary" size="small">
                                                     <EditIcon fontSize="small" />

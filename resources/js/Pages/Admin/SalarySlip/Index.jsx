@@ -1,14 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import ResourceIndex from '../../../Components/ResourceIndex';
-import { Box, Alert, Button } from '@mui/material';
+import { Box, Alert, Button, CircularProgress } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 export default function Index({ records }) {
     const { flash } = usePage().props;
     const printId = flash?.print_id;
+    const [printingId, setPrintingId] = useState(null);
+
+    const handleDirectPrint = (id) => {
+        setPrintingId(id);
+
+        // Remove previous silent print iframe if present
+        const oldFrame = document.getElementById('silent-salary-print-frame');
+        if (oldFrame) {
+            oldFrame.remove();
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.id = 'silent-salary-print-frame';
+        iframe.src = `/admin/salary-slip/${id}/print?direct=1`;
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.opacity = '0.01';
+        iframe.style.border = 'none';
+        iframe.style.pointerEvents = 'none';
+        document.body.appendChild(iframe);
+
+        iframe.onload = () => {
+            setTimeout(() => {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch (err) {
+                    console.error('Direct print failed:', err);
+                } finally {
+                    setPrintingId(null);
+                }
+            }, 500);
+        };
+    };
 
     return (
         <AdminLayout>
@@ -22,9 +59,9 @@ export default function Index({ records }) {
                                 color="inherit"
                                 size="small"
                                 variant="contained"
-                                startIcon={<PrintIcon />}
-                                href={`/admin/salary-slip/${printId}/print`}
-                                target="_blank"
+                                startIcon={printingId === printId ? <CircularProgress size={16} color="inherit" /> : <PrintIcon />}
+                                disabled={printingId === printId}
+                                onClick={() => handleDirectPrint(printId)}
                                 sx={{
                                     bgcolor: '#16a34a',
                                     color: '#ffffff',
@@ -32,7 +69,7 @@ export default function Index({ records }) {
                                     '&:hover': { bgcolor: '#15803d' },
                                 }}
                             >
-                                Print Salary Slip Now
+                                {printingId === printId ? 'Printing...' : 'Print Salary Slip Now'}
                             </Button>
                         }
                         sx={{
@@ -42,7 +79,7 @@ export default function Index({ records }) {
                             border: '1px solid #bbf7d0',
                         }}
                     >
-                        Your Salary Slip is ready! Click the button to print using your connected online printer.
+                        Your Salary Slip is ready! Click the button to send print command directly to your connected printer without opening any tab.
                     </Alert>
                 </Box>
             )}
@@ -96,7 +133,7 @@ export default function Index({ records }) {
                 ]}
                 createHref="/admin/salary-slip/create"
                 editHref={(r) => `/admin/salary-slip/${r.id}/edit`}
-                printHref={(r) => `/admin/salary-slip/${r.id}/print`}
+                onPrint={(r) => handleDirectPrint(r.id)}
                 deleteHref={(r) => `/admin/salary-slip/${r.id}`}
                 emptyLabel="No salary slip records found. Click '+ Create' to generate one."
             />
