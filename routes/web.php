@@ -325,6 +325,59 @@ Route::get('/migrate-db', function () {
         }
         $output .= "=== ALL CACHES CLEARED ===\nDone.\n";
 
+        // 4. Salary Slip
+        try {
+            $salarySlipService = \Illuminate\Support\Facades\DB::table('services')->where('slug', 'salary-slip')->first();
+            if ($salarySlipService) {
+                \Illuminate\Support\Facades\DB::table('services')->where('id', $salarySlipService->id)->update([
+                    'name' => 'Salary Slip',
+                    'kind' => 'module',
+                    'module_key' => 'salary_slip',
+                    'coin_cost' => 99,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'fields' => null,
+                    'updated_at' => now(),
+                ]);
+                $salarySlipId = $salarySlipService->id;
+            } else {
+                $salarySlipId = \Illuminate\Support\Facades\DB::table('services')->insertGetId([
+                    'name' => 'Salary Slip',
+                    'slug' => 'salary-slip',
+                    'description' => 'Official Salary Slip Generator - Create, edit and print authentic Salary Slips.',
+                    'icon' => '💼',
+                    'coin_cost' => 99,
+                    'kind' => 'module',
+                    'module_key' => 'salary_slip',
+                    'fields' => null,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            if ($salarySlipId) {
+                foreach ($allUserIds as $uId) {
+                    \Illuminate\Support\Facades\DB::table('service_user')->updateOrInsert(
+                        ['service_id' => $salarySlipId, 'user_id' => $uId],
+                        ['created_at' => now(), 'updated_at' => now()]
+                    );
+                }
+            }
+
+            $currentSalaryService = \Illuminate\Support\Facades\DB::table('services')
+                ->where('slug', 'salary-slip')
+                ->select(['id', 'name', 'slug', 'module_key', 'coin_cost', 'is_active', 'visibility'])
+                ->first();
+            $output .= "=== SALARY SLIP SERVICE VERIFIED ===\n" . json_encode($currentSalaryService, JSON_PRETTY_PRINT) . "\n\n";
+        } catch (\Throwable $seSalary) {
+            $output .= "Salary Slip Notice: " . $seSalary->getMessage() . "\n\n";
+        }
+
         return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
             . "<h2 style='margin-top:0;'>✓ Database Migrated & Seeded Successfully!</h2>"
             . "<pre style='background:#111;color:#4ade80;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;'>" . htmlspecialchars($output) . "</pre>"
@@ -1657,6 +1710,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         Route::resource('bob-affidavit', \App\Http\Controllers\Admin\RentAgreementController::class)->middleware('license.active');
         Route::get('bob-affidavit/{bob_affidavit}/print', [\App\Http\Controllers\Admin\RentAgreementController::class, 'print'])->name('bob-affidavit.print');
+
+        Route::resource('salary-slip', \App\Http\Controllers\Admin\SalarySlipController::class)->middleware('license.active');
+        Route::get('salary-slip/{salary_slip}/print', [\App\Http\Controllers\Admin\SalarySlipController::class, 'print'])->name('salary-slip.print');
+        Route::get('salary-slip/{salary_slip}/download', [\App\Http\Controllers\Admin\SalarySlipController::class, 'download'])->name('salary-slip.download');
 
         
         Route::get('aadhar-update/grid', function () {

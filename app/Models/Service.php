@@ -83,6 +83,12 @@ class Service extends Model
             'index' => '/admin/rent-agreement',
             'create' => '/admin/rent-agreement/create',
         ],
+        'salary_slip' => [
+            'label' => 'Salary Slip',
+            'model' => SalarySlip::class,
+            'index' => '/admin/salary-slip',
+            'create' => '/admin/salary-slip/create',
+        ],
         'pan_request' => [
             'label' => 'PAN Card',
             'model' => PanRequest::class,
