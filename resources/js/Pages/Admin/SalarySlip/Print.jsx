@@ -77,25 +77,33 @@ export default function Print({ record }) {
             <style>{`
                 @page {
                     size: A4 portrait;
-                    margin: 8mm 12mm 8mm 12mm;
+                    margin: 0;
                 }
                 @media print {
-                    .no-print {
-                        display: none !important;
-                    }
-                    body {
+                    html, body {
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        max-height: 297mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         background: #ffffff !important;
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
+                        overflow: hidden !important;
+                    }
+                    .no-print {
+                        display: none !important;
                     }
                     .page-container {
                         box-shadow: none !important;
                         margin: 0 auto !important;
-                        padding: 0 !important;
-                        width: 100% !important;
-                        max-width: 100% !important;
+                        padding: 5mm 8mm !important;
+                        width: 210mm !important;
+                        max-width: 210mm !important;
+                        box-sizing: border-box !important;
+                        page-break-after: avoid !important;
+                        page-break-inside: avoid !important;
+                        break-inside: avoid !important;
                     }
                     .black-screen-force {
                         display: block !important;
@@ -169,27 +177,28 @@ export default function Print({ record }) {
             )}
 
             {/* MAIN SALARY SLIP A4 CONTAINER */}
-            <div className="py-6 no-print-padding">
+            <div className="py-2 no-print-padding">
                 <div
                     className="page-container mx-auto bg-white text-black shadow-lg"
                     style={{
                         width: '210mm',
-                        minHeight: '297mm',
-                        padding: '8mm 12mm',
+                        minHeight: 'auto',
+                        maxHeight: '285mm',
+                        padding: '5mm 8mm',
                         boxSizing: 'border-box',
                         fontFamily: 'Arial, Helvetica, sans-serif',
-                        fontSize: '11px',
-                        lineHeight: '1.25',
+                        fontSize: '9.5px',
+                        lineHeight: '1.2',
                         color: '#000000',
                     }}
                 >
                     {/* TITLE */}
-                    <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                    <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '12px', marginBottom: '5px', letterSpacing: '0.5px' }}>
                         &lt;&lt;&lt; SALARY SLIP &gt;&gt;&gt;
                     </div>
 
                     {/* TOP SECTION: EMPLOYER & EMPLOYEE DETAILS */}
-                    <div style={{ border: '1.5px solid #000', marginBottom: '8px' }}>
+                    <div style={{ border: '1.5px solid #000', marginBottom: '5px' }}>
                         {/* ROW 1: Names & Addresses */}
                         <div style={{ display: 'flex', borderBottom: '1px solid #000' }}>
                             {/* Left: Employer */}
@@ -267,25 +276,25 @@ export default function Print({ record }) {
                             border: '1.5px solid #000',
                             textAlign: 'center',
                             fontWeight: 'bold',
-                            padding: '3px 0',
-                            fontSize: '11px',
+                            padding: '2px 0',
+                            fontSize: '10px',
                             letterSpacing: '0.5px',
-                            marginBottom: '6px',
+                            marginBottom: '4px',
                         }}
                     >
                         BASIC DETAILS OF PAY
                     </div>
 
                     {/* MAIN PAY BREAKDOWN TABLE */}
-                    <div style={{ border: '1.5px solid #000', marginBottom: '8px', fontSize: '10px' }}>
+                    <div style={{ border: '1.5px solid #000', marginBottom: '4px', fontSize: '9px', lineHeight: '1.18' }}>
                         {/* Table Header */}
-                        <div style={{ display: 'flex', borderBottom: '1px solid #000', padding: '3px 6px', fontWeight: 'bold' }}>
+                        <div style={{ display: 'flex', borderBottom: '1px solid #000', padding: '2px 5px', fontWeight: 'bold' }}>
                             <div style={{ flex: 1 }}>Details of salary paid and other income and tax deducted</div>
                             <div style={{ width: '65px', textAlign: 'right' }}>INR</div>
                             <div style={{ width: '75px', textAlign: 'right' }}>INR</div>
                         </div>
 
-                        <div style={{ padding: '4px 6px' }}>
+                        <div style={{ padding: '3px 5px' }}>
                             {/* 1. Gross Salary */}
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span>1. Gross Salary</span>
@@ -438,17 +447,17 @@ export default function Print({ record }) {
                     </div>
 
                     {/* VERIFICATION BOX */}
-                    <div style={{ border: '1.5px solid #000', padding: '5px 8px', marginBottom: '8px', fontSize: '10.5px' }}>
-                        <div style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '4px' }}>
+                    <div style={{ border: '1.5px solid #000', padding: '3px 6px', marginBottom: '4px', fontSize: '8.5px', lineHeight: '1.25' }}>
+                        <div style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '2px' }}>
                             Verification
                         </div>
-                        <div style={{ textAlign: 'justify', lineHeight: '1.35' }}>
+                        <div style={{ textAlign: 'justify' }}>
                             I, <strong>{record.verification_name}</strong>, {record.verification_relation_title || 'wife/son/daughter of'} <strong>{record.verification_relation_name}</strong> working with us as <strong>{record.verification_designation}</strong> do hereby certify that the information given above is true, complete and correct and based on the books of account, documents, and other available records.
                         </div>
                     </div>
 
                     {/* SIGNATORY & PLACE BOX */}
-                    <div style={{ border: '1.5px solid #000', display: 'flex', padding: '5px 8px', minHeight: '62px' }}>
+                    <div style={{ border: '1.5px solid #000', display: 'flex', padding: '3px 6px', minHeight: '48px', fontSize: '9px' }}>
                         {/* Place */}
                         <div style={{ width: '45%', display: 'flex', alignItems: 'flex-start' }}>
                             <span>Place :&nbsp;</span>
@@ -457,10 +466,10 @@ export default function Print({ record }) {
 
                         {/* Signatory */}
                         <div style={{ width: '55%', paddingLeft: '10px' }}>
-                            <div style={{ fontSize: '10px', color: '#111', marginBottom: '4px' }}>
+                            <div style={{ fontSize: '8.5px', color: '#111', marginBottom: '2px' }}>
                                 (Signature of person responsible for deduction tax)
                             </div>
-                            <div style={{ display: 'flex', marginBottom: '2px' }}>
+                            <div style={{ display: 'flex', marginBottom: '1px' }}>
                                 <span style={{ width: '90px' }}>Full Name</span>
                                 <span>:&nbsp;</span>
                                 <strong style={{ textTransform: 'uppercase' }}>{record.signatory_name}</strong>
