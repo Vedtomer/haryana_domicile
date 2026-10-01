@@ -101,6 +101,18 @@ export default function AdminLayout({ header, children }) {
         }));
     };
 
+    const handleCategoryClick = (catId) => {
+        toggleCategory(catId);
+        if (window.location.pathname === '/dashboard') {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('category', catId);
+            window.history.pushState({}, '', currentUrl);
+            window.dispatchEvent(new CustomEvent('categoryChange', { detail: catId }));
+        } else {
+            router.visit(`/dashboard?category=${catId}`);
+        }
+    };
+
     const NavItem = ({ href, icon, children }) => {
         const isActive = url.startsWith(href);
         return (
@@ -138,10 +150,19 @@ export default function AdminLayout({ header, children }) {
             >
                 {/* Brand Header */}
                 <div className="p-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/70">
-                    <Link href="/dashboard" className="flex items-center gap-2.5 group">
-                        <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black text-sm px-4 py-2.5 rounded-2xl shadow-md shadow-purple-600/20 flex items-center gap-2 tracking-wider group-hover:opacity-95 transition-opacity">
-                            <span className="material-symbols-outlined text-[20px]">web</span>
-                            <span>BROTHER WEB</span>
+                    <Link href="/dashboard" className="flex items-center gap-3 group">
+                        <img
+                            src="/images/logo.png"
+                            className="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+                            alt="CSP Jaankari"
+                        />
+                        <div className="flex flex-col justify-center">
+                            <h2 className="text-xl font-black tracking-tight leading-none text-slate-800 dark:text-white" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                CSP Jaankari
+                            </h2>
+                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider mt-1">
+                                Smart Portal
+                            </span>
                         </div>
                     </Link>
                     <button
@@ -209,7 +230,7 @@ export default function AdminLayout({ header, children }) {
                                 >
                                     <button
                                         type="button"
-                                        onClick={() => toggleCategory(g.category.id)}
+                                        onClick={() => handleCategoryClick(g.category.id)}
                                         className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                                     >
                                         <div className="flex items-center gap-2.5 min-w-0">

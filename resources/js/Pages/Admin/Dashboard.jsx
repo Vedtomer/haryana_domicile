@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { SERVICE_CATEGORIES, getServiceCategory } from '../../Utils/serviceCategories';
@@ -179,29 +179,71 @@ export default function Dashboard({
     todayDebit = 0,
     apiBalance = 487.00,
     userRole = 'RETAILER',
-    supportWhatsApp = '9648526426',
-    supportTelegram = '@brotherweb001',
+    supportWhatsApp = '380630323112',
+    supportTelegram = '@cspjaankari',
+    siteName = 'CSP Jaankari',
+    siteLogo = '/images/logo.png',
 }) {
-    const { auth } = usePage().props;
+    const { auth, whatsappNumber } = usePage().props;
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    // Selected category state (null = show Category Overview cards)
+    const [selectedCategory, setSelectedCategory] = useState(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('category') || null;
+        } catch (e) {
+            return null;
+        }
+    });
+
+    // Listen for category selection from sidebar
+    useEffect(() => {
+        const handleCategoryEvent = (e) => {
+            setSelectedCategory(e.detail);
+        };
+        window.addEventListener('categoryChange', handleCategoryEvent);
+        return () => window.removeEventListener('categoryChange', handleCategoryEvent);
+    }, []);
 
     // Balance values
     const effectiveBalance = walletBalance ?? auth?.user?.coins ?? 0;
     const effectiveRole = userRole || (isAdmin ? 'ADMINISTRATOR' : 'RETAILER');
+    const effectiveWhatsApp = whatsappNumber || supportWhatsApp || '380630323112';
 
-    // Sort services alphabetically
-    const sortedServices = useMemo(() => {
-        return [...(services || [])].sort((a, b) =>
-            (a.name || '').trim().localeCompare((b.name || '').trim(), undefined, { sensitivity: 'base' })
-        );
+    // Group services into categories for the overview
+    const groupedCategories = useMemo(() => {
+        const groups = {};
+        SERVICE_CATEGORIES.forEach((cat) => {
+            groups[cat.id] = {
+                category: cat,
+                services: [],
+            };
+        });
+
+        (services || []).forEach((service) => {
+            const cat = getServiceCategory(service);
+            if (groups[cat.id]) {
+                groups[cat.id].services.push(service);
+            } else {
+                groups['utilities'].services.push(service);
+            }
+        });
+
+        return SERVICE_CATEGORIES.map((cat) => groups[cat.id]).filter((g) => g.services.length > 0);
     }, [services]);
 
-    // Filter services by search and category
+    // Currently active category object if selected
+    const activeCategoryObj = useMemo(() => {
+        if (!selectedCategory) return null;
+        return SERVICE_CATEGORIES.find((c) => c.id === selectedCategory) || null;
+    }, [selectedCategory]);
+
+    // Filter services according to selectedCategory and searchQuery
     const filteredServices = useMemo(() => {
-        return sortedServices.filter((service) => {
+        return (services || []).filter((service) => {
             const query = searchQuery.trim().toLowerCase();
             const matchesQuery =
                 !query ||
@@ -211,11 +253,14 @@ export default function Dashboard({
 
             if (!matchesQuery) return false;
 
-            if (selectedCategory === 'all') return true;
+            // If user searched across all, don't restrict to category unless category is explicitly chosen
+            if (searchQuery.trim() && !selectedCategory) return true;
+
+            if (!selectedCategory) return false; // In overview mode, individual service cards are not rendered
             const cat = getServiceCategory(service);
             return cat.id === selectedCategory;
         });
-    }, [sortedServices, searchQuery, selectedCategory]);
+    }, [services, searchQuery, selectedCategory]);
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -235,6 +280,16 @@ export default function Dashboard({
         );
     };
 
+    const clearSelectedCategory = () => {
+        setSelectedCategory(null);
+        setSearchQuery('');
+        try {
+            const url = new URL(window.location);
+            url.searchParams.delete('category');
+            window.history.pushState({}, '', url);
+        } catch (e) {}
+    };
+
     return (
         <AdminLayout
             header={
@@ -247,7 +302,7 @@ export default function Dashboard({
         >
             <Head title="Dashboard" />
 
-            {/* 1. Hero Welcome Banner (Gradient Blue-Purple Banner matching Screenshot) */}
+            {/* 1. Hero Welcome Banner (Gradient Blue-Purple Banner with CSP Jaankari Data) */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#4338ca] text-white p-6 sm:p-8 mb-6 shadow-xl shadow-indigo-950/20">
                 {/* Decorative background glow circles */}
                 <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -257,7 +312,7 @@ export default function Dashboard({
                     <div className="max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-[11px] font-black tracking-widest uppercase mb-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                            <span>PRINT PORTAL • SMART DASHBOARD</span>
+                            <span>{siteName.toUpperCase()} • SMART DASHBOARD</span>
                         </div>
                         <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight drop-shadow-sm">
                             Welcome, {auth?.user?.name || 'Retailer'}
@@ -287,7 +342,7 @@ export default function Dashboard({
                 </div>
             </div>
 
-            {/* 2. 4 Stat Metric Cards in a row (Matching Screenshot) */}
+            {/* 2. 4 Stat Metric Cards in a row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
                 <StatMetricCard
                     title="WALLET BALANCE"
@@ -322,7 +377,7 @@ export default function Dashboard({
                 />
             </div>
 
-            {/* 3. Customer Care Section (Matching Screenshot) */}
+            {/* 3. Customer Care Section (With actual site support data) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -351,7 +406,7 @@ export default function Dashboard({
 
                     {/* WhatsApp Card */}
                     <a
-                        href={`https://wa.me/${(supportWhatsApp || '').replace(/[^0-9]/g, '')}`}
+                        href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
@@ -364,7 +419,7 @@ export default function Dashboard({
                                 WhatsApp
                             </span>
                             <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {supportWhatsApp}
+                                {effectiveWhatsApp}
                             </span>
                         </div>
                     </a>
@@ -404,31 +459,122 @@ export default function Dashboard({
                                 Member Group
                             </span>
                             <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                Portal updates
+                                {siteName} Updates
                             </span>
                         </div>
                     </a>
                 </div>
             </div>
 
-            {/* 4. Instant Services Section (Header, Filter Chips, Search, Grid) */}
-            <div id="services" className="mb-6 scroll-mt-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Instant Services
-                        </h3>
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                            Quick verification, PDF and lookup services.
-                        </p>
+            {/* 4. Categorized Services Display */}
+            {/* Case A: User selected a category OR searched */}
+            {selectedCategory || searchQuery.trim() ? (
+                <div id="services" className="mb-8 scroll-mt-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 shadow-2xs">
+                        <div className="flex items-center gap-3">
+                            {activeCategoryObj && (
+                                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-xs ${activeCategoryObj.avatarBg}`}>
+                                    <span className="material-symbols-outlined text-[24px]">
+                                        {activeCategoryObj.icon}
+                                    </span>
+                                </div>
+                            )}
+                            <div>
+                                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                                    <span>
+                                        {searchQuery.trim()
+                                            ? `Search results for "${searchQuery}"`
+                                            : activeCategoryObj?.name || 'Selected Services'}
+                                    </span>
+                                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
+                                        {filteredServices.length}
+                                    </span>
+                                </h3>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                                    Click any service card below to open the service.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+                            {/* Search inside category */}
+                            <div className="relative w-full sm:w-64">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                                    search
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Search in services..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-9 pr-8 py-2 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-[15px]">close</span>
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Back to all categories button */}
+                            <button
+                                type="button"
+                                onClick={clearSelectedCategory}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                                <span>All Categories</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 whitespace-nowrap">
-                            {filteredServices.length} Services
-                        </span>
+                    {/* Filtered Services Grid */}
+                    {filteredServices.length === 0 ? (
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs">
+                            <div className="text-3xl">🔍</div>
+                            <p className="font-medium text-slate-700 dark:text-slate-300">
+                                Koi service nahi mili.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={clearSelectedCategory}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                                View All Categories
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
+                            {filteredServices.map((service) => (
+                                <ServiceCard
+                                    key={service.id}
+                                    service={service}
+                                    onUnlockClick={setUnlockingService}
+                                    isAdmin={isAdmin}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                /* Case B: Category Overview Cards (Clean, Uncluttered Dashboard) */
+                <div id="services" className="mb-8 scroll-mt-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                        <div>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Service Categories
+                            </h3>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                                Select a category below or from the sidebar to open its services.
+                            </p>
+                        </div>
 
-                        {/* Search Input */}
+                        {/* Search Input across all services */}
                         <div className="w-full sm:w-72 relative">
                             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[19px]">
                                 search
@@ -438,97 +584,48 @@ export default function Dashboard({
                                 placeholder="Search all services..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-2xl shadow-2xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-xs sm:text-sm outline-none transition-all"
+                                className="w-full pl-9 pr-8 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl shadow-2xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-xs sm:text-sm outline-none transition-all"
                             />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={() => setSearchQuery('')}
-                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[16px]">close</span>
-                                </button>
-                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* Category Filter Chips */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                    <button
-                        type="button"
-                        onClick={() => setSelectedCategory('all')}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                            selectedCategory === 'all'
-                                ? 'bg-indigo-600 text-white shadow-xs'
-                                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300'
-                        }`}
-                    >
-                        All Services
-                    </button>
-                    {SERVICE_CATEGORIES.map((cat) => (
-                        <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
-                                selectedCategory === cat.id
-                                    ? 'bg-indigo-600 text-white shadow-xs'
-                                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300'
-                            }`}
-                        >
-                            <span className="material-symbols-outlined text-[15px]">{cat.icon}</span>
-                            <span>{cat.shortName}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Services Grid */}
-            {filteredServices.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs">
-                    {searchQuery || selectedCategory !== 'all' ? (
-                        <>
-                            <div className="text-3xl">🔍</div>
-                            <p className="font-medium text-slate-700 dark:text-slate-300">
-                                Koi service nahi mili.
-                            </p>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearchQuery('');
-                                    setSelectedCategory('all');
-                                }}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
+                    {/* 8 Category Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                        {groupedCategories.map((g) => (
+                            <div
+                                key={g.category.id}
+                                onClick={() => setSelectedCategory(g.category.id)}
+                                className="group relative bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-3xl p-5 sm:p-6 shadow-2xs hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between hover:-translate-y-1"
                             >
-                                <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-                                Show All Services ({services.length})
-                            </button>
-                        </>
-                    ) : (
-                        <div className="max-w-md mx-auto py-6 flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-4 shadow-xs">
-                                <span className="material-symbols-outlined text-3xl">lock_person</span>
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-2xs ${g.category.avatarBg} group-hover:scale-110 transition-transform`}>
+                                        <span className="material-symbols-outlined text-[26px]">
+                                            {g.category.icon}
+                                        </span>
+                                    </div>
+                                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                        {g.services.length} Services
+                                    </span>
+                                </div>
+
+                                <div className="mt-4">
+                                    <h4 className="font-extrabold text-base text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                        {g.category.name}
+                                    </h4>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-1">
+                                        {g.services.slice(0, 3).map((s) => s.name).join(', ')}...
+                                    </p>
+                                </div>
+
+                                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                                    <span>View Services</span>
+                                    <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                                        arrow_forward
+                                    </span>
+                                </div>
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">
-                                No Services Assigned Yet
-                            </h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed mb-4">
-                                Aapke account par abhi koi service assign nahi hai. Services access karne ke liye kripya Admin se sampark karein.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
-                    {filteredServices.map((service) => (
-                        <ServiceCard
-                            key={service.id}
-                            service={service}
-                            onUnlockClick={setUnlockingService}
-                            isAdmin={isAdmin}
-                        />
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 

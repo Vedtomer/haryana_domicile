@@ -138,10 +138,12 @@ class DashboardController extends Controller
             $todayDebit = 0;
         }
 
-        $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '9648526426');
-        $supportTelegram = \App\Models\Setting::get('telegram_handle', '@brotherweb001');
+        $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '380630323112');
+        $supportTelegram = \App\Models\Setting::get('telegram_handle', '@cspjaankari');
 
         return Inertia::render('Admin/Dashboard', [
+            'siteName' => 'CSP Jaankari',
+            'siteLogo' => '/images/logo.png',
             'services' => $services,
             'isAdmin' => $isAdmin,
             'stats' => $isAdmin ? $this->adminStats($servicesCount) : $this->userStats($user, $servicesCount),
