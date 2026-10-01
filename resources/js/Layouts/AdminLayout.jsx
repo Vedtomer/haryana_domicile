@@ -453,15 +453,6 @@ export default function AdminLayout({ header, children }) {
                             </div>
                         )}
 
-                        {/* Wallet Balance Pill */}
-                        <Link
-                            href="/admin/coin-requests"
-                            className="flex items-center gap-1.5 bg-[#0f172a] hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all cursor-pointer"
-                            title="Your wallet / coin balance. Click to recharge"
-                        >
-                            <span className="material-symbols-outlined text-[17px] text-amber-400">payments</span>
-                            <span>₹{auth?.user?.coins ?? 0}</span>
-                        </Link>
 
                         {/* Dark Mode Toggle */}
                         <ThemeToggle variant="icon" />
