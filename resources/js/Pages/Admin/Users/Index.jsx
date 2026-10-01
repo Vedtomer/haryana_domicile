@@ -4,13 +4,57 @@ import AdminLayout from '../../../Layouts/AdminLayout';
 import AdminChatModal from '../../../Components/AdminChatModal';
 import AdminScreenViewModal from '../../../Components/AdminScreenViewModal';
 
-export default function Index({ users, allUsers = [] }) {
+export default function Index({ users, allUsers = [], filters = {}, counts = {} }) {
     const [addingCoinsTo, setAddingCoinsTo] = useState(null); // stores full user object
     const [chatUser, setChatUser] = useState(null); // user currently being chatted with
     const [screenUser, setScreenUser] = useState(null); // user currently having screen viewed
     const [amount, setAmount] = useState('');
     const [coinType, setCoinType] = useState('trial'); // 'trial' or 'paid'
     const [copiedCode, setCopiedCode] = useState(null);
+
+    // Search and Status filters
+    const [search, setSearch] = useState(filters.search || '');
+    const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
+
+    const performSearch = (searchTerm, statusValue) => {
+        router.get(
+            '/admin/users',
+            {
+                search: searchTerm,
+                status: statusValue === 'all' ? undefined : statusValue,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            }
+        );
+    };
+
+    // Debounced search when typing
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== (filters.search || '')) {
+                performSearch(search, statusFilter);
+            }
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        performSearch(search, statusFilter);
+    };
+
+    const handleClearSearch = () => {
+        setSearch('');
+        performSearch('', statusFilter);
+    };
+
+    const handleStatusChange = (newStatus) => {
+        setStatusFilter(newStatus);
+        performSearch(search, newStatus);
+    };
 
     // Clear Work Data states
     const [showClearAllModal, setShowClearAllModal] = useState(false);
@@ -168,6 +212,67 @@ export default function Index({ users, allUsers = [] }) {
                         </div>
                     </div>
                 )}
+
+                {/* Search & Filter Bar */}
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm mb-6 flex flex-col md:flex-row gap-3 items-center justify-between">
+                    <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96">
+                        <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
+                            search
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Search users by name, phone, email, or role..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full pl-11 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-850 transition-all"
+                        />
+                        {search && (
+                            <button
+                                type="button"
+                                onClick={handleClearSearch}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                        )}
+                    </form>
+
+                    <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <button
+                            type="button"
+                            onClick={() => handleStatusChange('all')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                                statusFilter === 'all'
+                                    ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-sm'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            }`}
+                        >
+                            All Users ({counts?.total ?? users?.total ?? 0})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleStatusChange('active')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                                statusFilter === 'active'
+                                    ? 'bg-emerald-600 text-white shadow-sm'
+                                    : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
+                            }`}
+                        >
+                            Active ({counts?.active ?? 0})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleStatusChange('inactive')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                                statusFilter === 'inactive'
+                                    ? 'bg-rose-600 text-white shadow-sm'
+                                    : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/50'
+                            }`}
+                        >
+                            Inactive ({counts?.inactive ?? 0})
+                        </button>
+                    </div>
+                </div>
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden mb-6">
                     <div className="overflow-x-auto">
@@ -376,6 +481,30 @@ export default function Index({ users, allUsers = [] }) {
                                     </td>
                                 </tr>
                             ))}
+                            {users.data.length === 0 && (
+                                <tr>
+                                    <td colSpan="6" className="py-12 text-center text-slate-500 dark:text-slate-400">
+                                        <div className="flex flex-col items-center justify-center space-y-3">
+                                            <span className="text-4xl">🔍</span>
+                                            <p className="text-base font-bold text-slate-800 dark:text-white">
+                                                {search ? `Koi user nahi mila matching "${search}"` : 'Koi user available nahi hai'}
+                                            </p>
+                                            <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm">
+                                                {search ? 'Aap name, mobile number, email ya role se search kar sakte hain.' : 'Naya user create karne ke liye Create User button par click karein.'}
+                                            </p>
+                                            {search && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleClearSearch}
+                                                    className="px-4 py-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
+                                                >
+                                                    Clear Search
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -388,13 +517,15 @@ export default function Index({ users, allUsers = [] }) {
                             <Link
                                 key={i}
                                 href={link.url}
-                                className={`px-4 py-2 text-sm rounded-lg border transition-colors ${link.active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'}`}
+                                preserveState
+                                preserveScroll
+                                className={`px-4 py-2 text-sm rounded-lg border transition-colors ${link.active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-900 hover:bg-slate-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'}`}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
                             />
                         ) : (
                             <span
                                 key={i}
-                                className="px-4 py-2 text-sm rounded-lg border opacity-40 cursor-not-allowed bg-white text-slate-500 border-slate-200"
+                                className="px-4 py-2 text-sm rounded-lg border opacity-40 cursor-not-allowed bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800"
                                 dangerouslySetInnerHTML={{ __html: link.label }}
                             />
                         )

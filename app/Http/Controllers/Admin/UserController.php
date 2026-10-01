@@ -12,11 +12,14 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (!in_array(auth()->user()->type, ['admin', 'super_admin'])) {
             abort(403);
         }
+
+        $search = trim($request->input('search', ''));
+        $status = $request->input('status', 'all');
 
         $query = User::with(['roles', 'referrer:id,name,phone,email,referral_code'])
             ->withCount([
@@ -31,7 +34,27 @@ class UserController extends Controller
             $query->where('type', 'user');
         }
 
-        $users = $query->paginate(10);
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('referral_code', 'like', "%{$search}%")
+                  ->orWhere('type', 'like', "%{$search}%");
+                
+                if (is_numeric($search)) {
+                    $q->orWhere('id', $search);
+                }
+            });
+        }
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $users = $query->paginate(15)->withQueryString();
 
         $allUsersQuery = User::select('id', 'name', 'phone', 'email', 'type');
         if (auth()->user()->type === 'admin') {
@@ -41,9 +64,27 @@ class UserController extends Controller
         }
         $allUsers = $allUsersQuery->orderBy('name')->get();
 
+        // Calculate counts for badges
+        $countsQuery = User::query();
+        if (auth()->user()->type === 'admin') {
+            $countsQuery->where('type', 'user');
+        }
+        $totalCount = (clone $countsQuery)->count();
+        $activeCount = (clone $countsQuery)->where('is_active', true)->count();
+        $inactiveCount = (clone $countsQuery)->where('is_active', false)->count();
+
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
             'allUsers' => $allUsers,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+            ],
+            'counts' => [
+                'total' => $totalCount,
+                'active' => $activeCount,
+                'inactive' => $inactiveCount,
+            ],
         ]);
     }
 
