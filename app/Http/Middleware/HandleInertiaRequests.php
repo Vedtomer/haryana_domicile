@@ -75,6 +75,8 @@ class HandleInertiaRequests extends Middleware
                     'license_days_left'  => $user->licenseDaysLeft(),
                     'referral_code'      => $user->getActiveReferralCode(),
                     'referral_link'      => $user->referral_link,
+                    'is_admin'           => $user->isAdmin(),
+                    'is_staff'           => $user->isStaff(),
                 ]) : null,
             ],
             'flash' => [

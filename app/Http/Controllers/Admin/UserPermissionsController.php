@@ -12,6 +12,10 @@ class UserPermissionsController extends Controller
 {
     public function index()
     {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+
         // Get all regular users with their assigned services (in a single bulk query)
         $users = User::where(function ($q) {
                 $q->where('type', 'user')->orWhereNull('type');
@@ -54,6 +58,10 @@ class UserPermissionsController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+
         $data = $request->validate([
             'service_ids' => 'present|array',
             'service_ids.*' => 'integer|exists:services,id',

@@ -1668,53 +1668,51 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('airtel-passbook/{airtel_passbook}/print', [\App\Http\Controllers\Admin\AirtelPassbookController::class, 'print'])->name('airtel-passbook.print'); 
 
         Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);
-        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-        Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
-        Route::post('users/{user}/add-coins', [\App\Http\Controllers\Admin\UserController::class, 'addCoins'])->name('users.add-coins');
-        Route::post('users/{user}/clear-coins', [\App\Http\Controllers\Admin\UserController::class, 'clearCoins'])->name('users.clear-coins');
-        Route::patch('users/{user}/update-device-limit', [\App\Http\Controllers\Admin\UserController::class, 'updateDeviceLimit'])->name('users.update-device-limit');
-        Route::post('users/{user}/reset-device-lock', [\App\Http\Controllers\Admin\UserController::class, 'resetDeviceLock'])->name('users.reset-device-lock');
-        Route::post('users/clear-all-work-data', [\App\Http\Controllers\Admin\UserController::class, 'clearAllWorkData'])->name('users.clear-all-work-data');
-        Route::post('users/{user}/clear-work-data', [\App\Http\Controllers\Admin\UserController::class, 'clearUserWorkData'])->name('users.clear-work-data');
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->middleware('admin');
+        Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('admin');
+        Route::post('users/{user}/add-coins', [\App\Http\Controllers\Admin\UserController::class, 'addCoins'])->name('users.add-coins')->middleware('admin');
+        Route::post('users/{user}/clear-coins', [\App\Http\Controllers\Admin\UserController::class, 'clearCoins'])->name('users.clear-coins')->middleware('admin');
+        Route::patch('users/{user}/update-device-limit', [\App\Http\Controllers\Admin\UserController::class, 'updateDeviceLimit'])->name('users.update-device-limit')->middleware('admin');
+        Route::post('users/{user}/reset-device-lock', [\App\Http\Controllers\Admin\UserController::class, 'resetDeviceLock'])->name('users.reset-device-lock')->middleware('admin');
+        Route::post('users/clear-all-work-data', [\App\Http\Controllers\Admin\UserController::class, 'clearAllWorkData'])->name('users.clear-all-work-data')->middleware('admin');
+        Route::post('users/{user}/clear-work-data', [\App\Http\Controllers\Admin\UserController::class, 'clearUserWorkData'])->name('users.clear-work-data')->middleware('admin');
 
         // Admin Chat with Users
-        Route::get('chat/{user}', [\App\Http\Controllers\ChatController::class, 'getAdminChat'])->name('admin.chat.messages');
-        Route::post('chat/{user}/send', [\App\Http\Controllers\ChatController::class, 'sendAdminMessage'])->name('admin.chat.send');
+        Route::get('chat/{user}', [\App\Http\Controllers\ChatController::class, 'getAdminChat'])->name('admin.chat.messages')->middleware('admin');
+        Route::post('chat/{user}/send', [\App\Http\Controllers\ChatController::class, 'sendAdminMessage'])->name('admin.chat.send')->middleware('admin');
 
         // Admin Screen Share & Display View
-        Route::post('screen-share/{user}/start', [\App\Http\Controllers\ScreenShareController::class, 'startSession'])->name('admin.screen.start');
-        Route::get('screen-share/{session}/poll', [\App\Http\Controllers\ScreenShareController::class, 'pollAdmin'])->name('admin.screen.poll');
-        Route::post('screen-share/{session}/candidate', [\App\Http\Controllers\ScreenShareController::class, 'sendCandidate'])->name('admin.screen.candidate');
-        Route::post('screen-share/{session}/end', [\App\Http\Controllers\ScreenShareController::class, 'endSession'])->name('admin.screen.end');
+        Route::post('screen-share/{user}/start', [\App\Http\Controllers\ScreenShareController::class, 'startSession'])->name('admin.screen.start')->middleware('admin');
+        Route::get('screen-share/{session}/poll', [\App\Http\Controllers\ScreenShareController::class, 'pollAdmin'])->name('admin.screen.poll')->middleware('admin');
+        Route::post('screen-share/{session}/candidate', [\App\Http\Controllers\ScreenShareController::class, 'sendCandidate'])->name('admin.screen.candidate')->middleware('admin');
+        Route::post('screen-share/{session}/end', [\App\Http\Controllers\ScreenShareController::class, 'endSession'])->name('admin.screen.end')->middleware('admin');
 
-        Route::get('reactivation-requests', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'index'])->name('reactivation-requests.index');
-        Route::post('reactivation-requests/{reactivationRequest}/approve', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'approve'])->name('reactivation-requests.approve');
-        Route::post('reactivation-requests/{reactivationRequest}/reject',  [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'reject'])->name('reactivation-requests.reject');
+        Route::get('reactivation-requests', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'index'])->name('reactivation-requests.index')->middleware('admin');
+        Route::post('reactivation-requests/{reactivationRequest}/approve', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'approve'])->name('reactivation-requests.approve')->middleware('admin');
+        Route::post('reactivation-requests/{reactivationRequest}/reject',  [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'reject'])->name('reactivation-requests.reject')->middleware('admin');
 
-        Route::get('user-permissions', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'index'])->name('user-permissions.index');
-        Route::post('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update');
+        Route::get('user-permissions', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'index'])->name('user-permissions.index')->middleware('admin');
+        Route::post('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update')->middleware('admin');
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
         Route::get('referrals', [\App\Http\Controllers\ReferralController::class, 'index'])->name('referrals.index');
         Route::post('referrals/generate-new', [\App\Http\Controllers\ReferralController::class, 'generateNew'])->name('referrals.generate-new');
 
         // Payment / QR Settings — admin only
-        Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
-        Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update');
+        Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit')->middleware('admin');
+        Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update')->middleware('admin');
 
         // API Settings — admin only
-        Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit');
-        Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update');
+        Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit')->middleware('admin');
+        Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update')->middleware('admin');
 
         // Broadcast Notices / Announcements
-        Route::resource('notices', \App\Http\Controllers\Admin\BroadcastNoticeController::class)->except(['create', 'show', 'edit']);
-        Route::patch('notices/{notice}/toggle-status', [\App\Http\Controllers\Admin\BroadcastNoticeController::class, 'toggleStatus'])->name('notices.toggle-status');
-
-
+        Route::resource('notices', \App\Http\Controllers\Admin\BroadcastNoticeController::class)->except(['create', 'show', 'edit'])->middleware('admin');
+        Route::patch('notices/{notice}/toggle-status', [\App\Http\Controllers\Admin\BroadcastNoticeController::class, 'toggleStatus'])->name('notices.toggle-status')->middleware('admin');
 
         // Haryana Domicile PDF Coordinates — admin only
-        Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit');
-        Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save');
+        Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit')->middleware('admin');
+        Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save')->middleware('admin');
     });
 });
 

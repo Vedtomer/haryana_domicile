@@ -52,7 +52,12 @@ export default function AdminLayout({ header, children }) {
     }, [auth?.user?.id]);
 
     const { url } = usePage();
-    const isAdmin = auth?.user?.type === 'admin' || auth?.user?.type === 'super_admin';
+    const isAdmin = Boolean(
+        auth?.user?.is_admin ||
+        auth?.user?.is_staff ||
+        auth?.user?.type === 'admin' ||
+        auth?.user?.type === 'super_admin'
+    );
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
     const showSpellingWarning = url.includes('/create') || url.includes('/edit') || url.includes('/utilities/');
 
@@ -547,19 +552,21 @@ export default function AdminLayout({ header, children }) {
                                     <span className="material-symbols-outlined text-[18px]">account_circle</span>
                                     <span>My Profile</span>
                                 </Link>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        setSwitchAccountModalOpen(true);
-                                    }}
-                                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400">
-                                        switch_account
-                                    </span>
-                                    <span>Switch Account</span>
-                                </button>
+                                {isAdmin && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            setSwitchAccountModalOpen(true);
+                                        }}
+                                        className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400">
+                                            switch_account
+                                        </span>
+                                        <span>Switch Account</span>
+                                    </button>
+                                )}
                                 <Link
                                     href="/admin/profile#coin-ledger"
                                     onClick={() => setDropdownOpen(false)}
