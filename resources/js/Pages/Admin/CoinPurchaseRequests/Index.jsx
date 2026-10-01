@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
 // Status config
@@ -194,10 +194,21 @@ export default function Index({ requests, isAdmin, canAction }) {
         <AdminLayout>
             <Head title="Coin Requests" />
 
-            <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {/* Back to Dashboard bar */}
+                <div className="mb-4 flex items-center justify-between">
+                    <Link
+                        href="/admin/dashboard"
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer group"
+                    >
+                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+                        <span>Back to Dashboard</span>
+                    </Link>
+                </div>
+
                 {/* Header */}
-                <div className="mb-8">
-                    <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Coin Requests</h2>
+                <div className="mb-6">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Coin Requests</h2>
                     <p className="mt-1 text-sm text-slate-500">Review and manage user coin purchase requests.</p>
                 </div>
 

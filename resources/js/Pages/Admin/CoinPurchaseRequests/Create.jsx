@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
 const STATUS_CONFIG = {
@@ -153,11 +153,21 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
         <AdminLayout>
             <Head title="Buy Coins" />
 
-            <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {/* Back to Dashboard bar */}
+                <div className="mb-4 flex items-center justify-between">
+                    <Link
+                        href="/admin/dashboard"
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer group"
+                    >
+                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+                        <span>Back to Dashboard</span>
+                    </Link>
+                </div>
 
                 {/* Header */}
                 <div className="mb-6 flex flex-wrap items-baseline gap-3">
-                    <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Buy Coins</h2>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Buy Coins / Add Balance</h2>
                     <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-0.5">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         {userCoins} coins

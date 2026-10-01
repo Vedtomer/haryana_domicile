@@ -517,35 +517,25 @@ export default function Dashboard({
             {/* When NO category is selected & NO search: SHOW FULL DASHBOARD */}
             {!selectedCategory && !searchQuery.trim() ? (
                 <>
-                    {/* 1. Hero Welcome Banner (Gradient Blue-Purple Banner with CSP Jaankari Data) */}
-                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#4338ca] text-white p-6 sm:p-8 mb-6 shadow-xl shadow-indigo-950/20">
-                        {/* Decorative background glow circles */}
-                        <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute right-1/3 -bottom-16 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
-
-                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div className="max-w-2xl">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-[11px] font-black tracking-widest uppercase mb-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                                    <span>{siteName.toUpperCase()} • SMART DASHBOARD</span>
-                                </div>
-                                <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight drop-shadow-sm">
-                                    Welcome, {auth?.user?.name || 'Retailer'}
-                                </h2>
-                                <p className="text-blue-100/85 text-xs sm:text-sm mt-2 font-medium leading-relaxed">
-                                    Fast services, clear wallet records and a cleaner retailer experience.
-                                </p>
+                    {/* 1. Small Compact Welcome Banner */}
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+                                <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
                             </div>
-
-                            {/* Banner Action Buttons */}
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <Link
-                                    href="/admin/profile#coin-ledger"
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">history</span>
-                                    <span>Wallet History</span>
-                                </Link>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+                                        Welcome, {auth?.user?.name || 'Retailer'}
+                                    </h2>
+                                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                        {siteName.toUpperCase()}
+                                    </span>
+                                </div>
+                                <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
+                                    Fast services, clear wallet records and quick processing.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -570,11 +560,11 @@ export default function Dashboard({
                                 linkUrl="/admin/coin-requests"
                             />
                             <StatMetricCard
-                                title="TODAY'S DEBIT"
+                                title="WALLET HISTORY"
                                 value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
-                                subtitle="Service usage today"
-                                icon="payments"
-                                iconBg="bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
+                                subtitle="Today's debit & ledger"
+                                icon="history"
+                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
                                 linkUrl="/admin/profile#coin-ledger"
                             />
                             <StatMetricCard
@@ -582,7 +572,7 @@ export default function Dashboard({
                                 value={effectiveRole}
                                 subtitle="Portal permissions"
                                 icon="admin_panel_settings"
-                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
+                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
                                 linkUrl="/admin/profile"
                             />
                         </div>
