@@ -592,6 +592,20 @@ Route::get('/force-add-service', function () {
             'unlock_cost' => 0,
         ],
         [
+            'name' => 'PAN Card Manual Maker',
+            'slug' => 'pan-card-manual-maker',
+            'description' => 'Generate and print authentic Income Tax PAN Card PVC with photo, signature, and QR code.',
+            'icon' => '💳',
+            'coin_cost' => 20,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'pan_card_manual_maker',
+            'sort_order' => 40,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
             'name' => 'Aadhar Card Mobile Number Update',
             'slug' => 'aadhar-mobile-update',
             'description' => 'Link or update mobile number on Aadhaar Card with instant acknowledgement receipt.',
@@ -1517,6 +1531,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/AadharCardManual');
     })->name('utilities.aadhar-card-manual');
     Route::post('/utilities/aadhar-card-manual/generate', [\App\Http\Controllers\AadharCardManualController::class, 'generate'])->name('utilities.aadhar-card-manual.generate');
+
+    // 10.1 PAN Card Manual Maker
+    Route::get('/utilities/pan-card-manual-maker', function () {
+        return Inertia::render('Utilities/PanCardManualMaker');
+    })->name('utilities.pan-card-manual-maker');
+    Route::post('/utilities/pan-card-manual-maker/generate', [\App\Http\Controllers\PanCardManualMakerController::class, 'generate'])->name('utilities.pan-card-manual-maker.generate');
 
     // 11. Voter Card Manual For Address Change
     Route::get('/utilities/voter-card-manual-address-change', function () {

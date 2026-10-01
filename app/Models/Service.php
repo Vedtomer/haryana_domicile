@@ -107,6 +107,13 @@ class Service extends Model
             'index' => '/admin/manual-pan-cards',
             'create' => '/admin/manual-pan-cards/create',
         ],
+        'pan_card_manual_maker' => [
+            'label' => 'PAN Card Manual Maker',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-card-manual-maker',
+            'create' => '/utilities/pan-card-manual-maker',
+        ],
         'electricity_bill' => [
             'label' => 'Electricity Bill',
             'model' => null,
