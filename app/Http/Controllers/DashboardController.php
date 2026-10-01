@@ -128,10 +128,29 @@ class DashboardController extends Controller
 
         $servicesCount = $rawServices->count();
 
+        $todayDebit = 0;
+        try {
+            $todayDebit = abs((float) \App\Models\CoinTransaction::where('user_id', $user->id)
+                ->whereDate('created_at', today())
+                ->where('amount', '<', 0)
+                ->sum('amount'));
+        } catch (\Throwable $e) {
+            $todayDebit = 0;
+        }
+
+        $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '9648526426');
+        $supportTelegram = \App\Models\Setting::get('telegram_handle', '@brotherweb001');
+
         return Inertia::render('Admin/Dashboard', [
             'services' => $services,
             'isAdmin' => $isAdmin,
             'stats' => $isAdmin ? $this->adminStats($servicesCount) : $this->userStats($user, $servicesCount),
+            'walletBalance' => (int) ($user->coins ?? 0),
+            'todayDebit' => $todayDebit,
+            'apiBalance' => 487.00,
+            'userRole' => $isAdmin ? 'ADMINISTRATOR' : 'RETAILER',
+            'supportWhatsApp' => $supportWhatsApp,
+            'supportTelegram' => $supportTelegram,
             'referralCode' => $user->getActiveReferralCode(),
             'referralLink' => $user->referral_link,
         ]);

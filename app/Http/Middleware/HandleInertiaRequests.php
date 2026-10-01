@@ -94,7 +94,7 @@ class HandleInertiaRequests extends Middleware
             // Sidebar service links — cached in cache store for 5 minutes
             'navServices' => fn () => $user
                 ? \Illuminate\Support\Facades\Cache::remember(
-                    'nav_services_user_' . ($user->isAdmin() || $user->hasRole('super_admin') ? 'admin' : $user->id),
+                    'nav_services_v4_user_' . ($user->isAdmin() || $user->hasRole('super_admin') ? 'admin' : $user->id),
                     300,
                     function () use ($user) {
                         return \App\Models\Service::active()
@@ -103,14 +103,19 @@ class HandleInertiaRequests extends Middleware
                                 fn ($q) => $q->visibleTo($user)
                             )
                             ->ordered()
-                            ->select(['id', 'name', 'icon', 'logo', 'module_key', 'kind', 'slug'])
+                            ->select(['id', 'name', 'icon', 'logo', 'module_key', 'kind', 'slug', 'coin_cost', 'is_premium'])
                             ->get()
                             ->map(fn ($s) => [
-                                'id'       => $s->id,
-                                'name'     => $s->name,
-                                'icon'     => $s->icon ?: '📄',
-                                'logo_url' => $s->logoUrl(),
-                                'url'      => $s->targetUrl(),
+                                'id'         => $s->id,
+                                'name'       => $s->name,
+                                'slug'       => $s->slug,
+                                'module_key' => $s->module_key,
+                                'icon'       => $s->icon ?: '📄',
+                                'logo_url'   => $s->logoUrl(),
+                                'coin_cost'  => $s->coin_cost,
+                                'is_free'    => $s->isFree(),
+                                'is_premium' => (bool) $s->is_premium,
+                                'url'        => $s->targetUrl(),
                             ]);
                     }
                 )
