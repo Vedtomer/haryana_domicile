@@ -65,6 +65,29 @@ Route::get('/migrate-db', function () {
             $output .= "TenthPassbookSeeder Notice: " . $se1->getMessage() . "\n\n";
         }
 
+        // Ensure PAN Card Manual Maker is in services table
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-card-manual-maker'],
+                [
+                    'name' => 'PAN Card Manual Maker',
+                    'description' => 'Generate and print authentic Income Tax PAN Card PVC with photo, signature, and QR code.',
+                    'icon' => '💳',
+                    'coin_cost' => 20,
+                    'kind' => 'module',
+                    'module_key' => 'pan_card_manual_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 41,
+                ]
+            );
+            $output .= "=== PAN CARD MANUAL MAKER UPSERTED ===\n\n";
+        } catch (\Throwable $pe) {
+            $output .= "PanCardManualMaker error: " . $pe->getMessage() . "\n\n";
+        }
+
         // Ensure all staff/admin users have access to all services
         try {
             $allServiceIds = \App\Models\Service::pluck('id')->all();
