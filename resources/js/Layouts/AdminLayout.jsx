@@ -102,6 +102,17 @@ export default function AdminLayout({ header, children }) {
         } catch (e) {}
     }, [url]);
 
+    const handleDashboardClick = (e) => {
+        setSidebarOpen(false);
+        setActiveCategory(null);
+        if (window.location.pathname === '/dashboard') {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.delete('category');
+            window.history.pushState({}, '', currentUrl);
+            window.dispatchEvent(new CustomEvent('categoryChange', { detail: null }));
+        }
+    };
+
     const handleCategoryClick = (catId) => {
         setActiveCategory(catId);
         setSidebarOpen(false);
@@ -110,12 +121,7 @@ export default function AdminLayout({ header, children }) {
             currentUrl.searchParams.set('category', catId);
             window.history.pushState({}, '', currentUrl);
             window.dispatchEvent(new CustomEvent('categoryChange', { detail: catId }));
-            setTimeout(() => {
-                const el = document.getElementById('services');
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 80);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             router.visit(`/dashboard?category=${catId}`);
         }
@@ -187,9 +193,9 @@ export default function AdminLayout({ header, children }) {
                     {/* Top Action 1: Dashboard Button */}
                     <Link
                         href="/dashboard"
-                        onClick={() => setSidebarOpen(false)}
+                        onClick={handleDashboardClick}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
-                            isDashboard
+                            isDashboard && !activeCategory
                                 ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-400/30'
                                 : 'bg-slate-100/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800/80'
                         }`}

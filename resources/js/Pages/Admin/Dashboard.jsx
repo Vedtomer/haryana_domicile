@@ -315,258 +315,318 @@ export default function Dashboard({
         <AdminLayout
             header={
                 <div className="flex items-center gap-2">
-                    <h1 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white leading-tight">
-                        Dashboard
-                    </h1>
-                </div>
-            }
-        >
-            <Head title="Dashboard" />
-
-            {/* 1. Hero Welcome Banner (Gradient Blue-Purple Banner with CSP Jaankari Data) */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#4338ca] text-white p-6 sm:p-8 mb-6 shadow-xl shadow-indigo-950/20">
-                {/* Decorative background glow circles */}
-                <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute right-1/3 -bottom-16 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
-
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-[11px] font-black tracking-widest uppercase mb-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                            <span>{siteName.toUpperCase()} • SMART DASHBOARD</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight drop-shadow-sm">
-                            Welcome, {auth?.user?.name || 'Retailer'}
-                        </h2>
-                        <p className="text-blue-100/85 text-xs sm:text-sm mt-2 font-medium leading-relaxed">
-                            Fast services, clear wallet records and a cleaner retailer experience.
-                        </p>
-                    </div>
-
-                    {/* Banner Action Buttons */}
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <Link
-                            href="/admin/profile#coin-ledger"
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">history</span>
-                            <span>Wallet History</span>
-                        </Link>
-                        <Link
-                            href="/admin/coin-requests"
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 border border-white/30 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">add_card</span>
-                            <span>Add Balance</span>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-
-            {/* 2. 4 Stat Metric Cards in a row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
-                <StatMetricCard
-                    title="WALLET BALANCE"
-                    value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                    subtitle="Live retailer balance"
-                    icon="account_balance_wallet"
-                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                    linkUrl="/admin/coin-requests"
-                />
-                <StatMetricCard
-                    title="TODAY'S DEBIT"
-                    value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
-                    subtitle="Service usage today"
-                    icon="add_circle"
-                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                    linkUrl="/admin/profile#coin-ledger"
-                />
-                <StatMetricCard
-                    title="API BALANCE"
-                    value={`₹${Number(apiBalance).toFixed(2)}`}
-                    subtitle="Live portal sync"
-                    icon="description"
-                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                />
-                <StatMetricCard
-                    title="ACCOUNT TYPE"
-                    value={effectiveRole}
-                    subtitle="Your portal role"
-                    icon="person"
-                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                    linkUrl="/admin/profile"
-                />
-            </div>
-
-            {/* 3. Customer Care Section (With actual site support data) */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
-                            support_agent
-                        </span>
-                        <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
-                            Customer Care
-                        </h3>
-                    </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                        Support
-                    </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                    {/* Help Note Card */}
-                    <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
-                            Need help with a service?
-                        </h4>
-                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                            Use one request at a time. Keep the transaction/service detail ready before contacting support.
-                        </p>
-                    </div>
-
-                    {/* WhatsApp Card */}
-                    <a
-                        href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">chat</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                WhatsApp
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {effectiveWhatsApp}
-                            </span>
-                        </div>
-                    </a>
-
-                    {/* Telegram Card */}
-                    <a
-                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">send</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                Telegram
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {supportTelegram}
-                            </span>
-                        </div>
-                    </a>
-
-                    {/* Member Group Card */}
-                    <a
-                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">groups</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                Member Group
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {siteName} Updates
-                            </span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            {/* 4. Categorized Services Display */}
-            {/* Case A: User selected a category OR searched */}
-            {selectedCategory || searchQuery.trim() ? (
-                <div id="services" className="mb-8 scroll-mt-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                            {activeCategoryObj && (
-                                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-xs ${activeCategoryObj.avatarBg}`}>
-                                    <span className="material-symbols-outlined text-[24px]">
-                                        {activeCategoryObj.icon}
-                                    </span>
-                                </div>
-                            )}
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                                    <span>
-                                        {searchQuery.trim()
-                                            ? `Search results for "${searchQuery}"`
-                                            : activeCategoryObj?.name || 'Selected Services'}
-                                    </span>
-                                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                                        {filteredServices.length}
-                                    </span>
-                                </h3>
-                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                                    Click any service card below to open the service.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-                            {/* Search inside category */}
-                            <div className="relative w-full sm:w-64">
-                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
-                                    search
-                                </span>
-                                <input
-                                    type="text"
-                                    placeholder="Search in services..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-8 py-2 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs outline-none focus:ring-2 focus:ring-indigo-500/20"
-                                />
-                                {searchQuery && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setSearchQuery('')}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                                    >
-                                        <span className="material-symbols-outlined text-[15px]">close</span>
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Close services button */}
+                    {selectedCategory && activeCategoryObj ? (
+                        <div className="flex items-center gap-2 text-sm sm:text-base font-bold text-slate-800 dark:text-white">
                             <button
                                 type="button"
                                 onClick={clearSelectedCategory}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                                className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1 cursor-pointer"
                             >
-                                <span className="material-symbols-outlined text-[16px]">close</span>
-                                <span>Close Services</span>
+                                <span>Dashboard</span>
                             </button>
+                            <span className="text-slate-300 dark:text-slate-600">/</span>
+                            <span className="text-indigo-600 dark:text-indigo-400">
+                                {activeCategoryObj.name}
+                            </span>
+                        </div>
+                    ) : (
+                        <h1 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white leading-tight">
+                            Dashboard
+                        </h1>
+                    )}
+                </div>
+            }
+        >
+            <Head title={selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'Dashboard'} />
+
+            {/* When NO category is selected & NO search: SHOW FULL DASHBOARD */}
+            {!selectedCategory && !searchQuery.trim() ? (
+                <>
+                    {/* 1. Hero Welcome Banner (Gradient Blue-Purple Banner with CSP Jaankari Data) */}
+                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#4338ca] text-white p-6 sm:p-8 mb-6 shadow-xl shadow-indigo-950/20">
+                        {/* Decorative background glow circles */}
+                        <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute right-1/3 -bottom-16 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
+
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="max-w-2xl">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-[11px] font-black tracking-widest uppercase mb-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                                    <span>{siteName.toUpperCase()} • SMART DASHBOARD</span>
+                                </div>
+                                <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight drop-shadow-sm">
+                                    Welcome, {auth?.user?.name || 'Retailer'}
+                                </h2>
+                                <p className="text-blue-100/85 text-xs sm:text-sm mt-2 font-medium leading-relaxed">
+                                    Fast services, clear wallet records and a cleaner retailer experience.
+                                </p>
+                            </div>
+
+                            {/* Banner Action Buttons */}
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <Link
+                                    href="/admin/profile#coin-ledger"
+                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">history</span>
+                                    <span>Wallet History</span>
+                                </Link>
+                                <Link
+                                    href="/admin/coin-requests"
+                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 border border-white/30 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">add_card</span>
+                                    <span>Add Balance</span>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 2. 4 Stat Metric Cards in a row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+                        <StatMetricCard
+                            title="WALLET BALANCE"
+                            value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
+                            subtitle="Live retailer balance"
+                            icon="account_balance_wallet"
+                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                            linkUrl="/admin/coin-requests"
+                        />
+                        <StatMetricCard
+                            title="TODAY'S DEBIT"
+                            value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
+                            subtitle="Service usage today"
+                            icon="add_circle"
+                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                            linkUrl="/admin/profile#coin-ledger"
+                        />
+                        <StatMetricCard
+                            title="API BALANCE"
+                            value={`₹${Number(apiBalance).toFixed(2)}`}
+                            subtitle="Live portal sync"
+                            icon="description"
+                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                        />
+                        <StatMetricCard
+                            title="ACCOUNT TYPE"
+                            value={effectiveRole}
+                            subtitle="Your portal role"
+                            icon="person"
+                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                            linkUrl="/admin/profile"
+                        />
+                    </div>
+
+                    {/* 3. Customer Care Section (With actual site support data) */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
+                                    support_agent
+                                </span>
+                                <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
+                                    Customer Care
+                                </h3>
+                            </div>
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
+                                Support
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                            {/* Help Note Card */}
+                            <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
+                                <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    Need help with a service?
+                                </h4>
+                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                    Use one request at a time. Keep the transaction/service detail ready before contacting support.
+                                </p>
+                            </div>
+
+                            {/* WhatsApp Card */}
+                            <a
+                                href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">chat</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        WhatsApp
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {effectiveWhatsApp}
+                                    </span>
+                                </div>
+                            </a>
+
+                            {/* Telegram Card */}
+                            <a
+                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">send</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        Telegram
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {supportTelegram}
+                                    </span>
+                                </div>
+                            </a>
+
+                            {/* Member Group Card */}
+                            <a
+                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">groups</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        Member Group
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {siteName} Updates
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                /* When a Category or Search is selected: DASHBOARD HIDES, ONLY SERVICES SHOW */
+                <div id="services" className="mb-8">
+                    {/* Category Services Top Action Card */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-6 shadow-2xs">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3.5">
+                                {activeCategoryObj && (
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-xs ${activeCategoryObj.avatarBg}`}>
+                                        <span className="material-symbols-outlined text-[26px]">
+                                            {activeCategoryObj.icon}
+                                        </span>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                            {searchQuery.trim()
+                                                ? `Search: "${searchQuery}"`
+                                                : activeCategoryObj?.name || 'Services'}
+                                        </h2>
+                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
+                                            {filteredServices.length} Services
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                                        Click any service card below to open and use.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                                {/* Search inside category */}
+                                <div className="relative w-full sm:w-64">
+                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                                        search
+                                    </span>
+                                    <input
+                                        type="text"
+                                        placeholder="Search service..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                        >
+                                            <span className="material-symbols-outlined text-[15px]">close</span>
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Back to Dashboard button */}
+                                <button
+                                    type="button"
+                                    onClick={clearSelectedCategory}
+                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
+                                >
+                                    <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+                                        arrow_back
+                                    </span>
+                                    <span>Back to Dashboard</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Quick Category Switcher Pills */}
+                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex-shrink-0 mr-1">
+                                Quick Switch:
+                            </span>
+                            {SERVICE_CATEGORIES.map((cat) => {
+                                const isCurrent = selectedCategory === cat.id;
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedCategory(cat.id);
+                                            setSearchQuery('');
+                                            try {
+                                                const url = new URL(window.location);
+                                                url.searchParams.set('category', cat.id);
+                                                window.history.pushState({}, '', url);
+                                                window.dispatchEvent(new CustomEvent('categoryChange', { detail: cat.id }));
+                                            } catch (e) {}
+                                        }}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                                            isCurrent
+                                                ? 'bg-indigo-600 text-white shadow-xs ring-1 ring-indigo-400/30'
+                                                : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                        }`}
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">{cat.icon}</span>
+                                        <span>{cat.name.replace(' Services', '')}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Filtered Services Grid */}
                     {filteredServices.length === 0 ? (
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs">
-                            <div className="text-3xl">🔍</div>
-                            <p className="font-medium text-slate-700 dark:text-slate-300">
-                                Koi service nahi mili.
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs">
+                            <div className="text-4xl">🔍</div>
+                            <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">
+                                Koi service nahi mili
+                            </h4>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+                                Aapke search query ya is category me koi service match nahi hui.
                             </p>
                             <button
                                 type="button"
                                 onClick={clearSelectedCategory}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
                             >
-                                <span className="material-symbols-outlined text-[16px]">close</span>
-                                Close Services
+                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                                <span>Back to Dashboard</span>
                             </button>
                         </div>
                     ) : (
@@ -581,8 +641,22 @@ export default function Dashboard({
                             ))}
                         </div>
                     )}
+
+                    {/* Bottom Back Button */}
+                    <div className="mt-8 text-center">
+                        <button
+                            type="button"
+                            onClick={clearSelectedCategory}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-md transition-all cursor-pointer group"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+                                arrow_back
+                            </span>
+                            <span>Back to Dashboard</span>
+                        </button>
+                    </div>
                 </div>
-            ) : null}
+            )}
 
             {/* Premium Unlock Modal */}
             {unlockingService && (
