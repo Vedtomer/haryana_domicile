@@ -14,6 +14,7 @@ import UserLocationTracker from '../Components/UserLocationTracker';
 import BroadcastNoticeBanner from '../Components/BroadcastNoticeBanner';
 import DailyBonusModal from '../Components/DailyBonusModal';
 import { groupServicesByCategory } from '../Utils/serviceCategories';
+import CategoryLogo from '../Components/CategoryLogo';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash, switchAccount } = usePage().props;
@@ -244,13 +245,7 @@ export default function AdminLayout({ header, children }) {
                                     }`}
                                 >
                                     <div className="flex items-center gap-2.5 min-w-0">
-                                        <div
-                                            className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-2xs ${g.category.avatarBg} group-hover:scale-105 transition-transform`}
-                                        >
-                                            <span className="material-symbols-outlined text-[19px]">
-                                                {g.category.icon}
-                                            </span>
-                                        </div>
+                                        <CategoryLogo category={g.category} services={g.services} size="w-8 h-8" />
                                         <span
                                             className={`text-xs font-bold truncate transition-colors ${
                                                 isActive
