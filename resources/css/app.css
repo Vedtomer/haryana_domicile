@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @config "../../tailwind.config.js";
+@custom-variant dark (&:where(.dark, .dark *));
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -137,57 +138,71 @@ textarea::placeholder {
     opacity: 0.8 !important;
 }
 
-/* Ensure inputs on white or light backgrounds have pure black text */
-.bg-white input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-white textarea,
-.bg-white select,
-.bg-slate-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-slate-50 textarea,
-.bg-slate-50 select,
-.bg-gray-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-gray-50 textarea,
-.bg-gray-50 select,
-.MuiPaper-root input,
-.MuiPaper-root textarea,
-.MuiPaper-root select {
+/* Ensure inputs on white or light backgrounds have pure black text (only in light mode) */
+html:not(.dark) .bg-white input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-white textarea,
+html:not(.dark) .bg-white select,
+html:not(.dark) .bg-slate-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-slate-50 textarea,
+html:not(.dark) .bg-slate-50 select,
+html:not(.dark) .bg-gray-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-gray-50 textarea,
+html:not(.dark) .bg-gray-50 select,
+html:not(.dark) .MuiPaper-root input,
+html:not(.dark) .MuiPaper-root textarea,
+html:not(.dark) .MuiPaper-root select {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
 }
 
-/* Text in white/light service cards should be crisp dark slate / black, never white */
-.bg-white,
-.bg-slate-50,
-.bg-gray-50,
-.MuiPaper-root {
+/* Text in white/light service cards in light mode */
+html:not(.dark) .bg-white,
+html:not(.dark) .bg-slate-50,
+html:not(.dark) .bg-gray-50,
+html:not(.dark) .MuiPaper-root {
     color: #0f172a;
 }
 
-.bg-white label,
-.bg-slate-50 label,
-.bg-gray-50 label,
-.MuiPaper-root label {
+html:not(.dark) .bg-white label,
+html:not(.dark) .bg-slate-50 label,
+html:not(.dark) .bg-gray-50 label,
+html:not(.dark) .MuiPaper-root label {
     color: #1e293b;
 }
 
-/* Exceptions: Dark configuration panels (e.g. Admin API Settings modal/banner) */
-.from-slate-900 input:not([type="submit"]):not([type="button"]),
-.bg-slate-950 input:not([type="submit"]):not([type="button"]),
-.bg-slate-900 input:not([type="submit"]):not([type="button"]),
-.from-slate-900 textarea,
-.bg-slate-950 textarea,
-.bg-slate-900 textarea,
-.from-slate-900 select,
-.bg-slate-950 select,
-.bg-slate-900 select {
+/* In dark mode, ensure text and labels on dark cards are crisp light text */
+html.dark .dark\:bg-slate-900,
+html.dark .dark\:bg-slate-800,
+html.dark .dark\:bg-slate-950 {
+    color: #f1f5f9;
+}
+
+html.dark .dark\:bg-slate-900 label,
+html.dark .dark\:bg-slate-800 label,
+html.dark .dark\:bg-slate-950 label {
+    color: #cbd5e1;
+}
+
+html.dark input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
 
-.from-slate-900 input::placeholder,
-.bg-slate-950 input::placeholder,
-.bg-slate-900 input::placeholder {
+html.dark input::placeholder,
+html.dark textarea::placeholder {
     color: #94a3b8 !important;
     -webkit-text-fill-color: #94a3b8 !important;
+}
+
+/* Browser autofill dark mode fix */
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 

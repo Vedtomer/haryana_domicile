@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
-import FloatingInput from '../../../Components/FloatingInput';
 
 // Plain-language labels — the ledger exists so nothing looks unexplained.
 const TYPE_LABELS = {
@@ -25,6 +24,18 @@ export default function Edit({ user, ledger, ledgerSummary }) {
         phone: user.phone || '',
         password: '',
     });
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        if (window.location.hash === '#coin-ledger') {
+            const el = document.getElementById('coin-ledger');
+            if (el) {
+                setTimeout(() => {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                }, 150);
+            }
+        }
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
@@ -45,15 +56,15 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                 <div className="mb-4 flex items-center justify-between">
                     <Link
                         href="/admin/dashboard"
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer group"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer group"
                     >
-                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+                        <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-indigo-400 group-hover:-translate-x-1 transition-transform">arrow_back</span>
                         <span>Back to Dashboard</span>
                     </Link>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden">
-                    <div className="px-6 py-6 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 flex items-center justify-between flex-wrap gap-4">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/90 dark:border-slate-800 overflow-hidden">
+                    <div className="px-6 py-6 border-b border-slate-200/90 dark:border-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 flex items-center justify-between flex-wrap gap-4">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
                             <p className="text-gray-500 dark:text-slate-400 text-sm mt-0.5">{user.email}</p>
@@ -63,67 +74,103 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                         </div>
                         <Link
                             href="/admin/dashboard"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
                         >
-                            <span className="material-symbols-outlined text-[18px]">dashboard</span>
+                            <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-cyan-300">dashboard</span>
                             <span>Dashboard</span>
                         </Link>
                     </div>
 
-                    <form onSubmit={submit} className="p-8 space-y-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b dark:border-slate-800 pb-2">Update Profile Details</h3>
+                    <form onSubmit={submit} className="p-6 sm:p-8 space-y-6">
+                        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pb-2 border-b border-slate-100 dark:border-slate-800">
+                            Update Profile Details
+                        </h3>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <FloatingInput 
-                                id="name"
-                                label="Full Name (Optional)"
-                                value={data.name}
-                                onChange={e => setData('name', e.target.value)}
-                                error={errors.name}
-                                required={false}
-                            />
-                            
-                            <FloatingInput 
-                                id="email"
-                                type="email"
-                                label="Email Address (Optional)"
-                                value={data.email}
-                                onChange={e => setData('email', e.target.value)}
-                                error={errors.email}
-                                required={false}
-                            />
-
-                            <FloatingInput 
-                                id="phone"
-                                type="text"
-                                label="Phone Number (Optional)"
-                                value={data.phone}
-                                onChange={e => setData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                error={errors.phone}
-                                required={false}
-                            />
-                        </div>
-
-                        <div className="pt-6 mt-8 border-t border-gray-100 dark:border-slate-800">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b dark:border-slate-800 pb-2">Security</h3>
-                            
-                            <div className="max-w-md">
-                                <FloatingInput 
-                                    id="password"
-                                    label="New Password (Leave blank to keep current)"
-                                    value={data.password}
-                                    onChange={e => setData('password', e.target.value)}
-                                    error={errors.password}
-                                    isPassword={true}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label htmlFor="name" className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    Full Name (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={data.name}
+                                    onChange={e => setData('name', e.target.value)}
+                                    placeholder="Enter your name"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
                                 />
+                                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                                <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    Email Address (Optional)
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={data.email}
+                                    onChange={e => setData('email', e.target.value)}
+                                    placeholder="Enter your email"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
+                                />
+                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                            </div>
+
+                            <div>
+                                <label htmlFor="phone" className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    Phone Number (Optional)
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    value={data.phone}
+                                    onChange={e => setData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                    placeholder="10-digit phone number"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
+                                />
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                             </div>
                         </div>
 
-                        <div className="pt-8 text-right">
+                        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4">
+                                Security
+                            </h3>
+                            
+                            <div className="max-w-md">
+                                <label htmlFor="password" className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    New Password (Leave blank to keep current)
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password"
+                                        value={data.password}
+                                        onChange={e => setData('password', e.target.value)}
+                                        placeholder="••••••••"
+                                        autoComplete="new-password"
+                                        className="w-full px-4 py-2.5 pr-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-[19px]">
+                                            {showPassword ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
+                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                            </div>
+                        </div>
+
+                        <div className="pt-4 text-right">
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all duration-200"
+                                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                             >
                                 {processing ? 'Saving...' : 'Save Profile Changes'}
                             </button>
