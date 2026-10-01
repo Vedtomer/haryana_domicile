@@ -497,6 +497,10 @@ export default function Dashboard({
     walletBalance,
     todayDebit = 0,
     totalUsers = 0,
+    pendingCoins = 0,
+    pendingRequests = 0,
+    totalRequests = 0,
+    servicesCount,
     apiBalance = 487.00,
     userRole = 'RETAILER',
     supportWhatsApp = '380630323112',
@@ -692,35 +696,35 @@ export default function Dashboard({
                                 index={0}
                                 colorTheme="indigo"
                                 title="TOTAL USERS"
-                                badgeText="ACTIVE"
+                                badgeText="MEMBERS"
                                 value={Number(totalUsers || 0).toLocaleString('en-IN')}
-                                subtitle="Registered members"
+                                subtitle="Registered portal users"
                                 icon="group"
                                 linkUrl="/admin/users"
                             />
                             <StatMetricCard
                                 index={1}
-                                colorTheme="emerald"
-                                title="TOTAL BALANCE"
-                                badgeText="LIVE"
-                                value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                                subtitle="Admin wallet coins"
-                                icon="account_balance_wallet"
+                                colorTheme="amber"
+                                title="COIN REQUESTS"
+                                badgeText="PENDING"
+                                value={`${pendingCoins} Pending`}
+                                subtitle="Wallet recharge requests"
+                                icon="monetization_on"
                                 linkUrl="/admin/coin-requests"
                             />
                             <StatMetricCard
                                 index={2}
                                 colorTheme="purple"
-                                title="WALLET HISTORY"
-                                badgeText="TODAY'S DEBIT"
-                                value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
-                                subtitle="Debit & passbook ledger"
-                                icon="history"
-                                linkUrl="/admin/profile#coin-ledger"
+                                title="PENDING REQUESTS"
+                                badgeText="ORDERS"
+                                value={`${pendingRequests} Pending`}
+                                subtitle="Service requests pending"
+                                icon="hourglass_top"
+                                linkUrl="/admin/service-requests?status=pending"
                             />
                             <StatMetricCard
                                 index={3}
-                                colorTheme="amber"
+                                colorTheme="blue"
                                 title="ACCOUNT TYPE"
                                 badgeText="VERIFIED"
                                 value={effectiveRole}

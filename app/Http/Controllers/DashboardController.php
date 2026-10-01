@@ -145,6 +145,23 @@ class DashboardController extends Controller
             $totalUsers = 0;
         }
 
+        $pendingCoins = 0;
+        try {
+            $pendingCoins = \App\Models\CoinPurchaseRequest::where('status', 'pending')->count();
+        } catch (\Throwable $e) {
+            $pendingCoins = 0;
+        }
+
+        $pendingRequests = 0;
+        $totalRequests = 0;
+        try {
+            $pendingRequests = ServiceRequest::where('status', 'pending')->count();
+            $totalRequests = ServiceRequest::count();
+        } catch (\Throwable $e) {
+            $pendingRequests = 0;
+            $totalRequests = 0;
+        }
+
         $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '380630323112');
         $supportTelegram = \App\Models\Setting::get('telegram_handle', '@cspjaankari');
 
@@ -157,6 +174,10 @@ class DashboardController extends Controller
             'walletBalance' => (int) ($user->coins ?? 0),
             'todayDebit' => $todayDebit,
             'totalUsers' => $totalUsers,
+            'pendingCoins' => $pendingCoins,
+            'pendingRequests' => $pendingRequests,
+            'totalRequests' => $totalRequests,
+            'servicesCount' => $servicesCount,
             'apiBalance' => 487.00,
             'userRole' => $isAdmin ? 'ADMINISTRATOR' : 'RETAILER',
             'supportWhatsApp' => $supportWhatsApp,
