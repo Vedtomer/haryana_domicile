@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import axios from 'axios';
 import Toast from '../Components/Toast';
@@ -21,6 +21,24 @@ export default function AdminLayout({ header, children }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [switchAccountModalOpen, setSwitchAccountModalOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        }
+        if (dropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('touchstart', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     // Global Presence Heartbeat
     useEffect(() => {
@@ -495,7 +513,7 @@ export default function AdminLayout({ header, children }) {
                         </button>
 
                         {/* Profile Avatar & Dropdown */}
-                        <div className="relative z-50">
+                        <div ref={dropdownRef} className="relative z-50">
                             <button
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
                                 className="inline-flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-bold text-xs sm:text-sm transition-all cursor-pointer"
@@ -512,7 +530,7 @@ export default function AdminLayout({ header, children }) {
                             {/* Dropdown Menu */}
                             <div
                                 className={`absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-xl py-2 border border-slate-100 dark:border-slate-800 z-50 transform origin-top-right transition-all duration-200 ease-out ${
-                                    dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'
+                                    dropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible pointer-events-none'
                                 }`}
                             >
                                 <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
@@ -523,6 +541,7 @@ export default function AdminLayout({ header, children }) {
                                 </div>
                                 <Link
                                     href="/admin/profile"
+                                    onClick={() => setDropdownOpen(false)}
                                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">account_circle</span>
@@ -543,6 +562,7 @@ export default function AdminLayout({ header, children }) {
                                 </button>
                                 <Link
                                     href="/admin/profile#coin-ledger"
+                                    onClick={() => setDropdownOpen(false)}
                                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                 >
                                     <span className="material-symbols-outlined text-[18px] text-amber-500">monetization_on</span>
@@ -550,6 +570,7 @@ export default function AdminLayout({ header, children }) {
                                 </Link>
                                 <Link
                                     href="/admin/coin-requests"
+                                    onClick={() => setDropdownOpen(false)}
                                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                 >
                                     <span className="material-symbols-outlined text-[18px] text-emerald-500">add_card</span>
@@ -560,6 +581,7 @@ export default function AdminLayout({ header, children }) {
                                         <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
                                         <Link
                                             href="/admin/payment-settings"
+                                            onClick={() => setDropdownOpen(false)}
                                             className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                         >
                                             <span className="material-symbols-outlined text-[18px]">qr_code_2</span>
@@ -567,6 +589,7 @@ export default function AdminLayout({ header, children }) {
                                         </Link>
                                         <Link
                                             href="/admin/pdf-coordinates"
+                                            onClick={() => setDropdownOpen(false)}
                                             className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                         >
                                             <span className="material-symbols-outlined text-[18px]">straighten</span>
@@ -579,6 +602,7 @@ export default function AdminLayout({ header, children }) {
                                     href="/logout"
                                     method="post"
                                     as="button"
+                                    onClick={() => setDropdownOpen(false)}
                                     className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">logout</span>
@@ -621,11 +645,6 @@ export default function AdminLayout({ header, children }) {
                     {children}
                 </main>
             </div>
-
-            {/* Click outside listener overlay for profile dropdown */}
-            {dropdownOpen && (
-                <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-            )}
 
             <SwitchAccountModal
                 isOpen={switchAccountModalOpen}
