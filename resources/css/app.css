@@ -79,6 +79,45 @@
   animation: glass-pulse-glow 2s ease-in-out infinite;
 }
 
+/* 3D Live Logo Animation Effects */
+@keyframes logo-float-3d {
+  0%, 100% {
+    transform: perspective(600px) rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px);
+    box-shadow: 0 8px 18px -4px rgba(79, 70, 229, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
+  }
+  25% {
+    transform: perspective(600px) rotateX(8deg) rotateY(-8deg) translateY(-4px) translateZ(8px);
+    box-shadow: 0 14px 22px -4px rgba(99, 102, 241, 0.35), 0 6px 8px -2px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    transform: perspective(600px) rotateX(0deg) rotateY(10deg) translateY(-6px) translateZ(12px);
+    box-shadow: 0 18px 26px -4px rgba(168, 85, 247, 0.38), 0 8px 10px -2px rgba(0, 0, 0, 0.15);
+  }
+  75% {
+    transform: perspective(600px) rotateX(-6deg) rotateY(-5deg) translateY(-2px) translateZ(6px);
+    box-shadow: 0 10px 18px -4px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes logo-shimmer-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  35%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-3d-live-logo {
+  animation: logo-float-3d 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+.animate-3d-live-shine {
+  animation: logo-shimmer-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* ==========================================================================
    Universal Form Controls & Service Forms: Crisp Black Text
    Ensure that words typed in any input, textarea, or select are always black

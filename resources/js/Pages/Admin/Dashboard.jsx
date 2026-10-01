@@ -67,17 +67,28 @@ function ServiceCard({ service, onUnlockClick, isAdmin }) {
 
             <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
-                    {service.logo_url ? (
-                        <img
-                            src={service.logo_url}
-                            alt=""
-                            className="w-10 h-10 rounded-2xl object-cover border border-slate-100 dark:border-slate-800 flex-shrink-0 shadow-2xs"
-                        />
-                    ) : (
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl flex-shrink-0 shadow-2xs">
-                            {service.icon || '📄'}
+                    <div className="relative group/logo">
+                        {/* 3D ambient glow pulse behind logo */}
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-indigo-500/40 via-purple-500/40 to-pink-500/40 blur-xs opacity-75 group-hover:opacity-100 transition-opacity" />
+
+                        {/* 3D Live Animated Container */}
+                        <div className="relative w-12 h-12 rounded-2xl p-1.5 bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 border border-slate-200/90 dark:border-slate-700/80 animate-3d-live-logo group-hover:scale-110 transition-transform flex items-center justify-center overflow-hidden">
+                            {/* Continuous 3D gloss shine sweep */}
+                            <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent animate-3d-live-shine pointer-events-none" />
+
+                            {service.logo_url ? (
+                                <img
+                                    src={service.logo_url}
+                                    alt={service.name}
+                                    className="w-full h-full object-contain rounded-xl drop-shadow-[0_4px_6px_rgba(0,0,0,0.18)]"
+                                />
+                            ) : (
+                                <span className="text-2xl drop-shadow-[0_3px_5px_rgba(0,0,0,0.2)]">
+                                    {service.icon || '📄'}
+                                </span>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
@@ -509,104 +520,39 @@ export default function Dashboard({
             ) : (
                 /* When a Category or Search is selected: DASHBOARD HIDES, ONLY SERVICES SHOW */
                 <div id="services" className="mb-8">
-                    {/* Category Services Top Action Card */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-6 shadow-2xs">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-3.5">
-                                {activeCategoryObj && (
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-xs ${activeCategoryObj.avatarBg}`}>
-                                        <span className="material-symbols-outlined text-[26px]">
-                                            {activeCategoryObj.icon}
-                                        </span>
-                                    </div>
-                                )}
-                                <div>
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                                            {searchQuery.trim()
-                                                ? `Search: "${searchQuery}"`
-                                                : activeCategoryObj?.name || 'Services'}
-                                        </h2>
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                                            {filteredServices.length} Services
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                                        Click any service card below to open and use.
-                                    </p>
-                                </div>
-                            </div>
+                    {/* Clean Minimal Top Row (Bulky card and Quick Switch removed as requested) */}
+                    <div className="flex items-center justify-between gap-3 mb-6">
+                        <button
+                            type="button"
+                            onClick={clearSelectedCategory}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+                                arrow_back
+                            </span>
+                            <span>Back to Dashboard</span>
+                        </button>
 
-                            <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                                {/* Search inside category */}
-                                <div className="relative w-full sm:w-64">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
-                                        search
-                                    </span>
-                                    <input
-                                        type="text"
-                                        placeholder="Search service..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"
-                                    />
-                                    {searchQuery && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setSearchQuery('')}
-                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                                        >
-                                            <span className="material-symbols-outlined text-[15px]">close</span>
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Back to Dashboard button */}
+                        <div className="relative w-48 sm:w-64">
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                                search
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Search service..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"
+                            />
+                            {searchQuery && (
                                 <button
                                     type="button"
-                                    onClick={clearSelectedCategory}
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                                 >
-                                    <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
-                                        arrow_back
-                                    </span>
-                                    <span>Back to Dashboard</span>
+                                    <span className="material-symbols-outlined text-[15px]">close</span>
                                 </button>
-                            </div>
-                        </div>
-
-                        {/* Quick Category Switcher Pills */}
-                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex-shrink-0 mr-1">
-                                Quick Switch:
-                            </span>
-                            {SERVICE_CATEGORIES.map((cat) => {
-                                const isCurrent = selectedCategory === cat.id;
-                                return (
-                                    <button
-                                        key={cat.id}
-                                        type="button"
-                                        onClick={() => {
-                                            setSelectedCategory(cat.id);
-                                            setSearchQuery('');
-                                            try {
-                                                const url = new URL(window.location);
-                                                url.searchParams.set('category', cat.id);
-                                                window.history.pushState({}, '', url);
-                                                window.dispatchEvent(new CustomEvent('categoryChange', { detail: cat.id }));
-                                            } catch (e) {}
-                                        }}
-                                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                                            isCurrent
-                                                ? 'bg-indigo-600 text-white shadow-xs ring-1 ring-indigo-400/30'
-                                                : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                        }`}
-                                    >
-                                        <span className="material-symbols-outlined text-[16px]">{cat.icon}</span>
-                                        <span>{cat.name.replace(' Services', '')}</span>
-                                    </button>
-                                );
-                            })}
+                            )}
                         </div>
                     </div>
 
