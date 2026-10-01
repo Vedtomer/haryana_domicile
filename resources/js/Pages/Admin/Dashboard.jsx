@@ -691,7 +691,7 @@ export default function Dashboard({
 
                     {/* 2. Stat Metric Cards in a row */}
                     {isAdmin ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
                                 index={0}
                                 colorTheme="indigo"
@@ -715,22 +715,12 @@ export default function Dashboard({
                             <StatMetricCard
                                 index={2}
                                 colorTheme="purple"
-                                title="PENDING REQUESTS"
+                                title="SERVICE PENDING REQUEST"
                                 badgeText="ORDERS"
                                 value={`${pendingRequests} Pending`}
-                                subtitle="Service requests pending"
+                                subtitle="Service requests pending action"
                                 icon="hourglass_top"
                                 linkUrl="/admin/service-requests?status=pending"
-                            />
-                            <StatMetricCard
-                                index={3}
-                                colorTheme="blue"
-                                title="ACCOUNT TYPE"
-                                badgeText="VERIFIED"
-                                value={effectiveRole}
-                                subtitle="Portal permissions"
-                                icon="admin_panel_settings"
-                                linkUrl="/admin/profile"
                             />
                         </div>
                     ) : (
