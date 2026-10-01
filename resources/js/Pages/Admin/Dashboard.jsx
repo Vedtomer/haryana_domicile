@@ -558,32 +558,69 @@ export default function Dashboard({
                     </div>
 
                     {/* 2. Stat Metric Cards in a row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                        <StatMetricCard
-                            title="TODAY'S DEBIT"
-                            value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
-                            subtitle="Service usage today"
-                            icon="add_circle"
-                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                            linkUrl="/admin/profile#coin-ledger"
-                        />
-                        <StatMetricCard
-                            title="TOTAL USERS"
-                            value={Number(totalUsers || 0).toLocaleString('en-IN')}
-                            subtitle="Registered members"
-                            icon="group"
-                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                            linkUrl={isAdmin ? "/admin/users" : undefined}
-                        />
-                        <StatMetricCard
-                            title="ACCOUNT TYPE"
-                            value={effectiveRole}
-                            subtitle="Your portal role"
-                            icon="person"
-                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                            linkUrl="/admin/profile"
-                        />
-                    </div>
+                    {isAdmin ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+                            <StatMetricCard
+                                title="TOTAL USERS"
+                                value={Number(totalUsers || 0).toLocaleString('en-IN')}
+                                subtitle="Registered members"
+                                icon="group"
+                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                                linkUrl="/admin/users"
+                            />
+                            <StatMetricCard
+                                title="TOTAL BALANCE"
+                                value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
+                                subtitle="Admin wallet coins"
+                                icon="account_balance_wallet"
+                                iconBg="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
+                                linkUrl="/admin/coin-requests"
+                            />
+                            <StatMetricCard
+                                title="TODAY'S DEBIT"
+                                value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
+                                subtitle="Service usage today"
+                                icon="payments"
+                                iconBg="bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
+                                linkUrl="/admin/profile#coin-ledger"
+                            />
+                            <StatMetricCard
+                                title="ACCOUNT TYPE"
+                                value={effectiveRole}
+                                subtitle="Portal permissions"
+                                icon="admin_panel_settings"
+                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
+                                linkUrl="/admin/profile"
+                            />
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                            <StatMetricCard
+                                title="TOTAL BALANCE"
+                                value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
+                                subtitle="Available wallet balance"
+                                icon="account_balance_wallet"
+                                iconBg="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
+                                linkUrl="/admin/coin-requests"
+                            />
+                            <StatMetricCard
+                                title="ADD BALANCE"
+                                value="+ Add Balance"
+                                subtitle="Instant QR scan & recharge"
+                                icon="add_card"
+                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                                linkUrl="/admin/coin-requests"
+                            />
+                            <StatMetricCard
+                                title="WALLET HISTORY"
+                                value="Passbook"
+                                subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • View ledger`}
+                                icon="history"
+                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
+                                linkUrl="/admin/profile#coin-ledger"
+                            />
+                        </div>
+                    )}
 
                     {/* 3. Customer Care Section (With actual site support data) */}
                     <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
