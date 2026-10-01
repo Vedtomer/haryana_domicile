@@ -3,26 +3,166 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { SERVICE_CATEGORIES, getServiceCategory } from '../../Utils/serviceCategories';
 
-function StatMetricCard({ title, value, subtitle, icon, iconBg = 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400', linkUrl }) {
+const STAT_THEMES = {
+    emerald: {
+        cardBg: 'bg-gradient-to-br from-emerald-500/10 via-white to-teal-500/10 dark:from-emerald-950/40 dark:via-slate-900 dark:to-teal-950/30',
+        borderColor: 'border-2 border-emerald-400/80 dark:border-emerald-500/70',
+        shadow: 'shadow-[0_14px_35px_-8px_rgba(16,185,129,0.35)] hover:shadow-[0_22px_45px_-6px_rgba(16,185,129,0.5)]',
+        glowColor: 'bg-emerald-500/25',
+        iconBg: 'bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400',
+        iconShadow: 'shadow-lg shadow-emerald-500/40',
+        badgeBg: 'bg-emerald-100/90 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-600/60',
+        dotPing: 'bg-emerald-400',
+        dotSolid: 'bg-emerald-500',
+        titleColor: 'text-emerald-700 dark:text-emerald-400',
+    },
+    blue: {
+        cardBg: 'bg-gradient-to-br from-blue-500/10 via-white to-cyan-500/10 dark:from-blue-950/40 dark:via-slate-900 dark:to-cyan-950/30',
+        borderColor: 'border-2 border-blue-400/80 dark:border-blue-500/70',
+        shadow: 'shadow-[0_14px_35px_-8px_rgba(37,99,235,0.35)] hover:shadow-[0_22px_45px_-6px_rgba(37,99,235,0.5)]',
+        glowColor: 'bg-blue-500/25',
+        iconBg: 'bg-gradient-to-tr from-blue-600 via-blue-500 to-cyan-400',
+        iconShadow: 'shadow-lg shadow-blue-500/40',
+        badgeBg: 'bg-blue-100/90 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-300/80 dark:border-blue-600/60',
+        dotPing: 'bg-blue-400',
+        dotSolid: 'bg-blue-500',
+        titleColor: 'text-blue-700 dark:text-blue-400',
+    },
+    purple: {
+        cardBg: 'bg-gradient-to-br from-purple-500/10 via-white to-fuchsia-500/10 dark:from-purple-950/40 dark:via-slate-900 dark:to-fuchsia-950/30',
+        borderColor: 'border-2 border-purple-400/80 dark:border-purple-500/70',
+        shadow: 'shadow-[0_14px_35px_-8px_rgba(168,85,247,0.35)] hover:shadow-[0_22px_45px_-6px_rgba(168,85,247,0.5)]',
+        glowColor: 'bg-purple-500/25',
+        iconBg: 'bg-gradient-to-tr from-purple-600 via-fuchsia-500 to-pink-400',
+        iconShadow: 'shadow-lg shadow-purple-500/40',
+        badgeBg: 'bg-purple-100/90 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-300/80 dark:border-purple-600/60',
+        dotPing: 'bg-purple-400',
+        dotSolid: 'bg-purple-500',
+        titleColor: 'text-purple-700 dark:text-purple-400',
+    },
+    amber: {
+        cardBg: 'bg-gradient-to-br from-amber-500/10 via-white to-yellow-500/10 dark:from-amber-950/40 dark:via-slate-900 dark:to-yellow-950/30',
+        borderColor: 'border-2 border-amber-400/80 dark:border-amber-500/70',
+        shadow: 'shadow-[0_14px_35px_-8px_rgba(245,158,11,0.35)] hover:shadow-[0_22px_45px_-6px_rgba(245,158,11,0.5)]',
+        glowColor: 'bg-amber-500/25',
+        iconBg: 'bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400',
+        iconShadow: 'shadow-lg shadow-amber-500/40',
+        badgeBg: 'bg-amber-100/90 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300/80 dark:border-amber-600/60',
+        dotPing: 'bg-amber-400',
+        dotSolid: 'bg-amber-500',
+        titleColor: 'text-amber-700 dark:text-amber-400',
+    },
+    indigo: {
+        cardBg: 'bg-gradient-to-br from-indigo-500/10 via-white to-blue-500/10 dark:from-indigo-950/40 dark:via-slate-900 dark:to-blue-950/30',
+        borderColor: 'border-2 border-indigo-400/80 dark:border-indigo-500/70',
+        shadow: 'shadow-[0_14px_35px_-8px_rgba(99,102,241,0.35)] hover:shadow-[0_22px_45px_-6px_rgba(99,102,241,0.5)]',
+        glowColor: 'bg-indigo-500/25',
+        iconBg: 'bg-gradient-to-tr from-indigo-600 via-indigo-500 to-blue-400',
+        iconShadow: 'shadow-lg shadow-indigo-500/40',
+        badgeBg: 'bg-indigo-100/90 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 border border-indigo-300/80 dark:border-indigo-600/60',
+        dotPing: 'bg-indigo-400',
+        dotSolid: 'bg-indigo-500',
+        titleColor: 'text-indigo-700 dark:text-indigo-400',
+    },
+};
+
+function StatMetricCard({
+    title,
+    value,
+    subtitle,
+    icon,
+    colorTheme = 'blue',
+    linkUrl,
+    index = 0,
+    badgeText,
+    isButton = false,
+}) {
+    const [tilt, setTilt] = useState({ x: 0, y: 0, active: false });
+
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        setTilt({ x: x * 10, y: -y * 10, active: true });
+    };
+
+    const handleMouseLeave = () => {
+        setTilt({ x: 0, y: 0, active: false });
+    };
+
+    const t = STAT_THEMES[colorTheme] || STAT_THEMES.blue;
+    const animClass = ['animate-3d-box-1', 'animate-3d-box-2', 'animate-3d-box-3', 'animate-3d-box-4'][index % 4];
+
     const cardContent = (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xs hover:shadow-md transition-all duration-200 group flex flex-col justify-between h-full">
-            <div className="flex items-start justify-between gap-3">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    {title}
-                </span>
-                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-2xs ${iconBg} group-hover:scale-105 transition-transform`}>
-                    <span className="material-symbols-outlined text-[20px] sm:text-[22px]">
+        <div
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className={`relative rounded-3xl p-5 sm:p-6 transition-all duration-300 group flex flex-col justify-between h-full overflow-hidden cursor-pointer select-none ${animClass} ${t.cardBg} ${t.borderColor} ${t.shadow}`}
+            style={{
+                transform: tilt.active
+                    ? `perspective(850px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg) scale3d(1.03, 1.03, 1.03) translateZ(12px)`
+                    : undefined,
+                transition: tilt.active ? 'transform 0.12s ease-out' : 'transform 0.5s ease-out, box-shadow 0.3s ease',
+                transformStyle: 'preserve-3d',
+            }}
+        >
+            {/* Ambient 3D Glowing Orb */}
+            <div className={`absolute -top-12 -right-12 w-36 h-36 rounded-full ${t.glowColor} blur-2xl pointer-events-none animate-ambient-glow`} />
+            <div className={`absolute -bottom-12 -left-12 w-28 h-28 rounded-full ${t.glowColor} blur-2xl pointer-events-none opacity-60`} />
+
+            {/* Live 3D Shimmer Sweep */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl z-20">
+                <div className="w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 dark:via-white/10 to-transparent skew-x-[-22deg] animate-box-shimmer" />
+            </div>
+
+            {/* Top Row: Title + Live Badge + 3D Icon */}
+            <div className="flex items-start justify-between gap-3 relative z-10" style={{ transform: 'translateZ(25px)' }}>
+                <div>
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <span className={`text-[11px] sm:text-xs font-black uppercase tracking-wider ${t.titleColor}`}>
+                            {title}
+                        </span>
+                        {badgeText && (
+                            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider ${t.badgeBg}`}>
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${t.dotPing} opacity-75`} />
+                                    <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${t.dotSolid}`} />
+                                </span>
+                                <span>{badgeText}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* 3D Floating Icon Box */}
+                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center flex-shrink-0 text-white ${t.iconBg} ${t.iconShadow} animate-3d-icon-float group-hover:scale-110 transition-transform`}>
+                    <span className="material-symbols-outlined text-[21px] sm:text-[23px] drop-shadow-sm">
                         {icon}
                     </span>
                 </div>
             </div>
 
-            <div className="mt-3">
-                <div className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white truncate">
-                    {value}
-                </div>
-                <div className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-1 truncate">
-                    {subtitle}
+            {/* Middle Row: Dynamic Value */}
+            <div className="mt-3 relative z-10" style={{ transform: 'translateZ(20px)' }}>
+                {isButton ? (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold text-sm sm:text-base shadow-md shadow-blue-500/30 group-hover:shadow-blue-500/60 group-hover:scale-[1.03] transition-all">
+                        <span className="material-symbols-outlined text-[18px]">add_card</span>
+                        <span>{value}</span>
+                        <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
+                    </div>
+                ) : (
+                    <div className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white truncate drop-shadow-2xs">
+                        {value}
+                    </div>
+                )}
+
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1.5 flex items-center gap-1 truncate">
+                    <span>{subtitle}</span>
+                    {linkUrl && !isButton && (
+                        <span className="text-[13px] font-black opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-slate-400 dark:text-slate-300">
+                            →
+                        </span>
+                    )}
                 </div>
             </div>
         </div>
@@ -30,7 +170,7 @@ function StatMetricCard({ title, value, subtitle, icon, iconBg = 'bg-blue-50 tex
 
     if (linkUrl) {
         return (
-            <Link href={linkUrl} className="block transition-transform hover:-translate-y-0.5">
+            <Link href={linkUrl} className="block h-full">
                 {cardContent}
             </Link>
         );
@@ -205,11 +345,16 @@ function ServiceCard({ service, index = 0, onUnlockClick, isAdmin }) {
     return (
         <div
             onClick={handleCardNavigate}
-            className={`group relative flex flex-col justify-between rounded-[28px] p-5 pb-5 transition-all duration-300 overflow-hidden shadow-sm hover:-translate-y-2 cursor-pointer ${theme.borderColor} ${theme.bgGradient} ${theme.hoverShadow} ${
+            className={`group relative flex flex-col justify-between rounded-[28px] p-5 pb-5 transition-all duration-300 overflow-hidden shadow-sm hover:-translate-y-2 hover:scale-[1.015] hover:shadow-xl cursor-pointer ${theme.borderColor} ${theme.bgGradient} ${theme.hoverShadow} ${
                 isInactive ? 'opacity-85 select-none cursor-not-allowed' : ''
             }`}
             style={{ minHeight: '430px' }}
         >
+            {/* Live 3D Shimmer Sweep */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[28px] z-20">
+                <div className="w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent skew-x-[-22deg] animate-box-shimmer" />
+            </div>
+
             {/* Center Overlay for Inactive Services */}
             {isInactive && (
                 <div className="absolute inset-0 z-30 bg-slate-950/50 dark:bg-slate-950/75 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 text-center pointer-events-none rounded-[28px]">
@@ -264,7 +409,7 @@ function ServiceCard({ service, index = 0, onUnlockClick, isAdmin }) {
 
                 {/* Front 3D Icon Squircle */}
                 <div
-                    className={`relative z-10 w-16 h-16 rounded-2xl p-2.5 ${theme.iconBg} ${theme.iconGlow} flex items-center justify-center text-white transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}
+                    className={`relative z-10 w-16 h-16 rounded-2xl p-2.5 ${theme.iconBg} ${theme.iconGlow} flex items-center justify-center text-white transform group-hover:scale-115 group-hover:-rotate-3 transition-transform duration-300 animate-3d-icon-float`}
                 >
                     {service.logo_url ? (
                         <img
@@ -544,62 +689,77 @@ export default function Dashboard({
                     {isAdmin ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
+                                index={0}
+                                colorTheme="indigo"
                                 title="TOTAL USERS"
+                                badgeText="ACTIVE"
                                 value={Number(totalUsers || 0).toLocaleString('en-IN')}
                                 subtitle="Registered members"
                                 icon="group"
-                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
                                 linkUrl="/admin/users"
                             />
                             <StatMetricCard
+                                index={1}
+                                colorTheme="emerald"
                                 title="TOTAL BALANCE"
+                                badgeText="LIVE"
                                 value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
                                 subtitle="Admin wallet coins"
                                 icon="account_balance_wallet"
-                                iconBg="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
                                 linkUrl="/admin/coin-requests"
                             />
                             <StatMetricCard
+                                index={2}
+                                colorTheme="purple"
                                 title="WALLET HISTORY"
+                                badgeText="TODAY'S DEBIT"
                                 value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
-                                subtitle="Today's debit & ledger"
+                                subtitle="Debit & passbook ledger"
                                 icon="history"
-                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
                                 linkUrl="/admin/profile#coin-ledger"
                             />
                             <StatMetricCard
+                                index={3}
+                                colorTheme="amber"
                                 title="ACCOUNT TYPE"
+                                badgeText="VERIFIED"
                                 value={effectiveRole}
                                 subtitle="Portal permissions"
                                 icon="admin_panel_settings"
-                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
                                 linkUrl="/admin/profile"
                             />
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
+                                index={0}
+                                colorTheme="emerald"
                                 title="TOTAL BALANCE"
+                                badgeText="LIVE"
                                 value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                                subtitle="Available wallet balance"
+                                subtitle="Available wallet coins"
                                 icon="account_balance_wallet"
-                                iconBg="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
                                 linkUrl="/admin/coin-requests"
                             />
                             <StatMetricCard
+                                index={1}
+                                colorTheme="blue"
                                 title="ADD BALANCE"
-                                value="+ Add Balance"
-                                subtitle="Instant QR scan & recharge"
+                                badgeText="INSTANT QR"
+                                value="Add Balance"
+                                subtitle="Instant scan & automatic recharge"
                                 icon="add_card"
-                                iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
                                 linkUrl="/admin/coin-requests"
+                                isButton={true}
                             />
                             <StatMetricCard
+                                index={2}
+                                colorTheme="purple"
                                 title="WALLET HISTORY"
-                                value="Passbook"
-                                subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • View ledger`}
+                                badgeText="PASSBOOK"
+                                value="View Ledger"
+                                subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
                                 icon="history"
-                                iconBg="bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400"
                                 linkUrl="/admin/profile#coin-ledger"
                             />
                         </div>

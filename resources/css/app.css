@@ -120,6 +120,135 @@
 }
 
 /* ==========================================================================
+   3D Live Dashboard Boxes & Cards Animation
+   ========================================================================== */
+
+@keyframes box-float-3d-1 {
+  0%, 100% {
+    transform: perspective(900px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(900px) translateY(-6px) rotateX(2.2deg) rotateY(-1.5deg);
+  }
+}
+
+@keyframes box-float-3d-2 {
+  0%, 100% {
+    transform: perspective(900px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(900px) translateY(-7px) rotateX(-2deg) rotateY(2deg);
+  }
+}
+
+@keyframes box-float-3d-3 {
+  0%, 100% {
+    transform: perspective(900px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(900px) translateY(-5.5px) rotateX(2deg) rotateY(1.8deg);
+  }
+}
+
+@keyframes box-float-3d-4 {
+  0%, 100% {
+    transform: perspective(900px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(900px) translateY(-6.5px) rotateX(-1.8deg) rotateY(-1.5deg);
+  }
+}
+
+.animate-3d-box-1 {
+  animation: box-float-3d-1 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.animate-3d-box-2 {
+  animation: box-float-3d-2 5.6s ease-in-out infinite 0.5s;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.animate-3d-box-3 {
+  animation: box-float-3d-3 5.2s ease-in-out infinite 1s;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.animate-3d-box-4 {
+  animation: box-float-3d-4 5.8s ease-in-out infinite 1.5s;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.animate-3d-box-1:hover,
+.animate-3d-box-2:hover,
+.animate-3d-box-3:hover,
+.animate-3d-box-4:hover {
+  animation-play-state: paused;
+}
+
+@keyframes box-shimmer-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-22deg);
+  }
+  30%, 100% {
+    transform: translateX(280%) skewX(-22deg);
+  }
+}
+
+.animate-box-shimmer {
+  animation: box-shimmer-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes icon-3d-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) rotate(3deg) scale(1.06);
+  }
+}
+
+.animate-3d-icon-float {
+  animation: icon-3d-float 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pulse-ring-live {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  70%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-ring-live {
+  animation: pulse-ring-live 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ambient-glow-breathe {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.15);
+  }
+}
+
+.animate-ambient-glow {
+  animation: ambient-glow-breathe 4.2s ease-in-out infinite;
+}
+
+
+/* ==========================================================================
    Universal Form Controls & Service Forms: Crisp Black Text
    Ensure that words typed in any input, textarea, or select are always black
    ========================================================================== */
