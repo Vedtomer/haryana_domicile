@@ -138,6 +138,13 @@ class DashboardController extends Controller
             $todayDebit = 0;
         }
 
+        $totalUsers = 0;
+        try {
+            $totalUsers = User::count();
+        } catch (\Throwable $e) {
+            $totalUsers = 0;
+        }
+
         $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '380630323112');
         $supportTelegram = \App\Models\Setting::get('telegram_handle', '@cspjaankari');
 
@@ -149,6 +156,7 @@ class DashboardController extends Controller
             'stats' => $isAdmin ? $this->adminStats($servicesCount) : $this->userStats($user, $servicesCount),
             'walletBalance' => (int) ($user->coins ?? 0),
             'todayDebit' => $todayDebit,
+            'totalUsers' => $totalUsers,
             'apiBalance' => 487.00,
             'userRole' => $isAdmin ? 'ADMINISTRATOR' : 'RETAILER',
             'supportWhatsApp' => $supportWhatsApp,

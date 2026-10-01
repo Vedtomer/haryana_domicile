@@ -351,6 +351,7 @@ export default function Dashboard({
     isAdmin = false,
     walletBalance,
     todayDebit = 0,
+    totalUsers = 0,
     apiBalance = 487.00,
     userRole = 'RETAILER',
     supportWhatsApp = '380630323112',
@@ -575,11 +576,12 @@ export default function Dashboard({
                             linkUrl="/admin/profile#coin-ledger"
                         />
                         <StatMetricCard
-                            title="API BALANCE"
-                            value={`₹${Number(apiBalance).toFixed(2)}`}
-                            subtitle="Live portal sync"
-                            icon="description"
+                            title="TOTAL USERS"
+                            value={Number(totalUsers || 0).toLocaleString('en-IN')}
+                            subtitle="Registered members"
+                            icon="group"
                             iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
+                            linkUrl={isAdmin ? "/admin/users" : undefined}
                         />
                         <StatMetricCard
                             title="ACCOUNT TYPE"
