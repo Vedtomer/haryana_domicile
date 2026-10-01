@@ -546,13 +546,6 @@ export default function Dashboard({
                                     <span className="material-symbols-outlined text-[18px]">history</span>
                                     <span>Wallet History</span>
                                 </Link>
-                                <Link
-                                    href="/admin/coin-requests"
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 border border-white/30 text-white font-bold text-xs sm:text-sm backdrop-blur-md transition-all duration-200 shadow-sm cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">add_card</span>
-                                    <span>Add Balance</span>
-                                </Link>
                             </div>
                         </div>
                     </div>
