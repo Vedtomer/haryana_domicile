@@ -80,34 +80,42 @@ export default function AdminLayout({ header, children }) {
         return groupServicesByCategory(navServices);
     }, [navServices]);
 
-    // Accordion open/close state: automatically open category matching active URL
-    const [openCategories, setOpenCategories] = useState(() => {
-        const initial = {};
-        groupedServices.forEach((g) => {
-            if (g.services.some((s) => s.url && url.startsWith(s.url))) {
-                initial[g.category.id] = true;
-            }
-        });
-        if (Object.keys(initial).length === 0 && groupedServices.length > 0) {
-            initial[groupedServices[0].category.id] = true;
+    // Active category from URL query or categoryChange event
+    const [activeCategory, setActiveCategory] = useState(() => {
+        try {
+            return new URLSearchParams(window.location.search).get('category') || null;
+        } catch (e) {
+            return null;
         }
-        return initial;
     });
 
-    const toggleCategory = (catId) => {
-        setOpenCategories((prev) => ({
-            ...prev,
-            [catId]: !prev[catId],
-        }));
-    };
+    useEffect(() => {
+        const handleCat = (e) => setActiveCategory(e.detail);
+        window.addEventListener('categoryChange', handleCat);
+        return () => window.removeEventListener('categoryChange', handleCat);
+    }, []);
+
+    useEffect(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            setActiveCategory(params.get('category') || null);
+        } catch (e) {}
+    }, [url]);
 
     const handleCategoryClick = (catId) => {
-        toggleCategory(catId);
+        setActiveCategory(catId);
+        setSidebarOpen(false);
         if (window.location.pathname === '/dashboard') {
             const currentUrl = new URL(window.location);
             currentUrl.searchParams.set('category', catId);
             window.history.pushState({}, '', currentUrl);
             window.dispatchEvent(new CustomEvent('categoryChange', { detail: catId }));
+            setTimeout(() => {
+                const el = document.getElementById('services');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 80);
         } else {
             router.visit(`/dashboard?category=${catId}`);
         }
@@ -213,101 +221,61 @@ export default function AdminLayout({ header, children }) {
                         <span>SERVICES</span>
                     </div>
 
-                    {/* Categorized Services Accordion ("jo service jiski hai unke aner ho") */}
-                    <div className="space-y-2">
+                    {/* Categorized Services List (Click opens category services on the main screen) */}
+                    <div className="space-y-1.5">
                         {groupedServices.map((g) => {
-                            const isOpen = !!openCategories[g.category.id];
-                            const hasActiveChild = g.services.some((s) => s.url && url === s.url);
+                            const isActive = activeCategory === g.category.id;
 
                             return (
-                                <div
+                                <button
                                     key={g.category.id}
-                                    className={`bg-white dark:bg-slate-900/90 border rounded-2xl shadow-2xs overflow-hidden transition-all duration-200 ${
-                                        hasActiveChild
-                                            ? 'border-indigo-300 dark:border-indigo-600/60 ring-1 ring-indigo-400/30'
-                                            : 'border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700'
+                                    type="button"
+                                    onClick={() => handleCategoryClick(g.category.id)}
+                                    className={`w-full flex items-center justify-between p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer group ${
+                                        isActive
+                                            ? 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-500 shadow-xs ring-1 ring-indigo-400/30'
+                                            : 'bg-white dark:bg-slate-900/90 border-slate-200/80 dark:border-slate-800/80 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                                     }`}
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => handleCategoryClick(g.category.id)}
-                                        className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
-                                    >
-                                        <div className="flex items-center gap-2.5 min-w-0">
-                                            <div
-                                                className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-2xs ${g.category.avatarBg}`}
-                                            >
-                                                <span className="material-symbols-outlined text-[19px]">
-                                                    {g.category.icon}
-                                                </span>
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
-                                                {g.category.name}
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <div
+                                            className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-2xs ${g.category.avatarBg} group-hover:scale-105 transition-transform`}
+                                        >
+                                            <span className="material-symbols-outlined text-[19px]">
+                                                {g.category.icon}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-1.5 flex-shrink-0 text-slate-400">
-                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                                {g.services.length}
-                                            </span>
-                                            <span
-                                                className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${
-                                                    isOpen ? 'rotate-90 text-indigo-600 dark:text-indigo-400' : ''
-                                                }`}
-                                            >
-                                                chevron_right
-                                            </span>
-                                        </div>
-                                    </button>
-
-                                    {/* Sub-services list inside category */}
-                                    {isOpen && (
-                                        <div className="bg-slate-50/70 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 p-2 space-y-1 max-h-72 overflow-y-auto custom-scrollbar">
-                                            {g.services.map((service) => {
-                                                const isActive = service.url && url === service.url;
-                                                return (
-                                                    <Link
-                                                        key={service.id || service.slug}
-                                                        href={service.url}
-                                                        onClick={() => setSidebarOpen(false)}
-                                                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                                                            isActive
-                                                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold shadow-xs'
-                                                                : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800/80'
-                                                        }`}
-                                                    >
-                                                        <div className="flex items-center gap-2 truncate pr-2">
-                                                            <span
-                                                                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                                                                    isActive ? 'bg-white' : 'bg-slate-400'
-                                                                }`}
-                                                            />
-                                                            <span className="truncate">{service.name}</span>
-                                                        </div>
-                                                        {service.is_free ? (
-                                                            <span
-                                                                className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${
-                                                                    isActive
-                                                                        ? 'bg-white/20 text-white'
-                                                                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                                                                }`}
-                                                            >
-                                                                FREE
-                                                            </span>
-                                                        ) : service.coin_cost > 0 ? (
-                                                            <span
-                                                                className={`text-[10px] font-bold ${
-                                                                    isActive ? 'text-white' : 'text-amber-600 dark:text-amber-400'
-                                                                }`}
-                                                            >
-                                                                🪙{service.coin_cost}
-                                                            </span>
-                                                        ) : null}
-                                                    </Link>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
+                                        <span
+                                            className={`text-xs font-bold truncate transition-colors ${
+                                                isActive
+                                                    ? 'text-indigo-600 dark:text-indigo-400'
+                                                    : 'text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'
+                                            }`}
+                                        >
+                                            {g.category.name}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                                        <span
+                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                                isActive
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                                            }`}
+                                        >
+                                            {g.services.length}
+                                        </span>
+                                        <span
+                                            className={`material-symbols-outlined text-[17px] transition-transform ${
+                                                isActive
+                                                    ? 'text-indigo-600 dark:text-indigo-400 translate-x-0.5'
+                                                    : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 group-hover:translate-x-0.5'
+                                            }`}
+                                        >
+                                            arrow_forward
+                                        </span>
+                                    </div>
+                                </button>
                             );
                         })}
                     </div>

@@ -203,9 +203,29 @@ export default function Dashboard({
     useEffect(() => {
         const handleCategoryEvent = (e) => {
             setSelectedCategory(e.detail);
+            if (e.detail) {
+                setTimeout(() => {
+                    const el = document.getElementById('services');
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 100);
+            }
         };
         window.addEventListener('categoryChange', handleCategoryEvent);
         return () => window.removeEventListener('categoryChange', handleCategoryEvent);
+    }, []);
+
+    // Initial scroll if category is in URL
+    useEffect(() => {
+        if (selectedCategory) {
+            setTimeout(() => {
+                const el = document.getElementById('services');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 250);
+        }
     }, []);
 
     // Balance values
@@ -287,6 +307,7 @@ export default function Dashboard({
             const url = new URL(window.location);
             url.searchParams.delete('category');
             window.history.pushState({}, '', url);
+            window.dispatchEvent(new CustomEvent('categoryChange', { detail: null }));
         } catch (e) {}
     };
 
@@ -520,14 +541,14 @@ export default function Dashboard({
                                 )}
                             </div>
 
-                            {/* Back to all categories button */}
+                            {/* Close services button */}
                             <button
                                 type="button"
                                 onClick={clearSelectedCategory}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
                             >
-                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                                <span>All Categories</span>
+                                <span className="material-symbols-outlined text-[16px]">close</span>
+                                <span>Close Services</span>
                             </button>
                         </div>
                     </div>
@@ -544,8 +565,8 @@ export default function Dashboard({
                                 onClick={clearSelectedCategory}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
                             >
-                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                                View All Categories
+                                <span className="material-symbols-outlined text-[16px]">close</span>
+                                Close Services
                             </button>
                         </div>
                     ) : (
