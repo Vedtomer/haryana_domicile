@@ -43,6 +43,18 @@ Route::get('/', function () {
 Route::get('/migrate-db', function () {
     try {
         $output = '';
+        
+        $output .= "=== GIT & ENVIRONMENT DIAGNOSTICS ===\n";
+        $output .= "Base Path: " . base_path() . "\n";
+        $output .= "Public Path: " . public_path() . "\n";
+        $output .= "Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'none') . "\n";
+        $output .= "Git Log Before: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n";
+
+        // Pull latest from GitHub directly
+        $gitPullOutput = @shell_exec('git fetch origin main 2>&1 && git reset --hard origin/main 2>&1');
+        $output .= "Git Reset Output: " . trim((string) $gitPullOutput) . "\n";
+        $output .= "Git Log After: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n\n";
+
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $output .= "=== MIGRATE OUTPUT ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
 
