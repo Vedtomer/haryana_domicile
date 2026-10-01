@@ -557,16 +557,8 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    {/* 2. 4 Stat Metric Cards in a row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
-                        <StatMetricCard
-                            title="WALLET BALANCE"
-                            value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                            subtitle="Live retailer balance"
-                            icon="account_balance_wallet"
-                            iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400"
-                            linkUrl="/admin/coin-requests"
-                        />
+                    {/* 2. Stat Metric Cards in a row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-6">
                         <StatMetricCard
                             title="TODAY'S DEBIT"
                             value={`₹${Number(todayDebit).toLocaleString('en-IN')}.00`}
