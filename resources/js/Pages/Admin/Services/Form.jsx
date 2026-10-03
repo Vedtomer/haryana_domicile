@@ -187,12 +187,23 @@ export default function ServiceForm({ service, users = [], submitUrl, method, su
                 </div>
 
                 <div>
-                    <label className={label}>Status</label>
-                    <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <label className={label}>Visibility (Hide / Unhide / दिखना या छुपाना)</label>
+                    <label className="flex items-center gap-2.5 mt-2 cursor-pointer select-none">
                         <input type="checkbox" className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
                             checked={Boolean(data.is_active)} onChange={(e) => setData('is_active', e.target.checked)} />
-                        <span className="text-sm text-gray-700 font-medium">
-                            Active {Boolean(data.is_active) ? '(Service is visible & enabled)' : '(Service is marked Unavailable & disabled)'}
+                        <span className="text-sm font-semibold flex items-center gap-1.5">
+                            <span className={`material-symbols-outlined text-base ${Boolean(data.is_active) ? 'text-emerald-600' : 'text-rose-600'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                                {Boolean(data.is_active) ? 'visibility' : 'visibility_off'}
+                            </span>
+                            {Boolean(data.is_active) ? (
+                                <span className="text-emerald-700 font-bold">
+                                    Visible (Unhide) — Portal & Dashboard par show hoga
+                                </span>
+                            ) : (
+                                <span className="text-rose-700 font-bold">
+                                    Hidden (Hide) — Portal & Dashboard se hide rahega
+                                </span>
+                            )}
                         </span>
                     </label>
                 </div>

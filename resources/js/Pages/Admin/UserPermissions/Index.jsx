@@ -297,9 +297,9 @@ export default function UserPermissions({ users = [], services = [] }) {
                                                         </div>
 
                                                         {isGloballyInactive && (
-                                                            <div className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.2 text-red-700 bg-red-50 border border-red-200 rounded mt-0.5">
-                                                                <span className="material-symbols-outlined text-[11px]">block</span>
-                                                                Disabled in Manage Services
+                                                            <div className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 text-rose-700 bg-rose-50 border border-rose-200 rounded mt-0.5">
+                                                                <span className="material-symbols-outlined text-[11px]" style={{ fontVariationSettings: "'FILL' 1" }}>visibility_off</span>
+                                                                Hidden in Manage Services
                                                             </div>
                                                         )}
 

@@ -356,17 +356,17 @@ function ServiceCard({ service, index = 0, onUnlockClick, isAdmin }) {
                 <div className="w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 dark:via-white/10 to-transparent skew-x-[-22deg] animate-box-shimmer" />
             </div>
 
-            {/* Center Overlay for Inactive Services */}
+            {/* Center Overlay for Inactive/Hidden Services */}
             {isInactive && (
-                <div className="absolute inset-0 z-30 bg-slate-950/50 dark:bg-slate-950/75 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 text-center pointer-events-none rounded-[28px]">
-                    <div className="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center mb-2 shadow-lg ring-4 ring-red-500/30">
-                        <span className="material-symbols-outlined text-2xl font-bold">block</span>
+                <div className="absolute inset-0 z-30 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 text-center pointer-events-none rounded-[28px]">
+                    <div className="w-11 h-11 rounded-full bg-slate-800 text-white flex items-center justify-center mb-2 shadow-lg ring-4 ring-rose-500/30">
+                        <span className="material-symbols-outlined text-2xl font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>visibility_off</span>
                     </div>
-                    <span className="text-xs font-black tracking-widest uppercase text-white bg-red-600 px-3 py-1 rounded-full shadow-md">
-                        UNAVAILABLE
+                    <span className="text-xs font-black tracking-widest uppercase text-white bg-rose-600 px-3 py-1 rounded-full shadow-md">
+                        HIDDEN
                     </span>
                     <span className="text-[11px] font-bold text-white/90 drop-shadow mt-1">
-                        Currently Inactive
+                        Service is Hidden (छुपी हुई है)
                     </span>
                 </div>
             )}

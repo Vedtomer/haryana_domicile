@@ -129,17 +129,17 @@ export default function Index({ services }) {
                     </div>
                     <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-semibold text-emerald-600 uppercase">Active</p>
+                            <p className="text-xs font-semibold text-emerald-600 uppercase">Visible (दिख रही हैं)</p>
                             <p className="text-2xl font-black text-emerald-700 mt-0.5">{activeCount}</p>
                         </div>
-                        <span className="material-symbols-outlined text-emerald-500 text-3xl">check_circle</span>
+                        <span className="material-symbols-outlined text-emerald-500 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>visibility</span>
                     </div>
                     <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-semibold text-rose-500 uppercase">Unavailable</p>
+                            <p className="text-xs font-semibold text-rose-500 uppercase">Hidden (छुपी हुई हैं)</p>
                             <p className="text-2xl font-black text-rose-600 mt-0.5">{services.length - activeCount}</p>
                         </div>
-                        <span className="material-symbols-outlined text-rose-400 text-3xl">block</span>
+                        <span className="material-symbols-outlined text-rose-400 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>visibility_off</span>
                     </div>
                     <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
@@ -178,23 +178,25 @@ export default function Index({ services }) {
                         </button>
                         <button
                             onClick={() => setFilterStatus('active')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
                                 filterStatus === 'active'
                                     ? 'bg-emerald-600 text-white shadow-sm'
                                     : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                             }`}
                         >
-                            Active ({activeCount})
+                            <span className="material-symbols-outlined text-xs">visibility</span>
+                            Visible / Unhide ({activeCount})
                         </button>
                         <button
                             onClick={() => setFilterStatus('hidden')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
                                 filterStatus === 'hidden'
                                     ? 'bg-rose-600 text-white shadow-sm'
                                     : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
                             }`}
                         >
-                            Unavailable ({services.length - activeCount})
+                            <span className="material-symbols-outlined text-xs">visibility_off</span>
+                            Hidden / Hide ({services.length - activeCount})
                         </button>
                     </div>
                 </div>
@@ -209,7 +211,7 @@ export default function Index({ services }) {
                                     <th className="px-5 py-3.5">Type</th>
                                     <th className="px-5 py-3.5">Coin Cost</th>
                                     <th className="px-5 py-3.5">Total Requests</th>
-                                    <th className="px-5 py-3.5">Status (Click to Toggle)</th>
+                                    <th className="px-5 py-3.5">Visibility (Hide / Unhide)</th>
                                     <th className="px-5 py-3.5 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -266,26 +268,28 @@ export default function Index({ services }) {
                                                 type="button"
                                                 disabled={togglingId === service.id}
                                                 onClick={() => handleToggleStatus(service)}
-                                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all shadow-sm ${
+                                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all shadow-xs cursor-pointer ${
                                                     togglingId === service.id ? 'opacity-50 cursor-wait' : ''
                                                 } ${
                                                     service.is_active
-                                                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
-                                                        : 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200'
+                                                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400'
+                                                        : 'bg-rose-50 text-rose-800 border border-rose-300 hover:bg-rose-100 hover:border-rose-400'
                                                 }`}
-                                                title={service.is_active ? 'Click to make Unavailable' : 'Click to make Active'}
+                                                title={service.is_active ? 'Click to Hide (छिपाने के लिए क्लिक करें)' : 'Click to Unhide / Show (दिखाने के लिए क्लिक करें)'}
                                             >
                                                 <span
-                                                    className={`material-symbols-outlined text-sm ${togglingId === service.id ? 'animate-spin' : ''}`}
+                                                    className={`material-symbols-outlined text-base ${togglingId === service.id ? 'animate-spin' : ''}`}
                                                     style={{ fontVariationSettings: "'FILL' 1" }}
                                                 >
                                                     {togglingId === service.id
                                                         ? 'sync'
                                                         : service.is_active
-                                                        ? 'check_circle'
-                                                        : 'cancel'}
+                                                        ? 'visibility'
+                                                        : 'visibility_off'}
                                                 </span>
-                                                {service.is_active ? 'Active' : 'Unavailable'}
+                                                <span>
+                                                    {service.is_active ? 'Visible (Unhide)' : 'Hidden (Hide)'}
+                                                </span>
                                             </button>
                                         </td>
                                         <td className="px-5 py-4 whitespace-nowrap text-right">

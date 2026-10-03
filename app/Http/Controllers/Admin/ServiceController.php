@@ -175,7 +175,7 @@ class ServiceController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        $statusText = $service->is_active ? 'Active' : 'Unavailable (Inactive)';
+        $statusText = $service->is_active ? 'Visible (Unhidden / दिख रहा है)' : 'Hidden (Hide / छुपा दिया गया)';
 
         return back()->with('success', "Service '{$service->name}' is now {$statusText}.");
     }
