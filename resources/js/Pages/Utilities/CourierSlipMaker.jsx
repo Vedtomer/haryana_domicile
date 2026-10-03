@@ -4,7 +4,7 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 // Self-contained high-contrast vector SVG Barcode generator
-function SvgBarcode({ value, height = 48, className = "" }) {
+function SvgBarcode({ value, height = 44, className = "" }) {
     const cleanVal = (value || 'CSP2610031234IN').toUpperCase();
     const bars = [];
     let x = 10;
@@ -45,11 +45,11 @@ function SvgBarcode({ value, height = 48, className = "" }) {
 function PinBoxes({ pin = '' }) {
     const cleanPin = (pin || '').replace(/\D/g, '').padEnd(6, ' ').slice(0, 6);
     return (
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-1.5">
             {cleanPin.split('').map((char, i) => (
                 <div
                     key={i}
-                    className="w-7 h-8 sm:w-8 sm:h-9 bg-white border-2 border-slate-900 rounded font-mono font-black text-base sm:text-lg flex items-center justify-center text-slate-900 shadow-sm"
+                    className="w-7 h-8 sm:w-8 sm:h-9 bg-white border-2 border-slate-900 rounded font-mono font-black text-base sm:text-lg flex items-center justify-center text-slate-900 shadow-2xs"
                 >
                     {char.trim()}
                 </div>
@@ -61,19 +61,22 @@ function PinBoxes({ pin = '' }) {
 export default function CourierSlipMaker() {
     const todayStr = new Date().toISOString().split('T')[0];
 
+    // Slip Mode: 'SIMPLE_DISPATCH' (Direct From/To Parcel Label) or 'COURIER_BARCODE' (Speed Post Barcode Slip)
+    const [slipMode, setSlipMode] = useState('SIMPLE_DISPATCH');
+
     // Form State
     const [formData, setFormData] = useState({
-        // Consignment info
-        courier_type: 'SPEED_POST', // SPEED_POST, INDIA_POST, DTDC, BLUEDART, DELHIVERY, PRIVATE
+        // Consignment info (For Barcode Mode)
+        courier_type: 'SPEED_POST',
         tracking_no: 'SP' + Math.floor(10000000 + Math.random() * 90000000) + 'IN',
         dispatch_date: todayStr,
         weight: '500 gm',
-        contents: 'Urgent Documents / Certificates',
+        contents: 'Urgent Documents / Certificates / Parcel',
         payment_mode: 'PREPAID',
         declared_value: '₹ 500',
         priority_stamp: 'SPEED POST - URGENT',
 
-        // TO / Receiver (Consignee) Details
+        // TO / Receiver (Delivery Destination)
         receiver_name: 'AMIT VERMA',
         receiver_phone: '9876543210',
         receiver_alt_phone: '9416012345',
@@ -84,7 +87,7 @@ export default function CourierSlipMaker() {
         receiver_state: 'Haryana',
         receiver_pincode: '125055',
 
-        // FROM / Sender (Consignor) Details
+        // FROM / Sender (Dispatch By)
         sender_firm: 'CSP JAANKARI / CYBER CAFE',
         sender_name: 'RAMESH CHAND SHARMA',
         sender_phone: '9991122334',
@@ -97,8 +100,8 @@ export default function CourierSlipMaker() {
         sender_pincode: '125001',
     });
 
-    // Paper layout options: 'A3_LARGE', 'A3_DUAL', 'A4_SINGLE', 'A4_DUAL'
-    const [paperSize, setPaperSize] = useState('A3_LARGE');
+    // Paper layout options: 'A4_SINGLE', 'A4_DUAL', 'A4_QUAD', 'A3_LARGE', 'A3_DUAL'
+    const [paperSize, setPaperSize] = useState('A4_SINGLE');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
@@ -171,6 +174,7 @@ export default function CourierSlipMaker() {
             const response = await axios.post('/utilities/courier-slip-maker/generate', {
                 ...formData,
                 paper_size: paperSize,
+                slip_mode: slipMode,
             });
 
             if (response.data.success) {
@@ -178,8 +182,7 @@ export default function CourierSlipMaker() {
                 if (response.data.remaining_coins !== undefined) {
                     setCoinsRemaining(response.data.remaining_coins);
                 }
-                setSuccessMsg(`✓ Courier Slip saved & 5 Coins charged successfully! Opening print dialog...`);
-                // Auto trigger print after brief delay
+                setSuccessMsg(`✓ Dispatch Slip generated & 5 Coins charged successfully! Opening print dialog...`);
                 setTimeout(() => {
                     window.print();
                 }, 400);
@@ -203,7 +206,7 @@ export default function CourierSlipMaker() {
     const qrData = `TO: ${formData.receiver_name} | PH: ${formData.receiver_phone} | PIN: ${formData.receiver_pincode} | ADDR: ${formData.receiver_address}, ${formData.receiver_city}, ${formData.receiver_state} | FROM: ${formData.sender_name} (${formData.sender_firm}) | TRACK: ${formData.tracking_no}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=2&data=${encodeURIComponent(qrData)}`;
 
-    // Get courier badge info
+    // Get courier badge info for Barcode mode
     const getCourierBadge = () => {
         switch (formData.courier_type) {
             case 'SPEED_POST':
@@ -223,14 +226,209 @@ export default function CourierSlipMaker() {
 
     const courierBadge = getCourierBadge();
 
-    // Render single courier slip card
+    // ==========================================
+    // 1. RENDER DIRECT PARCEL DISPATCH SLIP (OPTION 1)
+    // ==========================================
+    const renderSimpleDispatchSlip = (copyType = 'ORIGINAL', isCompact = false) => {
+        return (
+            <div className={`courier-slip-box bg-white text-slate-900 border-4 border-slate-900 shadow-xl overflow-hidden rounded-xl font-sans relative ${isCompact ? 'p-3 text-xs' : 'p-5 sm:p-7 text-sm'}`}>
+                {/* Top Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-slate-900 pb-3 gap-2">
+                    <div className="flex items-center gap-2.5">
+                        <div className="bg-slate-950 text-white px-3.5 py-1.5 rounded-lg font-black tracking-wider text-xs sm:text-base flex items-center gap-2 uppercase">
+                            <span className="material-symbols-outlined text-base sm:text-lg text-amber-400">local_shipping</span>
+                            <span>PARCEL DISPATCH SLIP / पार्सल डिस्पैच पर्ची</span>
+                        </div>
+                        {copyType === 'OFFICE' && (
+                            <span className="bg-amber-100 text-amber-900 border-2 border-amber-800 px-2 py-0.5 rounded font-black text-xs uppercase">
+                                OFFICE COPY
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-2.5 text-right">
+                        <div className="text-xs font-bold text-slate-600">
+                            Date: <span className="text-slate-950 font-black">{formData.dispatch_date}</span>
+                        </div>
+                        {formData.priority_stamp && (
+                            <span className="border-2 border-red-700 bg-red-50 text-red-700 font-black px-2.5 py-0.5 rounded text-[11px] sm:text-xs uppercase">
+                                ★ {formData.priority_stamp} ★
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Main Content Grid: TO (Delivery Destination) & FROM (Sender) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border-b-4 border-slate-900">
+                    {/* 1. TO / सेवा में (Delivery Address) - 7 Columns, large & bold */}
+                    <div className="md:col-span-7 p-4 sm:p-5 bg-amber-50/50 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
+                                <span className="bg-red-700 text-white font-black px-3 py-1 rounded text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-2xs">
+                                    <span className="material-symbols-outlined text-sm sm:text-base">pin_drop</span>
+                                    TO / सेवा में (DELIVERY TO)
+                                </span>
+                                <span className="text-[10px] font-black text-red-600 uppercase tracking-wider">
+                                    [ DELIVER TO ]
+                                </span>
+                            </div>
+
+                            {/* Receiver Full Name */}
+                            <div className="text-lg sm:text-2xl font-black text-slate-950 uppercase tracking-tight leading-tight">
+                                {formData.receiver_name || 'RECEIVER FULL NAME'}
+                            </div>
+
+                            {/* Mobile Numbers */}
+                            <div className="mt-2.5 flex flex-wrap items-center gap-2 sm:gap-3">
+                                <div className="flex items-center gap-1.5 bg-white border-2 border-slate-900 px-3 py-1 rounded-lg text-slate-950 shadow-2xs">
+                                    <span className="text-sm">📞</span>
+                                    <span className="text-xs font-bold text-slate-600 uppercase">Mobile:</span>
+                                    <span className="font-mono font-black text-emerald-800 text-sm sm:text-base">
+                                        {formData.receiver_phone || 'XXXXXXXXXX'}
+                                    </span>
+                                </div>
+                                {formData.receiver_alt_phone && (
+                                    <div className="flex items-center gap-1 bg-white border border-slate-400 px-2 py-0.5 rounded-lg text-slate-700 text-xs font-bold">
+                                        <span>Alt:</span>
+                                        <span className="font-mono">{formData.receiver_alt_phone}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Receiver Aadhaar if present */}
+                            {formData.receiver_aadhaar && (
+                                <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 border border-blue-300 text-blue-900 px-2 py-0.5 rounded font-mono font-bold text-[11px]">
+                                    <span>🆔 Aadhaar:</span>
+                                    <span>{formData.receiver_aadhaar}</span>
+                                </div>
+                            )}
+
+                            {/* Full Address */}
+                            <div className="mt-3 text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
+                                <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                                    Delivery Address (डिलीवरी पता):
+                                </div>
+                                <div className="text-slate-950 font-black text-sm sm:text-base mt-0.5">
+                                    {formData.receiver_address || 'Complete House / Street / Landmark Address'}
+                                </div>
+                                <div className="mt-1 text-slate-900 font-bold">
+                                    {[formData.receiver_city, formData.receiver_district, formData.receiver_state].filter(Boolean).join(', ')}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Delivery PIN Code */}
+                        <div className="mt-4 pt-3 border-t-2 border-dashed border-slate-400 flex flex-wrap items-center justify-between gap-2 bg-white p-2.5 rounded-lg border border-slate-300">
+                            <div>
+                                <div className="text-[10px] font-black uppercase text-slate-600 tracking-wider">
+                                    PIN CODE (पिन कोड):
+                                </div>
+                                <div className="text-[11px] font-bold text-indigo-700">
+                                    {formData.receiver_city}, {formData.receiver_state}
+                                </div>
+                            </div>
+                            <PinBoxes pin={formData.receiver_pincode} />
+                        </div>
+                    </div>
+
+                    {/* 2. FROM / प्रेषक (Sender Details) - 5 Columns */}
+                    <div className="md:col-span-5 p-4 sm:p-5 bg-slate-50 flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
+                                <span className="bg-slate-800 text-white font-black px-2.5 py-0.5 rounded text-xs uppercase tracking-wider flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">home_pin</span>
+                                    FROM / प्रेषक (DISPATCH BY)
+                                </span>
+                            </div>
+
+                            {formData.sender_firm && (
+                                <div className="text-xs sm:text-sm font-extrabold text-indigo-900 uppercase">
+                                    {formData.sender_firm}
+                                </div>
+                            )}
+
+                            <div className="text-sm sm:text-base font-black text-slate-950 uppercase mt-0.5">
+                                {formData.sender_name || 'SENDER NAME'}
+                            </div>
+
+                            <div className="mt-1.5 text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                <span>📞 Mobile:</span>
+                                <span className="font-mono font-black text-slate-950">
+                                    {formData.sender_phone || 'XXXXXXXXXX'}
+                                </span>
+                            </div>
+
+                            {formData.sender_alt_phone && (
+                                <div className="text-[11px] font-semibold text-slate-600 mt-0.5">
+                                    Alt Mobile: <span className="font-mono font-bold text-slate-900">{formData.sender_alt_phone}</span>
+                                </div>
+                            )}
+
+                            {formData.sender_aadhaar && (
+                                <div className="mt-1 text-[11px] font-mono font-bold text-slate-700">
+                                    🆔 Aadhaar: {formData.sender_aadhaar}
+                                </div>
+                            )}
+
+                            <div className="mt-2 text-xs text-slate-800 font-medium leading-relaxed">
+                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sender Address:</div>
+                                <div className="text-slate-900 font-bold mt-0.5">{formData.sender_address || 'Sender Address'}</div>
+                                <div className="text-slate-800 font-bold mt-0.5">
+                                    {[formData.sender_city, formData.sender_district, formData.sender_state].filter(Boolean).join(', ')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 pt-2.5 border-t-2 border-slate-300">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-slate-500 uppercase">SENDER PIN:</span>
+                                <span className="font-mono font-black text-base text-slate-950">{formData.sender_pincode || '125001'}</span>
+                            </div>
+                            <div className="mt-1.5 p-1.5 bg-red-50 border border-red-200 rounded text-[9px] sm:text-[10px] text-red-700 font-black flex items-center gap-1 leading-tight">
+                                <span>⚠️ यदि पैकेट डिलीवर न हो तो कृपया वापस प्रेषक के पते पर भेजें।</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Bar: QR Code, Parcel Details & Signature */}
+                <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5">
+                        <img
+                            src={qrUrl}
+                            alt="Dispatch QR"
+                            className="w-14 h-14 sm:w-16 sm:h-16 border-2 border-slate-900 rounded p-0.5 bg-white shadow-2xs shrink-0"
+                        />
+                        <div className="text-[10px] text-slate-700 leading-snug">
+                            <div className="font-black text-slate-900 uppercase">PARCEL CONTENTS / विशेष विवरण:</div>
+                            <div className="font-bold text-slate-950">{formData.contents || 'Urgent Documents / Parcel Packet'}</div>
+                            <div className="mt-0.5 text-[9px] text-slate-500">
+                                Scan QR code with mobile camera for delivery routing & receiver phone number.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-right flex flex-col items-end justify-end shrink-0">
+                        <div className="w-32 sm:w-40 border-b-2 border-slate-900 mb-1 h-6 sm:h-7"></div>
+                        <div className="text-[10px] font-black uppercase text-slate-900">
+                            Authorized Signatory / प्रेषक हस्ताक्षर
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // ==========================================
+    // 2. RENDER BARCODE / SPEED POST SLIP (OPTION 2)
+    // ==========================================
     const renderSlip = (isOfficeCopy = false, isCompact = false) => {
         return (
             <div className={`courier-slip-box bg-white text-slate-900 border-4 border-slate-900 shadow-xl overflow-hidden rounded-lg font-sans relative ${isCompact ? 'p-3.5 text-xs' : 'p-5 sm:p-6 text-sm'}`}>
-                {/* Diagonal / Corner Watermark or Stamp */}
+                {/* Priority Stamp Badge */}
                 {formData.priority_stamp && (
                     <div className="absolute right-4 top-16 sm:top-20 z-10 pointer-events-none opacity-85 rotate-[-8deg]">
-                        <div className="border-4 border-red-700 text-red-700 font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm tracking-wider uppercase shadow-sm bg-white/90">
+                        <div className="border-4 border-red-700 text-red-700 font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm tracking-wider uppercase shadow-2xs bg-white/90">
                             ★ {formData.priority_stamp} ★
                         </div>
                     </div>
@@ -264,7 +462,7 @@ export default function CourierSlipMaker() {
                 {/* Barcode & Routing Strip */}
                 <div className="bg-slate-100/90 border-b-2 border-slate-900 py-2 px-3 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div className="w-full sm:w-64 max-w-full">
-                        <SvgBarcode value={formData.tracking_no} height={38} />
+                        <SvgBarcode value={formData.tracking_no} height={36} />
                         <div className="text-center font-mono font-bold text-[10px] tracking-widest text-slate-700">
                             *{formData.tracking_no || 'CSP2610031234IN'}*
                         </div>
@@ -288,7 +486,7 @@ export default function CourierSlipMaker() {
 
                 {/* Main Content: TO (Delivery) & FROM (Sender) */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border-b-4 border-slate-900">
-                    {/* TO / Consignee / Delivery Address - 7 Columns (Prominent!) */}
+                    {/* TO / Consignee / Delivery Address - 7 Columns */}
                     <div className="md:col-span-7 p-4 sm:p-5 bg-amber-50/40 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
@@ -348,11 +546,11 @@ export default function CourierSlipMaker() {
                                 <div className="text-[10px] font-black uppercase text-slate-600 tracking-wider">
                                     DELIVERY PIN CODE:
                                 </div>
-                                <PinBoxes pin={formData.receiver_pincode} />
+                                <div className="text-xs font-bold text-indigo-700">
+                                    {formData.receiver_city}, {formData.receiver_state}
+                                </div>
                             </div>
-                            <div className="text-right text-[11px] font-bold text-slate-600">
-                                STATE: <span className="text-slate-950 uppercase">{formData.receiver_state || 'HARYANA'}</span>
-                            </div>
+                            <PinBoxes pin={formData.receiver_pincode} />
                         </div>
                     </div>
 
@@ -418,7 +616,7 @@ export default function CourierSlipMaker() {
                         <img
                             src={qrUrl}
                             alt="Courier Routing QR"
-                            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-slate-900 rounded p-0.5 bg-white shadow-sm shrink-0"
+                            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-slate-900 rounded p-0.5 bg-white shadow-2xs shrink-0"
                         />
                         <div className="text-[10px] text-slate-600 leading-snug">
                             <div className="font-bold text-slate-800 uppercase">PARCEL CONTENTS:</div>
@@ -441,6 +639,14 @@ export default function CourierSlipMaker() {
         );
     };
 
+    // Current slip renderer based on chosen format mode
+    const renderActiveSlip = (isOffice = false, isCompact = false) => {
+        if (slipMode === 'SIMPLE_DISPATCH') {
+            return renderSimpleDispatchSlip(isOffice ? 'OFFICE' : 'ORIGINAL', isCompact);
+        }
+        return renderSlip(isOffice, isCompact);
+    };
+
     return (
         <AdminLayout
             header={
@@ -448,7 +654,7 @@ export default function CourierSlipMaker() {
                     <div>
                         <div className="flex items-center gap-2">
                             <span className="px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-wider rounded-full bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-300">
-                                📦 Manual Dispatch Service
+                                📦 Parcel & Courier Dispatch Maker
                             </span>
                             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -459,7 +665,7 @@ export default function CourierSlipMaker() {
                             Courier & Parcel Slip Maker (A3 / A4 Print)
                         </h1>
                         <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                            Generate professional courier dispatch labels, speed post slips with Aadhaar, Barcode & QR Code
+                            From / To Dispatch Label, Speed Post Slips, Barcode & QR Code for Envelopes and Boxes
                         </p>
                     </div>
 
@@ -467,7 +673,7 @@ export default function CourierSlipMaker() {
                         <button
                             type="button"
                             onClick={handleFillSample}
-                            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all shadow-2xs"
                         >
                             <span className="material-symbols-outlined text-base">auto_fix_high</span>
                             Demo Data
@@ -492,7 +698,7 @@ export default function CourierSlipMaker() {
                 @media print {
                     @page {
                         size: ${paperSize.startsWith('A3') ? 'A3 portrait' : 'A4 portrait'};
-                        margin: 8mm;
+                        margin: 6mm;
                     }
                     body {
                         background: #ffffff !important;
@@ -540,220 +746,253 @@ export default function CourierSlipMaker() {
                     </div>
                 )}
 
+                {/* ============================================================== */}
+                {/* TOP FORMAT SELECTOR: OPTION 1 (DISPATCH) VS OPTION 2 (BARCODE) */}
+                {/* ============================================================== */}
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-4 sm:p-5 text-white shadow-xl mb-7 no-print border border-indigo-800/60">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5 pb-3 border-b border-white/10">
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">
+                                    ★ NEW OPTION ADDED
+                                </span>
+                                <span className="text-xs font-bold text-indigo-300">
+                                    Select Desired Format (स्लिप फॉर्मेट चुनें):
+                                </span>
+                            </div>
+                            <h2 className="text-base sm:text-lg font-black text-white mt-1">
+                                पार्सल भेजने के लिए स्लिप का प्रकार चुनें
+                            </h2>
+                        </div>
+                        <div className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>{slipMode === 'SIMPLE_DISPATCH' ? 'Direct From / To Mode' : 'Barcode & Tracking Mode'}</span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Option A: Direct Parcel Dispatch Slip (From / To) */}
+                        <button
+                            type="button"
+                            onClick={() => setSlipMode('SIMPLE_DISPATCH')}
+                            className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                                slipMode === 'SIMPLE_DISPATCH'
+                                    ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30 ring-2 ring-white/30'
+                                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                            }`}
+                        >
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                                slipMode === 'SIMPLE_DISPATCH' ? 'bg-white text-indigo-700' : 'bg-white/10 text-white'
+                            }`}>
+                                <span className="material-symbols-outlined text-[26px]">local_shipping</span>
+                            </div>
+                            <div>
+                                <div className="font-black text-sm flex items-center gap-2">
+                                    <span>1. Direct Parcel Dispatch Slip</span>
+                                    {slipMode === 'SIMPLE_DISPATCH' && (
+                                        <span className="text-[10px] bg-white text-indigo-700 px-2 py-0.5 rounded-full font-black uppercase">
+                                            ACTIVE
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="text-[11px] opacity-85 mt-0.5 leading-snug">
+                                    कहीं भी पार्सल भेजने के लिए सीधा <b>FROM</b> और <b>TO</b> डिटेल डालें और तुरंत प्रिंट निकालें।
+                                </div>
+                            </div>
+                        </button>
+
+                        {/* Option B: Speed Post & Official Barcode Slip */}
+                        <button
+                            type="button"
+                            onClick={() => setSlipMode('COURIER_BARCODE')}
+                            className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                                slipMode === 'COURIER_BARCODE'
+                                    ? 'bg-amber-600 border-amber-400 text-white shadow-lg shadow-amber-600/30 ring-2 ring-white/30'
+                                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                            }`}
+                        >
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                                slipMode === 'COURIER_BARCODE' ? 'bg-white text-amber-700' : 'bg-white/10 text-white'
+                            }`}>
+                                <span className="material-symbols-outlined text-[26px]">barcode</span>
+                            </div>
+                            <div>
+                                <div className="font-black text-sm flex items-center gap-2">
+                                    <span>2. Speed Post & Barcode Courier Slip</span>
+                                    {slipMode === 'COURIER_BARCODE' && (
+                                        <span className="text-[10px] bg-white text-amber-700 px-2 py-0.5 rounded-full font-black uppercase">
+                                            ACTIVE
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="text-[11px] opacity-85 mt-0.5 leading-snug">
+                                    कंसाइनमेंट नंबर, बारकोड, स्पीड पोस्ट मोहर और ऑफिशियल कूरियर रसीद के साथ।
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* LEFT COLUMN: Data Entry Form */}
                     <div className="lg:col-span-5 space-y-6 no-print">
                         {/* Paper Size / Print Layout Selector */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xs">
                             <div className="flex items-center justify-between mb-3">
                                 <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                                     <span className="material-symbols-outlined text-base text-amber-500">description</span>
-                                    Select Print Paper Size:
+                                    Select Print Paper Size (प्रिंट साइज):
                                 </label>
                                 <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                                    {paperSize.startsWith('A3') ? '★ A3 Full Sheet Mode' : 'Standard A4 Mode'}
+                                    {paperSize.startsWith('A3') ? '★ A3 Poster Mode' : 'Standard A4 Mode'}
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setPaperSize('A3_LARGE')}
-                                    className={`px-3 py-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                                        paperSize === 'A3_LARGE'
-                                            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-300 ring-2 ring-amber-400/30'
-                                            : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
-                                    }`}
-                                >
-                                    <div className="font-extrabold flex items-center gap-1">
-                                        <span className="text-amber-600">📄 A3 Large Label</span>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Big Box Shipping Poster</div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setPaperSize('A3_DUAL')}
-                                    className={`px-3 py-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                                        paperSize === 'A3_DUAL'
-                                            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-300 ring-2 ring-amber-400/30'
-                                            : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
-                                    }`}
-                                >
-                                    <div className="font-extrabold flex items-center gap-1">
-                                        <span className="text-amber-600">📋 A3 Dual Copy</span>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Parcel + Office Receipt</div>
-                                </button>
-
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setPaperSize('A4_SINGLE')}
-                                    className={`px-3 py-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                                    className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
                                         paperSize === 'A4_SINGLE'
-                                            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-300 ring-2 ring-amber-400/30'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-900 dark:text-indigo-300 ring-2 ring-indigo-400/30'
                                             : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
                                     }`}
                                 >
-                                    <div className="font-extrabold flex items-center gap-1">
-                                        <span className="text-blue-600">📄 A4 Standard</span>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Single A4 Parcel Slip</div>
+                                    <div className="font-black">📄 A4 Single</div>
+                                    <div className="text-[10px] text-slate-500 font-normal">1 Big Slip / Sheet</div>
                                 </button>
 
                                 <button
                                     type="button"
                                     onClick={() => setPaperSize('A4_DUAL')}
-                                    className={`px-3 py-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                                    className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
                                         paperSize === 'A4_DUAL'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-900 dark:text-indigo-300 ring-2 ring-indigo-400/30'
+                                            : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <div className="font-black">📋 A4 Dual (2-in-1)</div>
+                                    <div className="text-[10px] text-slate-500 font-normal">2 Slips on 1 A4 Page</div>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaperSize('A4_QUAD')}
+                                    className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                                        paperSize === 'A4_QUAD'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-900 dark:text-indigo-300 ring-2 ring-indigo-400/30'
+                                            : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <div className="font-black">🏷️ A4 Quad (4-in-1)</div>
+                                    <div className="text-[10px] text-slate-500 font-normal">4 Small Stickers/Page</div>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaperSize('A3_LARGE')}
+                                    className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                                        paperSize === 'A3_LARGE'
                                             ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-300 ring-2 ring-amber-400/30'
                                             : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
                                     }`}
                                 >
-                                    <div className="font-extrabold flex items-center gap-1">
-                                        <span className="text-blue-600">📋 A4 Dual Copy</span>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">2 Slips on 1 A4 Sheet</div>
+                                    <div className="font-black">📦 A3 Large Label</div>
+                                    <div className="text-[10px] text-slate-500 font-normal">Big Carton Box Poster</div>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaperSize('A3_DUAL')}
+                                    className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                                        paperSize === 'A3_DUAL'
+                                            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-300 ring-2 ring-amber-400/30'
+                                            : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <div className="font-black">📋 A3 Dual Copy</div>
+                                    <div className="text-[10px] text-slate-500 font-normal">Parcel + Office Receipt</div>
                                 </button>
                             </div>
                         </div>
 
                         {/* FORM: Details Inputs */}
-                        <form onSubmit={handleGenerateSlip} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-6">
-                            {/* Courier & Tracking Section */}
-                            <div>
-                                <h3 className="text-xs font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
-                                    <span className="material-symbols-outlined text-base">local_shipping</span>
-                                    1. Courier & Dispatch Service
-                                </h3>
+                        <form onSubmit={handleGenerateSlip} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-2xs space-y-6">
+                            {/* Courier & Tracking Section - Only shown in COURIER_BARCODE mode */}
+                            {slipMode === 'COURIER_BARCODE' && (
+                                <div>
+                                    <h3 className="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-3 flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-base">barcode</span>
+                                        Courier & Tracking Information
+                                    </h3>
 
-                                <div className="space-y-3">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                            Courier Company / Type:
-                                        </label>
-                                        <select
-                                            name="courier_type"
-                                            value={formData.courier_type}
-                                            onChange={handleChange}
-                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            <option value="SPEED_POST">India Post - Speed Post (त्वरित डाक)</option>
-                                            <option value="INDIA_POST">India Post - Registered Parcel (पंजीकृत पार्सल)</option>
-                                            <option value="DTDC">DTDC Express Courier</option>
-                                            <option value="BLUEDART">Blue Dart Express</option>
-                                            <option value="DELHIVERY">Delhivery Surface / Air</option>
-                                            <option value="PRIVATE">Private Courier / By Hand Transport</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <div className="flex items-center justify-between mb-1">
-                                                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                                    Tracking / Ref No:
-                                                </label>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleGenerateTracking}
-                                                    className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
-                                                >
-                                                    ⚡ New
-                                                </button>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                name="tracking_no"
-                                                value={formData.tracking_no}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white uppercase"
-                                                placeholder="SP12345678IN"
-                                            />
-                                        </div>
-
+                                    <div className="space-y-3">
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Dispatch Date:
-                                            </label>
-                                            <input
-                                                type="date"
-                                                name="dispatch_date"
-                                                value={formData.dispatch_date}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <div>
-                                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                Weight:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="weight"
-                                                value={formData.weight}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-medium"
-                                                placeholder="500 gm"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                Payment:
+                                                Courier Service Company:
                                             </label>
                                             <select
-                                                name="payment_mode"
-                                                value={formData.payment_mode}
+                                                name="courier_type"
+                                                value={formData.courier_type}
                                                 onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-bold"
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                                             >
-                                                <option value="PREPAID">PREPAID</option>
-                                                <option value="COD">C.O.D.</option>
-                                                <option value="TO-PAY">TO-PAY</option>
+                                                <option value="SPEED_POST">India Post - Speed Post (त्वरित डाक)</option>
+                                                <option value="INDIA_POST">India Post - Registered Parcel (पंजीकृत पार्सल)</option>
+                                                <option value="DTDC">DTDC Express Courier</option>
+                                                <option value="BLUEDART">Blue Dart Express</option>
+                                                <option value="DELHIVERY">Delhivery Surface / Air</option>
+                                                <option value="PRIVATE">Private Courier / By Hand Transport</option>
                                             </select>
                                         </div>
-                                        <div>
-                                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                Priority Stamp:
-                                            </label>
-                                            <select
-                                                name="priority_stamp"
-                                                value={formData.priority_stamp}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-900 dark:text-white font-bold"
-                                            >
-                                                <option value="SPEED POST - URGENT">SPEED POST</option>
-                                                <option value="DOCUMENTS ONLY">DOCUMENTS ONLY</option>
-                                                <option value="FRAGILE - HANDLE WITH CARE">FRAGILE</option>
-                                                <option value="DO NOT BEND">DO NOT BEND</option>
-                                                <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                            Contents Description:
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="contents"
-                                            value={formData.contents}
-                                            onChange={handleChange}
-                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                                            placeholder="Urgent Documents / Certificates / Legal Notice"
-                                        />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                        Tracking / Ref No:
+                                                    </label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleGenerateTracking}
+                                                        className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
+                                                    >
+                                                        ⚡ Generate
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    name="tracking_no"
+                                                    value={formData.tracking_no}
+                                                    onChange={handleChange}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white uppercase"
+                                                    placeholder="SP12345678IN"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                    Weight:
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="weight"
+                                                    value={formData.weight}
+                                                    onChange={handleChange}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-medium"
+                                                    placeholder="500 gm"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Section 2: TO / Receiver (Consignee) Details */}
-                            <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                                <h3 className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-1.5">
+                            {/* Section: TO / Receiver (Consignee) Details */}
+                            <div>
+                                <h3 className="text-xs font-black uppercase tracking-wider text-red-600 dark:text-red-400 mb-3 flex items-center gap-1.5">
                                     <span className="material-symbols-outlined text-base">pin_drop</span>
-                                    2. Receiver / Delivery Details (TO - पाने वाला)
+                                    {slipMode === 'SIMPLE_DISPATCH' ? '1. Deliver To / सेवा में (पाने वाले का पता)' : 'Receiver Details (TO - पाने वाला)'}
                                 </h3>
 
                                 <div className="space-y-3">
@@ -803,10 +1042,9 @@ export default function CourierSlipMaker() {
                                         </div>
                                     </div>
 
-                                    {/* Aadhaar Number field */}
                                     <div>
                                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                            Receiver Aadhaar Number (आधार नंबर):
+                                            Receiver Aadhaar Number (आधार नंबर - ऐच्छिक):
                                         </label>
                                         <input
                                             type="text"
@@ -836,7 +1074,7 @@ export default function CourierSlipMaker() {
                                     <div className="grid grid-cols-3 gap-2">
                                         <div>
                                             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                City / Tehsil:
+                                                City / Village:
                                             </label>
                                             <input
                                                 type="text"
@@ -849,7 +1087,7 @@ export default function CourierSlipMaker() {
                                         </div>
                                         <div>
                                             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                District / State:
+                                                District:
                                             </label>
                                             <input
                                                 type="text"
@@ -857,7 +1095,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.receiver_district}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
-                                                placeholder="Sirsa, HR"
+                                                placeholder="Sirsa"
                                             />
                                         </div>
                                         <div>
@@ -879,11 +1117,11 @@ export default function CourierSlipMaker() {
                                 </div>
                             </div>
 
-                            {/* Section 3: FROM / Sender (Consignor) Details */}
+                            {/* Section: FROM / Sender (Consignor) Details */}
                             <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1.5">
                                     <span className="material-symbols-outlined text-base">storefront</span>
-                                    3. Sender Details (FROM - प्रेषक)
+                                    {slipMode === 'SIMPLE_DISPATCH' ? '2. Dispatch From / प्रेषक (भेजने वाले का पता)' : 'Sender Details (FROM - प्रेषक)'}
                                 </h3>
 
                                 <div className="space-y-3">
@@ -936,7 +1174,7 @@ export default function CourierSlipMaker() {
 
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Sender Aadhaar:
+                                                Sender Aadhaar (ऐच्छिक):
                                             </label>
                                             <input
                                                 type="text"
@@ -996,12 +1234,63 @@ export default function CourierSlipMaker() {
                                 </div>
                             </div>
 
+                            {/* Section: Priority & Notes */}
+                            <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                                            Priority Stamp / Label:
+                                        </label>
+                                        <select
+                                            name="priority_stamp"
+                                            value={formData.priority_stamp}
+                                            onChange={handleChange}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-bold"
+                                        >
+                                            <option value="SPEED POST - URGENT">SPEED POST - URGENT</option>
+                                            <option value="URGENT DISPATCH">URGENT DISPATCH</option>
+                                            <option value="DOCUMENTS ONLY">DOCUMENTS ONLY</option>
+                                            <option value="FRAGILE - HANDLE WITH CARE">FRAGILE - HANDLE WITH CARE</option>
+                                            <option value="DO NOT BEND">DO NOT BEND</option>
+                                            <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                                            Dispatch Date:
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="dispatch_date"
+                                            value={formData.dispatch_date}
+                                            onChange={handleChange}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-3">
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Contents Description (सामग्री विवरण):
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="contents"
+                                        value={formData.contents}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
+                                        placeholder="Urgent Documents / Certificates / Legal Notice"
+                                    />
+                                </div>
+                            </div>
+
                             {/* Submit & Generate Action Button */}
                             <div className="pt-2">
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-700 hover:to-red-700 text-white font-black rounded-xl text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                                    className="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-700 text-white font-black rounded-xl text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                                 >
                                     {loading ? (
                                         <>
@@ -1010,8 +1299,8 @@ export default function CourierSlipMaker() {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined text-lg">receipt_long</span>
-                                            <span>Generate & Print Courier Slip (5 Coins)</span>
+                                            <span className="material-symbols-outlined text-lg">print</span>
+                                            <span>Generate & Print Dispatch Slip (5 Coins)</span>
                                         </>
                                     )}
                                 </button>
@@ -1029,7 +1318,7 @@ export default function CourierSlipMaker() {
                                 <div>
                                     <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                                         <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        Live Courier Slip Preview
+                                        Live Print Preview ({slipMode === 'SIMPLE_DISPATCH' ? 'Direct From/To Slip' : 'Speed Post Slip'})
                                     </h2>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
                                         Exact print layout for <b>{paperSize.replace('_', ' ')}</b>
@@ -1040,7 +1329,7 @@ export default function CourierSlipMaker() {
                                     <button
                                         type="button"
                                         onClick={handleDirectPrint}
-                                        className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow"
+                                        className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
                                     >
                                         <span className="material-symbols-outlined text-base">print</span>
                                         Print Now
@@ -1052,7 +1341,7 @@ export default function CourierSlipMaker() {
                             <div id="courier-print-area" className="space-y-6">
                                 {paperSize === 'A3_LARGE' && (
                                     <div className="a3-large-container">
-                                        {renderSlip(false, false)}
+                                        {renderActiveSlip(false, false)}
                                     </div>
                                 )}
 
@@ -1063,7 +1352,7 @@ export default function CourierSlipMaker() {
                                             <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5 text-center no-print">
                                                 ✂️ COPY 1: PARCEL BOX PASTE LABEL (A3)
                                             </div>
-                                            {renderSlip(false, false)}
+                                            {renderActiveSlip(false, false)}
                                         </div>
 
                                         {/* Dotted Cut Line */}
@@ -1078,14 +1367,14 @@ export default function CourierSlipMaker() {
                                             <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5 text-center no-print">
                                                 📋 COPY 2: OFFICE & SENDER BOOKING RECEIPT (A3)
                                             </div>
-                                            {renderSlip(true, false)}
+                                            {renderActiveSlip(true, false)}
                                         </div>
                                     </div>
                                 )}
 
                                 {paperSize === 'A4_SINGLE' && (
                                     <div className="a4-single-container">
-                                        {renderSlip(false, false)}
+                                        {renderActiveSlip(false, false)}
                                     </div>
                                 )}
 
@@ -1095,7 +1384,7 @@ export default function CourierSlipMaker() {
                                             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 text-center no-print">
                                                 ✂️ SLIP 1: PARCEL PASTE COPY (A4)
                                             </div>
-                                            {renderSlip(false, true)}
+                                            {renderActiveSlip(false, true)}
                                         </div>
 
                                         <div className="border-t-2 border-dashed border-slate-400 my-2 relative flex items-center justify-center">
@@ -1108,8 +1397,17 @@ export default function CourierSlipMaker() {
                                             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 text-center no-print">
                                                 📋 SLIP 2: OFFICE RECEIPT (A4)
                                             </div>
-                                            {renderSlip(true, true)}
+                                            {renderActiveSlip(true, true)}
                                         </div>
+                                    </div>
+                                )}
+
+                                {paperSize === 'A4_QUAD' && (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>{renderActiveSlip(false, true)}</div>
+                                        <div>{renderActiveSlip(false, true)}</div>
+                                        <div>{renderActiveSlip(false, true)}</div>
+                                        <div>{renderActiveSlip(false, true)}</div>
                                     </div>
                                 )}
                             </div>
@@ -1122,16 +1420,19 @@ export default function CourierSlipMaker() {
                                 </div>
                                 <ul className="list-disc list-inside space-y-1 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
                                     <li>
+                                        <b>Option 1 (Direct Parcel Dispatch):</b> Perfect for sending registry, envelopes, documents or cargo cartons. Just enter FROM and TO and print!
+                                    </li>
+                                    <li>
+                                        <b>Option 2 (Speed Post & Barcode):</b> Provides official postal barcode, consignment number, and priority stamps.
+                                    </li>
+                                    <li>
                                         For <b>A3 Page Print</b>, select <b>A3 Large Label</b> or <b>A3 Dual Copy</b> above, then in print preview choose Paper size <b>A3</b>.
                                     </li>
                                     <li>
-                                        For standard desktop printers, choose <b>A4 Standard</b> or <b>A4 Dual Copy</b>.
+                                        For standard desktop printers, choose <b>A4 Single</b>, <b>A4 Dual (2-in-1)</b>, or <b>A4 Quad (4-in-1)</b>.
                                     </li>
                                     <li>
-                                        In browser print dialog, set <b>Margins to Minimum / None</b> and enable <b>Background Graphics</b> for sharp borders and badges.
-                                    </li>
-                                    <li>
-                                        The QR code and Barcode are 100% scannable by postmen and courier delivery agents with any mobile camera or barcode scanner.
+                                        In browser print dialog, set <b>Margins to Minimum / None</b> and enable <b>Background Graphics</b> for clean borders.
                                     </li>
                                 </ul>
                             </div>
