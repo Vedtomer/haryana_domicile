@@ -981,10 +981,6 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 
-        // PhonePe Online Payment Gateway Routes
-        Route::post('/payment/phonepe/initiate', [\App\Http\Controllers\PhonePePaymentController::class, 'initiate'])->name('payment.phonepe.initiate');
-        Route::get('/payment/phonepe/check-status/{orderId}', [\App\Http\Controllers\PhonePePaymentController::class, 'checkStatus'])->name('payment.phonepe.check-status');
-
         // License Purchase & Activation Routes
         Route::post('/license/buy', [\App\Http\Controllers\LicenseController::class, 'buy'])->name('license.buy');
         Route::post('/license/activate', [\App\Http\Controllers\LicenseController::class, 'activate'])->name('license.activate');
@@ -1947,10 +1943,6 @@ Route::prefix('api/print-agent')->group(function () {
     Route::get('/engine', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'downloadEngine']);
     Route::get('/script', [\App\Http\Controllers\Api\PrintAgentApiController::class, 'getLatestScript']);
 });
-
-// PhonePe Payment Gateway Public Callback and Webhook
-Route::match(['get', 'post'], '/payment/phonepe/callback', [\App\Http\Controllers\PhonePePaymentController::class, 'callback'])->name('payment.phonepe.callback');
-Route::post('/api/phonepe/webhook', [\App\Http\Controllers\PhonePePaymentController::class, 'webhook'])->name('payment.phonepe.webhook');
 
 // Storage fallback route - guarantees uploaded service logos and public files are always served
 Route::get('/storage/{path}', function ($path) {
