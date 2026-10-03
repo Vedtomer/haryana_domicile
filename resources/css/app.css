@@ -334,4 +334,32 @@ html.dark input:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
+/* Login card & light container autofill override: keep crisp dark text on light background */
+#login-card input:-webkit-autofill,
+#login-card input:-webkit-autofill:hover,
+#login-card input:-webkit-autofill:focus,
+#login-card input:-webkit-autofill:active,
+.login-card-container input:-webkit-autofill,
+.login-card-container input:-webkit-autofill:hover,
+.login-card-container input:-webkit-autofill:focus,
+.login-card-container input:-webkit-autofill:active {
+    -webkit-text-fill-color: #0f172a !important;
+    -webkit-box-shadow: 0 0 0px 1000px #f1f5f9 inset !important;
+    box-shadow: 0 0 0px 1000px #f1f5f9 inset !important;
+    color: #0f172a !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+#login-card input,
+.login-card-container input {
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+#login-card label,
+.login-card-container label {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
 
