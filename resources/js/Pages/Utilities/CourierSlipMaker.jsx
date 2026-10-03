@@ -493,13 +493,6 @@ export default function CourierSlipMaker() {
                                     <span className="material-symbols-outlined text-sm">home_pin</span>
                                     FROM / प्रेषक (DISPATCH BY)
                                 </span>
-                                {formData.show_logo && formData.sender_logo && (
-                                    <img
-                                        src={formData.sender_logo}
-                                        alt="Logo"
-                                        className="h-7 max-h-7 max-w-[90px] object-contain rounded bg-white p-0.5 border border-slate-200"
-                                    />
-                                )}
                             </div>
 
                             {formData.sender_firm && (
@@ -523,13 +516,6 @@ export default function CourierSlipMaker() {
                                 <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
                                     <span>🌐 Website:</span>
                                     <span className="font-mono font-black underline">{formData.sender_website}</span>
-                                </div>
-                            )}
-
-                            {formData.sender_email && (
-                                <div className="mt-0.5 text-[11px] font-semibold text-slate-700 flex items-center gap-1">
-                                    <span>✉️ Email:</span>
-                                    <span className="font-mono text-slate-900">{formData.sender_email}</span>
                                 </div>
                             )}
 
@@ -715,13 +701,6 @@ export default function CourierSlipMaker() {
                                     <span className="material-symbols-outlined text-sm">home_pin</span>
                                     FROM / प्रेषक (SENDER)
                                 </span>
-                                {formData.show_logo && formData.sender_logo && (
-                                    <img
-                                        src={formData.sender_logo}
-                                        alt="Logo"
-                                        className="h-7 max-h-7 max-w-[90px] object-contain rounded bg-white p-0.5 border border-slate-200"
-                                    />
-                                )}
                             </div>
 
                             {formData.sender_firm && (
@@ -745,13 +724,6 @@ export default function CourierSlipMaker() {
                                 <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
                                     <span>🌐 Website:</span>
                                     <span className="font-mono font-black underline">{formData.sender_website}</span>
-                                </div>
-                            )}
-
-                            {formData.sender_email && (
-                                <div className="mt-0.5 text-[11px] font-semibold text-slate-700 flex items-center gap-1">
-                                    <span>✉️ Email:</span>
-                                    <span className="font-mono text-slate-900">{formData.sender_email}</span>
                                 </div>
                             )}
 
@@ -1437,7 +1409,7 @@ export default function CourierSlipMaker() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                                 Mobile No: *
@@ -1464,20 +1436,6 @@ export default function CourierSlipMaker() {
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-400 font-mono"
                                                 placeholder={isAdmin ? "akenterprisegroup.com" : "yourwebsite.com (Optional)"}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Sender Email (ईमेल):
-                                            </label>
-                                            <input
-                                                type="email"
-                                                name="sender_email"
-                                                value={formData.sender_email}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono"
-                                                placeholder={isAdmin ? "a.kenterprise0611@gmail.com" : "youremail@gmail.com (Optional)"}
                                             />
                                         </div>
                                     </div>
