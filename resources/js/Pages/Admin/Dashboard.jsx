@@ -562,7 +562,6 @@ export default function Dashboard({
     const availableServices = useMemo(() => {
         return (services || []).filter((s) => {
             if (!s.is_active && !isAdmin) return false;
-            if (!s.can_access && !isAdmin) return false;
             return true;
         });
     }, [services, isAdmin]);
@@ -572,59 +571,20 @@ export default function Dashboard({
         return groupServicesByCategory(availableServices);
     }, [availableServices]);
 
-    // 3. Filtered groups based on search & selected category
+    // 3. Display groups (if category selected from sidebar, show that category or all)
     const displayGroups = useMemo(() => {
-        const query = searchQuery.trim().toLowerCase();
-
-        return allCategoryGroups
-            .map((group) => {
-                if (selectedCategory && group.category.id !== selectedCategory) {
-                    return { ...group, services: [] };
-                }
-
-                if (!query) {
-                    return group;
-                }
-
-                const matched = group.services.filter((s) => {
-                    const name = (s.name || '').toLowerCase();
-                    const desc = (s.description || '').toLowerCase();
-                    const slug = (s.slug || '').toLowerCase();
-                    return name.includes(query) || desc.includes(query) || slug.includes(query);
-                });
-
-                return {
-                    ...group,
-                    services: matched,
-                };
-            })
-            .filter((g) => g.services.length > 0);
-    }, [allCategoryGroups, selectedCategory, searchQuery]);
+        if (selectedCategory) {
+            const found = allCategoryGroups.find((g) => g.category.id === selectedCategory);
+            if (found) return [found];
+        }
+        return allCategoryGroups;
+    }, [allCategoryGroups, selectedCategory]);
 
     // Currently active category object if selected
     const activeCategoryObj = useMemo(() => {
         if (!selectedCategory) return null;
         return SERVICE_CATEGORIES.find((c) => c.id === selectedCategory) || null;
     }, [selectedCategory]);
-
-    const handleCategorySelect = (catId) => {
-        setSelectedCategory(catId);
-        try {
-            const url = new URL(window.location);
-            if (catId) {
-                url.searchParams.set('category', catId);
-            } else {
-                url.searchParams.delete('category');
-            }
-            window.history.pushState({}, '', url);
-            window.dispatchEvent(new CustomEvent('categoryChange', { detail: catId }));
-
-            const el = document.getElementById('services-section');
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        } catch (e) {}
-    };
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -776,202 +736,64 @@ export default function Dashboard({
                 </div>
             )}
 
-            {/* 3. Category Filter & Search Control Bar */}
-            <div id="services-section" className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-4 sm:p-5 mb-7 shadow-2xs">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3.5">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[20px]">category</span>
-                        </div>
-                        <div>
-                            <h3 className="font-extrabold text-slate-800 dark:text-white text-sm sm:text-base leading-none">
-                                Services by Category
-                            </h3>
-                            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
-                                {selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'All Service Categories'} • {availableServices.length} Total Services
+            {/* If filtered by sidebar category: small clean indicator */}
+            {selectedCategory && (
+                <div className="flex items-center justify-between gap-3 mb-6 p-3 px-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500 font-semibold">
+                            Category: <strong className="text-indigo-600 dark:text-indigo-400">{activeCategoryObj?.name}</strong>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${activeCategoryObj?.badgeBg}`}>
+                            {displayGroups[0]?.services?.length || 0} Services
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={clearSelectedCategory}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all cursor-pointer whitespace-nowrap"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                        <span>Show All Services</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Separated Category Columns of Services */}
+            <div className="space-y-10 mb-10">
+                {displayGroups.map((group) => (
+                    <div key={group.category.id} id={`cat-${group.category.id}`} className="relative">
+                        {/* Clean Category Column Header */}
+                        <div className="flex items-center justify-between gap-3 mb-4 pb-2 border-b-2 border-slate-200/80 dark:border-slate-800">
+                            <div className="flex items-center gap-2.5">
+                                <CategoryLogo category={group.category} services={group.services} size="w-8 h-8" />
+                                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                                    {group.category.name}
+                                </h2>
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 hidden sm:inline">
+                                    ({group.category.hindiName})
+                                </span>
+                            </div>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${group.category.badgeBg}`}>
+                                {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
                             </span>
                         </div>
+
+                        {/* Responsive 3D Grid of Cards for this Category Column */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
+                            {group.services.map((service, index) => (
+                                <ServiceCard
+                                    key={service.id}
+                                    service={service}
+                                    index={index}
+                                    onUnlockClick={setUnlockingService}
+                                    isAdmin={isAdmin}
+                                />
+                            ))}
+                        </div>
                     </div>
-
-                    {/* Instant Search Bar */}
-                    <div className="relative w-full md:w-72">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
-                            search
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Search any service..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        />
-                        {searchQuery && (
-                            <button
-                                type="button"
-                                onClick={() => setSearchQuery('')}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-[15px]">close</span>
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Horizontal Category Navigation Tabs */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar">
-                    {/* All Services Pill */}
-                    <button
-                        type="button"
-                        onClick={() => handleCategorySelect(null)}
-                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer flex-shrink-0 ${
-                            !selectedCategory
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-400/30'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/80'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-[16px]">grid_view</span>
-                        <span>All Services</span>
-                        <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
-                            !selectedCategory ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                        }`}>
-                            {availableServices.length}
-                        </span>
-                    </button>
-
-                    {/* Individual Category Navigation Pills */}
-                    {allCategoryGroups.map((g) => {
-                        const isSelected = selectedCategory === g.category.id;
-                        return (
-                            <button
-                                key={g.category.id}
-                                type="button"
-                                onClick={() => handleCategorySelect(g.category.id)}
-                                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer flex-shrink-0 ${
-                                    isSelected
-                                        ? `bg-gradient-to-r ${g.category.color} text-white shadow-md ring-2 ring-white/30`
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/80'
-                                }`}
-                            >
-                                <span className="material-symbols-outlined text-[16px]">{g.category.icon}</span>
-                                <span>{g.category.shortName}</span>
-                                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
-                                    isSelected ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                                }`}>
-                                    {g.services.length}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </div>
+                ))}
             </div>
-
-            {/* If a category is selected: Show Selected Category Header Banner */}
-            {selectedCategory && activeCategoryObj && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
-                    <div className="flex items-center gap-3.5">
-                        <CategoryLogo category={activeCategoryObj} services={displayGroups[0]?.services || []} size="w-12 h-12" />
-                        <div>
-                            <div className="flex items-center gap-2.5 flex-wrap">
-                                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                                    {activeCategoryObj.name}
-                                </h2>
-                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
-                                    ({activeCategoryObj.hindiName})
-                                </span>
-                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider ${activeCategoryObj.badgeBg}`}>
-                                    {displayGroups[0]?.services?.length || 0} Services
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                {activeCategoryObj.description}
-                            </p>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={clearSelectedCategory}
-                        className="self-start sm:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap"
-                    >
-                        <span className="material-symbols-outlined text-[17px]">arrow_back</span>
-                        <span>Show All Categories</span>
-                    </button>
-                </div>
-            )}
-
-            {/* 4. Categorized Columns of Services */}
-            {displayGroups.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs mb-8">
-                    <div className="text-4xl">🔍</div>
-                    <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">
-                        Koi service nahi mili
-                    </h4>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
-                        Aapke search query ya is filter me koi service match nahi hui.
-                    </p>
-                    <button
-                        type="button"
-                        onClick={clearSelectedCategory}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">refresh</span>
-                        <span>Reset Search & Filters</span>
-                    </button>
-                </div>
-            ) : (
-                <div className="space-y-8 mb-10">
-                    {displayGroups.map((group) => (
-                        <div key={group.category.id} className="relative">
-                            {/* Column / Category Header (Only when viewing all categories) */}
-                            {!selectedCategory && (
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4.5 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-                                    <div className="flex items-center gap-3.5 min-w-0">
-                                        <CategoryLogo category={group.category} services={group.services} size="w-10 h-10" />
-                                        <div className="min-w-0">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
-                                                    {group.category.name}
-                                                </h3>
-                                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
-                                                    ({group.category.hindiName})
-                                                </span>
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${group.category.badgeBg}`}>
-                                                    {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
-                                                </span>
-                                            </div>
-                                            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                                                {group.category.description}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => handleCategorySelect(group.category.id)}
-                                        className="self-start sm:self-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
-                                    >
-                                        <span>Only {group.category.shortName}</span>
-                                        <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Responsive 3D Grid of Cards for this Category Column */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
-                                {group.services.map((service, index) => (
-                                    <ServiceCard
-                                        key={service.id}
-                                        service={service}
-                                        index={index}
-                                        onUnlockClick={setUnlockingService}
-                                        isAdmin={isAdmin}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
 
             {/* 5. Customer Care Section */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
