@@ -128,6 +128,13 @@ export default function CourierSlipMaker() {
     const [slipGenerated, setSlipGenerated] = useState(false);
     const [coinsRemaining, setCoinsRemaining] = useState(null);
 
+    // WhatsApp modal and share state
+    const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false);
+    const [whatsAppPhone, setWhatsAppPhone] = useState('9876543210');
+    const [whatsAppName, setWhatsAppName] = useState('AMIT VERMA');
+    const [whatsAppNote, setWhatsAppNote] = useState('');
+    const [copiedWhatsAppMsg, setCopiedWhatsAppMsg] = useState(false);
+
     // Auto-generate fresh tracking number
     const handleGenerateTracking = () => {
         let prefix = 'SP';
@@ -177,6 +184,8 @@ export default function CourierSlipMaker() {
                       show_logo: true,
                   }),
         }));
+        setWhatsAppPhone('9812345670');
+        setWhatsAppName('SANJAY KUMAR S/O SHRI RAMESH KUMAR');
         setSuccessMsg('Sample demo data loaded successfully!');
         setTimeout(() => setSuccessMsg(null), 3500);
     };
@@ -311,6 +320,12 @@ export default function CourierSlipMaker() {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
 
+        if (name === 'receiver_phone') {
+            setWhatsAppPhone(value);
+        } else if (name === 'receiver_name') {
+            setWhatsAppName(value);
+        }
+
         // Instant auto-lookup as soon as 6th digit is typed
         if (name === 'receiver_pincode') {
             const digits = value.replace(/\D/g, '');
@@ -364,6 +379,80 @@ export default function CourierSlipMaker() {
     // Trigger Print
     const handleDirectPrint = () => {
         window.print();
+    };
+
+    // Helper to generate professional WhatsApp message for the courier slip
+    const buildCourierWhatsAppMessage = (targetPhone, targetName, extraNote) => {
+        const custName = (targetName !== undefined ? targetName : whatsAppName || formData.receiver_name || 'ग्राहक').trim();
+        const phone = targetPhone !== undefined ? targetPhone : whatsAppPhone || formData.receiver_phone || '';
+        const note = extraNote !== undefined ? extraNote : whatsAppNote;
+
+        const destAddress = [
+            formData.receiver_address,
+            formData.receiver_city,
+            formData.receiver_district,
+            formData.receiver_state ? `${formData.receiver_state} - ${formData.receiver_pincode}` : formData.receiver_pincode
+        ].filter(Boolean).join(', ');
+
+        const senderFirmOrName = formData.sender_firm || formData.sender_name || 'A K ENTERPRISE';
+
+        const lines = [
+            `📦 *कूरियर / पार्सल डिस्पैच रसीद (Courier Dispatch Details)*`,
+            `----------------------------------------`,
+            `नमस्ते *${custName}* जी,`,
+            `आपका पार्सल सफलतापूर्वक बुक / डिस्पैच कर दिया गया है। 🚚`,
+            ``,
+            `📍 *डिलीवरी विवरण (Delivery To):*`,
+            `• *ग्राहक का नाम:* ${custName}`,
+            `• *मोबाइल:* ${phone || 'N/A'}`,
+            `• *डिलीवरी पता:* ${destAddress || 'N/A'}`,
+        ];
+
+        if (slipMode === 'BARCODE_SLIP' && formData.tracking_no) {
+            lines.push(``);
+            lines.push(`🔖 *कंसाइनमेंट / ट्रैकिंग नं:* ${formData.tracking_no}`);
+            lines.push(`🚚 *सर्विस टाइप:* ${formData.courier_type || 'SPEED POST'}`);
+            if (formData.weight) lines.push(`⚖️ *वजन:* ${formData.weight}`);
+        }
+
+        lines.push(``);
+        lines.push(`🏢 *प्रेषक विवरण (Dispatched From):*`);
+        lines.push(`• *फर्म / नाम:* ${senderFirmOrName}`);
+        if (formData.sender_phone) lines.push(`• *संपर्क:* ${formData.sender_phone}`);
+        if (formData.sender_website) lines.push(`• *वेबसाइट:* ${formData.sender_website}`);
+
+        if (note && note.trim()) {
+            lines.push(``);
+            lines.push(`💬 *सूचना:* ${note.trim()}`);
+        }
+
+        lines.push(`----------------------------------------`);
+        lines.push(`⚠️ *नोट:* कृपया पार्सल प्राप्त करते समय फोन चालू रखें।`);
+        lines.push(`✅ सेवा का अवसर देने के लिए धन्यवाद! 🙏`);
+
+        return lines.join('\n');
+    };
+
+    // Direct WhatsApp Send Handler
+    const handleSendWhatsAppDirect = (targetPhone, isWeb = false) => {
+        const raw = (targetPhone || whatsAppPhone || formData.receiver_phone || '').replace(/[^0-9]/g, '');
+        if (raw.length < 10) {
+            alert('कृपया 10 अंकों का मान्य मोबाइल नंबर दर्ज करें!');
+            return;
+        }
+        const validPhone = raw.length === 10 ? `91${raw}` : raw;
+        const msg = buildCourierWhatsAppMessage(raw, whatsAppName, whatsAppNote);
+        const url = isWeb
+            ? `https://web.whatsapp.com/send?phone=${validPhone}&text=${encodeURIComponent(msg)}`
+            : `https://wa.me/${validPhone}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    };
+
+    const handleCopyWhatsAppMessage = () => {
+        const msg = buildCourierWhatsAppMessage(whatsAppPhone, whatsAppName, whatsAppNote);
+        navigator.clipboard.writeText(msg);
+        setCopiedWhatsAppMsg(true);
+        setTimeout(() => setCopiedWhatsAppMsg(false), 2500);
     };
 
     // Dynamic QR Code data string containing all key postal details
@@ -800,6 +889,19 @@ export default function CourierSlipMaker() {
                         >
                             <span className="material-symbols-outlined text-base">auto_fix_high</span>
                             Demo Data
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setWhatsAppPhone(formData.receiver_phone || '');
+                                setWhatsAppName(formData.receiver_name || '');
+                                setWhatsAppModalOpen(true);
+                            }}
+                            className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-base">chat</span>
+                            WhatsApp Share
                         </button>
 
                         <button
@@ -1542,6 +1644,19 @@ export default function CourierSlipMaker() {
                                 <div className="text-center text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium">
                                     ⚡ Charges: <b>5 Coins (₹5)</b> will be deducted on generation. (Super Admins Free)
                                 </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setWhatsAppPhone(formData.receiver_phone || '');
+                                        setWhatsAppName(formData.receiver_name || '');
+                                        setWhatsAppModalOpen(true);
+                                    }}
+                                    className="w-full mt-2.5 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-bold rounded-xl text-xs border border-emerald-300 dark:border-emerald-700 flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-base">chat</span>
+                                    <span>ग्राहक को WhatsApp पर रसीद भेजें (Share on WhatsApp)</span>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -1561,6 +1676,19 @@ export default function CourierSlipMaker() {
                                 </div>
 
                                 <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setWhatsAppPhone(formData.receiver_phone || '');
+                                            setWhatsAppName(formData.receiver_name || '');
+                                            setWhatsAppModalOpen(true);
+                                        }}
+                                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">chat</span>
+                                        WhatsApp पर भेजें
+                                    </button>
+
                                     <button
                                         type="button"
                                         onClick={handleDirectPrint}
@@ -1647,6 +1775,72 @@ export default function CourierSlipMaker() {
                                 )}
                             </div>
 
+                            {/* Quick WhatsApp Share to Customer Card */}
+                            <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border-2 border-emerald-300 dark:border-emerald-800 shadow-sm no-print">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2.5 border-b border-emerald-200 dark:border-emerald-800/60">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
+                                            <span className="material-symbols-outlined text-lg">chat</span>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-xs sm:text-sm text-emerald-950 dark:text-emerald-100 flex items-center gap-1.5">
+                                                ग्राहक को WhatsApp पर रसीद भेजें (Direct WhatsApp Share)
+                                            </h4>
+                                            <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
+                                                नंबर डालें और 1-क्लिक में ग्राहक को कूरियर/पार्सल की पूरी डिटेल व्हाट्सएप पर भेजें (बिना नंबर सेव किए)
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setWhatsAppPhone(formData.receiver_phone || '');
+                                            setWhatsAppName(formData.receiver_name || '');
+                                            setWhatsAppModalOpen(true);
+                                        }}
+                                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 self-start sm:self-auto cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">tune</span>
+                                        मैसेज कस्टमाइज़ करें
+                                    </button>
+                                </div>
+
+                                <div className="mt-3 flex flex-col sm:flex-row items-center gap-2">
+                                    <div className="relative w-full sm:w-64">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-600">
+                                            +91
+                                        </span>
+                                        <input
+                                            type="tel"
+                                            maxLength="10"
+                                            value={whatsAppPhone}
+                                            onChange={(e) => setWhatsAppPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                                            placeholder="Customer Mobile No."
+                                            className="w-full pl-11 pr-3 py-2 rounded-xl border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSendWhatsAppDirect(whatsAppPhone, false)}
+                                        className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/30 cursor-pointer shrink-0 transition-transform active:scale-95"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">send</span>
+                                        WhatsApp पर भेजें
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSendWhatsAppDirect(whatsAppPhone, true)}
+                                        className="w-full sm:w-auto px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                                        title="WhatsApp Web पर भेजें"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">laptop</span>
+                                        WhatsApp Web
+                                    </button>
+                                </div>
+                            </div>
+
                             {/* Helpful Tips Box */}
                             <div className="mt-6 p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-xs text-slate-700 dark:text-slate-300 space-y-2 no-print">
                                 <div className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
@@ -1675,6 +1869,139 @@ export default function CourierSlipMaker() {
                     </div>
                 </div>
             </div>
+
+            {/* WhatsApp Direct Send Modal */}
+            {whatsAppModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200 no-print">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-5 text-white flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-2xl">chat</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-extrabold text-base leading-tight">
+                                        WhatsApp Direct Dispatch Share
+                                    </h3>
+                                    <p className="text-xs text-emerald-100 mt-0.5">
+                                        बिना नंबर सेव किए ग्राहक को पार्सल रसीद व्हाट्सएप पर भेजें
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setWhatsAppModalOpen(false)}
+                                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-xl">close</span>
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        ग्राहक का मोबाइल नंबर <span className="text-rose-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                                            +91
+                                        </span>
+                                        <input
+                                            type="tel"
+                                            maxLength="10"
+                                            value={whatsAppPhone}
+                                            onChange={(e) => setWhatsAppPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                                            placeholder="9876543210"
+                                            className="w-full pl-11 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-mono font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                                            autoFocus
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        ग्राहक का नाम (Receiver Name)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={whatsAppName}
+                                        onChange={(e) => setWhatsAppName(e.target.value)}
+                                        placeholder="e.g. AMIT VERMA"
+                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-800 dark:text-white"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    अतिरिक्त संदेश / नोट (Optional Note)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={whatsAppNote}
+                                    onChange={(e) => setWhatsAppNote(e.target.value)}
+                                    placeholder="e.g. पार्सल स्पीड पोस्ट द्वारा भेजा गया है।"
+                                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-white"
+                                />
+                            </div>
+
+                            {/* Live Message Preview */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-sm">visibility</span>
+                                        व्हाट्सएप मैसेज प्रिव्यू (Live Preview)
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={handleCopyWhatsAppMessage}
+                                        className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">
+                                            {copiedWhatsAppMsg ? 'check' : 'content_copy'}
+                                        </span>
+                                        {copiedWhatsAppMsg ? 'कॉपी हो गया!' : 'मैसेज कॉपी करें'}
+                                    </button>
+                                </div>
+                                <div className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-xs whitespace-pre-wrap font-sans text-slate-800 dark:text-slate-200 leading-relaxed max-h-48 overflow-y-auto">
+                                    {buildCourierWhatsAppMessage(whatsAppPhone, whatsAppName, whatsAppNote)}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Buttons */}
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2.5 justify-end">
+                            <button
+                                type="button"
+                                onClick={() => setWhatsAppModalOpen(false)}
+                                className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            >
+                                रद्द करें
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSendWhatsAppDirect(whatsAppPhone, true)}
+                                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                                title="WhatsApp Web पर भेजें"
+                            >
+                                <span className="material-symbols-outlined text-sm">laptop</span>
+                                WhatsApp Web
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSendWhatsAppDirect(whatsAppPhone, false)}
+                                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-base">send</span>
+                                WhatsApp पर भेजें
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
