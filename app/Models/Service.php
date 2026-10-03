@@ -532,6 +532,13 @@ class Service extends Model
             'index' => '/utilities/abha-health-id-make',
             'create' => '/utilities/abha-health-id-make',
         ],
+        'courier_slip_maker' => [
+            'label' => 'Courier & Parcel Slip Maker',
+            'icon' => '📦',
+            'model' => null,
+            'index' => '/utilities/courier-slip-maker',
+            'create' => '/utilities/courier-slip-maker',
+        ],
     ];
 
     protected $fillable = [

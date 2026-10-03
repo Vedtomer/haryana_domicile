@@ -88,16 +88,38 @@ Route::get('/migrate-db', function () {
             $output .= "PanCardManualMaker error: " . $pe->getMessage() . "\n\n";
         }
 
-        // Ensure all staff/admin users have access to all services
+        // Ensure Courier & Parcel Slip Maker is in services table
         try {
-            $allServiceIds = \App\Models\Service::pluck('id')->all();
-            $adminUsers = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->get();
-            foreach ($adminUsers as $adm) {
-                $adm->services()->syncWithoutDetaching($allServiceIds);
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'courier-slip-maker'],
+                [
+                    'name' => 'Courier & Parcel Slip Maker',
+                    'description' => 'Generate and print professional Courier / Parcel Dispatch Slips & Shipping Labels on A3, A4 or sticker size with From, To, Aadhaar, Barcode & QR Code.',
+                    'icon' => '📦',
+                    'coin_cost' => 5,
+                    'kind' => 'module',
+                    'module_key' => 'courier_slip_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 45,
+                ]
+            );
+            $output .= "=== COURIER & PARCEL SLIP MAKER UPSERTED ===\n\n";
+        } catch (\Throwable $cpe) {
+            $output .= "CourierSlipMaker error: " . $cpe->getMessage() . "\n\n";
+        }
+
+        // Ensure all users have access to all active services
+        try {
+            $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
+            foreach (\App\Models\User::all() as $eachUser) {
+                $eachUser->services()->syncWithoutDetaching($allActiveServiceIds);
             }
-            $output .= "=== ADMIN USER SERVICES SYNCED ===\n\n";
+            $output .= "=== ALL USERS SERVICES SYNCED ===\n\n";
         } catch (\Throwable $ue) {
-            $output .= "Admin sync notice: " . $ue->getMessage() . "\n\n";
+            $output .= "User sync notice: " . $ue->getMessage() . "\n\n";
         }
 
         // Ensure necessary schema adjustments
@@ -623,6 +645,20 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'pan_card_manual_maker',
             'sort_order' => 40,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ],
+        [
+            'name' => 'Courier & Parcel Slip Maker',
+            'slug' => 'courier-slip-maker',
+            'description' => 'Generate and print professional Courier / Parcel Dispatch Slips & Shipping Labels on A3, A4 or sticker size with From, To, Aadhaar, Barcode & QR Code.',
+            'icon' => '📦',
+            'coin_cost' => 5,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'courier_slip_maker',
+            'sort_order' => 45,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -1560,6 +1596,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/PanCardManualMaker');
     })->name('utilities.pan-card-manual-maker');
     Route::post('/utilities/pan-card-manual-maker/generate', [\App\Http\Controllers\PanCardManualMakerController::class, 'generate'])->name('utilities.pan-card-manual-maker.generate');
+
+    // 10.2 Courier & Parcel Slip Maker
+    Route::get('/utilities/courier-slip-maker', function () {
+        return Inertia::render('Utilities/CourierSlipMaker');
+    })->name('utilities.courier-slip-maker');
+    Route::post('/utilities/courier-slip-maker/generate', [\App\Http\Controllers\CourierSlipMakerController::class, 'generate'])->name('utilities.courier-slip-maker.generate');
 
     // 11. Voter Card Manual For Address Change
     Route::get('/utilities/voter-card-manual-address-change', function () {
