@@ -97,6 +97,7 @@ export function CategorySvgLogo({ categoryId }) {
                 </svg>
             );
 
+        case 'ration':
         case 'rasan':
             return (
                 <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
@@ -138,7 +139,6 @@ export function CategorySvgLogo({ categoryId }) {
             );
 
         case 'ppp':
-        case 'rasan':
             return (
                 <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
                     <rect x="5" y="8" width="38" height="32" rx="6" fill="#0F172A" />
@@ -349,6 +349,65 @@ export function CategorySvgLogo({ categoryId }) {
                     <text x="24" y="36" fill="#0F172A" fontSize="2" fontWeight="900" textAnchor="middle">
                         PAY SLIP • CV
                     </text>
+                </svg>
+            );
+
+        case 'mobile_info':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#1E1B4B" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#4F46E5" />
+                    <text x="24" y="13.5" fill="#EEF2FF" fontSize="3.2" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        MOBILE • TO INFO
+                    </text>
+                    {/* Smartphone with User / Search icon */}
+                    <rect x="17" y="18.5" width="14" height="18" rx="2.5" fill="#0F172A" stroke="#6366F1" strokeWidth="1.2" />
+                    <circle cx="24" cy="20.5" r="0.8" fill="#818CF8" />
+                    <circle cx="24" cy="26" r="2.8" fill="#38BDF8" />
+                    <path d="M21 32C21 30.5 22.3 29.5 24 29.5C25.7 29.5 27 30.5 27 32" stroke="#38BDF8" strokeWidth="1.2" strokeLinecap="round" />
+                    <rect x="22" y="34.5" width="4" height="0.8" rx="0.4" fill="#6366F1" />
+                </svg>
+            );
+
+        case 'passport':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="6" y="7" width="36" height="34" rx="4" fill="#0B192C" stroke="#1E3E62" strokeWidth="1.5" />
+                    {/* Gold Foil Header */}
+                    <rect x="6" y="7" width="36" height="8" rx="2" fill="#1E3E62" />
+                    <text x="24" y="13" fill="#FBBF24" fontSize="3.3" fontWeight="900" textAnchor="middle" letterSpacing="0.4">
+                        PASSPORT • INDIA
+                    </text>
+                    {/* Golden Ashoka Emblem / Circle */}
+                    <circle cx="24" cy="24" r="5.5" stroke="#FBBF24" strokeWidth="1.2" fill="none" />
+                    <circle cx="24" cy="24" r="1.5" fill="#FBBF24" />
+                    <path d="M24 20V28M20 24H28" stroke="#FBBF24" strokeWidth="1" />
+                    {/* Bottom Passport Tag */}
+                    <rect x="14" y="33" width="20" height="3" rx="1.5" fill="#F59E0B" />
+                    <text x="24" y="35.3" fill="#0B192C" fontSize="2.2" fontWeight="900" textAnchor="middle">
+                        PASSPORT SEVA
+                    </text>
+                </svg>
+            );
+
+        case 'photo_pdf':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#1E293B" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#E11D48" />
+                    <text x="24" y="13.5" fill="#FFF1F2" fontSize="3.1" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        PHOTO • PDF TOOLS
+                    </text>
+                    {/* Photo Frame + PDF Tag */}
+                    <rect x="11" y="19" width="12" height="15" rx="1.5" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
+                    <circle cx="17" cy="24" r="2.2" fill="#E11D48" />
+                    <path d="M13.5 31C13.5 28.5 15 27.5 17 27.5C19 27.5 20.5 28.5 20.5 31H13.5Z" fill="#E11D48" />
+                    {/* PDF Document Badge */}
+                    <rect x="25" y="19" width="13" height="15" rx="1.5" fill="#DC2626" />
+                    <text x="31.5" y="27" fill="#FFFFFF" fontSize="3.5" fontWeight="900" textAnchor="middle">
+                        PDF
+                    </text>
+                    <path d="M28 30H35M28 32H33" stroke="#FFFFFF" strokeWidth="0.8" strokeLinecap="round" />
                 </svg>
             );
 

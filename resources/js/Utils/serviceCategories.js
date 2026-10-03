@@ -4,7 +4,7 @@ export const SERVICE_CATEGORIES = [
         name: 'Aadhaar Card Services',
         hindiName: 'आधार कार्ड सेवाएं',
         shortName: 'Aadhaar',
-        description: 'Aadhaar manual maker, mobile update, DOB, surname change & UID info',
+        description: 'Aadhaar manual maker, Smart PVC maker, mobile update, DOB & UID info',
         color: 'from-amber-500 to-orange-600',
         border: 'border-orange-400 dark:border-orange-500',
         badgeBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/70 dark:border-orange-800/60',
@@ -28,6 +28,126 @@ export const SERVICE_CATEGORIES = [
         avatarBg: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600',
         headerBg: 'from-cyan-500/15 via-blue-500/5 to-transparent border-l-4 border-cyan-500',
         accentColor: 'text-cyan-600 dark:text-cyan-400',
+    },
+    {
+        id: 'voter',
+        name: 'Voter Card Services',
+        hindiName: 'वोटर कार्ड सेवाएं',
+        shortName: 'Voter Card',
+        description: 'Voter card manual maker, address change, mobile update & S.I.R roll list',
+        color: 'from-blue-600 to-indigo-600',
+        border: 'border-blue-400 dark:border-blue-500',
+        badgeBg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200/70 dark:border-blue-800/60',
+        icon: 'how_to_vote',
+        iconType: 'material',
+        avatarBg: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600',
+        headerBg: 'from-blue-500/15 via-indigo-500/5 to-transparent border-l-4 border-blue-500',
+        accentColor: 'text-blue-600 dark:text-blue-400',
+    },
+    {
+        id: 'ppp',
+        name: 'Family ID / Parivar Pehchan Patra (PPP)',
+        hindiName: 'परिवार पहचान पत्र (PPP)',
+        shortName: 'Family ID (PPP)',
+        description: 'PPP ID to Aadhaar, mobile, bank details, Aadhaar to PPP, Family ID PDF & PVC',
+        color: 'from-amber-600 to-yellow-600',
+        border: 'border-amber-400 dark:border-amber-500',
+        badgeBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/70 dark:border-amber-800/60',
+        icon: 'family_restroom',
+        iconType: 'material',
+        avatarBg: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700',
+        headerBg: 'from-amber-500/15 via-yellow-500/5 to-transparent border-l-4 border-amber-500',
+        accentColor: 'text-amber-600 dark:text-amber-400',
+    },
+    {
+        id: 'ration',
+        name: 'Ration Card Services',
+        hindiName: 'राशन कार्ड सेवाएं',
+        shortName: 'Ration Card',
+        description: 'Bihar Ration Card maker, NFSA Food Dept print, Ration card download & slip',
+        color: 'from-amber-700 to-yellow-800',
+        border: 'border-amber-600 dark:border-amber-500',
+        badgeBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border-amber-200/70 dark:border-amber-800/60',
+        icon: 'receipt_long',
+        iconType: 'material',
+        avatarBg: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800',
+        headerBg: 'from-amber-600/15 via-yellow-600/5 to-transparent border-l-4 border-amber-600',
+        accentColor: 'text-amber-700 dark:text-amber-400',
+    },
+    {
+        id: 'mobile_info',
+        name: 'Mobile to Info',
+        hindiName: 'मोबाइल टू इन्फो सेवाएं',
+        shortName: 'Mobile Info',
+        description: 'Instant mobile number lookup, caller info, operator & SIM details',
+        color: 'from-indigo-600 to-blue-700',
+        border: 'border-indigo-400 dark:border-indigo-500',
+        badgeBg: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200/70 dark:border-indigo-800/60',
+        icon: 'contact_phone',
+        iconType: 'material',
+        avatarBg: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700',
+        headerBg: 'from-indigo-500/15 via-blue-500/5 to-transparent border-l-4 border-indigo-500',
+        accentColor: 'text-indigo-600 dark:text-indigo-400',
+    },
+    {
+        id: 'passport',
+        name: 'Passport Services',
+        hindiName: 'पासपोर्ट सेवाएं',
+        shortName: 'Passport',
+        description: 'Official Passport Apply service, appointment booking & online application',
+        color: 'from-blue-800 to-slate-900',
+        border: 'border-blue-600 dark:border-blue-500',
+        badgeBg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border-blue-200/70 dark:border-blue-800/60',
+        icon: 'travel_explore',
+        iconType: 'material',
+        avatarBg: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800',
+        headerBg: 'from-blue-700/15 via-slate-800/5 to-transparent border-l-4 border-blue-700',
+        accentColor: 'text-blue-700 dark:text-blue-300',
+    },
+    {
+        id: 'photo_pdf',
+        name: 'Photo & PDF Tools',
+        hindiName: 'सरकारी फोटो, पासपोर्ट फोटो एवं PDF',
+        shortName: 'Photo & PDF',
+        description: 'Passport photo maker, Sarkari photo signature resizer & PDF size compressor',
+        color: 'from-rose-600 to-purple-700',
+        border: 'border-rose-400 dark:border-rose-500',
+        badgeBg: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200/70 dark:border-rose-800/60',
+        icon: 'crop',
+        iconType: 'material',
+        avatarBg: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700',
+        headerBg: 'from-rose-500/15 via-purple-500/5 to-transparent border-l-4 border-rose-500',
+        accentColor: 'text-rose-600 dark:text-rose-400',
+    },
+    {
+        id: 'vehicle',
+        name: 'Vehicle & RTO Services',
+        hindiName: 'वाहन एवं आरटीओ सेवाएं',
+        shortName: 'Vehicle & DL',
+        description: 'Vehicle RC details, mobile lookup, PUC download, Driving Licence cards',
+        color: 'from-slate-700 to-slate-900',
+        border: 'border-slate-500 dark:border-slate-600',
+        badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        icon: 'directions_car',
+        iconType: 'material',
+        avatarBg: 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+        headerBg: 'from-slate-500/15 via-slate-600/5 to-transparent border-l-4 border-slate-600',
+        accentColor: 'text-slate-700 dark:text-slate-300',
+    },
+    {
+        id: 'courier',
+        name: 'Courier & Parcel Services',
+        hindiName: 'कूरियर एवं पार्सल सेवाएं',
+        shortName: 'Courier & Dispatch',
+        description: 'Print parcel address slips with Sender/Receiver info, barcode & dynamic QR',
+        color: 'from-amber-600 to-orange-700',
+        border: 'border-orange-500 dark:border-orange-600',
+        badgeBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-800',
+        icon: 'local_shipping',
+        iconType: 'material',
+        avatarBg: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700',
+        headerBg: 'from-orange-600/15 via-amber-600/5 to-transparent border-l-4 border-orange-600',
+        accentColor: 'text-orange-600 dark:text-orange-400',
     },
     {
         id: 'marriage',
@@ -150,66 +270,6 @@ export const SERVICE_CATEGORIES = [
         accentColor: 'text-slate-700 dark:text-slate-300',
     },
     {
-        id: 'ppp',
-        name: 'Family ID / Parivar Pehchan Patra (PPP)',
-        hindiName: 'परिवार पहचान पत्र (PPP)',
-        shortName: 'Family ID (PPP)',
-        description: 'PPP ID to Aadhaar, mobile, bank details, Aadhaar to PPP & Family ID PVC',
-        color: 'from-amber-600 to-yellow-600',
-        border: 'border-amber-400 dark:border-amber-500',
-        badgeBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/70 dark:border-amber-800/60',
-        icon: 'family_restroom',
-        iconType: 'material',
-        avatarBg: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700',
-        headerBg: 'from-amber-500/15 via-yellow-500/5 to-transparent border-l-4 border-amber-500',
-        accentColor: 'text-amber-600 dark:text-amber-400',
-    },
-    {
-        id: 'voter',
-        name: 'Voter Card Services',
-        hindiName: 'वोटर कार्ड सेवाएं',
-        shortName: 'Voter Card',
-        description: 'Voter card manual maker, address change, mobile update & S.I.R roll list',
-        color: 'from-blue-600 to-indigo-600',
-        border: 'border-blue-400 dark:border-blue-500',
-        badgeBg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200/70 dark:border-blue-800/60',
-        icon: 'how_to_vote',
-        iconType: 'material',
-        avatarBg: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600',
-        headerBg: 'from-blue-500/15 via-indigo-500/5 to-transparent border-l-4 border-blue-500',
-        accentColor: 'text-blue-600 dark:text-blue-400',
-    },
-    {
-        id: 'vehicle',
-        name: 'Vehicle & RTO Services',
-        hindiName: 'वाहन एवं आरटीओ सेवाएं',
-        shortName: 'Vehicle & DL',
-        description: 'Vehicle RC details, mobile lookup, PUC download, Driving Licence cards',
-        color: 'from-slate-700 to-slate-900',
-        border: 'border-slate-500 dark:border-slate-600',
-        badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
-        icon: 'directions_car',
-        iconType: 'material',
-        avatarBg: 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
-        headerBg: 'from-slate-500/15 via-slate-600/5 to-transparent border-l-4 border-slate-600',
-        accentColor: 'text-slate-700 dark:text-slate-300',
-    },
-    {
-        id: 'courier',
-        name: 'Courier & Parcel Services',
-        hindiName: 'कूरियर एवं पार्सल सेवाएं',
-        shortName: 'Courier & Dispatch',
-        description: 'Print parcel address slips with Sender/Receiver info, barcode & dynamic QR',
-        color: 'from-amber-600 to-orange-700',
-        border: 'border-orange-500 dark:border-orange-600',
-        badgeBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-800',
-        icon: 'local_shipping',
-        iconType: 'material',
-        avatarBg: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700',
-        headerBg: 'from-orange-600/15 via-amber-600/5 to-transparent border-l-4 border-orange-600',
-        accentColor: 'text-orange-600 dark:text-orange-400',
-    },
-    {
         id: 'health',
         name: 'Ayushman & Health Services',
         hindiName: 'आयुष्मान एवं स्वास्थ्य सेवाएं',
@@ -226,10 +286,10 @@ export const SERVICE_CATEGORIES = [
     },
     {
         id: 'utilities',
-        name: 'Govt Utilities, PVC & Affidavits',
-        hindiName: 'सरकारी टूल्स एवं पीवीसी कार्ड',
-        shortName: 'Govt Tools & PVC',
-        description: 'Smart PVC card maker, WhatsApp sender, photo resizer, rent agreement & legal forms',
+        name: 'Govt Utilities & Affidavits',
+        hindiName: 'सरकारी टूल्स एवं शपथ पत्र',
+        shortName: 'Govt Tools',
+        description: 'Kundli generator, rent agreement, legal affidavits & cyber tools',
         color: 'from-purple-600 to-violet-700',
         border: 'border-purple-400 dark:border-purple-500',
         badgeBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/70 dark:border-purple-800/60',
@@ -258,7 +318,71 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'courier');
     }
 
-    // 2. Salary Slip & Resume / Employment (User requested: "salry slip alg")
+    // 2. Mobile to Info (User requested: "mobile to info alg kro")
+    if (
+        slug === 'mobile-to-info' ||
+        moduleKey === 'mobile_to_info' ||
+        text.includes('mobile-to-info') ||
+        text.includes('mobile to info') ||
+        (text.includes('mobile') && text.includes('info') && !text.includes('vehicle') && !text.includes('voter') && !text.includes('aadhar') && !text.includes('family'))
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'mobile_info');
+    }
+
+    // 3. Photo & PDF Tools (User requested: "passpor photo , pdf, sarkari photo ye ak me kro alg se")
+    // Groups: Passport Photo Maker, Sarkari Photo/Signature Resizer, PDF Resizer & PDF Editor
+    if (
+        slug === 'passport-maker' ||
+        moduleKey === 'passport_maker' ||
+        text.includes('passport-maker') ||
+        text.includes('passport maker') ||
+        text.includes('passport photo') ||
+        slug === 'photo-signature-resizer' ||
+        moduleKey === 'photo_signature_resizer' ||
+        text.includes('photo-signature') ||
+        text.includes('photo signature') ||
+        text.includes('sarkari photo') ||
+        slug === 'pdf-resizer' ||
+        slug === 'pdf-editor' ||
+        moduleKey === 'pdf_resizer' ||
+        moduleKey === 'pdf_editor' ||
+        text.includes('pdf-resizer') ||
+        text.includes('pdf resizer') ||
+        text.includes('pdf-editor') ||
+        text.includes('pdf editor')
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'photo_pdf');
+    }
+
+    // 4. Passport Services (User requested: "passport service alg kro")
+    // Official Passport Apply service & online applications
+    if (
+        slug === 'passport-apply' ||
+        moduleKey === 'passport_apply' ||
+        text.includes('passport-apply') ||
+        text.includes('passport apply') ||
+        (text.includes('passport') && !text.includes('maker') && !text.includes('photo'))
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'passport');
+    }
+
+    // 5. Ration Card Services (User requested: "ration card ka alg colum bana d")
+    if (
+        slug.includes('ration') ||
+        slug.includes('rasan') ||
+        text.includes('ration') ||
+        text.includes('rasan') ||
+        text.includes('nfsa') ||
+        text.includes('epds') ||
+        moduleKey === 'bihar_ration_card_maker' ||
+        moduleKey === 'ration_card' ||
+        moduleKey === 'ration_card_maker' ||
+        slug === 'bihar-ration-card-maker'
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'ration');
+    }
+
+    // 6. Salary Slip & Resume / Employment (User requested: "salry slip alg")
     if (
         slug === 'salary-slip' ||
         slug.includes('salary') ||
@@ -274,7 +398,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'salary');
     }
 
-    // 3. Customer & Khata Management (User requested: "customer alg")
+    // 7. Customer & Khata Management (User requested: "customer alg")
     if (
         slug.includes('customer-whatsapp') ||
         moduleKey === 'customer_whatsapp' ||
@@ -292,7 +416,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'customer');
     }
 
-    // 4. Udyam MSME Registration (User requested: "udhyam alg")
+    // 8. Udyam MSME Registration (User requested: "udhyam alg")
     if (
         slug.includes('udhyam') ||
         slug.includes('udyam') ||
@@ -303,7 +427,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'udhyam');
     }
 
-    // 5. Banking, Passbook & IFSC (User requested: "bank alg")
+    // 9. Banking, Passbook & IFSC (User requested: "bank alg")
     if (
         slug.includes('bob-affidavit') ||
         moduleKey === 'bob_affidavit' ||
@@ -320,7 +444,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'bank');
     }
 
-    // 6. Haryana Domicile (User requested: "haryana domocile ka alg kro")
+    // 10. Haryana Domicile (User requested: "haryana domocile ka alg kro")
     if (
         slug.includes('domicile') ||
         slug.includes('domocile') ||
@@ -332,7 +456,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'domicile');
     }
 
-    // 7. Birth Certificate (User requested: "birth cetiicate ka alg kro ... birrth alg")
+    // 11. Birth Certificate (User requested: "birth cetiicate ka alg kro ... birrth alg")
     if (
         (slug.includes('birth') ||
         text.includes('birth') ||
@@ -347,7 +471,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'birth');
     }
 
-    // 8. Marriage Certificate (User requested: "jo marriage ki file hai usme bas marriage ki option dalo")
+    // 12. Marriage Certificate (User requested: "jo marriage ki file hai usme bas marriage ki option dalo")
     // ONLY pure marriage options match here!
     if (
         (slug.includes('marriage') ||
@@ -361,7 +485,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'marriage');
     }
 
-    // 9. Electricity Bills (User requested: "bill alg")
+    // 13. Electricity Bills (User requested: "bill alg")
     if (
         slug.includes('dhbvn') ||
         slug.includes('uhbvn') ||
@@ -377,7 +501,8 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'bills');
     }
 
-    // 10. Parivar Pehchan Patra (Family ID / PPP)
+    // 14. Parivar Pehchan Patra (Family ID / PPP) (User requested: "family id number to pdf isko famliy id colum me dalo")
+    // Checked BEFORE aadhar so all Family ID / PPP tools (including PDF / Number lookups) stay in PPP
     if (
         text.includes('ppp') ||
         text.includes('familyid') ||
@@ -389,7 +514,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'ppp');
     }
 
-    // 11. PAN Card Services
+    // 15. PAN Card Services
     if (
         (text.includes('pan') && !text.includes('company')) ||
         slug.includes('pan')
@@ -397,8 +522,16 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'pan');
     }
 
-    // 12. Aadhaar Services
+    // 16. Aadhaar Services (User requested: "samrt pvc make aadhr seervice me add krd o")
+    // Smart PVC Card Maker is now explicitly routed to Aadhaar Services!
     if (
+        slug === 'pvc-card-maker' ||
+        moduleKey === 'pvc_card_maker' ||
+        slug === 'smart-pvc-card-maker' ||
+        text.includes('smart pvc') ||
+        text.includes('smart-pvc') ||
+        text.includes('pvc card maker') ||
+        text.includes('pvc-card-maker') ||
         text.includes('aadhar') ||
         text.includes('aadhaar') ||
         text.includes('uid') ||
@@ -408,7 +541,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'aadhar');
     }
 
-    // 13. Voter Card Services
+    // 17. Voter Card Services
     if (
         text.includes('voter') ||
         text.includes('epic') ||
@@ -418,7 +551,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'voter');
     }
 
-    // 14. Vehicle & Driving Licence Services
+    // 18. Vehicle & Driving Licence Services
     if (
         text.includes('vehicle') ||
         text.includes('vahan') ||
@@ -434,7 +567,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'vehicle');
     }
 
-    // 15. Ayushman & Health Services
+    // 19. Ayushman & Health Services
     if (
         text.includes('ayushman') ||
         text.includes('chirayu') ||
@@ -444,7 +577,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'health');
     }
 
-    // 16. Default / Govt Utilities, PVC & Affidavits
+    // 20. Default / Govt Utilities & Legal Affidavits
     return SERVICE_CATEGORIES.find(c => c.id === 'utilities');
 }
 
