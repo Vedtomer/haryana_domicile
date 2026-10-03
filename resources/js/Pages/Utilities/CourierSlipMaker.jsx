@@ -425,8 +425,8 @@ export default function CourierSlipMaker() {
 
                 {/* Main Content Grid: TO (Delivery Destination) & FROM (Sender) */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border-b-4 border-slate-900">
-                    {/* 1. TO / सेवा में (Delivery Address) - 7 Columns, large & bold */}
-                    <div className="md:col-span-7 p-4 sm:p-5 bg-amber-50/50 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
+                    {/* 1. TO / सेवा में (Delivery Address) - 8 Columns, large & bold */}
+                    <div className="md:col-span-8 p-4 sm:p-5 bg-amber-50/50 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
                                 <span className="bg-red-700 text-white font-black px-3 py-1 rounded text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-2xs">
@@ -485,27 +485,27 @@ export default function CourierSlipMaker() {
                         </div>
                     </div>
 
-                    {/* 2. FROM / प्रेषक (Sender Details) - 5 Columns */}
-                    <div className="md:col-span-5 p-4 sm:p-5 bg-slate-50 flex flex-col justify-between">
+                    {/* 2. FROM / प्रेषक (Sender Details) - 4 Columns, compact */}
+                    <div className="md:col-span-4 p-3 sm:p-4 bg-slate-50 flex flex-col justify-between text-xs">
                         <div>
-                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
-                                <span className="bg-slate-800 text-white font-black px-2.5 py-0.5 rounded text-xs uppercase tracking-wider flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">home_pin</span>
+                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1 mb-2">
+                                <span className="bg-slate-800 text-white font-black px-2 py-0.5 rounded text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-xs">home_pin</span>
                                     FROM / प्रेषक (DISPATCH BY)
                                 </span>
                             </div>
 
                             {formData.sender_firm && (
-                                <div className="text-xs sm:text-sm font-extrabold text-indigo-900 uppercase">
+                                <div className="text-xs font-black text-indigo-900 uppercase">
                                     {formData.sender_firm}
                                 </div>
                             )}
 
-                            <div className="text-sm sm:text-base font-black text-slate-950 uppercase mt-0.5">
+                            <div className="text-xs sm:text-sm font-black text-slate-950 uppercase mt-0.5">
                                 {formData.sender_name || 'SENDER NAME'}
                             </div>
 
-                            <div className="mt-1.5 text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <div className="mt-1 text-[11px] font-bold text-slate-800 flex items-center gap-1">
                                 <span>📞 Mobile:</span>
                                 <span className="font-mono font-black text-slate-950">
                                     {formData.sender_phone || 'XXXXXXXXXX'}
@@ -513,28 +513,28 @@ export default function CourierSlipMaker() {
                             </div>
 
                             {formData.sender_website && (
-                                <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
+                                <div className="mt-0.5 text-[10px] font-bold text-indigo-700 flex items-center gap-1">
                                     <span>🌐 Website:</span>
                                     <span className="font-mono font-black underline">{formData.sender_website}</span>
                                 </div>
                             )}
 
-                            <div className="mt-2 text-xs text-slate-800 font-medium leading-relaxed">
-                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sender Address:</div>
+                            <div className="mt-1.5 text-[11px] text-slate-800 font-medium leading-snug">
+                                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Sender Address:</div>
                                 <div className="text-slate-900 font-bold mt-0.5">{formData.sender_address || 'Sender Address'}</div>
-                                <div className="text-slate-800 font-bold mt-0.5">
+                                <div className="text-slate-800 font-semibold mt-0.5">
                                     {[formData.sender_city, formData.sender_district, formData.sender_state].filter(Boolean).join(', ')}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-2.5 border-t-2 border-slate-300">
+                        <div className="mt-3 pt-2 border-t-2 border-slate-300">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-slate-500 uppercase">SENDER PIN:</span>
-                                <span className="font-mono font-black text-base text-slate-950">{formData.sender_pincode || '------'}</span>
+                                <span className="text-[9px] font-black text-slate-500 uppercase">SENDER PIN:</span>
+                                <span className="font-mono font-black text-sm text-slate-950">{formData.sender_pincode || '------'}</span>
                             </div>
-                            <div className="mt-1.5 p-1.5 bg-red-50 border border-red-200 rounded text-[9px] sm:text-[10px] text-red-700 font-black flex items-center gap-1 leading-tight">
-                                <span>⚠️ यदि पैकेट डिलीवर न हो तो कृपया वापस प्रेषक के पते पर भेजें।</span>
+                            <div className="mt-1 p-1 bg-red-50 border border-red-200 rounded text-[8px] sm:text-[9px] text-red-700 font-black flex items-center gap-1 leading-tight">
+                                <span>⚠️ यदि पैकेट डिलीवर न हो तो वापस प्रेषक के पते पर भेजें।</span>
                             </div>
                         </div>
                     </div>
@@ -633,8 +633,8 @@ export default function CourierSlipMaker() {
 
                 {/* Main Content: TO (Delivery) & FROM (Sender) */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border-b-4 border-slate-900">
-                    {/* TO / Consignee / Delivery Address - 7 Columns */}
-                    <div className="md:col-span-7 p-4 sm:p-5 bg-amber-50/40 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
+                    {/* TO / Consignee / Delivery Address - 8 Columns */}
+                    <div className="md:col-span-8 p-4 sm:p-5 bg-amber-50/40 border-b-2 md:border-b-0 md:border-r-4 border-slate-900 flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
                                 <span className="bg-slate-900 text-white font-black px-2.5 py-0.5 rounded text-xs uppercase tracking-wider flex items-center gap-1.5">
@@ -693,27 +693,27 @@ export default function CourierSlipMaker() {
                         </div>
                     </div>
 
-                    {/* FROM / Consignor / Sender Address - 5 Columns */}
-                    <div className="md:col-span-5 p-4 sm:p-5 bg-slate-50 flex flex-col justify-between">
+                    {/* FROM / Consignor / Sender Address - 4 Columns, compact */}
+                    <div className="md:col-span-4 p-3 sm:p-4 bg-slate-50 flex flex-col justify-between text-xs">
                         <div>
-                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
-                                <span className="bg-slate-700 text-white font-black px-2.5 py-0.5 rounded text-xs uppercase tracking-wider flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">home_pin</span>
+                            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1 mb-2">
+                                <span className="bg-slate-700 text-white font-black px-2 py-0.5 rounded text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-xs">home_pin</span>
                                     FROM / प्रेषक (SENDER)
                                 </span>
                             </div>
 
                             {formData.sender_firm && (
-                                <div className="text-xs sm:text-sm font-extrabold text-indigo-900 uppercase">
+                                <div className="text-xs font-black text-indigo-900 uppercase">
                                     {formData.sender_firm}
                                 </div>
                             )}
 
-                            <div className="text-sm sm:text-base font-black text-slate-900 uppercase">
+                            <div className="text-xs sm:text-sm font-black text-slate-900 uppercase mt-0.5">
                                 {formData.sender_name || 'SENDER FULL NAME'}
                             </div>
 
-                            <div className="mt-1 text-xs font-bold text-slate-800">
+                            <div className="mt-1 text-[11px] font-bold text-slate-800 flex items-center gap-1">
                                 <span>📞 Mobile: </span>
                                 <span className="font-mono font-bold text-slate-900">
                                     {formData.sender_phone || 'XXXXXXXXXX'}
@@ -721,26 +721,26 @@ export default function CourierSlipMaker() {
                             </div>
 
                             {formData.sender_website && (
-                                <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
+                                <div className="mt-0.5 text-[10px] font-bold text-indigo-700 flex items-center gap-1">
                                     <span>🌐 Website:</span>
                                     <span className="font-mono font-black underline">{formData.sender_website}</span>
                                 </div>
                             )}
 
-                            <div className="mt-2 text-xs text-slate-700 font-medium leading-normal">
+                            <div className="mt-1.5 text-[11px] text-slate-700 font-medium leading-snug">
                                 <div>{formData.sender_address || 'Sender Shop / House Address'}</div>
-                                <div className="font-bold text-slate-900">
+                                <div className="font-bold text-slate-900 mt-0.5">
                                     {[formData.sender_city, formData.sender_district, formData.sender_state].filter(Boolean).join(', ')}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-2 border-t border-slate-300">
-                            <div className="text-[10px] font-bold text-slate-500 uppercase">SENDER PIN CODE:</div>
-                            <div className="font-mono font-black text-base text-slate-900">
-                                {formData.sender_pincode || '------'}
+                        <div className="mt-3 pt-2 border-t border-slate-300">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-bold text-slate-500 uppercase">SENDER PIN CODE:</span>
+                                <span className="font-mono font-black text-sm text-slate-900">{formData.sender_pincode || '------'}</span>
                             </div>
-                            <div className="text-[9px] text-red-600 font-bold mt-1">
+                            <div className="text-[8px] sm:text-[9px] text-red-600 font-bold mt-1">
                                 ⚠️ If undelivered, please return to sender address.
                             </div>
                         </div>
