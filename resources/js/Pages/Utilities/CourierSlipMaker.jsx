@@ -59,8 +59,6 @@ function PinBoxes({ pin = '' }) {
 }
 
 export default function CourierSlipMaker() {
-    const todayStr = new Date().toISOString().split('T')[0];
-
     // Slip Mode: 'SIMPLE_DISPATCH' (Direct From/To Parcel Label) or 'COURIER_BARCODE' (Speed Post Barcode Slip)
     const [slipMode, setSlipMode] = useState('SIMPLE_DISPATCH');
 
@@ -69,12 +67,10 @@ export default function CourierSlipMaker() {
         // Consignment info (For Barcode Mode)
         courier_type: 'SPEED_POST',
         tracking_no: 'SP' + Math.floor(10000000 + Math.random() * 90000000) + 'IN',
-        dispatch_date: todayStr,
         weight: '500 gm',
         contents: 'Urgent Documents / Certificates / Parcel',
         payment_mode: 'PREPAID',
         declared_value: '₹ 500',
-        priority_stamp: 'SPEED POST - URGENT',
 
         // TO / Receiver (Delivery Destination)
         receiver_name: 'AMIT VERMA',
@@ -87,15 +83,16 @@ export default function CourierSlipMaker() {
         receiver_pincode: '125055',
 
         // FROM / Sender (Dispatch By)
-        sender_firm: 'CSP JAANKARI / CYBER CAFE',
-        sender_name: 'RAMESH CHAND SHARMA',
-        sender_phone: '9991122334',
-        sender_alt_phone: '',
-        sender_address: 'Shop No. 5, Main Market, Near Tehsil Complex',
-        sender_city: 'Hisar',
-        sender_district: 'Hisar',
+        sender_firm: 'A K ENTERPRISE',
+        sender_name: 'SAM VERMA',
+        sender_phone: '9541230611',
+        sender_website: 'akenterprisegroup.com',
+        sender_email: 'info@akenterprisegroup.com',
+        sender_address: '#03, Kutani Road, Verma Chowk',
+        sender_city: 'Panipat',
+        sender_district: 'Panipat',
         sender_state: 'Haryana',
-        sender_pincode: '125001',
+        sender_pincode: '132103',
     });
 
     // Paper layout options: 'A4_SINGLE', 'A4_DUAL', 'A4_QUAD', 'A3_LARGE', 'A3_DUAL'
@@ -124,12 +121,10 @@ export default function CourierSlipMaker() {
         setFormData({
             courier_type: 'SPEED_POST',
             tracking_no: 'SP' + Math.floor(10000000 + Math.random() * 90000000) + 'IN',
-            dispatch_date: todayStr,
             weight: '500 gm',
             contents: 'Original Marksheet & Govt Affidavit Documents',
             payment_mode: 'PREPAID',
             declared_value: '₹ 1,000',
-            priority_stamp: 'SPEED POST - URGENT',
 
             receiver_name: 'SANJAY KUMAR S/O SHRI RAMESH KUMAR',
             receiver_phone: '9812345670',
@@ -140,15 +135,16 @@ export default function CourierSlipMaker() {
             receiver_state: 'Haryana',
             receiver_pincode: '132001',
 
-            sender_firm: 'CSP JAANKARI DIGITAL SEVA KENDRA',
-            sender_name: 'VIKAS VERMA',
-            sender_phone: '9998877665',
-            sender_alt_phone: '9896011223',
-            sender_address: 'Shop No. 12, Tehsil Road, Near Post Office',
-            sender_city: 'Rohtak',
-            sender_district: 'Rohtak',
+            sender_firm: 'A K ENTERPRISE',
+            sender_name: 'SAM VERMA',
+            sender_phone: '9541230611',
+            sender_website: 'akenterprisegroup.com',
+            sender_email: 'info@akenterprisegroup.com',
+            sender_address: '#03, Kutani Road, Verma Chowk',
+            sender_city: 'Panipat',
+            sender_district: 'Panipat',
             sender_state: 'Haryana',
-            sender_pincode: '124001',
+            sender_pincode: '132103',
         });
         setSuccessMsg('Sample demo data loaded successfully!');
         setTimeout(() => setSuccessMsg(null), 3500);
@@ -265,7 +261,7 @@ export default function CourierSlipMaker() {
     };
 
     // Dynamic QR Code data string containing all key postal details
-    const qrData = `TO: ${formData.receiver_name} | PH: ${formData.receiver_phone} | PIN: ${formData.receiver_pincode} | ADDR: ${formData.receiver_address}, ${formData.receiver_city}, ${formData.receiver_state} | FROM: ${formData.sender_name} (${formData.sender_firm}) | TRACK: ${formData.tracking_no}`;
+    const qrData = `TO: ${formData.receiver_name} | PH: ${formData.receiver_phone} | PIN: ${formData.receiver_pincode} | ADDR: ${formData.receiver_address}, ${formData.receiver_city}, ${formData.receiver_state} | FROM: ${formData.sender_name} (${formData.sender_firm}) | WEB: ${formData.sender_website || 'akenterprisegroup.com'} | TRACK: ${formData.tracking_no}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=2&data=${encodeURIComponent(qrData)}`;
 
     // Get courier badge info for Barcode mode
@@ -308,11 +304,6 @@ export default function CourierSlipMaker() {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-right">
-                        <div className="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-300 px-3 py-1 rounded-lg">
-                            Date: <span className="text-slate-950 font-black">{formData.dispatch_date}</span>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Main Content Grid: TO (Delivery Destination) & FROM (Sender) */}
@@ -404,9 +395,17 @@ export default function CourierSlipMaker() {
                                 </span>
                             </div>
 
-                            {formData.sender_alt_phone && (
-                                <div className="text-[11px] font-semibold text-slate-600 mt-0.5">
-                                    Alt Mobile: <span className="font-mono font-bold text-slate-900">{formData.sender_alt_phone}</span>
+                            {formData.sender_website && (
+                                <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
+                                    <span>🌐 Website:</span>
+                                    <span className="font-mono font-black underline">{formData.sender_website}</span>
+                                </div>
+                            )}
+
+                            {formData.sender_email && (
+                                <div className="mt-0.5 text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                                    <span>✉️ Email:</span>
+                                    <span className="font-mono text-slate-900">{formData.sender_email}</span>
                                 </div>
                             )}
 
@@ -465,15 +464,6 @@ export default function CourierSlipMaker() {
     const renderSlip = (isOfficeCopy = false, isCompact = false) => {
         return (
             <div className={`courier-slip-box bg-white text-slate-900 border-4 border-slate-900 shadow-xl overflow-hidden rounded-lg font-sans relative ${isCompact ? 'p-3.5 text-xs' : 'p-5 sm:p-6 text-sm'}`}>
-                {/* Priority Stamp Badge */}
-                {formData.priority_stamp && (
-                    <div className="absolute right-4 top-16 sm:top-20 z-10 pointer-events-none opacity-85 rotate-[-8deg]">
-                        <div className="border-4 border-red-700 text-red-700 font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm tracking-wider uppercase shadow-2xs bg-white/90">
-                            ★ {formData.priority_stamp} ★
-                        </div>
-                    </div>
-                )}
-
                 {/* Top Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-slate-900 pb-3 gap-3">
                     <div className="flex items-center gap-3">
@@ -492,9 +482,6 @@ export default function CourierSlipMaker() {
                         <div className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Consignment / Article No:</div>
                         <div className="font-mono font-black text-base sm:text-xl tracking-widest text-slate-950">
                             {formData.tracking_no || 'CSP2610031234IN'}
-                        </div>
-                        <div className="text-[11px] font-semibold text-slate-600">
-                            Date: <span className="font-bold text-slate-900">{formData.dispatch_date}</span>
                         </div>
                     </div>
                 </div>
@@ -611,10 +598,21 @@ export default function CourierSlipMaker() {
                                 <span className="font-mono font-bold text-slate-900">
                                     {formData.sender_phone || 'XXXXXXXXXX'}
                                 </span>
-                                {formData.sender_alt_phone && (
-                                    <span className="text-slate-600">, {formData.sender_alt_phone}</span>
-                                )}
                             </div>
+
+                            {formData.sender_website && (
+                                <div className="mt-1 text-[11px] font-bold text-indigo-700 flex items-center gap-1">
+                                    <span>🌐 Website:</span>
+                                    <span className="font-mono font-black underline">{formData.sender_website}</span>
+                                </div>
+                            )}
+
+                            {formData.sender_email && (
+                                <div className="mt-0.5 text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                                    <span>✉️ Email:</span>
+                                    <span className="font-mono text-slate-900">{formData.sender_email}</span>
+                                </div>
+                            )}
 
                             <div className="mt-2 text-xs text-slate-700 font-medium leading-normal">
                                 <div>{formData.sender_address || 'Sender Shop / House Address'}</div>
@@ -1203,7 +1201,7 @@ export default function CourierSlipMaker() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                                 Mobile No: *
@@ -1215,21 +1213,35 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_phone}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white"
-                                                placeholder="9991122334"
+                                                placeholder="9541230611"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Alternate Mobile (वैकल्पिक):
+                                                Website (वेबसाइट):
                                             </label>
                                             <input
                                                 type="text"
-                                                name="sender_alt_phone"
-                                                value={formData.sender_alt_phone}
+                                                name="sender_website"
+                                                value={formData.sender_website}
                                                 onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white"
-                                                placeholder="9896011223"
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-400 font-mono"
+                                                placeholder="akenterprisegroup.com"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                Sender Email (ईमेल):
+                                            </label>
+                                            <input
+                                                type="email"
+                                                name="sender_email"
+                                                value={formData.sender_email}
+                                                onChange={handleChange}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono"
+                                                placeholder="info@akenterprisegroup.com"
                                             />
                                         </div>
                                     </div>
@@ -1245,7 +1257,7 @@ export default function CourierSlipMaker() {
                                             value={formData.sender_address}
                                             onChange={handleChange}
                                             className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                                            placeholder="Shop No. 5, Main Market, Sirsa, Haryana"
+                                            placeholder="#03, Kutani Road, Verma Chowk"
                                         />
                                     </div>
 
@@ -1327,43 +1339,9 @@ export default function CourierSlipMaker() {
                                 </div>
                             </div>
 
-                            {/* Section: Priority & Notes */}
+                            {/* Section: Parcel Contents Description */}
                             <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                            Priority Stamp / Label:
-                                        </label>
-                                        <select
-                                            name="priority_stamp"
-                                            value={formData.priority_stamp}
-                                            onChange={handleChange}
-                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-bold"
-                                        >
-                                            <option value="SPEED POST - URGENT">SPEED POST - URGENT</option>
-                                            <option value="URGENT DISPATCH">URGENT DISPATCH</option>
-                                            <option value="DOCUMENTS ONLY">DOCUMENTS ONLY</option>
-                                            <option value="FRAGILE - HANDLE WITH CARE">FRAGILE - HANDLE WITH CARE</option>
-                                            <option value="DO NOT BEND">DO NOT BEND</option>
-                                            <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                            Dispatch Date:
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="dispatch_date"
-                                            value={formData.dispatch_date}
-                                            onChange={handleChange}
-                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 dark:text-white"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="mt-3">
+                                <div>
                                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                         Contents Description (सामग्री विवरण):
                                     </label>
