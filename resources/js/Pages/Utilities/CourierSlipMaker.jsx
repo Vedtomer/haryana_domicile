@@ -110,7 +110,6 @@ export default function CourierSlipMaker() {
         // TO / Receiver (Delivery Destination)
         receiver_name: 'AMIT VERMA',
         receiver_phone: '9876543210',
-        receiver_alt_phone: '9416012345',
         receiver_address: 'H.No. 142, Near Shiv Mandir, Ward No. 4, Old Bus Stand Road',
         receiver_city: 'Sirsa',
         receiver_district: 'Sirsa',
@@ -155,7 +154,6 @@ export default function CourierSlipMaker() {
 
             receiver_name: 'SANJAY KUMAR S/O SHRI RAMESH KUMAR',
             receiver_phone: '9812345670',
-            receiver_alt_phone: '9416554433',
             receiver_address: 'House No. 34-B, Gali No. 2, Near Hanuman Mandir, Sector 14',
             receiver_city: 'Karnal',
             receiver_district: 'Karnal',
@@ -449,12 +447,6 @@ export default function CourierSlipMaker() {
                                         {formData.receiver_phone || 'XXXXXXXXXX'}
                                     </span>
                                 </div>
-                                {formData.receiver_alt_phone && (
-                                    <div className="flex items-center gap-1 bg-white border border-slate-400 px-2 py-0.5 rounded-lg text-slate-700 text-xs font-bold">
-                                        <span>Alt:</span>
-                                        <span className="font-mono">{formData.receiver_alt_phone}</span>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Full Address */}
@@ -659,12 +651,6 @@ export default function CourierSlipMaker() {
                                         {formData.receiver_phone || 'XXXXXXXXXX'}
                                     </span>
                                 </div>
-                                {formData.receiver_alt_phone && (
-                                    <div className="flex items-center gap-1 bg-white border border-slate-400 px-2 py-0.5 rounded text-slate-700 text-xs">
-                                        <span>Alt:</span>
-                                        <span className="font-mono font-bold">{formData.receiver_alt_phone}</span>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Full Address */}
@@ -1148,35 +1134,19 @@ export default function CourierSlipMaker() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Mobile No (मोबाइल): *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="receiver_phone"
-                                                required
-                                                value={formData.receiver_phone}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white"
-                                                placeholder="9876543210"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Alternate Mobile (वैकल्पिक):
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="receiver_alt_phone"
-                                                value={formData.receiver_alt_phone}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white"
-                                                placeholder="9416012345"
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                            Mobile No (मोबाइल): *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="receiver_phone"
+                                            required
+                                            value={formData.receiver_phone}
+                                            onChange={handleChange}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                                            placeholder="9876543210"
+                                        />
                                     </div>
 
                                     <div>
