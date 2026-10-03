@@ -571,13 +571,10 @@ export default function Dashboard({
         return groupServicesByCategory(availableServices);
     }, [availableServices]);
 
-    // 3. Display groups (if category selected from sidebar, show that category or all)
-    const displayGroups = useMemo(() => {
-        if (selectedCategory) {
-            const found = allCategoryGroups.find((g) => g.category.id === selectedCategory);
-            if (found) return [found];
-        }
-        return allCategoryGroups;
+    // 3. Current category's group
+    const currentGroup = useMemo(() => {
+        if (!selectedCategory) return null;
+        return allCategoryGroups.find((g) => g.category.id === selectedCategory) || null;
     }, [allCategoryGroups, selectedCategory]);
 
     // Currently active category object if selected
@@ -643,246 +640,255 @@ export default function Dashboard({
         >
             <Head title={selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'Dashboard'} />
 
-            {/* 1. Small Compact Welcome Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
-                        <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
+            {!selectedCategory ? (
+                /* DASHBOARD OVERVIEW: No services show! Only stats, balance, and customer care */
+                <>
+                    {/* 1. Small Compact Welcome Banner */}
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+                                <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+                                        Welcome, {auth?.user?.name || 'Retailer'}
+                                    </h2>
+                                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                        {siteName.toUpperCase()}
+                                    </span>
+                                </div>
+                                <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
+                                    Fast services, clear wallet records and quick processing.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
-                                Welcome, {auth?.user?.name || 'Retailer'}
-                            </h2>
-                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
-                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                                {siteName.toUpperCase()}
+
+                    {/* 2. Stat Metric Cards in a row */}
+                    {isAdmin ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                            <StatMetricCard
+                                index={0}
+                                colorTheme="indigo"
+                                title="TOTAL USERS"
+                                badgeText="MEMBERS"
+                                value={Number(totalUsers || 0).toLocaleString('en-IN')}
+                                subtitle="Registered portal users"
+                                icon="group"
+                                linkUrl="/admin/users"
+                            />
+                            <StatMetricCard
+                                index={1}
+                                colorTheme="amber"
+                                title="COIN REQUESTS"
+                                badgeText="PENDING"
+                                value={`${pendingCoins} Pending`}
+                                subtitle="Wallet recharge requests"
+                                icon="monetization_on"
+                                linkUrl="/admin/coin-requests"
+                            />
+                            <StatMetricCard
+                                index={2}
+                                colorTheme="purple"
+                                title="SERVICE PENDING REQUEST"
+                                badgeText="ORDERS"
+                                value={`${pendingRequests} Pending`}
+                                subtitle="Service requests pending action"
+                                icon="hourglass_top"
+                                linkUrl="/admin/service-requests?status=pending"
+                            />
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                            <StatMetricCard
+                                index={0}
+                                colorTheme="emerald"
+                                title="TOTAL BALANCE"
+                                badgeText="LIVE"
+                                value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
+                                subtitle="Available wallet coins"
+                                icon="account_balance_wallet"
+                                linkUrl="/admin/coin-requests"
+                            />
+                            <StatMetricCard
+                                index={1}
+                                colorTheme="blue"
+                                title="ADD BALANCE"
+                                badgeText="INSTANT QR"
+                                value="Add Balance"
+                                subtitle="Instant scan & automatic recharge"
+                                icon="add_card"
+                                linkUrl="/admin/coin-requests"
+                                isButton={true}
+                            />
+                            <StatMetricCard
+                                index={2}
+                                colorTheme="purple"
+                                title="WALLET HISTORY"
+                                badgeText="PASSBOOK"
+                                value="View Ledger"
+                                subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
+                                icon="history"
+                                linkUrl="/admin/profile#coin-ledger"
+                            />
+                        </div>
+                    )}
+
+                    {/* 3. Customer Care Section */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
+                                    support_agent
+                                </span>
+                                <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
+                                    Customer Care
+                                </h3>
+                            </div>
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
+                                Support
                             </span>
                         </div>
-                        <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
-                            Fast services, clear wallet records and quick processing.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            {/* 2. Stat Metric Cards in a row */}
-            {isAdmin ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                    <StatMetricCard
-                        index={0}
-                        colorTheme="indigo"
-                        title="TOTAL USERS"
-                        badgeText="MEMBERS"
-                        value={Number(totalUsers || 0).toLocaleString('en-IN')}
-                        subtitle="Registered portal users"
-                        icon="group"
-                        linkUrl="/admin/users"
-                    />
-                    <StatMetricCard
-                        index={1}
-                        colorTheme="amber"
-                        title="COIN REQUESTS"
-                        badgeText="PENDING"
-                        value={`${pendingCoins} Pending`}
-                        subtitle="Wallet recharge requests"
-                        icon="monetization_on"
-                        linkUrl="/admin/coin-requests"
-                    />
-                    <StatMetricCard
-                        index={2}
-                        colorTheme="purple"
-                        title="SERVICE PENDING REQUEST"
-                        badgeText="ORDERS"
-                        value={`${pendingRequests} Pending`}
-                        subtitle="Service requests pending action"
-                        icon="hourglass_top"
-                        linkUrl="/admin/service-requests?status=pending"
-                    />
-                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                            {/* Help Note Card */}
+                            <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
+                                <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    Need help with a service?
+                                </h4>
+                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                    Use one request at a time. Keep the transaction/service detail ready before contacting support.
+                                </p>
+                            </div>
+
+                            {/* WhatsApp Card */}
+                            <a
+                                href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">chat</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        WhatsApp
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {effectiveWhatsApp}
+                                    </span>
+                                </div>
+                            </a>
+
+                            {/* Telegram Card */}
+                            <a
+                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">send</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        Telegram
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {supportTelegram}
+                                    </span>
+                                </div>
+                            </a>
+
+                            {/* Member Group Card */}
+                            <a
+                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-[22px]">groups</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                        Member Group
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                        {siteName} Updates
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                    <StatMetricCard
-                        index={0}
-                        colorTheme="emerald"
-                        title="TOTAL BALANCE"
-                        badgeText="LIVE"
-                        value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                        subtitle="Available wallet coins"
-                        icon="account_balance_wallet"
-                        linkUrl="/admin/coin-requests"
-                    />
-                    <StatMetricCard
-                        index={1}
-                        colorTheme="blue"
-                        title="ADD BALANCE"
-                        badgeText="INSTANT QR"
-                        value="Add Balance"
-                        subtitle="Instant scan & automatic recharge"
-                        icon="add_card"
-                        linkUrl="/admin/coin-requests"
-                        isButton={true}
-                    />
-                    <StatMetricCard
-                        index={2}
-                        colorTheme="purple"
-                        title="WALLET HISTORY"
-                        badgeText="PASSBOOK"
-                        value="View Ledger"
-                        subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
-                        icon="history"
-                        linkUrl="/admin/profile#coin-ledger"
-                    />
-                </div>
-            )}
+                /* SERVICE VIEW: When a service category is clicked, ONLY that category's services show! */
+                <div id="services" className="mb-10">
+                    {/* Top Row: Back to Dashboard button + Category Name & Badge */}
+                    <div className="flex items-center justify-between gap-3 mb-6">
+                        <button
+                            type="button"
+                            onClick={clearSelectedCategory}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+                                arrow_back
+                            </span>
+                            <span>Back to Dashboard</span>
+                        </button>
 
-            {/* If filtered by sidebar category: small clean indicator */}
-            {selectedCategory && (
-                <div className="flex items-center justify-between gap-3 mb-6 p-3 px-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 font-semibold">
-                            Category: <strong className="text-indigo-600 dark:text-indigo-400">{activeCategoryObj?.name}</strong>
-                        </span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${activeCategoryObj?.badgeBg}`}>
-                            {displayGroups[0]?.services?.length || 0} Services
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={clearSelectedCategory}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all cursor-pointer whitespace-nowrap"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                        <span>Show All Services</span>
-                    </button>
-                </div>
-            )}
-
-            {/* Separated Category Columns of Services */}
-            <div className="space-y-10 mb-10">
-                {displayGroups.map((group) => (
-                    <div key={group.category.id} id={`cat-${group.category.id}`} className="relative">
-                        {/* Clean Category Column Header */}
-                        <div className="flex items-center justify-between gap-3 mb-4 pb-2 border-b-2 border-slate-200/80 dark:border-slate-800">
-                            <div className="flex items-center gap-2.5">
-                                <CategoryLogo category={group.category} services={group.services} size="w-8 h-8" />
-                                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                                    {group.category.name}
-                                </h2>
-                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 hidden sm:inline">
-                                    ({group.category.hindiName})
+                        <div className="flex items-center gap-2.5">
+                            <CategoryLogo category={activeCategoryObj} services={currentGroup?.services || []} size="w-9 h-9" />
+                            <div className="text-right">
+                                <div className="flex items-center gap-2 justify-end flex-wrap">
+                                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                                        {activeCategoryObj?.name}
+                                    </h2>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${activeCategoryObj?.badgeBg}`}>
+                                        {currentGroup?.services?.length || 0} Services
+                                    </span>
+                                </div>
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                                    {activeCategoryObj?.hindiName}
                                 </span>
                             </div>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${group.category.badgeBg}`}>
-                                {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
+                        </div>
+                    </div>
+
+                    {/* Services Grid for This Category */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
+                        {(currentGroup?.services || []).map((service, index) => (
+                            <ServiceCard
+                                key={service.id}
+                                service={service}
+                                index={index}
+                                onUnlockClick={setUnlockingService}
+                                isAdmin={isAdmin}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Bottom Back to Dashboard Button */}
+                    <div className="mt-8 text-center">
+                        <button
+                            type="button"
+                            onClick={clearSelectedCategory}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-md transition-all cursor-pointer group"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+                                arrow_back
                             </span>
-                        </div>
-
-                        {/* Responsive 3D Grid of Cards for this Category Column */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
-                            {group.services.map((service, index) => (
-                                <ServiceCard
-                                    key={service.id}
-                                    service={service}
-                                    index={index}
-                                    onUnlockClick={setUnlockingService}
-                                    isAdmin={isAdmin}
-                                />
-                            ))}
-                        </div>
+                            <span>Back to Dashboard</span>
+                        </button>
                     </div>
-                ))}
-            </div>
-
-            {/* 5. Customer Care Section */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
-                            support_agent
-                        </span>
-                        <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
-                            Customer Care
-                        </h3>
-                    </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                        Support
-                    </span>
                 </div>
+            )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                    {/* Help Note Card */}
-                    <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
-                            Need help with a service?
-                        </h4>
-                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                            Use one request at a time. Keep the transaction/service detail ready before contacting support.
-                        </p>
-                    </div>
 
-                    {/* WhatsApp Card */}
-                    <a
-                        href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">chat</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                WhatsApp
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {effectiveWhatsApp}
-                            </span>
-                        </div>
-                    </a>
-
-                    {/* Telegram Card */}
-                    <a
-                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">send</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                Telegram
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {supportTelegram}
-                            </span>
-                        </div>
-                    </a>
-
-                    {/* Member Group Card */}
-                    <a
-                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">groups</span>
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                Member Group
-                            </span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                {siteName} Updates
-                            </span>
-                        </div>
-                    </a>
-                </div>
-            </div>
 
             {/* Premium Unlock Modal */}
             {unlockingService && (
