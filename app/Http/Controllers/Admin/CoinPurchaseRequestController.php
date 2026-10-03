@@ -65,6 +65,10 @@ class CoinPurchaseRequestController extends Controller
             'upiId'          => Setting::get('upi_id',   'cspjaankari@upi'),
             'upiName'        => Setting::get('upi_name', 'CSP Jaankari'),
             'whatsappNumber' => Setting::get('whatsapp_number', '380630323112'),
+            'phonepeConfig'  => [
+                'enabled' => Setting::get('phonepe_enabled', '0') === '1',
+                'mode'    => Setting::get('phonepe_mode', 'sandbox'),
+            ],
         ]);
     }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
 const STATUS_CONFIG = {
@@ -56,7 +56,7 @@ function PackageCard({ pkg, selected, onSelect }) {
     );
 }
 
-export default function Create({ packages, myRequests, userCoins, upiId, upiName, whatsappNumber }) {
+export default function Create({ packages, myRequests, userCoins, upiId, upiName, whatsappNumber, phonepeConfig }) {
     const { auth, flash, whatsappNumber: sharedWhatsapp } = usePage().props;
     const targetWhatsapp = (whatsappNumber || sharedWhatsapp || '380630323112').replace(/[^0-9]/g, '');
 
@@ -65,6 +65,19 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
     const [customAmount, setCustomAmount] = useState('');
     const [preview, setPreview] = useState(null);
     const [successData, setSuccessData] = useState(null);
+    const [isPhonePeLoading, setIsPhonePeLoading] = useState(false);
+
+    const handlePhonePePay = () => {
+        if (!selectedPackage) return;
+        setIsPhonePeLoading(true);
+        router.post('/payment/phonepe/initiate', {
+            package_amount: selectedPackage.amount,
+            coins_requested: selectedPackage.coins_requested,
+        }, {
+            onError: () => setIsPhonePeLoading(false),
+            onFinish: () => setIsPhonePeLoading(false),
+        });
+    };
 
     const { data, setData, post, processing, errors, reset } = useForm({
         package_amount: '',
@@ -238,7 +251,67 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
 
                     {/* STEP 2: Order + Payment */}
                     {selectedPackage && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="space-y-6">
+
+                            {/* PhonePe Instant Auto Coin Pay Option (if enabled) */}
+                            {phonepeConfig?.enabled && (
+                                <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 border-2 border-purple-500/40 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-28 h-28 bg-purple-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="flex items-start sm:items-center gap-3.5">
+                                            <div className="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-purple-600/30 shrink-0">
+                                                पे
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="font-extrabold text-base tracking-tight text-white">
+                                                        ⚡ Auto Instant Coin Add (PhonePe / GPay / Paytm)
+                                                    </h4>
+                                                    <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow animate-pulse">
+                                                        Auto Approved
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-purple-200 mt-0.5">
+                                                    पेमेंट होते ही 1 सेकंड में कॉइन सीधे आपके अकाउंट में जुड़ जाएंगे (No Manual Approval Needed).
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={handlePhonePePay}
+                                            disabled={isPhonePeLoading}
+                                            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-sm shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                                        >
+                                            {isPhonePeLoading ? (
+                                                <span className="flex items-center gap-2">
+                                                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                    Connecting to PhonePe...
+                                                </span>
+                                            ) : (
+                                                <>
+                                                    <span>Pay ₹{selectedPackage.amount} Online Now</span>
+                                                    <span className="material-symbols-outlined text-base">arrow_forward</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Section separator if PhonePe enabled */}
+                            {phonepeConfig?.enabled && (
+                                <div className="relative flex py-1 items-center">
+                                    <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                                    <span className="flex-shrink mx-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                        या फिर Manual QR से पेमेंट करें (Or Pay via Manual QR)
+                                    </span>
+                                    <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                             {/* Left — QR + Order Summary */}
                             <div className="space-y-4">
@@ -359,6 +432,7 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                 </p>
                             </div>
                         </div>
+                    </div>
                     )}
                 </form>
 

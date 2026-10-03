@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             '/api/print-agent/*',
             'p/*/upload',
             '/p/*/upload',
+            'api/phonepe/*',
+            '/api/phonepe/*',
+            'payment/phonepe/*',
+            '/payment/phonepe/*',
         ]);
 
         $middleware->web(append: [
