@@ -80,7 +80,6 @@ export default function CourierSlipMaker() {
         receiver_name: 'AMIT VERMA',
         receiver_phone: '9876543210',
         receiver_alt_phone: '9416012345',
-        receiver_aadhaar: '4567 8901 2345',
         receiver_address: 'H.No. 142, Near Shiv Mandir, Ward No. 4, Old Bus Stand Road',
         receiver_city: 'Sirsa',
         receiver_district: 'Sirsa',
@@ -92,7 +91,6 @@ export default function CourierSlipMaker() {
         sender_name: 'RAMESH CHAND SHARMA',
         sender_phone: '9991122334',
         sender_alt_phone: '',
-        sender_aadhaar: '9876 5432 1098',
         sender_address: 'Shop No. 5, Main Market, Near Tehsil Complex',
         sender_city: 'Hisar',
         sender_district: 'Hisar',
@@ -136,7 +134,6 @@ export default function CourierSlipMaker() {
             receiver_name: 'SANJAY KUMAR S/O SHRI RAMESH KUMAR',
             receiver_phone: '9812345670',
             receiver_alt_phone: '9416554433',
-            receiver_aadhaar: '5412 8963 1245',
             receiver_address: 'House No. 34-B, Gali No. 2, Near Hanuman Mandir, Sector 14',
             receiver_city: 'Karnal',
             receiver_district: 'Karnal',
@@ -147,7 +144,6 @@ export default function CourierSlipMaker() {
             sender_name: 'VIKAS VERMA',
             sender_phone: '9998877665',
             sender_alt_phone: '9896011223',
-            sender_aadhaar: '8956 2314 7890',
             sender_address: 'Shop No. 12, Tehsil Road, Near Post Office',
             sender_city: 'Rohtak',
             sender_district: 'Rohtak',
@@ -295,14 +291,6 @@ export default function CourierSlipMaker() {
                                 )}
                             </div>
 
-                            {/* Receiver Aadhaar if present */}
-                            {formData.receiver_aadhaar && (
-                                <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 border border-blue-300 text-blue-900 px-2 py-0.5 rounded font-mono font-bold text-[11px]">
-                                    <span>🆔 Aadhaar:</span>
-                                    <span>{formData.receiver_aadhaar}</span>
-                                </div>
-                            )}
-
                             {/* Full Address */}
                             <div className="mt-3 text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
                                 <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
@@ -361,12 +349,6 @@ export default function CourierSlipMaker() {
                             {formData.sender_alt_phone && (
                                 <div className="text-[11px] font-semibold text-slate-600 mt-0.5">
                                     Alt Mobile: <span className="font-mono font-bold text-slate-900">{formData.sender_alt_phone}</span>
-                                </div>
-                            )}
-
-                            {formData.sender_aadhaar && (
-                                <div className="mt-1 text-[11px] font-mono font-bold text-slate-700">
-                                    🆔 Aadhaar: {formData.sender_aadhaar}
                                 </div>
                             )}
 
@@ -520,14 +502,6 @@ export default function CourierSlipMaker() {
                                 )}
                             </div>
 
-                            {/* Aadhaar Number */}
-                            {formData.receiver_aadhaar && (
-                                <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 border border-blue-300 text-blue-900 px-2.5 py-0.5 rounded font-mono font-bold text-xs">
-                                    <span>🆔 Aadhaar No:</span>
-                                    <span>{formData.receiver_aadhaar}</span>
-                                </div>
-                            )}
-
                             {/* Full Address */}
                             <div className="mt-3 text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
                                 <div className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Address:</div>
@@ -583,12 +557,6 @@ export default function CourierSlipMaker() {
                                     <span className="text-slate-600">, {formData.sender_alt_phone}</span>
                                 )}
                             </div>
-
-                            {formData.sender_aadhaar && (
-                                <div className="mt-1 text-[11px] font-mono font-semibold text-slate-700">
-                                    🆔 Aadhaar: {formData.sender_aadhaar}
-                                </div>
-                            )}
 
                             <div className="mt-2 text-xs text-slate-700 font-medium leading-normal">
                                 <div>{formData.sender_address || 'Sender Shop / House Address'}</div>
@@ -1044,20 +1012,6 @@ export default function CourierSlipMaker() {
 
                                     <div>
                                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                            Receiver Aadhaar Number (आधार नंबर - ऐच्छिक):
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="receiver_aadhaar"
-                                            value={formData.receiver_aadhaar}
-                                            onChange={handleChange}
-                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white"
-                                            placeholder="XXXX XXXX 1234"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                             Complete Address (मकान नं, गली, लैंडमार्क): *
                                         </label>
                                         <textarea
@@ -1174,15 +1128,15 @@ export default function CourierSlipMaker() {
 
                                         <div>
                                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                                Sender Aadhaar (ऐच्छिक):
+                                                Alternate Mobile (वैकल्पिक):
                                             </label>
                                             <input
                                                 type="text"
-                                                name="sender_aadhaar"
-                                                value={formData.sender_aadhaar}
+                                                name="sender_alt_phone"
+                                                value={formData.sender_alt_phone}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white"
-                                                placeholder="XXXX XXXX 5678"
+                                                placeholder="9896011223"
                                             />
                                         </div>
                                     </div>
