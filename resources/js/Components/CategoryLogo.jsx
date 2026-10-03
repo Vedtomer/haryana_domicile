@@ -230,6 +230,128 @@ export function CategorySvgLogo({ categoryId }) {
                 </svg>
             );
 
+        case 'domicile':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#4C1D95" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#7C3AED" />
+                    <text x="24" y="13.5" fill="#F5F3FF" fontSize="3.1" fontWeight="900" textAnchor="middle" letterSpacing="0.4">
+                        HARYANA • DOMICILE
+                    </text>
+                    {/* Certificate with Haryana Seal / Star */}
+                    <rect x="13" y="19" width="22" height="16" rx="2" fill="#FFFFFF" stroke="#C4B5FD" strokeWidth="0.8" />
+                    <circle cx="24" cy="25" r="3.5" fill="#EDE9FE" stroke="#7C3AED" strokeWidth="1" />
+                    <path d="M24 23L24.8 24.6L26.5 24.8L25.2 26L25.6 27.6L24 26.7L22.4 27.6L22.8 26L21.5 24.8L23.2 24.6L24 23Z" fill="#F59E0B" />
+                    <rect x="16" y="30" width="16" height="1.5" rx="0.75" fill="#7C3AED" />
+                    <rect x="18" y="32.5" width="12" height="1.2" rx="0.6" fill="#A78BFA" />
+                </svg>
+            );
+
+        case 'birth':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#0C4A6E" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#0284C7" />
+                    <text x="24" y="13.5" fill="#F0F9FF" fontSize="3.2" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        BIRTH • CERTIFICATE
+                    </text>
+                    {/* Baby Motif & Certificate */}
+                    <circle cx="24" cy="24" r="8" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="1.2" />
+                    <circle cx="24" cy="23.5" r="4.5" fill="#FDE047" stroke="#F59E0B" strokeWidth="0.8" />
+                    <circle cx="22.5" cy="22.5" r="0.7" fill="#78350F" />
+                    <circle cx="25.5" cy="22.5" r="0.7" fill="#78350F" />
+                    <path d="M22.5 25C23 26 25 26 25.5 25" stroke="#78350F" strokeWidth="0.7" strokeLinecap="round" />
+                    <rect x="15" y="33.5" width="18" height="2.5" rx="1" fill="#38BDF8" />
+                    <text x="24" y="35.5" fill="#0C4A6E" fontSize="2" fontWeight="900" textAnchor="middle">
+                        JANAM PRAMAN
+                    </text>
+                </svg>
+            );
+
+        case 'udhyam':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#064E3B" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#059669" />
+                    <text x="24" y="13.5" fill="#ECFDF5" fontSize="3.2" fontWeight="900" textAnchor="middle" letterSpacing="0.4">
+                        UDYAM • MSME
+                    </text>
+                    {/* Factory & Industry Gear */}
+                    <circle cx="24" cy="24" r="8.5" fill="#065F46" stroke="#34D399" strokeWidth="1.2" strokeDasharray="2 1.5" />
+                    <path d="M19 28V22L22 24V22L25 24V19H29V28H19Z" fill="#FDE047" />
+                    <rect x="15" y="34" width="18" height="2.5" rx="1" fill="#10B981" />
+                    <text x="24" y="36" fill="#FFFFFF" fontSize="2" fontWeight="900" textAnchor="middle">
+                        MSME GOVT
+                    </text>
+                </svg>
+            );
+
+        case 'bank':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#1E1B4B" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#2563EB" />
+                    <text x="24" y="13.5" fill="#EFF6FF" fontSize="3.2" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        BANK • PASSBOOK
+                    </text>
+                    {/* Classical Bank Pillars & Pediment */}
+                    <path d="M24 17L15 21H33L24 17Z" fill="#FBBF24" />
+                    <rect x="17" y="21.5" width="2" height="7" fill="#93C5FD" />
+                    <rect x="21" y="21.5" width="2" height="7" fill="#93C5FD" />
+                    <rect x="25" y="21.5" width="2" height="7" fill="#93C5FD" />
+                    <rect x="29" y="21.5" width="2" height="7" fill="#93C5FD" />
+                    <rect x="14" y="28.5" width="20" height="2" fill="#FBBF24" />
+                    <rect x="15" y="33.5" width="18" height="2.5" rx="1" fill="#60A5FA" />
+                    <text x="24" y="35.5" fill="#1E1B4B" fontSize="2" fontWeight="900" textAnchor="middle">
+                        IFSC • PASSBOOK
+                    </text>
+                </svg>
+            );
+
+        case 'customer':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#14532D" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#16A34A" />
+                    <text x="24" y="13.5" fill="#F0FDF4" fontSize="3.1" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        CUSTOMER • KHATA
+                    </text>
+                    {/* WhatsApp Bubble + Ledger Book */}
+                    <circle cx="21" cy="24" r="5" fill="#22C55E" />
+                    <path d="M19 22C19 22 21 21.5 22.5 23C23.5 24 23 25.5 23 25.5L23.5 26.5L21.5 26" fill="#FFFFFF" />
+                    <rect x="26" y="20" width="8" height="10" rx="1.5" fill="#FEF08A" stroke="#CA8A04" strokeWidth="0.8" />
+                    <line x1="28" y1="23" x2="32" y2="23" stroke="#854D0E" strokeWidth="0.8" />
+                    <line x1="28" y1="26" x2="32" y2="26" stroke="#854D0E" strokeWidth="0.8" />
+                    <rect x="15" y="33.5" width="18" height="2.5" rx="1" fill="#4ADE80" />
+                    <text x="24" y="35.5" fill="#14532D" fontSize="2" fontWeight="900" textAnchor="middle">
+                        WHATSAPP • KHATA
+                    </text>
+                </svg>
+            );
+
+        case 'salary':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#0F172A" />
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#475569" />
+                    <text x="24" y="13.5" fill="#F8FAFC" fontSize="3.2" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        SALARY • RESUME
+                    </text>
+                    {/* Pay Slip Sheet with Rupee symbol */}
+                    <rect x="13" y="18.5" width="22" height="14" rx="2" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
+                    <circle cx="24" cy="25" r="3.8" fill="#ECFDF5" stroke="#10B981" strokeWidth="0.8" />
+                    <text x="24" y="27" fill="#059669" fontSize="4.5" fontWeight="900" textAnchor="middle">
+                        ₹
+                    </text>
+                    <rect x="15" y="21" width="5" height="1" fill="#94A3B8" />
+                    <rect x="28" y="21" width="5" height="1" fill="#94A3B8" />
+                    <rect x="15" y="34" width="18" height="2.5" rx="1" fill="#38BDF8" />
+                    <text x="24" y="36" fill="#0F172A" fontSize="2" fontWeight="900" textAnchor="middle">
+                        PAY SLIP • CV
+                    </text>
+                </svg>
+            );
+
         case 'utilities':
         default:
             return (

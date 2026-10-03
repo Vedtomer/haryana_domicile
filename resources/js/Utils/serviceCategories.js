@@ -4,7 +4,7 @@ export const SERVICE_CATEGORIES = [
         name: 'Aadhaar Card Services',
         hindiName: 'आधार कार्ड सेवाएं',
         shortName: 'Aadhaar',
-        description: 'Aadhaar manual maker, mobile update, DOB, name correction & UID info',
+        description: 'Aadhaar manual maker, mobile update, DOB, surname change & UID info',
         color: 'from-amber-500 to-orange-600',
         border: 'border-orange-400 dark:border-orange-500',
         badgeBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/70 dark:border-orange-800/60',
@@ -31,18 +31,123 @@ export const SERVICE_CATEGORIES = [
     },
     {
         id: 'marriage',
-        name: 'Marriage & Certificates',
-        hindiName: 'विवाह एवं प्रमाण पत्र',
-        shortName: 'Marriage & Cert.',
-        description: 'Marriage certificate, domicile, birth certificate add/download & Saral',
+        name: 'Marriage Certificate',
+        hindiName: 'विवाह प्रमाण पत्र',
+        shortName: 'Marriage',
+        description: 'Official Marriage certificate forms, registration & marriage affidavits',
         color: 'from-rose-500 to-pink-600',
         border: 'border-pink-400 dark:border-pink-500',
         badgeBg: 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border-pink-200/70 dark:border-pink-800/60',
-        icon: 'history_edu',
+        icon: 'favorite',
         iconType: 'material',
         avatarBg: 'bg-pink-100 dark:bg-pink-900/40 text-pink-600',
         headerBg: 'from-pink-500/15 via-rose-500/5 to-transparent border-l-4 border-pink-500',
         accentColor: 'text-pink-600 dark:text-pink-400',
+    },
+    {
+        id: 'domicile',
+        name: 'Haryana Domicile',
+        hindiName: 'हरियाणा डोमिसाइल',
+        shortName: 'Domicile',
+        description: 'Haryana domicile certificate generation, application & verification',
+        color: 'from-purple-600 to-indigo-700',
+        border: 'border-purple-400 dark:border-purple-500',
+        badgeBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/70 dark:border-purple-800/60',
+        icon: 'verified_user',
+        iconType: 'material',
+        avatarBg: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700',
+        headerBg: 'from-purple-500/15 via-indigo-500/5 to-transparent border-l-4 border-purple-500',
+        accentColor: 'text-purple-600 dark:text-purple-400',
+    },
+    {
+        id: 'birth',
+        name: 'Birth Certificate',
+        hindiName: 'जन्म प्रमाण पत्र',
+        shortName: 'Birth Cert.',
+        description: 'Birth certificate name add form, records & document merger PDF download',
+        color: 'from-sky-500 to-cyan-600',
+        border: 'border-sky-400 dark:border-sky-500',
+        badgeBg: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border-sky-200/70 dark:border-sky-800/60',
+        icon: 'child_care',
+        iconType: 'material',
+        avatarBg: 'bg-sky-100 dark:bg-sky-900/40 text-sky-600',
+        headerBg: 'from-sky-500/15 via-cyan-500/5 to-transparent border-l-4 border-sky-500',
+        accentColor: 'text-sky-600 dark:text-sky-400',
+    },
+    {
+        id: 'bills',
+        name: 'Electricity Bills',
+        hindiName: 'बिजली बिल सेवाएं',
+        shortName: 'Electricity Bills',
+        description: 'DHBVN & UHBVN duplicate electricity bill instant PDF download',
+        color: 'from-amber-500 to-yellow-600',
+        border: 'border-amber-400 dark:border-amber-500',
+        badgeBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/70 dark:border-amber-800/60',
+        icon: 'bolt',
+        iconType: 'material',
+        avatarBg: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700',
+        headerBg: 'from-amber-500/15 via-yellow-500/5 to-transparent border-l-4 border-amber-500',
+        accentColor: 'text-amber-600 dark:text-amber-400',
+    },
+    {
+        id: 'udhyam',
+        name: 'Udyam / MSME Registration',
+        hindiName: 'उद्यम / एमएसएमई रजिस्ट्रेशन',
+        shortName: 'Udyam MSME',
+        description: 'Official Udyam certificate registration for Business, CSC & Cyber Cafe',
+        color: 'from-emerald-600 to-teal-700',
+        border: 'border-emerald-400 dark:border-emerald-500',
+        badgeBg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200/70 dark:border-emerald-800/60',
+        icon: 'domain',
+        iconType: 'material',
+        avatarBg: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700',
+        headerBg: 'from-emerald-500/15 via-teal-500/5 to-transparent border-l-4 border-emerald-500',
+        accentColor: 'text-emerald-600 dark:text-emerald-400',
+    },
+    {
+        id: 'bank',
+        name: 'Banking & Passbook',
+        hindiName: 'बैंकिंग एवं पासबुक सेवाएं',
+        shortName: 'Banking & Passbook',
+        description: 'Bank of Baroda affidavit, Airtel passbook & IFSC code verification',
+        color: 'from-blue-600 to-indigo-700',
+        border: 'border-blue-400 dark:border-blue-500',
+        badgeBg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200/70 dark:border-blue-800/60',
+        icon: 'account_balance',
+        iconType: 'material',
+        avatarBg: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700',
+        headerBg: 'from-blue-500/15 via-indigo-500/5 to-transparent border-l-4 border-blue-500',
+        accentColor: 'text-blue-600 dark:text-blue-400',
+    },
+    {
+        id: 'customer',
+        name: 'Customer & Café Tools',
+        hindiName: 'ग्राहक एवं खाता टूल्स',
+        shortName: 'Customer Tools',
+        description: 'Customer WhatsApp document sender, Cyber Café khata & QR counter print',
+        color: 'from-teal-600 to-emerald-700',
+        border: 'border-teal-400 dark:border-teal-500',
+        badgeBg: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-teal-200/70 dark:border-teal-800/60',
+        icon: 'support_agent',
+        iconType: 'material',
+        avatarBg: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700',
+        headerBg: 'from-teal-500/15 via-emerald-500/5 to-transparent border-l-4 border-teal-500',
+        accentColor: 'text-teal-600 dark:text-teal-400',
+    },
+    {
+        id: 'salary',
+        name: 'Salary Slip & Resume',
+        hindiName: 'सैलरी स्लिप एवं रिज्यूम',
+        shortName: 'Salary & Resume',
+        description: 'Official company Salary Slip generator and automated Resume / CV maker',
+        color: 'from-slate-700 to-slate-900',
+        border: 'border-slate-500 dark:border-slate-600',
+        badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        icon: 'payments',
+        iconType: 'material',
+        avatarBg: 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+        headerBg: 'from-slate-500/15 via-slate-600/5 to-transparent border-l-4 border-slate-600',
+        accentColor: 'text-slate-700 dark:text-slate-300',
     },
     {
         id: 'ppp',
@@ -120,26 +225,11 @@ export const SERVICE_CATEGORIES = [
         accentColor: 'text-emerald-600 dark:text-emerald-400',
     },
     {
-        id: 'bills',
-        name: 'Electricity Bills & Govt Utility',
-        hindiName: 'बिजली बिल एवं सरकारी सेवाएं',
-        shortName: 'Bills & Govt',
-        description: 'DHBVN/UHBVN Bijli bill PDF, Bihar Ration Card, Kundli, Passport maker & IFSC',
-        color: 'from-indigo-600 to-blue-700',
-        border: 'border-indigo-400 dark:border-indigo-500',
-        badgeBg: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200/70 dark:border-indigo-800/60',
-        icon: 'receipt_long',
-        iconType: 'material',
-        avatarBg: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700',
-        headerBg: 'from-indigo-500/15 via-blue-500/5 to-transparent border-l-4 border-indigo-500',
-        accentColor: 'text-indigo-600 dark:text-indigo-400',
-    },
-    {
         id: 'utilities',
-        name: 'Cyber Café Tools & Affidavits',
-        hindiName: 'साइबर कैफे टूल्स एवं फॉर्म',
-        shortName: 'Cyber Tools',
-        description: 'Smart PVC card maker, WhatsApp sender, photo/sign resizer, khata & legal forms',
+        name: 'Govt Utilities, PVC & Affidavits',
+        hindiName: 'सरकारी टूल्स एवं पीवीसी कार्ड',
+        shortName: 'Govt Tools & PVC',
+        description: 'Smart PVC card maker, WhatsApp sender, photo resizer, rent agreement & legal forms',
         color: 'from-purple-600 to-violet-700',
         border: 'border-purple-400 dark:border-purple-500',
         badgeBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/70 dark:border-purple-800/60',
@@ -168,22 +258,126 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'courier');
     }
 
-    // 2. Marriage, Domicile, Birth records & Saral Certificates
+    // 2. Salary Slip & Resume / Employment (User requested: "salry slip alg")
     if (
+        slug === 'salary-slip' ||
+        slug.includes('salary') ||
+        text.includes('salary_slip') ||
+        text.includes('salary slip') ||
+        slug.includes('resume') ||
+        text.includes('resume') ||
+        text.includes('bio-data') ||
+        text.includes('biodata') ||
+        moduleKey === 'salary_slip' ||
+        moduleKey === 'resume_maker'
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'salary');
+    }
+
+    // 3. Customer & Khata Management (User requested: "customer alg")
+    if (
+        slug.includes('customer-whatsapp') ||
+        moduleKey === 'customer_whatsapp' ||
+        text.includes('customer_whatsapp') ||
+        text.includes('customer whatsapp') ||
+        slug.includes('khata') ||
+        text.includes('khata') ||
+        text.includes('earning_tracker') ||
+        text.includes('earning-tracker') ||
+        moduleKey === 'khata_tracker' ||
+        moduleKey === 'qr_to_print' ||
+        slug === 'qr-to-print' ||
+        text.includes('qr to print')
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'customer');
+    }
+
+    // 4. Udyam MSME Registration (User requested: "udhyam alg")
+    if (
+        slug.includes('udhyam') ||
+        slug.includes('udyam') ||
+        text.includes('udhyam') ||
+        text.includes('udyam') ||
+        text.includes('msme')
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'udhyam');
+    }
+
+    // 5. Banking, Passbook & IFSC (User requested: "bank alg")
+    if (
+        slug.includes('bob-affidavit') ||
+        moduleKey === 'bob_affidavit' ||
+        slug.includes('airtel-passbook') ||
+        moduleKey === 'airtel_passbook' ||
+        slug.includes('verify-ifsc') ||
+        moduleKey === 'verify_ifsc_code' ||
+        slug.includes('tenth-passbook') ||
+        moduleKey === 'tenth_passbook' ||
+        text.includes('ifsc') ||
+        text.includes('passbook') ||
+        (text.includes('bank') && !text.includes('ppp') && !text.includes('family'))
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'bank');
+    }
+
+    // 6. Haryana Domicile (User requested: "haryana domocile ka alg kro")
+    if (
+        slug.includes('domicile') ||
+        slug.includes('domocile') ||
+        text.includes('domicile') ||
+        text.includes('domocile') ||
+        text.includes('niwas') ||
+        moduleKey === 'haryana_domicile'
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'domicile');
+    }
+
+    // 7. Birth Certificate (User requested: "birth cetiicate ka alg kro ... birrth alg")
+    if (
+        (slug.includes('birth') ||
+        text.includes('birth') ||
+        text.includes('janam praman') ||
+        text.includes('janam-praman') ||
+        moduleKey === 'birth_record' ||
+        moduleKey === 'birth_certificate_download' ||
+        moduleKey === 'crs_portal') &&
+        !text.includes('kundli') &&
+        !text.includes('dob')
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'birth');
+    }
+
+    // 8. Marriage Certificate (User requested: "jo marriage ki file hai usme bas marriage ki option dalo")
+    // ONLY pure marriage options match here!
+    if (
+        (slug.includes('marriage') ||
         text.includes('marriage') ||
         text.includes('shadi') ||
-        slug.includes('domicile') ||
-        name.includes('domicile') ||
-        slug.includes('birth') ||
-        name.includes('birth') ||
-        slug.includes('saral') ||
-        name.includes('saral')
+        text.includes('vivah') ||
+        moduleKey === 'marriage_form' ||
+        moduleKey === 'marriage_affidavit') &&
+        !text.includes('surname')
     ) {
         return SERVICE_CATEGORIES.find(c => c.id === 'marriage');
     }
 
-    // 3. Parivar Pehchan Patra (Family ID / PPP)
-    // Matches PPP and Family ID lookups without leaking into Aadhaar or Marriage
+    // 9. Electricity Bills (User requested: "bill alg")
+    if (
+        slug.includes('dhbvn') ||
+        slug.includes('uhbvn') ||
+        text.includes('dhbvn') ||
+        text.includes('uhbvn') ||
+        text.includes('electricity') ||
+        text.includes('bijli') ||
+        moduleKey === 'dhbvn_electricity_bill' ||
+        moduleKey === 'uhbvn_electricity_bill' ||
+        moduleKey === 'electricity_bill' ||
+        (text.includes('bill') && !text.includes('ration') && !text.includes('rasan'))
+    ) {
+        return SERVICE_CATEGORIES.find(c => c.id === 'bills');
+    }
+
+    // 10. Parivar Pehchan Patra (Family ID / PPP)
     if (
         text.includes('ppp') ||
         text.includes('familyid') ||
@@ -195,8 +389,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'ppp');
     }
 
-    // 4. PAN Card Services
-    // Captures all PAN lookups, manual PAN makers, and NSDL/UTI PVC cards
+    // 11. PAN Card Services
     if (
         (text.includes('pan') && !text.includes('company')) ||
         slug.includes('pan')
@@ -204,17 +397,18 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'pan');
     }
 
-    // 5. Aadhaar Services
-    // Captures Aadhaar manual maker, updates, DOB change, name change, info
+    // 12. Aadhaar Services
     if (
         text.includes('aadhar') ||
         text.includes('aadhaar') ||
-        text.includes('uid')
+        text.includes('uid') ||
+        text.includes('eid') ||
+        (text.includes('sim') && text.includes('number'))
     ) {
         return SERVICE_CATEGORIES.find(c => c.id === 'aadhar');
     }
 
-    // 6. Voter Card Services
+    // 13. Voter Card Services
     if (
         text.includes('voter') ||
         text.includes('epic') ||
@@ -224,7 +418,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'voter');
     }
 
-    // 7. Vehicle & Driving Licence Services
+    // 14. Vehicle & Driving Licence Services
     if (
         text.includes('vehicle') ||
         text.includes('vahan') ||
@@ -240,7 +434,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'vehicle');
     }
 
-    // 8. Ayushman & Health Services
+    // 15. Ayushman & Health Services
     if (
         text.includes('ayushman') ||
         text.includes('chirayu') ||
@@ -250,27 +444,7 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'health');
     }
 
-    // 9. Electricity Bills & Govt Utilities
-    if (
-        text.includes('dhbvn') ||
-        text.includes('uhbvn') ||
-        text.includes('electricity') ||
-        text.includes('bijli') ||
-        text.includes('bill') ||
-        text.includes('ration') ||
-        text.includes('rasan') ||
-        text.includes('airtel') ||
-        text.includes('ifsc') ||
-        text.includes('kundli') ||
-        text.includes('passport') ||
-        text.includes('farmer') ||
-        text.includes('kisan') ||
-        text.includes('fasal')
-    ) {
-        return SERVICE_CATEGORIES.find(c => c.id === 'bills');
-    }
-
-    // 10. Default / Cyber Cafe Tools & Affidavits
+    // 16. Default / Govt Utilities, PVC & Affidavits
     return SERVICE_CATEGORIES.find(c => c.id === 'utilities');
 }
 

@@ -269,20 +269,50 @@ Route::get('/migrate-db', function () {
                     'unlock_cost' => 0,
                     'sort_order' => 1,
                 ],
+                [
+                    'slug' => 'udhyam-registration',
+                    'name' => 'Udhyam Registration',
+                    'description' => 'Official Udyam / MSME Certificate Registration - Business, Bank CSP, CSC & Cyber Cafe registration service.',
+                    'icon' => '🏢',
+                    'coin_cost' => 149,
+                    'kind' => 'manual',
+                    'module_key' => null,
+                    'fields' => json_encode([
+                        ['label' => 'Applicant Name', 'type' => 'text', 'required' => '1'],
+                        ['label' => 'Aadhaar Number', 'type' => 'text', 'required' => '1'],
+                        ['label' => 'PAN Card Number', 'type' => 'text', 'required' => '1'],
+                        ['label' => 'Email Address', 'type' => 'email', 'required' => '1'],
+                        ['label' => 'WhatsApp Mobile Number', 'type' => 'text', 'required' => '1'],
+                        ['label' => 'Enterprise / Shop Name', 'type' => 'text', 'required' => '1'],
+                    ]),
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 50,
+                ],
             ];
 
             foreach ($defaultServices as $def) {
                 // If it already exists (even if trashed/deleted), do NOT overwrite or resurrect it!
-                $exists = \Illuminate\Support\Facades\DB::table('services')
+                $existing = \Illuminate\Support\Facades\DB::table('services')
                     ->where('slug', $def['slug'])
-                    ->exists();
+                    ->first();
 
-                if (!$exists) {
+                if (!$existing) {
                     \Illuminate\Support\Facades\DB::table('services')->insert(array_merge($def, [
-                        'fields' => null,
+                        'fields' => $def['fields'] ?? null,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]));
+                } else {
+                    // Make sure it is active and has fields if empty
+                    \Illuminate\Support\Facades\DB::table('services')
+                        ->where('id', $existing->id)
+                        ->update([
+                            'is_active' => 1,
+                            'fields' => $existing->fields ?: ($def['fields'] ?? null),
+                        ]);
                 }
             }
         } catch (\Throwable $seDefaults) {
