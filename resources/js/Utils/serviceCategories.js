@@ -427,19 +427,24 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'udhyam');
     }
 
-    // 9. Banking, Passbook & IFSC (User requested: "bank alg")
+    // 9. Banking, Passbook & IFSC (User requested: "bank alg", but "banking & passbook ppp to bank wali service famliy id wali me dalo")
     if (
-        slug.includes('bob-affidavit') ||
-        moduleKey === 'bob_affidavit' ||
-        slug.includes('airtel-passbook') ||
-        moduleKey === 'airtel_passbook' ||
-        slug.includes('verify-ifsc') ||
-        moduleKey === 'verify_ifsc_code' ||
-        slug.includes('tenth-passbook') ||
-        moduleKey === 'tenth_passbook' ||
-        text.includes('ifsc') ||
-        text.includes('passbook') ||
-        (text.includes('bank') && !text.includes('ppp') && !text.includes('family'))
+        !text.includes('ppp') &&
+        !text.includes('family') &&
+        !text.includes('parivar') &&
+        (
+            slug.includes('bob-affidavit') ||
+            moduleKey === 'bob_affidavit' ||
+            slug.includes('airtel-passbook') ||
+            moduleKey === 'airtel_passbook' ||
+            slug.includes('verify-ifsc') ||
+            moduleKey === 'verify_ifsc_code' ||
+            slug.includes('tenth-passbook') ||
+            moduleKey === 'tenth_passbook' ||
+            text.includes('ifsc') ||
+            text.includes('passbook') ||
+            text.includes('bank')
+        )
     ) {
         return SERVICE_CATEGORIES.find(c => c.id === 'bank');
     }
@@ -501,9 +506,11 @@ export function getServiceCategory(service) {
         return SERVICE_CATEGORIES.find(c => c.id === 'bills');
     }
 
-    // 14. Parivar Pehchan Patra (Family ID / PPP) (User requested: "family id number to pdf isko famliy id colum me dalo")
-    // Checked BEFORE aadhar so all Family ID / PPP tools (including PDF / Number lookups) stay in PPP
+    // 14. Parivar Pehchan Patra (Family ID / PPP) (User requested: "family id number to pdf isko famliy id colum me dalo", "banking & passbook ppp to bank wali service famliy id wali me dalo")
+    // Checked BEFORE aadhar so all Family ID / PPP tools (including PDF / Number lookups / Bank details) stay in PPP
     if (
+        slug === 'ppp-to-bank-details' ||
+        moduleKey === 'ppp_to_bank_details' ||
         text.includes('ppp') ||
         text.includes('familyid') ||
         text.includes('family-id') ||
