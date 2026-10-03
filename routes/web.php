@@ -358,6 +358,21 @@ Route::get('/migrate-db', function () {
         }
         $output .= "Files now in base_path(build/assets): " . count(glob($destBuild . '/assets/*.*')) . "\n";
 
+        // Sync images from public/images to document root images
+        $srcImages = public_path('images');
+        $destImages = base_path('images');
+        if (file_exists($srcImages)) {
+            if (!file_exists($destImages)) {
+                @mkdir($destImages, 0755, true);
+            }
+            $imgCopied = 0;
+            foreach (glob($srcImages . '/*.*') as $imgFile) {
+                @copy($imgFile, $destImages . '/' . basename($imgFile));
+                $imgCopied++;
+            }
+            $output .= "Synced {$imgCopied} images from public/images to document root images!\n";
+        }
+
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         if (function_exists('opcache_reset')) {

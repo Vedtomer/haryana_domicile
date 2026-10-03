@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
@@ -59,6 +59,41 @@ function PinBoxes({ pin = '' }) {
 }
 
 export default function CourierSlipMaker() {
+    const { auth } = usePage().props;
+    const isAdmin = Boolean(auth?.user?.is_admin || auth?.user?.role === 'admin' || auth?.user?.role === 'super_admin');
+
+    // Admin default sender details (A K Enterprise)
+    const adminSenderData = {
+        sender_firm: 'A K ENTERPRISE',
+        sender_name: 'SAM VERMA',
+        sender_phone: '9541230611',
+        sender_website: 'akenterprisegroup.com',
+        sender_email: 'a.kenterprise0611@gmail.com',
+        sender_address: '#03, Kutani Road, Verma Chowk',
+        sender_city: 'Panipat',
+        sender_district: 'Panipat',
+        sender_state: 'Haryana',
+        sender_pincode: '132103',
+        sender_logo: '/images/ak-enterprise-logo.png',
+        show_logo: true,
+    };
+
+    // Regular user default sender details (completely blank as requested)
+    const blankSenderData = {
+        sender_firm: '',
+        sender_name: '',
+        sender_phone: '',
+        sender_website: '',
+        sender_email: '',
+        sender_address: '',
+        sender_city: '',
+        sender_district: '',
+        sender_state: '',
+        sender_pincode: '',
+        sender_logo: null,
+        show_logo: true,
+    };
+
     // Slip Mode: 'SIMPLE_DISPATCH' (Direct From/To Parcel Label) or 'COURIER_BARCODE' (Speed Post Barcode Slip)
     const [slipMode, setSlipMode] = useState('SIMPLE_DISPATCH');
 
@@ -82,17 +117,8 @@ export default function CourierSlipMaker() {
         receiver_state: 'Haryana',
         receiver_pincode: '125055',
 
-        // FROM / Sender (Dispatch By)
-        sender_firm: 'A K ENTERPRISE',
-        sender_name: 'SAM VERMA',
-        sender_phone: '9541230611',
-        sender_website: 'akenterprisegroup.com',
-        sender_email: 'a.kenterprise0611@gmail.com',
-        sender_address: '#03, Kutani Road, Verma Chowk',
-        sender_city: 'Panipat',
-        sender_district: 'Panipat',
-        sender_state: 'Haryana',
-        sender_pincode: '132103',
+        // FROM / Sender (Dispatch By) - Admin gets AK Enterprise, regular users get blank!
+        ...(isAdmin ? adminSenderData : blankSenderData),
     });
 
     // Paper layout options: 'A4_SINGLE', 'A4_DUAL', 'A4_QUAD', 'A3_LARGE', 'A3_DUAL'
@@ -118,7 +144,8 @@ export default function CourierSlipMaker() {
 
     // Quick fill sample data
     const handleFillSample = () => {
-        setFormData({
+        setFormData((prev) => ({
+            ...prev,
             courier_type: 'SPEED_POST',
             tracking_no: 'SP' + Math.floor(10000000 + Math.random() * 90000000) + 'IN',
             weight: '500 gm',
@@ -135,19 +162,98 @@ export default function CourierSlipMaker() {
             receiver_state: 'Haryana',
             receiver_pincode: '132001',
 
-            sender_firm: 'A K ENTERPRISE',
-            sender_name: 'SAM VERMA',
-            sender_phone: '9541230611',
-            sender_website: 'akenterprisegroup.com',
-            sender_email: 'a.kenterprise0611@gmail.com',
-            sender_address: '#03, Kutani Road, Verma Chowk',
-            sender_city: 'Panipat',
-            sender_district: 'Panipat',
-            sender_state: 'Haryana',
-            sender_pincode: '132103',
-        });
+            ...(isAdmin
+                ? adminSenderData
+                : {
+                      sender_firm: 'SHREE SHYAM DIGITAL CSC CENTER',
+                      sender_name: 'VIKAS KUMAR',
+                      sender_phone: '9876543210',
+                      sender_website: '',
+                      sender_email: 'vikas.csc@gmail.com',
+                      sender_address: 'Shop No. 12, Main Bus Stand Market',
+                      sender_city: 'Karnal',
+                      sender_district: 'Karnal',
+                      sender_state: 'Haryana',
+                      sender_pincode: '132001',
+                      sender_logo: prev.sender_logo || null,
+                      show_logo: true,
+                  }),
+        }));
         setSuccessMsg('Sample demo data loaded successfully!');
         setTimeout(() => setSuccessMsg(null), 3500);
+    };
+
+    // Clear sender details
+    const handleClearSender = () => {
+        setFormData((prev) => ({
+            ...prev,
+            ...blankSenderData,
+        }));
+        setSuccessMsg('Sender fields cleared.');
+        setTimeout(() => setSuccessMsg(null), 2500);
+    };
+
+    // Restore A.K Enterprise (for Admin only)
+    const handleRestoreAdminSender = () => {
+        setFormData((prev) => ({
+            ...prev,
+            ...adminSenderData,
+        }));
+        setSuccessMsg('A.K Enterprise details & logo loaded!');
+        setTimeout(() => setSuccessMsg(null), 2500);
+    };
+
+    // Upload Custom Logo Handler (File Reader -> Base64 Data URL)
+    const handleLogoFile = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            setError('Please select an image file (PNG, JPG, SVG, WebP)');
+            setTimeout(() => setError(null), 3500);
+            return;
+        }
+
+        if (file.size > 3 * 1024 * 1024) {
+            setError('Logo file size must be less than 3 MB');
+            setTimeout(() => setError(null), 3500);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const dataUrl = event.target?.result;
+            setFormData((prev) => ({
+                ...prev,
+                sender_logo: dataUrl,
+                show_logo: true,
+            }));
+            setSuccessMsg('✓ Logo uploaded successfully! Preview updated on slip.');
+            setTimeout(() => setSuccessMsg(null), 3500);
+        };
+        reader.onerror = () => {
+            setError('Failed to read logo image file.');
+            setTimeout(() => setError(null), 3500);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Remove Logo from Slip
+    const handleRemoveLogo = () => {
+        setFormData((prev) => ({ ...prev, sender_logo: null }));
+        setSuccessMsg('Logo removed from slip.');
+        setTimeout(() => setSuccessMsg(null), 2500);
+    };
+
+    // Reset to A.K Enterprise Logo (Admin)
+    const handleResetAdminLogo = () => {
+        setFormData((prev) => ({
+            ...prev,
+            sender_logo: '/images/ak-enterprise-logo.png',
+            show_logo: true,
+        }));
+        setSuccessMsg('A.K Enterprise logo restored.');
+        setTimeout(() => setSuccessMsg(null), 2500);
     };
 
     const [pincodeLoading, setPincodeLoading] = useState({ receiver: false, sender: false });
@@ -229,8 +335,10 @@ export default function CourierSlipMaker() {
         setSuccessMsg(null);
 
         try {
+            // Omit sender_logo from POST body to avoid payload bloat
+            const { sender_logo, ...postData } = formData;
             const response = await axios.post('/utilities/courier-slip-maker/generate', {
-                ...formData,
+                ...postData,
                 paper_size: paperSize,
                 slip_mode: slipMode,
             });
@@ -261,7 +369,7 @@ export default function CourierSlipMaker() {
     };
 
     // Dynamic QR Code data string containing all key postal details
-    const qrData = `TO: ${formData.receiver_name} | PH: ${formData.receiver_phone} | PIN: ${formData.receiver_pincode} | ADDR: ${formData.receiver_address}, ${formData.receiver_city}, ${formData.receiver_state} | FROM: ${formData.sender_name} (${formData.sender_firm}) | WEB: ${formData.sender_website || 'akenterprisegroup.com'} | TRACK: ${formData.tracking_no}`;
+    const qrData = `TO: ${formData.receiver_name} | PH: ${formData.receiver_phone} | PIN: ${formData.receiver_pincode} | ADDR: ${formData.receiver_address}, ${formData.receiver_city}, ${formData.receiver_state} | FROM: ${formData.sender_name}${formData.sender_firm ? ` (${formData.sender_firm})` : ''}${formData.sender_website ? ` | WEB: ${formData.sender_website}` : ''} | TRACK: ${formData.tracking_no}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=2&data=${encodeURIComponent(qrData)}`;
 
     // Get courier badge info for Barcode mode
@@ -304,6 +412,15 @@ export default function CourierSlipMaker() {
                         )}
                     </div>
 
+                    {formData.show_logo && formData.sender_logo && (
+                        <div className="flex items-center justify-end">
+                            <img
+                                src={formData.sender_logo}
+                                alt="Brand Logo"
+                                className="h-10 sm:h-12 max-h-12 max-w-[170px] object-contain rounded bg-white p-0.5"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Main Content Grid: TO (Delivery Destination) & FROM (Sender) */}
@@ -376,6 +493,13 @@ export default function CourierSlipMaker() {
                                     <span className="material-symbols-outlined text-sm">home_pin</span>
                                     FROM / प्रेषक (DISPATCH BY)
                                 </span>
+                                {formData.show_logo && formData.sender_logo && (
+                                    <img
+                                        src={formData.sender_logo}
+                                        alt="Logo"
+                                        className="h-7 max-h-7 max-w-[90px] object-contain rounded bg-white p-0.5 border border-slate-200"
+                                    />
+                                )}
                             </div>
 
                             {formData.sender_firm && (
@@ -421,7 +545,7 @@ export default function CourierSlipMaker() {
                         <div className="mt-4 pt-2.5 border-t-2 border-slate-300">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-black text-slate-500 uppercase">SENDER PIN:</span>
-                                <span className="font-mono font-black text-base text-slate-950">{formData.sender_pincode || '125001'}</span>
+                                <span className="font-mono font-black text-base text-slate-950">{formData.sender_pincode || '------'}</span>
                             </div>
                             <div className="mt-1.5 p-1.5 bg-red-50 border border-red-200 rounded text-[9px] sm:text-[10px] text-red-700 font-black flex items-center gap-1 leading-tight">
                                 <span>⚠️ यदि पैकेट डिलीवर न हो तो कृपया वापस प्रेषक के पते पर भेजें।</span>
@@ -477,6 +601,16 @@ export default function CourierSlipMaker() {
                             </div>
                         )}
                     </div>
+
+                    {formData.show_logo && formData.sender_logo && (
+                        <div className="flex items-center justify-center">
+                            <img
+                                src={formData.sender_logo}
+                                alt="Brand Logo"
+                                className="h-10 sm:h-12 max-h-12 max-w-[150px] object-contain rounded bg-white p-0.5"
+                            />
+                        </div>
+                    )}
 
                     <div className="text-right">
                         <div className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Consignment / Article No:</div>
@@ -581,6 +715,13 @@ export default function CourierSlipMaker() {
                                     <span className="material-symbols-outlined text-sm">home_pin</span>
                                     FROM / प्रेषक (SENDER)
                                 </span>
+                                {formData.show_logo && formData.sender_logo && (
+                                    <img
+                                        src={formData.sender_logo}
+                                        alt="Logo"
+                                        className="h-7 max-h-7 max-w-[90px] object-contain rounded bg-white p-0.5 border border-slate-200"
+                                    />
+                                )}
                             </div>
 
                             {formData.sender_firm && (
@@ -625,7 +766,7 @@ export default function CourierSlipMaker() {
                         <div className="mt-4 pt-2 border-t border-slate-300">
                             <div className="text-[10px] font-bold text-slate-500 uppercase">SENDER PIN CODE:</div>
                             <div className="font-mono font-black text-base text-slate-900">
-                                {formData.sender_pincode || '125001'}
+                                {formData.sender_pincode || '------'}
                             </div>
                             <div className="text-[9px] text-red-600 font-bold mt-1">
                                 ⚠️ If undelivered, please return to sender address.
@@ -1164,10 +1305,105 @@ export default function CourierSlipMaker() {
 
                             {/* Section: FROM / Sender (Consignor) Details */}
                             <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                                <h3 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1.5">
-                                    <span className="material-symbols-outlined text-base">storefront</span>
-                                    {slipMode === 'SIMPLE_DISPATCH' ? '2. Dispatch From / प्रेषक (भेजने वाले का पता)' : 'Sender Details (FROM - प्रेषक)'}
-                                </h3>
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-base">storefront</span>
+                                        {slipMode === 'SIMPLE_DISPATCH' ? '2. Dispatch From / प्रेषक (भेजने वाले का पता)' : 'Sender Details (FROM - प्रेषक)'}
+                                    </h3>
+
+                                    <div className="flex items-center gap-2">
+                                        {isAdmin && (
+                                            <button
+                                                type="button"
+                                                onClick={handleRestoreAdminSender}
+                                                className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                                title="A.K Enterprise default details load karein"
+                                            >
+                                                <span className="material-symbols-outlined text-xs">restore</span>
+                                                A.K Enterprise भरें
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSender}
+                                            className="text-[11px] font-bold text-slate-500 hover:text-red-600 transition-colors flex items-center gap-0.5"
+                                            title="Clear sender fields"
+                                        >
+                                            <span className="material-symbols-outlined text-xs">clear_all</span>
+                                            साफ़ करें
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Custom Logo Upload & Management Box */}
+                                <div className="mb-4 bg-slate-100 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                                        {formData.sender_logo ? (
+                                            <div className="w-20 h-14 bg-white border-2 border-slate-300 dark:border-slate-600 rounded-lg p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                                                <img
+                                                    src={formData.sender_logo}
+                                                    alt="Logo Preview"
+                                                    className="max-h-full max-w-full object-contain"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="w-20 h-14 bg-slate-200 dark:bg-slate-700/60 border-2 border-dashed border-slate-400 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center text-slate-400 shrink-0">
+                                                <span className="material-symbols-outlined text-lg">image</span>
+                                                <span className="text-[9px] font-bold">NO LOGO</span>
+                                            </div>
+                                        )}
+
+                                        <div className="text-left">
+                                            <div className="text-xs font-black text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                                                <span>Shop / Brand Logo (कस्टम लोगो)</span>
+                                                {formData.sender_logo && (
+                                                    <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold px-1.5 py-0.2 rounded">
+                                                        Active
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                                {formData.sender_logo ? 'Slip par yeh logo print hoga.' : 'Apni dukan/firm ka logo lagayein (PNG/JPG/SVG).'}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                                        <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 transition-all">
+                                            <span className="material-symbols-outlined text-sm">cloud_upload</span>
+                                            <span>{formData.sender_logo ? 'Change Logo' : 'Upload Custom Logo'}</span>
+                                            <input
+                                                type="file"
+                                                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                                                onChange={handleLogoFile}
+                                                className="hidden"
+                                            />
+                                        </label>
+
+                                        {formData.sender_logo && (
+                                            <button
+                                                type="button"
+                                                onClick={handleRemoveLogo}
+                                                className="bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:hover:bg-red-900/50 dark:text-red-400 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-red-200 dark:border-red-800 transition-all flex items-center gap-1"
+                                                title="Remove logo from slip"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">delete</span>
+                                                <span>Remove</span>
+                                            </button>
+                                        )}
+
+                                        {isAdmin && formData.sender_logo !== '/images/ak-enterprise-logo.png' && (
+                                            <button
+                                                type="button"
+                                                onClick={handleResetAdminLogo}
+                                                className="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all"
+                                                title="Reset to A.K Enterprise Logo"
+                                            >
+                                                A.K Logo
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
 
                                 <div className="space-y-3">
                                     <div className="grid grid-cols-2 gap-3">
@@ -1181,7 +1417,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_firm}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white uppercase"
-                                                placeholder="CSP JAANKARI"
+                                                placeholder={isAdmin ? "A K ENTERPRISE" : "Shop / Firm Name (e.g. Shree Shyam CSC)"}
                                             />
                                         </div>
 
@@ -1196,7 +1432,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_name}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white uppercase"
-                                                placeholder="RAMESH CHAND"
+                                                placeholder={isAdmin ? "SAM VERMA" : "Sender Full Name"}
                                             />
                                         </div>
                                     </div>
@@ -1213,7 +1449,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_phone}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white"
-                                                placeholder="9541230611"
+                                                placeholder={isAdmin ? "9541230611" : "10-digit mobile number"}
                                             />
                                         </div>
 
@@ -1227,7 +1463,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_website}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-400 font-mono"
-                                                placeholder="akenterprisegroup.com"
+                                                placeholder={isAdmin ? "akenterprisegroup.com" : "yourwebsite.com (Optional)"}
                                             />
                                         </div>
 
@@ -1241,7 +1477,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_email}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono"
-                                                placeholder="a.kenterprise0611@gmail.com"
+                                                placeholder={isAdmin ? "a.kenterprise0611@gmail.com" : "youremail@gmail.com (Optional)"}
                                             />
                                         </div>
                                     </div>
@@ -1257,7 +1493,7 @@ export default function CourierSlipMaker() {
                                             value={formData.sender_address}
                                             onChange={handleChange}
                                             className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                                            placeholder="#03, Kutani Road, Verma Chowk"
+                                            placeholder={isAdmin ? "#03, Kutani Road, Verma Chowk" : "House / Shop No, Street, Area Landmark"}
                                         />
                                     </div>
 
@@ -1290,7 +1526,7 @@ export default function CourierSlipMaker() {
                                                     if (pin.length === 6) fetchPincodeDetails(pin, 'sender');
                                                 }}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:border-indigo-600 rounded-xl px-2.5 py-1.5 text-xs font-mono font-bold text-slate-900 dark:text-white"
-                                                placeholder="125001"
+                                                placeholder={isAdmin ? "132103" : "Pincode"}
                                             />
                                         </div>
 
@@ -1304,7 +1540,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_district}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
-                                                placeholder="Hisar"
+                                                placeholder={isAdmin ? "Panipat" : "District"}
                                             />
                                         </div>
 
@@ -1318,7 +1554,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_state}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
-                                                placeholder="Haryana"
+                                                placeholder={isAdmin ? "Haryana" : "State"}
                                             />
                                         </div>
 
@@ -1332,7 +1568,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_city}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
-                                                placeholder="Hisar"
+                                                placeholder={isAdmin ? "Panipat" : "City"}
                                             />
                                         </div>
                                     </div>
