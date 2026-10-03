@@ -1632,6 +1632,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         return Inertia::render('Utilities/CourierSlipMaker');
     })->name('utilities.courier-slip-maker');
     Route::post('/utilities/courier-slip-maker/generate', [\App\Http\Controllers\CourierSlipMakerController::class, 'generate'])->name('utilities.courier-slip-maker.generate');
+    Route::get('/utilities/courier-slip-maker/pincode/{pincode}', [\App\Http\Controllers\CourierSlipMakerController::class, 'lookupPincode'])->name('utilities.courier-slip-maker.pincode');
 
     // 11. Voter Card Manual For Address Change
     Route::get('/utilities/voter-card-manual-address-change', function () {

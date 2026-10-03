@@ -154,9 +154,75 @@ export default function CourierSlipMaker() {
         setTimeout(() => setSuccessMsg(null), 3500);
     };
 
+    const [pincodeLoading, setPincodeLoading] = useState({ receiver: false, sender: false });
+    const [pincodeSuccess, setPincodeSuccess] = useState({ receiver: null, sender: null });
+
+    // Auto-fetch District & State when 6-digit PIN code is entered
+    const fetchPincodeDetails = async (pin, type = 'receiver') => {
+        const cleanPin = (pin || '').toString().trim().replace(/\D/g, '');
+        if (cleanPin.length !== 6) return;
+
+        setPincodeLoading((prev) => ({ ...prev, [type]: true }));
+        setPincodeSuccess((prev) => ({ ...prev, [type]: null }));
+
+        try {
+            // First attempt: Call internal backend route (no CORS, uses cache)
+            const res = await axios.get(`/utilities/courier-slip-maker/pincode/${cleanPin}`);
+            if (res.data && res.data.success) {
+                const { district, state, city } = res.data;
+                setFormData((prev) => ({
+                    ...prev,
+                    [`${type}_district`]: district || prev[`${type}_district`],
+                    [`${type}_state`]: state || prev[`${type}_state`],
+                    [`${type}_city`]: prev[`${type}_city`] || city || district,
+                }));
+                setPincodeSuccess((prev) => ({ ...prev, [type]: `${district}, ${state}` }));
+                setTimeout(() => {
+                    setPincodeSuccess((prev) => ({ ...prev, [type]: null }));
+                }, 4000);
+                return;
+            }
+        } catch (err) {
+            // Fallback: Direct call to India Post public API
+            try {
+                const directRes = await axios.get(`https://api.postalpincode.in/pincode/${cleanPin}`);
+                if (directRes.data && directRes.data[0]?.Status === 'Success' && directRes.data[0].PostOffice?.length > 0) {
+                    const po = directRes.data[0].PostOffice[0];
+                    setFormData((prev) => ({
+                        ...prev,
+                        [`${type}_district`]: po.District || prev[`${type}_district`],
+                        [`${type}_state`]: po.State || prev[`${type}_state`],
+                        [`${type}_city`]: prev[`${type}_city`] || po.District,
+                    }));
+                    setPincodeSuccess((prev) => ({ ...prev, [type]: `${po.District}, ${po.State}` }));
+                    setTimeout(() => {
+                        setPincodeSuccess((prev) => ({ ...prev, [type]: null }));
+                    }, 4000);
+                }
+            } catch (fallbackErr) {
+                console.warn('Pincode fetch error:', fallbackErr);
+            }
+        } finally {
+            setPincodeLoading((prev) => ({ ...prev, [type]: false }));
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Instant auto-lookup as soon as 6th digit is typed
+        if (name === 'receiver_pincode') {
+            const digits = value.replace(/\D/g, '');
+            if (digits.length === 6) {
+                fetchPincodeDetails(digits, 'receiver');
+            }
+        } else if (name === 'sender_pincode') {
+            const digits = value.replace(/\D/g, '');
+            if (digits.length === 6) {
+                fetchPincodeDetails(digits, 'sender');
+            }
+        }
     };
 
     // Generate and charge 5 coins
@@ -1017,10 +1083,73 @@ export default function CourierSlipMaker() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <label className="text-[11px] font-black text-amber-700 dark:text-amber-400">
+                                                    PIN Code: *
+                                                </label>
+                                                {pincodeLoading.receiver && (
+                                                    <span className="text-[10px] text-indigo-600 animate-pulse font-medium flex items-center gap-0.5">
+                                                        <span className="material-symbols-outlined text-xs animate-spin">sync</span>
+                                                        Fetching...
+                                                    </span>
+                                                )}
+                                                {pincodeSuccess.receiver && (
+                                                    <span className="text-[10px] text-emerald-600 font-bold">
+                                                        ✓ Auto-filled
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="receiver_pincode"
+                                                required
+                                                maxLength={6}
+                                                value={formData.receiver_pincode}
+                                                onChange={handleChange}
+                                                onBlur={(e) => {
+                                                    const pin = e.target.value.replace(/\D/g, '');
+                                                    if (pin.length === 6) fetchPincodeDetails(pin, 'receiver');
+                                                }}
+                                                className="w-full bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 focus:border-indigo-600 rounded-xl px-2.5 py-1.5 text-xs font-mono font-black text-slate-900 dark:text-white"
+                                                placeholder="125055"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                District (ज़िला): *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="receiver_district"
+                                                required
+                                                value={formData.receiver_district}
+                                                onChange={handleChange}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
+                                                placeholder="Sirsa"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                State (राज्य): *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="receiver_state"
+                                                required
+                                                value={formData.receiver_state}
+                                                onChange={handleChange}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
+                                                placeholder="Haryana"
+                                            />
+                                        </div>
+
                                         <div>
                                             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                City / Village:
+                                                City / Town:
                                             </label>
                                             <input
                                                 type="text"
@@ -1029,34 +1158,6 @@ export default function CourierSlipMaker() {
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
                                                 placeholder="Sirsa"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                District:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="receiver_district"
-                                                value={formData.receiver_district}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
-                                                placeholder="Sirsa"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[11px] font-black text-amber-700 dark:text-amber-400 mb-1">
-                                                PIN Code: *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="receiver_pincode"
-                                                required
-                                                maxLength={6}
-                                                value={formData.receiver_pincode}
-                                                onChange={handleChange}
-                                                className="w-full bg-amber-50 dark:bg-amber-950/40 border border-amber-400 rounded-xl px-2.5 py-1.5 text-xs font-mono font-black text-slate-900 dark:text-white"
-                                                placeholder="125055"
                                             />
                                         </div>
                                     </div>
@@ -1148,10 +1249,70 @@ export default function CourierSlipMaker() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                                                    PIN Code:
+                                                </label>
+                                                {pincodeLoading.sender && (
+                                                    <span className="text-[10px] text-indigo-600 animate-pulse font-medium flex items-center gap-0.5">
+                                                        <span className="material-symbols-outlined text-xs animate-spin">sync</span>
+                                                        Fetching...
+                                                    </span>
+                                                )}
+                                                {pincodeSuccess.sender && (
+                                                    <span className="text-[10px] text-emerald-600 font-bold">
+                                                        ✓ Auto-filled
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="sender_pincode"
+                                                maxLength={6}
+                                                value={formData.sender_pincode}
+                                                onChange={handleChange}
+                                                onBlur={(e) => {
+                                                    const pin = e.target.value.replace(/\D/g, '');
+                                                    if (pin.length === 6) fetchPincodeDetails(pin, 'sender');
+                                                }}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:border-indigo-600 rounded-xl px-2.5 py-1.5 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                                                placeholder="125001"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                District (ज़िला):
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="sender_district"
+                                                value={formData.sender_district}
+                                                onChange={handleChange}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
+                                                placeholder="Hisar"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                State (राज्य):
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="sender_state"
+                                                value={formData.sender_state}
+                                                onChange={handleChange}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-semibold"
+                                                placeholder="Haryana"
+                                            />
+                                        </div>
+
                                         <div>
                                             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                City / District:
+                                                City / Town:
                                             </label>
                                             <input
                                                 type="text"
@@ -1160,20 +1321,6 @@ export default function CourierSlipMaker() {
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
                                                 placeholder="Hisar"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                PIN Code:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="sender_pincode"
-                                                maxLength={6}
-                                                value={formData.sender_pincode}
-                                                onChange={handleChange}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-mono text-slate-900 dark:text-white"
-                                                placeholder="125001"
                                             />
                                         </div>
                                     </div>

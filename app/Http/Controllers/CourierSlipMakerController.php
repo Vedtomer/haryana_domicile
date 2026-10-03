@@ -85,4 +85,53 @@ class CourierSlipMakerController extends Controller
             'completed_at' => now(),
         ]);
     }
+
+    public function lookupPincode(string $pincode)
+    {
+        $clean = trim($pincode);
+        if (!preg_match('/^[1-9][0-9]{5}$/', $clean)) {
+            return response()->json(['success' => false, 'message' => 'Invalid 6-digit PIN code.'], 422);
+        }
+
+        try {
+            $location = \App\Services\PincodeService::getLocationFromPincode($clean);
+            if ($location && !empty($location['district'])) {
+                return response()->json([
+                    'success' => true,
+                    'district' => $location['district'] ?? '',
+                    'city' => $location['city'] ?? ($location['district'] ?? ''),
+                    'state' => $location['state'] ?? '',
+                    'tehsil' => $location['tehsil'] ?? '',
+                    'pincode' => $clean,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning("PincodeService error: " . $e->getMessage());
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0'
+            ])->timeout(6)->get("https://api.postalpincode.in/pincode/{$clean}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (!empty($data[0]) && ($data[0]['Status'] ?? '') === 'Success' && !empty($data[0]['PostOffice'])) {
+                    $po = $data[0]['PostOffice'][0];
+                    return response()->json([
+                        'success' => true,
+                        'district' => $po['District'] ?? '',
+                        'city' => $po['District'] ?? ($po['Block'] ?? ''),
+                        'state' => $po['State'] ?? '',
+                        'tehsil' => $po['Block'] ?? '',
+                        'pincode' => $clean,
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Pincode lookup failed for {$clean}: " . $e->getMessage());
+        }
+
+        return response()->json(['success' => false, 'message' => 'PIN code not found.'], 404);
+    }
 }
