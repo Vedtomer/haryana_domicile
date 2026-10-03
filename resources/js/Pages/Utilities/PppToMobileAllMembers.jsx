@@ -62,17 +62,6 @@ export default function PppToMobileAllMembers() {
                             Fetch registered mobile numbers of all family members without OTP
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <a
-                            href="https://ppp-office.haryana.gov.in/Family/UpdateMobileNo"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
-                        >
-                            <span>Official PPP Portal</span>
-                            <span className="material-symbols-outlined text-[15px]">open_in_new</span>
-                        </a>
-                    </div>
                 </div>
             }
         >
@@ -128,22 +117,9 @@ export default function PppToMobileAllMembers() {
                             </form>
 
                             {error && (
-                                <div className="mt-5 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
-                                    <div className="flex items-start gap-3">
-                                        <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
-                                        <p className="text-red-700 dark:text-red-300 font-medium text-sm leading-relaxed">{error}</p>
-                                    </div>
-                                    {portalUrl && (
-                                        <a
-                                            href={portalUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
-                                        >
-                                            <span>Open Official Portal</span>
-                                            <span className="material-symbols-outlined text-sm">open_in_new</span>
-                                        </a>
-                                    )}
+                                <div className="mt-5 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-2xl flex items-center gap-3 text-left">
+                                    <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
+                                    <p className="text-red-700 dark:text-red-300 font-medium text-sm leading-relaxed">{error}</p>
                                 </div>
                             )}
                         </div>

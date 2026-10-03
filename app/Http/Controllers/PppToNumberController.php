@@ -21,7 +21,6 @@ class PppToNumberController extends Controller
         return Inertia::render('Utilities/PppToNumber', [
             'service'   => $service,
             'isAdmin'   => $isStaff,
-            'portalUrl' => 'https://ppp-office.haryana.gov.in/',
             'apiUrl'    => $isStaff ? Setting::get('ppp_to_number_url', Setting::get('family_id_to_mobile_url', '')) : null,
             'apiKey'    => $isStaff ? Setting::get('ppp_to_number_key', Setting::get('family_id_to_mobile_key', '')) : null,
         ]);
@@ -56,10 +55,8 @@ class PppToNumberController extends Controller
         // If admin set government portal URL as API, do not call it via cURL (prevent timeout)
         if (!empty($apiUrl) && (str_contains($apiUrl, 'ppp-office.haryana.gov.in') || str_contains($apiUrl, 'meraparivar.haryana.gov.in'))) {
             return response()->json([
-                'success'    => false,
-                'is_portal'  => true,
-                'portal_url' => 'https://ppp-office.haryana.gov.in/Family/UpdateMobileNo',
-                'message'    => 'https://ppp-office.haryana.gov.in/ ek official Haryana government portal (HTML website) hai, background REST API nahi hai. Mobile number check ya update karne ke liye "Official Portal" tab use karein, ya 3rd-party vendor API endpoint configure karein.'
+                'success' => false,
+                'message' => 'Configured URL is a government portal web page, not a background REST API endpoint. Please configure a valid vendor API endpoint in Admin settings.',
             ]);
         }
 
@@ -171,11 +168,10 @@ class PppToNumberController extends Controller
             Log::error('PppToNumberController portal error: ' . $e->getMessage());
         }
 
-        // 3. Fallback: Check if user wants demo or portal redirect
+        // 3. Fallback: No records or API error
         return response()->json([
             'success' => false,
-            'message' => 'No direct API response received for this PPP ID. You can also use the Official Portal tab (https://ppp-office.haryana.gov.in/) to update or verify numbers directly.',
-            'portal_url' => 'https://ppp-office.haryana.gov.in/Family/UpdateMobileNo',
+            'message' => 'No record found or no direct API response received for this PPP ID. Please verify the ID or check API configuration.',
         ]);
     }
 
