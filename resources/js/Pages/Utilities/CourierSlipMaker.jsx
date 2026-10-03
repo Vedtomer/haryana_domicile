@@ -243,14 +243,9 @@ export default function CourierSlipMaker() {
                     </div>
 
                     <div className="flex items-center gap-2.5 text-right">
-                        <div className="text-xs font-bold text-slate-600">
+                        <div className="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-300 px-3 py-1 rounded-lg">
                             Date: <span className="text-slate-950 font-black">{formData.dispatch_date}</span>
                         </div>
-                        {formData.priority_stamp && (
-                            <span className="border-2 border-red-700 bg-red-50 text-red-700 font-black px-2.5 py-0.5 rounded text-[11px] sm:text-xs uppercase">
-                                ★ {formData.priority_stamp} ★
-                            </span>
-                        )}
                     </div>
                 </div>
 
@@ -262,10 +257,7 @@ export default function CourierSlipMaker() {
                             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-2.5">
                                 <span className="bg-red-700 text-white font-black px-3 py-1 rounded text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-2xs">
                                     <span className="material-symbols-outlined text-sm sm:text-base">pin_drop</span>
-                                    TO / सेवा में (DELIVERY TO)
-                                </span>
-                                <span className="text-[10px] font-black text-red-600 uppercase tracking-wider">
-                                    [ DELIVER TO ]
+                                    TO / सेवा में (DELIVER TO)
                                 </span>
                             </div>
 
