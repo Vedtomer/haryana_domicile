@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import {
     Box, Typography, TextField, Button, Paper, Alert,
@@ -19,8 +19,9 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import axios from 'axios';
 import BilingualInputField from '../../Components/BilingualInputField';
 
-export default function BirthCertificateDownload({ defaultRegNo = '', userCoins = 0, isStaff = false }) {
-    const { currentService } = usePage().props;
+export default function BirthCertificateDownload({ service, defaultRegNo = '', userCoins = 0, isStaff = false }) {
+    const pageProps = usePage()?.props || {};
+    const currentService = service || pageProps.currentService;
     // Service Type: 'color_pdf` (${currentService?.coin_cost ?? 300} Coins) | `name_add' ({currentService?.coin_cost ?? 400} Coins)
     const [serviceType, setServiceType] = useState('color_pdf');
     const [childName, setChildName] = useState('');

@@ -16,7 +16,13 @@ class BirthCertificateDownloadController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        $service = Service::where('slug', 'birth-certificate-download')
+            ->orWhere('module_key', 'birth_certificate_download')
+            ->orWhere('slug', 'birth-certificate')
+            ->first();
+
         return Inertia::render('Utilities/BirthCertificateDownload', [
+            'service' => $service,
             'defaultRegNo' => $request->query('reg_no', ''),
             'userCoins' => $user ? $user->coins : 0,
             'isStaff' => $this->isStaff(),
@@ -343,5 +349,24 @@ class BirthCertificateDownloadController extends Controller
         return response()->download($fullPath, $filename, [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $regNo = trim((string) $request->input('registration_no', ''));
+        if ($regNo) {
+            $record = BirthRecord::where('registration_no', $regNo)
+                ->where('user_id', auth()->id())
+                ->first();
+            if ($record) {
+                return response()->json(['success' => true, 'record' => $record]);
+            }
+        }
+        return response()->json(['success' => false, 'message' => 'No record found with this registration number.']);
+    }
+
+    public function quickGenerate(Request $request)
+    {
+        return response()->json(['success' => false, 'message' => 'Please use the document merger application form below.']);
     }
 }
