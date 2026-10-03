@@ -58,7 +58,7 @@ abstract class Controller
 
         $user = auth()->user();
 
-        if (!$user->services()->where('services.id', $service->id)->exists()) {
+        if ($service->visibility !== 'public' && !$user->services()->where('services.id', $service->id)->exists()) {
             return "Aapke account par {$service->name} service activate nahi hai. Kripya Admin se sampark karein.";
         }
 

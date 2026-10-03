@@ -595,7 +595,10 @@ class Service extends Model
             return $query;
         }
 
-        return $query->whereHas('users', fn ($u) => $u->where('users.id', $user->id));
+        return $query->where(function ($q) use ($user) {
+            $q->where('visibility', self::VISIBILITY_PUBLIC)
+              ->orWhereHas('users', fn ($u) => $u->where('users.id', $user->id));
+        });
     }
 
     public function scopeOrdered($query)
@@ -636,6 +639,18 @@ class Service extends Model
      */
     public function targetUrl(): string
     {
+        if ($this->module_key && isset(self::MODULES[$this->module_key])) {
+            return self::MODULES[$this->module_key]['index'];
+        }
+
+        if ($this->slug === 'birth-certificate-download' || $this->slug === 'crs-birth-portal') {
+            return '/utilities/birth-certificate';
+        }
+
+        if ($this->slug === 'birth-certificate') {
+            return '/admin/birth-records';
+        }
+
         if ($this->isModule()) {
             return self::MODULES[$this->module_key]['index'];
         }
