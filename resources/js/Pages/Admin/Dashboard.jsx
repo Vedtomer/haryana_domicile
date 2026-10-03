@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { SERVICE_CATEGORIES, getServiceCategory } from '../../Utils/serviceCategories';
+import { SERVICE_CATEGORIES, getServiceCategory, groupServicesByCategory } from '../../Utils/serviceCategories';
+import CategoryLogo from '../../Components/CategoryLogo';
 
 const STAT_THEMES = {
     emerald: {
@@ -557,27 +558,48 @@ export default function Dashboard({
     const effectiveRole = userRole || (isAdmin ? 'ADMINISTRATOR' : 'RETAILER');
     const effectiveWhatsApp = whatsappNumber || supportWhatsApp || '380630323112';
 
-    // Group services into categories for the overview
-    const groupedCategories = useMemo(() => {
-        const groups = {};
-        SERVICE_CATEGORIES.forEach((cat) => {
-            groups[cat.id] = {
-                category: cat,
-                services: [],
-            };
+    // 1. Available services according to permissions
+    const availableServices = useMemo(() => {
+        return (services || []).filter((s) => {
+            if (!s.is_active && !isAdmin) return false;
+            if (!s.can_access && !isAdmin) return false;
+            return true;
         });
+    }, [services, isAdmin]);
 
-        (services || []).forEach((service) => {
-            const cat = getServiceCategory(service);
-            if (groups[cat.id]) {
-                groups[cat.id].services.push(service);
-            } else {
-                groups['utilities'].services.push(service);
-            }
-        });
+    // 2. All categorized groups with at least 1 service
+    const allCategoryGroups = useMemo(() => {
+        return groupServicesByCategory(availableServices);
+    }, [availableServices]);
 
-        return SERVICE_CATEGORIES.map((cat) => groups[cat.id]).filter((g) => g.services.length > 0);
-    }, [services]);
+    // 3. Filtered groups based on search & selected category
+    const displayGroups = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+
+        return allCategoryGroups
+            .map((group) => {
+                if (selectedCategory && group.category.id !== selectedCategory) {
+                    return { ...group, services: [] };
+                }
+
+                if (!query) {
+                    return group;
+                }
+
+                const matched = group.services.filter((s) => {
+                    const name = (s.name || '').toLowerCase();
+                    const desc = (s.description || '').toLowerCase();
+                    const slug = (s.slug || '').toLowerCase();
+                    return name.includes(query) || desc.includes(query) || slug.includes(query);
+                });
+
+                return {
+                    ...group,
+                    services: matched,
+                };
+            })
+            .filter((g) => g.services.length > 0);
+    }, [allCategoryGroups, selectedCategory, searchQuery]);
 
     // Currently active category object if selected
     const activeCategoryObj = useMemo(() => {
@@ -585,26 +607,24 @@ export default function Dashboard({
         return SERVICE_CATEGORIES.find((c) => c.id === selectedCategory) || null;
     }, [selectedCategory]);
 
-    // Filter services according to selectedCategory and searchQuery
-    const filteredServices = useMemo(() => {
-        return (services || []).filter((service) => {
-            const query = searchQuery.trim().toLowerCase();
-            const matchesQuery =
-                !query ||
-                (service.name && service.name.toLowerCase().includes(query)) ||
-                (service.description && service.description.toLowerCase().includes(query)) ||
-                (service.slug && service.slug.toLowerCase().includes(query));
+    const handleCategorySelect = (catId) => {
+        setSelectedCategory(catId);
+        try {
+            const url = new URL(window.location);
+            if (catId) {
+                url.searchParams.set('category', catId);
+            } else {
+                url.searchParams.delete('category');
+            }
+            window.history.pushState({}, '', url);
+            window.dispatchEvent(new CustomEvent('categoryChange', { detail: catId }));
 
-            if (!matchesQuery) return false;
-
-            // If user searched across all, don't restrict to category unless category is explicitly chosen
-            if (searchQuery.trim() && !selectedCategory) return true;
-
-            if (!selectedCategory) return false; // In overview mode, individual service cards are not rendered
-            const cat = getServiceCategory(service);
-            return cat.id === selectedCategory;
-        });
-    }, [services, searchQuery, selectedCategory]);
+            const el = document.getElementById('services-section');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } catch (e) {}
+    };
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -663,278 +683,384 @@ export default function Dashboard({
         >
             <Head title={selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'Dashboard'} />
 
-            {/* When NO category is selected & NO search: SHOW FULL DASHBOARD */}
-            {!selectedCategory && !searchQuery.trim() ? (
-                <>
-                    {/* 1. Small Compact Welcome Banner */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
-                                <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
-                            </div>
-                            <div className="min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
-                                        Welcome, {auth?.user?.name || 'Retailer'}
-                                    </h2>
-                                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                                        {siteName.toUpperCase()}
-                                    </span>
-                                </div>
-                                <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
-                                    Fast services, clear wallet records and quick processing.
-                                </p>
-                            </div>
-                        </div>
+            {/* 1. Small Compact Welcome Banner */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+                        <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
                     </div>
-
-                    {/* 2. Stat Metric Cards in a row */}
-                    {isAdmin ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                            <StatMetricCard
-                                index={0}
-                                colorTheme="indigo"
-                                title="TOTAL USERS"
-                                badgeText="MEMBERS"
-                                value={Number(totalUsers || 0).toLocaleString('en-IN')}
-                                subtitle="Registered portal users"
-                                icon="group"
-                                linkUrl="/admin/users"
-                            />
-                            <StatMetricCard
-                                index={1}
-                                colorTheme="amber"
-                                title="COIN REQUESTS"
-                                badgeText="PENDING"
-                                value={`${pendingCoins} Pending`}
-                                subtitle="Wallet recharge requests"
-                                icon="monetization_on"
-                                linkUrl="/admin/coin-requests"
-                            />
-                            <StatMetricCard
-                                index={2}
-                                colorTheme="purple"
-                                title="SERVICE PENDING REQUEST"
-                                badgeText="ORDERS"
-                                value={`${pendingRequests} Pending`}
-                                subtitle="Service requests pending action"
-                                icon="hourglass_top"
-                                linkUrl="/admin/service-requests?status=pending"
-                            />
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                            <StatMetricCard
-                                index={0}
-                                colorTheme="emerald"
-                                title="TOTAL BALANCE"
-                                badgeText="LIVE"
-                                value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
-                                subtitle="Available wallet coins"
-                                icon="account_balance_wallet"
-                                linkUrl="/admin/coin-requests"
-                            />
-                            <StatMetricCard
-                                index={1}
-                                colorTheme="blue"
-                                title="ADD BALANCE"
-                                badgeText="INSTANT QR"
-                                value="Add Balance"
-                                subtitle="Instant scan & automatic recharge"
-                                icon="add_card"
-                                linkUrl="/admin/coin-requests"
-                                isButton={true}
-                            />
-                            <StatMetricCard
-                                index={2}
-                                colorTheme="purple"
-                                title="WALLET HISTORY"
-                                badgeText="PASSBOOK"
-                                value="View Ledger"
-                                subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
-                                icon="history"
-                                linkUrl="/admin/profile#coin-ledger"
-                            />
-                        </div>
-                    )}
-
-                    {/* 3. Customer Care Section (With actual site support data) */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
-                                    support_agent
-                                </span>
-                                <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
-                                    Customer Care
-                                </h3>
-                            </div>
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                                Support
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+                                Welcome, {auth?.user?.name || 'Retailer'}
+                            </h2>
+                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                {siteName.toUpperCase()}
                             </span>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                            {/* Help Note Card */}
-                            <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
-                                <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
-                                    Need help with a service?
-                                </h4>
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                                    Use one request at a time. Keep the transaction/service detail ready before contacting support.
-                                </p>
-                            </div>
-
-                            {/* WhatsApp Card */}
-                            <a
-                                href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                            >
-                                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-[22px]">chat</span>
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                        WhatsApp
-                                    </span>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                        {effectiveWhatsApp}
-                                    </span>
-                                </div>
-                            </a>
-
-                            {/* Telegram Card */}
-                            <a
-                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                            >
-                                <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-[22px]">send</span>
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                        Telegram
-                                    </span>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                        {supportTelegram}
-                                    </span>
-                                </div>
-                            </a>
-
-                            {/* Member Group Card */}
-                            <a
-                                href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
-                            >
-                                <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-[22px]">groups</span>
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                        Member Group
-                                    </span>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
-                                        {siteName} Updates
-                                    </span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </>
-            ) : (
-                /* When a Category or Search is selected: DASHBOARD HIDES, ONLY SERVICES SHOW */
-                <div id="services" className="mb-8">
-                    {/* Clean Minimal Top Row (Bulky card and Quick Switch removed as requested) */}
-                    <div className="flex items-center justify-between gap-3 mb-6">
-                        <button
-                            type="button"
-                            onClick={clearSelectedCategory}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
-                        >
-                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
-                                arrow_back
-                            </span>
-                            <span>Back to Dashboard</span>
-                        </button>
-
-                        <div className="relative w-48 sm:w-64">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
-                                search
-                            </span>
-                            <input
-                                type="text"
-                                placeholder="Search service..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"
-                            />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={() => setSearchQuery('')}
-                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[15px]">close</span>
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Filtered Services Grid */}
-                    {filteredServices.length === 0 ? (
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs">
-                            <div className="text-4xl">🔍</div>
-                            <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">
-                                Koi service nahi mili
-                            </h4>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
-                                Aapke search query ya is category me koi service match nahi hui.
-                            </p>
-                            <button
-                                type="button"
-                                onClick={clearSelectedCategory}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                                <span>Back to Dashboard</span>
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
-                            {filteredServices.map((service, index) => (
-                                <ServiceCard
-                                    key={service.id}
-                                    service={service}
-                                    index={index}
-                                    onUnlockClick={setUnlockingService}
-                                    isAdmin={isAdmin}
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Bottom Back Button */}
-                    <div className="mt-8 text-center">
-                        <button
-                            type="button"
-                            onClick={clearSelectedCategory}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-md transition-all cursor-pointer group"
-                        >
-                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
-                                arrow_back
-                            </span>
-                            <span>Back to Dashboard</span>
-                        </button>
+                        <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
+                            Fast services, clear wallet records and quick processing.
+                        </p>
                     </div>
                 </div>
+            </div>
+
+            {/* 2. Stat Metric Cards in a row */}
+            {isAdmin ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                    <StatMetricCard
+                        index={0}
+                        colorTheme="indigo"
+                        title="TOTAL USERS"
+                        badgeText="MEMBERS"
+                        value={Number(totalUsers || 0).toLocaleString('en-IN')}
+                        subtitle="Registered portal users"
+                        icon="group"
+                        linkUrl="/admin/users"
+                    />
+                    <StatMetricCard
+                        index={1}
+                        colorTheme="amber"
+                        title="COIN REQUESTS"
+                        badgeText="PENDING"
+                        value={`${pendingCoins} Pending`}
+                        subtitle="Wallet recharge requests"
+                        icon="monetization_on"
+                        linkUrl="/admin/coin-requests"
+                    />
+                    <StatMetricCard
+                        index={2}
+                        colorTheme="purple"
+                        title="SERVICE PENDING REQUEST"
+                        badgeText="ORDERS"
+                        value={`${pendingRequests} Pending`}
+                        subtitle="Service requests pending action"
+                        icon="hourglass_top"
+                        linkUrl="/admin/service-requests?status=pending"
+                    />
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                    <StatMetricCard
+                        index={0}
+                        colorTheme="emerald"
+                        title="TOTAL BALANCE"
+                        badgeText="LIVE"
+                        value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
+                        subtitle="Available wallet coins"
+                        icon="account_balance_wallet"
+                        linkUrl="/admin/coin-requests"
+                    />
+                    <StatMetricCard
+                        index={1}
+                        colorTheme="blue"
+                        title="ADD BALANCE"
+                        badgeText="INSTANT QR"
+                        value="Add Balance"
+                        subtitle="Instant scan & automatic recharge"
+                        icon="add_card"
+                        linkUrl="/admin/coin-requests"
+                        isButton={true}
+                    />
+                    <StatMetricCard
+                        index={2}
+                        colorTheme="purple"
+                        title="WALLET HISTORY"
+                        badgeText="PASSBOOK"
+                        value="View Ledger"
+                        subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
+                        icon="history"
+                        linkUrl="/admin/profile#coin-ledger"
+                    />
+                </div>
             )}
+
+            {/* 3. Category Filter & Search Control Bar */}
+            <div id="services-section" className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-4 sm:p-5 mb-7 shadow-2xs">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3.5">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[20px]">category</span>
+                        </div>
+                        <div>
+                            <h3 className="font-extrabold text-slate-800 dark:text-white text-sm sm:text-base leading-none">
+                                Services by Category
+                            </h3>
+                            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                                {selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'All Service Categories'} • {availableServices.length} Total Services
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Instant Search Bar */}
+                    <div className="relative w-full md:w-72">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                            search
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Search any service..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 rounded-2xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[15px]">close</span>
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Horizontal Category Navigation Tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar">
+                    {/* All Services Pill */}
+                    <button
+                        type="button"
+                        onClick={() => handleCategorySelect(null)}
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                            !selectedCategory
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-400/30'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/80'
+                        }`}
+                    >
+                        <span className="material-symbols-outlined text-[16px]">grid_view</span>
+                        <span>All Services</span>
+                        <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                            !selectedCategory ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                        }`}>
+                            {availableServices.length}
+                        </span>
+                    </button>
+
+                    {/* Individual Category Navigation Pills */}
+                    {allCategoryGroups.map((g) => {
+                        const isSelected = selectedCategory === g.category.id;
+                        return (
+                            <button
+                                key={g.category.id}
+                                type="button"
+                                onClick={() => handleCategorySelect(g.category.id)}
+                                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                                    isSelected
+                                        ? `bg-gradient-to-r ${g.category.color} text-white shadow-md ring-2 ring-white/30`
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/80'
+                                }`}
+                            >
+                                <span className="material-symbols-outlined text-[16px]">{g.category.icon}</span>
+                                <span>{g.category.shortName}</span>
+                                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                                    isSelected ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                }`}>
+                                    {g.services.length}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* If a category is selected: Show Selected Category Header Banner */}
+            {selectedCategory && activeCategoryObj && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                    <div className="flex items-center gap-3.5">
+                        <CategoryLogo category={activeCategoryObj} services={displayGroups[0]?.services || []} size="w-12 h-12" />
+                        <div>
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                                    {activeCategoryObj.name}
+                                </h2>
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                                    ({activeCategoryObj.hindiName})
+                                </span>
+                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider ${activeCategoryObj.badgeBg}`}>
+                                    {displayGroups[0]?.services?.length || 0} Services
+                                </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                {activeCategoryObj.description}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={clearSelectedCategory}
+                        className="self-start sm:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap"
+                    >
+                        <span className="material-symbols-outlined text-[17px]">arrow_back</span>
+                        <span>Show All Categories</span>
+                    </button>
+                </div>
+            )}
+
+            {/* 4. Categorized Columns of Services */}
+            {displayGroups.length === 0 ? (
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 shadow-2xs mb-8">
+                    <div className="text-4xl">🔍</div>
+                    <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">
+                        Koi service nahi mili
+                    </h4>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+                        Aapke search query ya is filter me koi service match nahi hui.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={clearSelectedCategory}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors cursor-pointer"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">refresh</span>
+                        <span>Reset Search & Filters</span>
+                    </button>
+                </div>
+            ) : (
+                <div className="space-y-8 mb-10">
+                    {displayGroups.map((group) => (
+                        <div key={group.category.id} className="relative">
+                            {/* Column / Category Header (Only when viewing all categories) */}
+                            {!selectedCategory && (
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4.5 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+                                    <div className="flex items-center gap-3.5 min-w-0">
+                                        <CategoryLogo category={group.category} services={group.services} size="w-10 h-10" />
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
+                                                    {group.category.name}
+                                                </h3>
+                                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                                                    ({group.category.hindiName})
+                                                </span>
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${group.category.badgeBg}`}>
+                                                    {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                                                {group.category.description}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCategorySelect(group.category.id)}
+                                        className="self-start sm:self-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                                    >
+                                        <span>Only {group.category.shortName}</span>
+                                        <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Responsive 3D Grid of Cards for this Category Column */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
+                                {group.services.map((service, index) => (
+                                    <ServiceCard
+                                        key={service.id}
+                                        service={service}
+                                        index={index}
+                                        onUnlockClick={setUnlockingService}
+                                        isAdmin={isAdmin}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* 5. Customer Care Section */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">
+                            support_agent
+                        </span>
+                        <h3 className="font-extrabold text-slate-800 dark:text-white text-base">
+                            Customer Care
+                        </h3>
+                    </div>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
+                        Support
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    {/* Help Note Card */}
+                    <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 flex flex-col justify-center">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">
+                            Need help with a service?
+                        </h4>
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                            Use one request at a time. Keep the transaction/service detail ready before contacting support.
+                        </p>
+                    </div>
+
+                    {/* WhatsApp Card */}
+                    <a
+                        href={`https://wa.me/${(effectiveWhatsApp || '').replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                    >
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <span className="material-symbols-outlined text-[22px]">chat</span>
+                        </div>
+                        <div className="min-w-0">
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                WhatsApp
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                {effectiveWhatsApp}
+                            </span>
+                        </div>
+                    </a>
+
+                    {/* Telegram Card */}
+                    <a
+                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-sky-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                    >
+                        <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <span className="material-symbols-outlined text-[22px]">send</span>
+                        </div>
+                        <div className="min-w-0">
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                Telegram
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                {supportTelegram}
+                            </span>
+                        </div>
+                    </a>
+
+                    {/* Member Group Card */}
+                    <a
+                        href={`https://t.me/${(supportTelegram || '').replace(/^@+/, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl p-4 flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                    >
+                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <span className="material-symbols-outlined text-[22px]">groups</span>
+                        </div>
+                        <div className="min-w-0">
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                                Member Group
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block mt-0.5">
+                                {siteName} Updates
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
             {/* Premium Unlock Modal */}
             {unlockingService && (

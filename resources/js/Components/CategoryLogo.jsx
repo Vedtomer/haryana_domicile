@@ -118,22 +118,99 @@ export function CategorySvgLogo({ categoryId }) {
                 </svg>
             );
 
+        case 'marriage':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#831843" />
+                    {/* Gold Top Header */}
+                    <rect x="5" y="8" width="38" height="7" rx="3" fill="#BE185D" />
+                    <text x="24" y="13.2" fill="#FDE047" fontSize="3.3" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        MARRIAGE • CERT
+                    </text>
+                    {/* Interlocking Rings */}
+                    <circle cx="20" cy="25" r="6" stroke="#FDE047" strokeWidth="2" fill="none" />
+                    <circle cx="28" cy="25" r="6" stroke="#FBBF24" strokeWidth="2" fill="none" />
+                    <path d="M20 19L21.5 21L23 19" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="28" cy="19" r="1.5" fill="#FFFFFF" />
+                    {/* Certificate Base Trim */}
+                    <rect x="12" y="33" width="24" height="2" rx="1" fill="#FBCFE8" />
+                </svg>
+            );
+
+        case 'ppp':
+        case 'rasan':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#0F172A" />
+                    {/* Header */}
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#D97706" />
+                    <text x="24" y="13.5" fill="#FFFFFF" fontSize="3.4" fontWeight="900" textAnchor="middle" letterSpacing="0.4">
+                        FAMILY ID • PPP
+                    </text>
+                    {/* Family Silhouette (Father, Mother, Child) */}
+                    <circle cx="19" cy="21" r="2.5" fill="#F59E0B" />
+                    <path d="M15 28C15 25 17 24.5 19 24.5C21 24.5 23 25 23 28H15Z" fill="#F59E0B" />
+                    <circle cx="29" cy="21" r="2.5" fill="#FBBF24" />
+                    <path d="M25 28C25 25 27 24.5 29 24.5C31 24.5 33 25 33 28H25Z" fill="#FBBF24" />
+                    <circle cx="24" cy="26" r="1.8" fill="#FFFFFF" />
+                    <path d="M21 33C21 30.5 22.5 30 24 30C25.5 30 27 30.5 27 33H21Z" fill="#FFFFFF" />
+                    {/* PPP Tag */}
+                    <rect x="14" y="34.5" width="20" height="2" rx="1" fill="#D97706" />
+                </svg>
+            );
+
+        case 'courier':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#431407" />
+                    {/* Delivery Orange Banner */}
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#EA580C" />
+                    <text x="24" y="13.5" fill="#FFFFFF" fontSize="3.3" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        COURIER • PARCEL
+                    </text>
+                    {/* 3D Parcel Box */}
+                    <path d="M24 18L33 22V31L24 35L15 31V22L24 18Z" fill="#D97706" stroke="#FDE047" strokeWidth="1" />
+                    <path d="M24 18L33 22L24 26L15 22L24 18Z" fill="#F59E0B" />
+                    <path d="M24 26V35" stroke="#78350F" strokeWidth="1.2" />
+                    {/* Barcode on side of box */}
+                    <rect x="26.5" y="27" width="1" height="4" fill="#FFFFFF" />
+                    <rect x="28.5" y="27" width="1.5" height="4" fill="#FFFFFF" />
+                    <rect x="31" y="27" width="0.8" height="4" fill="#FFFFFF" />
+                </svg>
+            );
+
+        case 'health':
+            return (
+                <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#064E3B" />
+                    {/* Header */}
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#059669" />
+                    <text x="24" y="13.5" fill="#FFFFFF" fontSize="3.3" fontWeight="900" textAnchor="middle" letterSpacing="0.4">
+                        AYUSHMAN • HEALTH
+                    </text>
+                    {/* Medical Cross in Golden Shield */}
+                    <circle cx="24" cy="26" r="9" fill="#10B981" stroke="#FDE047" strokeWidth="1.2" />
+                    <rect x="22" y="20.5" width="4" height="11" rx="1" fill="#FFFFFF" />
+                    <rect x="18.5" y="24" width="11" height="4" rx="1" fill="#FFFFFF" />
+                    {/* Bottom Ribbon */}
+                    <rect x="16" y="34.5" width="16" height="2" rx="1" fill="#6EE7B7" />
+                </svg>
+            );
+
+        case 'bills':
         case 'farmer':
             return (
                 <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
-                    <circle cx="24" cy="24" r="21" fill="#15803D" />
-                    {/* Golden Sun */}
-                    <circle cx="24" cy="13" r="4.5" fill="#FDE047" />
-                    {/* Sprout Plant */}
-                    <path
-                        d="M24 35V19M24 19C24 13 16 12 16 18C16 24 24 24 24 19ZM24 21C24 15 32 14 32 20C32 26 24 26 24 21Z"
-                        fill="#86EFAC"
-                        stroke="#052E16"
-                        strokeWidth="1.2"
-                        strokeLinejoin="round"
-                    />
-                    {/* Field Ground */}
-                    <path d="M8 35C13 33 18 36 24 35C30 34 35 36 40 35" stroke="#FDE047" strokeWidth="2.5" strokeLinecap="round" />
+                    <rect x="5" y="8" width="38" height="32" rx="6" fill="#1E1B4B" />
+                    {/* Header */}
+                    <rect x="5" y="8" width="38" height="7.5" rx="3" fill="#3B82F6" />
+                    <text x="24" y="13.5" fill="#FFFFFF" fontSize="3.3" fontWeight="900" textAnchor="middle" letterSpacing="0.3">
+                        BIJLI • GOVT BILLS
+                    </text>
+                    {/* Electric Meter & Lightning */}
+                    <circle cx="24" cy="26" r="8" fill="#1E293B" stroke="#60A5FA" strokeWidth="1.5" />
+                    <path d="M24 20L21 26H25L23 31L28 25H24L25 20H24Z" fill="#FACC15" />
+                    <rect x="15" y="34.5" width="18" height="2" rx="1" fill="#60A5FA" />
                 </svg>
             );
 
