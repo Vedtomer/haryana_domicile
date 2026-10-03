@@ -87,7 +87,7 @@ export default function CourierSlipMaker() {
         sender_name: 'SAM VERMA',
         sender_phone: '9541230611',
         sender_website: 'akenterprisegroup.com',
-        sender_email: 'info@akenterprisegroup.com',
+        sender_email: 'a.kenterprise0611@gmail.com',
         sender_address: '#03, Kutani Road, Verma Chowk',
         sender_city: 'Panipat',
         sender_district: 'Panipat',
@@ -139,7 +139,7 @@ export default function CourierSlipMaker() {
             sender_name: 'SAM VERMA',
             sender_phone: '9541230611',
             sender_website: 'akenterprisegroup.com',
-            sender_email: 'info@akenterprisegroup.com',
+            sender_email: 'a.kenterprise0611@gmail.com',
             sender_address: '#03, Kutani Road, Verma Chowk',
             sender_city: 'Panipat',
             sender_district: 'Panipat',
@@ -1241,7 +1241,7 @@ export default function CourierSlipMaker() {
                                                 value={formData.sender_email}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono"
-                                                placeholder="info@akenterprisegroup.com"
+                                                placeholder="a.kenterprise0611@gmail.com"
                                             />
                                         </div>
                                     </div>
