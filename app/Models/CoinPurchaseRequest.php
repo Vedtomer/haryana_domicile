@@ -14,11 +14,16 @@ class CoinPurchaseRequest extends Model
 
     protected $fillable = [
         'user_id',
+        'order_id',
         'package_amount',
         'coins_requested',
         'utr_number',
         'payment_screenshot',
         'status',
+        'gateway',
+        'payment_url',
+        'qr_data',
+        'payment_data',
         'admin_notes',
         'approved_by',
         'approved_at',
@@ -28,6 +33,7 @@ class CoinPurchaseRequest extends Model
         'package_amount' => 'integer',
         'coins_requested' => 'integer',
         'approved_at' => 'datetime',
+        'payment_data' => 'array',
     ];
 
     /**

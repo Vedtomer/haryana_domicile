@@ -59,12 +59,13 @@ class CoinPurchaseRequestController extends Controller
         }
 
         return Inertia::render('Admin/CoinPurchaseRequests/Create', [
-            'packages'       => $packages,
-            'myRequests'     => $myRequests,
-            'userCoins'      => auth()->user()->coins,
-            'upiId'          => Setting::get('upi_id',   'cspjaankari@upi'),
-            'upiName'        => Setting::get('upi_name', 'CSP Jaankari'),
-            'whatsappNumber' => Setting::get('whatsapp_number', '380630323112'),
+            'packages'        => $packages,
+            'myRequests'      => $myRequests,
+            'userCoins'       => auth()->user()->coins,
+            'upiId'           => Setting::get('upi_id',   'cspjaankari@upi'),
+            'upiName'         => Setting::get('upi_name', 'CSP Jaankari'),
+            'whatsappNumber'  => Setting::get('whatsapp_number', '380630323112'),
+            'paycorexEnabled' => filter_var(Setting::get('paycorex_enabled', '1'), FILTER_VALIDATE_BOOLEAN),
         ]);
     }
 

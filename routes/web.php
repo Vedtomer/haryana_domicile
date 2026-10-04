@@ -1799,6 +1799,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('airtel-passbook/{airtel_passbook}/print', [\App\Http\Controllers\Admin\AirtelPassbookController::class, 'print'])->name('airtel-passbook.print'); 
 
         Route::resource('coin-requests', \App\Http\Controllers\Admin\CoinPurchaseRequestController::class)->only(['index', 'create', 'store', 'update']);
+
+        // PayCoreX Payment Gateway routes (for authenticated users)
+        Route::post('payment/paycorex/create-order', [\App\Http\Controllers\PaycorexPaymentController::class, 'createOrder'])->name('payment.paycorex.create-order');
+        Route::post('payment/paycorex/check-status', [\App\Http\Controllers\PaycorexPaymentController::class, 'checkStatus'])->name('payment.paycorex.check-status');
+
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->middleware('admin');
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('admin');
         Route::post('users/{user}/add-coins', [\App\Http\Controllers\Admin\UserController::class, 'addCoins'])->name('users.add-coins')->middleware('admin');
@@ -1832,6 +1837,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // Payment / QR Settings — admin only
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit')->middleware('admin');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update')->middleware('admin');
+        Route::post('payment-settings/test-paycorex', [\App\Http\Controllers\PaycorexPaymentController::class, 'testConnection'])->name('payment-settings.test-paycorex')->middleware('admin');
 
         // API Settings — admin only
         Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit')->middleware('admin');
@@ -1952,4 +1958,7 @@ Route::get('/storage/{path}', function ($path) {
     }
     return response()->file($filePath);
 })->where('path', '.*')->name('storage.local');
+
+// PayCoreX Payment Gateway Redirect Callback
+Route::match(['get', 'post'], '/payment/paycorex/callback', [\App\Http\Controllers\PaycorexPaymentController::class, 'callback'])->name('payment.paycorex.callback');
 

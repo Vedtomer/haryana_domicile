@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             '/api/print-agent/*',
             'p/*/upload',
             '/p/*/upload',
+            'payment/paycorex/callback',
+            '/payment/paycorex/callback',
         ]);
 
         $middleware->web(append: [
