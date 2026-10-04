@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
@@ -19,13 +19,54 @@ const InfoRow = ({ label, value, icon }) => {
 };
 
 export default function LearningLicencePdf() {
-    const { currentService } = usePage().props;
+    const {
+        service,
+        coinCost = 19,
+        isAdmin = false,
+        apiUrl: propApiUrl = '',
+        apiKey: propApiKey = '',
+        currentService,
+        auth,
+    } = usePage().props;
+
     const [applNum, setApplNum] = useState('');
     const [dob, setDob] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const [directPortal, setDirectPortal] = useState('https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do');
+
+    const displayCoinCost = service?.coin_cost ?? currentService?.coin_cost ?? coinCost ?? 19;
+    const isUserAdmin = auth?.user?.is_admin || auth?.user?.type === 'super_admin' || auth?.user?.type === 'admin' || isAdmin;
+
+    // Admin API Settings State
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php');
+    const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [settingMsg, setSettingMsg] = useState(null);
+
+    const handleSaveAdminSettings = async (e) => {
+        e.preventDefault();
+        setSavingSettings(true);
+        setSettingMsg(null);
+        try {
+            const resp = await axios.post('/utilities/learning-licence-pdf/update-api', {
+                api_url: adminApiUrl,
+                api_key: adminApiKey,
+            });
+            if (resp.data.success) {
+                setSettingMsg({ type: 'success', text: resp.data.message || 'API settings saved successfully!' });
+                setTimeout(() => setShowAdminModal(false), 1500);
+            } else {
+                setSettingMsg({ type: 'error', text: resp.data.message || 'Failed to save settings.' });
+            }
+        } catch (err) {
+            setSettingMsg({ type: 'error', text: err.response?.data?.message || 'Error saving API settings.' });
+        } finally {
+            setSavingSettings(false);
+        }
+    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -34,6 +75,12 @@ export default function LearningLicencePdf() {
             setError('Please enter a valid Application Number.');
             return;
         }
+
+        if (!isUserAdmin && (auth?.user?.coins ?? 0) < displayCoinCost) {
+            setError(`Insufficient coins. This service requires ${displayCoinCost} Coins. (Your balance: ${auth?.user?.coins ?? 0} coins)`);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         setResult(null);
@@ -46,6 +93,9 @@ export default function LearningLicencePdf() {
 
             if (response.data.success) {
                 setResult(response.data.data);
+                if (!isUserAdmin && auth?.user) {
+                    auth.user.coins -= displayCoinCost;
+                }
             } else {
                 setError(response.data.message || 'Details not found.');
                 if (response.data.direct_portal) {
@@ -62,13 +112,13 @@ export default function LearningLicencePdf() {
     const downloadPdf = () => {
         if (!result) return;
 
-        const directUrl = result.a4_pdf || result.pdf_url || result.a4 || (result.cards && result.cards[0]?.a4) || result.file_url;
+        const directUrl = result.a4_pdf || result.pdf_url || result.a4 || (result.cards && result.cards[0]?.a4) || result.file_url || result.download_url || result.url || result.data?.pdf_url || result.data?.file_url;
         if (directUrl) {
             window.open(directUrl, '_blank');
             return;
         }
 
-        let pdfData = result.pdf || result.data?.pdf || result.base64;
+        let pdfData = result.pdf || result.data?.pdf || result.base64 || result.pdf_base64 || result.data?.base64;
         if (pdfData) {
             if (pdfData.startsWith('http://') || pdfData.startsWith('https://')) {
                 window.open(pdfData, '_blank');
@@ -90,82 +140,140 @@ export default function LearningLicencePdf() {
         }
     };
 
+    const hasPdf = Boolean(
+        result && (
+            result.pdf_url ||
+            result.file_url ||
+            result.download_url ||
+            result.url ||
+            result.a4_pdf ||
+            result.a4 ||
+            result.pdf ||
+            result.base64 ||
+            result.pdf_base64 ||
+            result.data?.pdf ||
+            result.data?.pdf_url ||
+            result.data?.file_url ||
+            result.data?.base64 ||
+            (result.cards && result.cards[0]?.a4)
+        )
+    );
+
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Learning Licence Download
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Download Learning Licence PDF instantly
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/dashboard"
+                            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                            title="Back to Dashboard"
+                        >
+                            <span className="material-symbols-outlined text-lg">arrow_back</span>
+                        </Link>
+                        <div>
+                            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight flex items-center gap-2">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-2xl sm:text-3xl">directions_car</span>
+                                <span>Learning Licence Download</span>
+                            </h1>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                                Download Learning Licence PDF instantly &bull; Good-API-Point
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black bg-indigo-100 dark:bg-indigo-900/40 text-indigo-900 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-xs">
+                            <span>🪙</span>
+                            <span>{displayCoinCost} Coins / Fetch</span>
+                        </span>
+
+                        {isUserAdmin && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowAdminModal(true);
+                                    setSettingMsg(null);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600 shadow-xs transition-colors"
+                                title="Admin API Settings"
+                            >
+                                <span className="material-symbols-outlined text-[15px]">settings</span>
+                                <span className="hidden sm:inline">API Config</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
             }
         >
             <Head title="Learning Licence Download" />
 
-            <div className="max-w-xl mx-auto mt-8 space-y-6">
+            <div className="max-w-xl mx-auto mt-6 sm:mt-8 space-y-6 pb-12">
                 {/* Input Card */}
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
-                    <div className="p-8">
-                        <div className="flex items-center justify-center w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full mb-6 mx-auto">
-                            <span className="material-symbols-outlined text-3xl">directions_car</span>
+                    <div className="p-6 sm:p-8">
+                        <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-indigo-500/10 to-violet-500/20 text-indigo-600 dark:text-indigo-400 rounded-2xl mb-5 mx-auto border border-indigo-100 dark:border-indigo-900/30">
+                            <span className="material-symbols-outlined text-3xl">badge</span>
                         </div>
-                        <h2 className="text-2xl font-black text-center text-slate-800 dark:text-white mb-2 tracking-tight">
-                            Learning Licence Download
+                        <h2 className="text-xl sm:text-2xl font-black text-center text-slate-800 dark:text-white mb-1.5 tracking-tight">
+                            Download Learning Licence
                         </h2>
-                        <p className="text-center text-slate-500 mb-8 font-medium">
-                            Enter Application Number to fetch Learning Licence PDF.
+                        <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm font-medium">
+                            Enter Application Number to fetch official Learning Licence PDF.
                         </p>
 
-                        <form onSubmit={handleSearch} className="space-y-5">
+                        <form onSubmit={handleSearch} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    Application Number *
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wide">
+                                    Application Number <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
-                                    value={applNum}
-                                    onChange={(e) => {
-                                        setApplNum(e.target.value.toUpperCase());
-                                        if (error) setError(null);
-                                    }}
-                                    placeholder="e.g. 12345678"
-                                    required
-                                    className="w-full px-5 py-4 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-wider font-black transition-all text-center text-slate-900 uppercase"
-                                />
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl">
+                                        tag
+                                    </span>
+                                    <input
+                                        type="text"
+                                        value={applNum}
+                                        onChange={(e) => {
+                                            setApplNum(e.target.value.toUpperCase().replace(/\s/g, ''));
+                                            if (error) setError(null);
+                                        }}
+                                        placeholder="e.g. 12345678"
+                                        required
+                                        className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl font-black tracking-widest text-slate-900 dark:text-white transition-all text-center uppercase"
+                                    />
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wide">
                                     Date of Birth (DOB) <span className="text-xs font-normal text-slate-400 lowercase">(optional / यदि उपलब्ध हो)</span>
                                 </label>
                                 <input
                                     type="date"
                                     value={dob}
                                     onChange={(e) => setDob(e.target.value)}
-                                    className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-semibold text-center text-slate-900"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-semibold text-center text-slate-900 dark:text-white"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading || !applNum.trim()}
-                                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-black text-lg rounded-xl shadow-lg shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-black text-base sm:text-lg rounded-xl shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mt-4 active:scale-[0.99]"
                             >
                                 {loading ? (
                                     <>
-                                        <svg className="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Fetching Details...
+                                        <span>Fetching Learning Licence...</span>
                                     </>
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">cloud_download</span>
-                                        Get LL PDF ({currentService?.coin_cost ?? 19} Coins)
+                                        <span>Get LL PDF ({displayCoinCost} Coins)</span>
                                     </>
                                 )}
                             </button>
@@ -195,7 +303,7 @@ export default function LearningLicencePdf() {
                         )}
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-8">
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 sm:px-8">
                         <a
                             href="https://sarathi.parivahan.gov.in/sarathiservice/printlearninglicence.do"
                             target="_blank"
@@ -205,9 +313,9 @@ export default function LearningLicencePdf() {
                             <span className="material-symbols-outlined text-sm">open_in_new</span>
                             Official Parivahan Direct Link
                         </a>
-                        <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
-                            <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            {currentService?.coin_cost ?? 19} Coins
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
+                            <span className="material-symbols-outlined text-[15px]">monetization_on</span>
+                            {displayCoinCost} Coins
                         </div>
                     </div>
                 </div>
@@ -215,7 +323,7 @@ export default function LearningLicencePdf() {
                 {/* Result Card */}
                 {result && (
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-5 flex items-center gap-4">
+                        <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 p-5 flex items-center gap-4">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                                 <span className="material-symbols-outlined text-white text-2xl">verified</span>
                             </div>
@@ -224,15 +332,15 @@ export default function LearningLicencePdf() {
                                 <p className="text-white font-black text-xl tracking-widest">{applNum}</p>
                             </div>
                         </div>
-                        
-                        {(result.pdf_url || result.a4_pdf || result.a4 || result.pdf || result.data?.pdf || result.base64 || (result.cards && result.cards[0]?.a4)) && (
+
+                        {hasPdf && (
                             <div className="p-6 border-b border-slate-100 dark:border-slate-800 space-y-3">
                                 <button
                                     onClick={downloadPdf}
-                                    className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all text-base"
+                                    className="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all text-base active:scale-[0.99]"
                                 >
                                     <span className="material-symbols-outlined">download</span>
-                                    Download Learning Licence PDF (Print-Ready)
+                                    <span>Download Learning Licence PDF (Print-Ready)</span>
                                 </button>
                             </div>
                         )}
@@ -280,15 +388,106 @@ export default function LearningLicencePdf() {
                                 </div>
                             </div>
                         )}
-                        
+
                         <div className="p-6 space-y-1">
                             <InfoRow label="Application / LL Number" value={applNum} icon="tag" />
                             <InfoRow label="Date of Birth" value={dob || result.dob || result.data?.dob} icon="calendar_today" />
-                            {result.data?.name && <InfoRow label="Name" value={result.data.name} icon="person" />}
+                            {(result.name || result.data?.name || result.full_name || result.data?.full_name) && (
+                                <InfoRow label="Applicant Name" value={result.name || result.data?.name || result.full_name || result.data?.full_name} icon="person" />
+                            )}
+                            {(result.father_name || result.data?.father_name || result.data?.fatherName) && (
+                                <InfoRow label="Father / Husband Name" value={result.father_name || result.data?.father_name || result.data?.fatherName} icon="family_restroom" />
+                            )}
+                            {(result.ll_no || result.data?.ll_no || result.licence_no || result.data?.licence_no) && (
+                                <InfoRow label="LL Certificate Number" value={result.ll_no || result.data?.ll_no || result.licence_no || result.data?.licence_no} icon="badge" />
+                            )}
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Admin Quick API Settings Modal */}
+            {showAdminModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400">settings</span>
+                                <h3 className="font-black text-lg text-slate-900 dark:text-white">Learning Licence API Config</h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(false)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        {settingMsg && (
+                            <div className={`p-3 rounded-xl text-xs font-bold ${
+                                settingMsg.type === 'success'
+                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                    : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800'
+                            }`}>
+                                {settingMsg.text}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSaveAdminSettings} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                                    API Endpoint URL
+                                </label>
+                                <input
+                                    type="url"
+                                    value={adminApiUrl}
+                                    onChange={(e) => setAdminApiUrl(e.target.value)}
+                                    placeholder="https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php"
+                                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    required
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Default: <code className="text-indigo-600 dark:text-indigo-400 font-mono">https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                                    API Key (Good-API-Point)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiKey}
+                                    onChange={(e) => setAdminApiKey(e.target.value)}
+                                    placeholder="Enter your partner API key"
+                                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Khali chhodne par Master Good-API-Point key use hogi.
+                                </p>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAdminModal(false)}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingSettings}
+                                    className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors disabled:opacity-50"
+                                >
+                                    {savingSettings ? 'Saving...' : 'Save Settings'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

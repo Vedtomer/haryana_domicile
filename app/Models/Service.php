@@ -362,6 +362,12 @@ class Service extends Model
             'index' => '/utilities/learning-licence-pdf',
             'create' => '/utilities/learning-licence-pdf',
         ],
+        'learning_license_pdf' => [
+            'label' => 'Learning Licence Download',
+            'model' => null,
+            'index' => '/utilities/learning-licence-pdf',
+            'create' => '/utilities/learning-licence-pdf',
+        ],
         'voter_mobile_update' => [
             'label' => 'Voter Mobile Update Instant',
             'model' => null,

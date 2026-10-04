@@ -376,8 +376,8 @@ export default function Edit({ settings = {} }) {
                                             {renderKeyInput('vahan_rc_pdf_key', 'RC PDF API Key (Optional override)', 'Khali chhodne par Master Nexus Key use hogi')}
                                         </div>
                                         <div className="space-y-3">
-                                            {renderUrlInput('vahan_learning_licence_url', 'Learning Licence PDF Download URL', 'https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php')}
-                                            {renderKeyInput('vahan_learning_licence_key', 'Learning Licence API Key (Optional override)', 'Khali chhodne par Master Nexus Key use hogi')}
+                                            {renderUrlInput('vahan_learning_licence_url', 'Learning Licence PDF Download URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php')}
+                                            {renderKeyInput('vahan_learning_licence_key', 'Learning Licence API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                         </div>
                                     </div>
                                 </div>

@@ -9,20 +9,51 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class LearningLicenceController extends Controller
 {
+    public function index(Request $request)
+    {
+        $service = Service::where('slug', 'learning-licence-pdf')
+            ->orWhere('slug', 'learning-license-pdf')
+            ->first();
+        $user = auth()->user();
+
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+
+        $coinCost = $service ? (int) $service->coin_cost : 19;
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        return Inertia::render('Utilities/LearningLicencePdf', [
+            'service'        => $service,
+            'currentService' => $service,
+            'coinCost'       => $coinCost,
+            'isAdmin'        => (bool) $isStaff,
+            'apiUrl'         => $isStaff ? Setting::get('vahan_learning_licence_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php') : null,
+            'apiKey'         => $isStaff ? Setting::get('vahan_learning_licence_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')) : null,
+        ]);
+    }
+
     public function search(Request $request)
     {
         $request->validate([
             'applNum' => ['required', 'string']
+        ], [
+            'applNum.required' => 'Please enter a valid Application Number.'
         ]);
 
-        $service = Service::where('slug', 'learning-licence-pdf')->first();
+        $service = Service::where('slug', 'learning-licence-pdf')
+            ->orWhere('slug', 'learning-license-pdf')
+            ->first();
         $user = auth()->user();
 
-        $coinCost = $service ? $service->coin_cost : 19;
-        if ($user->coins < $coinCost && !$user->isAdmin() && !$user->hasRole('super_admin')) {
+        $coinCost = $service ? (int) $service->coin_cost : 19;
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        if (!$isStaff && $user->coins < $coinCost) {
             return response()->json([
                 'success' => false,
                 'message' => "Insufficient coins. This service requires {$coinCost} coins. (Current balance: {$user->coins} coins)"
@@ -32,13 +63,24 @@ class LearningLicenceController extends Controller
         $applNum = strtoupper(trim($request->input('applNum')));
         $dob = trim($request->input('dob', ''));
 
-        $apiKey = trim(Setting::get('vahan_learning_licence_key') ?: (Setting::get('nexus_api_key') ?: config('services.nexus.api_key', env('NEXUS_API_KEY', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'))));
-        $baseUrl = trim(Setting::get('vahan_learning_licence_url') ?: 'https://nexus-dashboard.space/api/v1/vahan_service_api/learning_license_pdf.php');
+        $baseUrl = trim(Setting::get('vahan_learning_licence_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php'));
+        if (empty($baseUrl) || str_contains($baseUrl, 'nexus-dashboard.space')) {
+            $baseUrl = 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php';
+        }
 
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{applNum}')) {
+        // Clean base URL if user pasted example query string
+        if (str_contains($baseUrl, 'apiKey=ENTER_API_KEY') || str_contains($baseUrl, 'applNum=ENTER_APPLICATION_NUMBER')) {
+            $baseUrl = explode('?', $baseUrl)[0];
+        }
+
+        $apiKey = trim(Setting::get('vahan_learning_licence_key')
+            ?: (Setting::get('goodapi_api_key')
+            ?: '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
+
+        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{applNum}') || str_contains($baseUrl, '{application_number}')) {
             $url = str_replace(
-                ['{apiKey}', '{applNum}', '{dob}'],
-                [urlencode($apiKey), urlencode($applNum), urlencode($dob)],
+                ['{apiKey}', '{applNum}', '{application_number}', '{dob}'],
+                [urlencode($apiKey), urlencode($applNum), urlencode($applNum), urlencode($dob)],
                 $baseUrl
             );
         } else {
@@ -57,15 +99,15 @@ class LearningLicenceController extends Controller
             $response = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept'     => 'application/json, application/pdf, */*',
-            ])->connectTimeout(10)->timeout(30)->get($url);
+            ])->connectTimeout(10)->timeout(45)->get($url);
 
             $contentType = $response->header('Content-Type') ?? '';
 
-            // Handle raw PDF binary response
+            // 1. Handle raw PDF binary response from provider
             if (str_contains($contentType, 'application/pdf') || str_starts_with($response->body(), '%PDF')) {
                 $pdfBase64 = base64_encode($response->body());
 
-                if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                if (!$isStaff && $coinCost > 0) {
                     $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Learning Licence Download: ' . $applNum);
                 }
 
@@ -74,7 +116,7 @@ class LearningLicenceController extends Controller
                     'service_id'    => $service ? $service->id : null,
                     'service_name'  => $service ? $service->name : 'Learning Licence Download',
                     'input_data'    => ['Application Number' => $applNum, 'DOB' => $dob],
-                    'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                    'coins_charged' => $isStaff ? 0 : $coinCost,
                     'status'        => ServiceRequest::STATUS_COMPLETED,
                     'completed_at'  => now(),
                 ]);
@@ -82,9 +124,10 @@ class LearningLicenceController extends Controller
                 return response()->json([
                     'success' => true,
                     'data'    => [
-                        'pdf'      => $pdfBase64,
-                        'appl_num' => $applNum,
-                        'dob'      => $dob,
+                        'pdf'        => $pdfBase64,
+                        'pdf_base64' => $pdfBase64,
+                        'appl_num'   => $applNum,
+                        'dob'        => $dob,
                     ],
                     'message' => 'Learning Licence PDF downloaded successfully.',
                 ]);
@@ -93,15 +136,20 @@ class LearningLicenceController extends Controller
             $data = $response->json();
 
             if (is_array($data)) {
-                $status = $data['Status'] ?? $data['status'] ?? null;
-                $isSuccess = ($status === 'Success' || $status === 'success' || $status === true || $status === 1);
+                $status = $data['Status'] ?? ($data['status'] ?? null);
+                $statusCode = $data['StatusCode'] ?? ($data['statusCode'] ?? null);
+                $isSuccess = ($status === 'Success' || $status === 'success' || $status === true || (int) $statusCode === 100);
 
-                $hasPdfData = isset($data['pdf_url']) || isset($data['file_url']) || isset($data['pdf'])
-                    || isset($data['base64']) || isset($data['a4_pdf']) || isset($data['a4'])
-                    || (isset($data['data']['pdf']) || isset($data['data']['pdf_url']) || isset($data['data']['file_url']) || isset($data['data']['base64']));
+                $pdfUrl = $data['pdf_url'] ?? ($data['file_url'] ?? ($data['download_url'] ?? ($data['url'] ?? ($data['a4_pdf'] ?? ($data['a4'] ?? null)))));
+                $pdfBase64 = $data['pdf'] ?? ($data['base64'] ?? ($data['pdf_base64'] ?? null));
 
-                if ($isSuccess || $hasPdfData) {
-                    if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+                if (!$pdfUrl && !$pdfBase64 && isset($data['data']) && is_array($data['data'])) {
+                    $pdfUrl = $data['data']['pdf_url'] ?? ($data['data']['file_url'] ?? ($data['data']['download_url'] ?? ($data['data']['url'] ?? ($data['data']['a4_pdf'] ?? null))));
+                    $pdfBase64 = $data['data']['pdf'] ?? ($data['data']['base64'] ?? ($data['data']['pdf_base64'] ?? null));
+                }
+
+                if ($isSuccess || !empty($pdfUrl) || !empty($pdfBase64)) {
+                    if (!$isStaff && $coinCost > 0) {
                         $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Learning Licence Download: ' . $applNum);
                     }
 
@@ -110,7 +158,7 @@ class LearningLicenceController extends Controller
                         'service_id'    => $service ? $service->id : null,
                         'service_name'  => $service ? $service->name : 'Learning Licence Download',
                         'input_data'    => ['Application Number' => $applNum, 'DOB' => $dob],
-                        'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+                        'coins_charged' => $isStaff ? 0 : $coinCost,
                         'status'        => ServiceRequest::STATUS_COMPLETED,
                         'completed_at'  => now(),
                     ]);
@@ -123,7 +171,7 @@ class LearningLicenceController extends Controller
                 }
 
                 // If API returned a specific message
-                $apiMsg = $data['message'] ?? $data['msg'] ?? null;
+                $apiMsg = $data['message'] ?? ($data['msg'] ?? null);
                 if ($apiMsg) {
                     return response()->json([
                         'success' => false,
@@ -140,7 +188,7 @@ class LearningLicenceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::warning('Nexus LL API Exception', ['error' => $e->getMessage()]);
+            Log::warning('Good-API-Point LL API Exception', ['error' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
@@ -150,20 +198,44 @@ class LearningLicenceController extends Controller
         }
     }
 
-    /**
-     * Deduct coins when frontend calls API directly if needed
-     */
+    public function updateApi(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || (!$user->isAdmin() && !$user->hasRole('admin') && !$user->hasRole('super_admin') && !in_array($user->type, ['admin', 'super_admin']))) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'api_url' => 'required|url',
+            'api_key' => 'nullable|string',
+        ]);
+
+        Setting::set('vahan_learning_licence_url', trim($request->api_url));
+        if ($request->filled('api_key')) {
+            Setting::set('vahan_learning_licence_key', trim($request->api_key));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Learning Licence API settings updated successfully!',
+            'apiUrl'  => Setting::get('vahan_learning_licence_url'),
+            'apiKey'  => Setting::get('vahan_learning_licence_key'),
+        ]);
+    }
+
     public function deductCoins(Request $request)
     {
         $request->validate(['applNum' => ['required', 'string']]);
 
         $service = Service::where('slug', 'learning-licence-pdf')->first();
         $user = auth()->user();
-        $coinCost = $service ? $service->coin_cost : 19;
+        $coinCost = $service ? (int) $service->coin_cost : 19;
         $applNum = strtoupper(trim($request->input('applNum')));
         $dob = trim($request->input('dob', ''));
 
-        if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        if (!$isStaff && $coinCost > 0) {
             if ($user->coins < $coinCost) {
                 return response()->json(['success' => false, 'message' => "Insufficient coins."]);
             }
@@ -175,7 +247,7 @@ class LearningLicenceController extends Controller
             'service_id'    => $service ? $service->id : null,
             'service_name'  => $service ? $service->name : 'Learning Licence Download',
             'input_data'    => ['Application Number' => $applNum, 'DOB' => $dob],
-            'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
+            'coins_charged' => $isStaff ? 0 : $coinCost,
             'status'        => ServiceRequest::STATUS_COMPLETED,
             'completed_at'  => now(),
         ]);

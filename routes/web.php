@@ -524,6 +524,17 @@ Route::get('/migrate-db', function () {
             $output .= "VehicleChallan error: " . $vce->getMessage() . "\n\n";
         }
 
+        // Ensure Learning Licence PDF is configured with Good-API-Point endpoint
+        try {
+            \App\Models\Setting::set('vahan_learning_licence_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php');
+            if (empty(\App\Models\Setting::get('vahan_learning_licence_key'))) {
+                \App\Models\Setting::set('vahan_learning_licence_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== LEARNING LICENCE PDF UPDATED (GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $lle) {
+            $output .= "LearningLicence error: " . $lle->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1754,16 +1765,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/pan-to-uid-advance/search', [\App\Http\Controllers\PanToUidController::class, 'search'])->name('utilities.pan-to-uid-advance.search');
     Route::post('/utilities/pan-to-uid-advance/update-api', [\App\Http\Controllers\PanToUidController::class, 'updateApi'])->name('utilities.pan-to-uid-advance.update-api');
 
-    Route::get('/utilities/learning-licence-pdf', function () {
-        $service = \App\Models\Service::where('slug', 'learning-licence-pdf')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
-        return Inertia::render('Utilities/LearningLicencePdf');
-    })->name('utilities.learning-licence-pdf');
-
+    Route::get('/utilities/learning-licence-pdf', [\App\Http\Controllers\LearningLicenceController::class, 'index'])->name('utilities.learning-licence-pdf');
+    Route::get('/utilities/learning-license-pdf', [\App\Http\Controllers\LearningLicenceController::class, 'index'])->name('utilities.learning-license-pdf');
     Route::post('/utilities/learning-licence-pdf/search', [\App\Http\Controllers\LearningLicenceController::class, 'search'])->name('utilities.learning-licence-pdf.search');
+    Route::post('/utilities/learning-licence-pdf/update-api', [\App\Http\Controllers\LearningLicenceController::class, 'updateApi'])->name('utilities.learning-licence-pdf.update-api');
     Route::post('/utilities/learning-licence-pdf/deduct-coins', [\App\Http\Controllers\LearningLicenceController::class, 'deductCoins'])->name('utilities.learning-licence-pdf.deduct-coins');
 
     Route::get('/utilities/voter-mobile-update', function () {
