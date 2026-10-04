@@ -442,6 +442,21 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(CoinPurchaseRequest::class);
     }
 
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function walletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
+
+    public function paymentOrders()
+    {
+        return $this->hasMany(PaymentOrder::class);
+    }
+
     /**
      * The user who referred this user.
      */

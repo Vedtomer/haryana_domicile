@@ -100,4 +100,13 @@ return [
         'api_key' => env('OPENAI_API_KEY', ''),
     ],
 
+    'payment' => [
+        'create_order_url' => env('PAYMENT_CREATE_ORDER_URL', 'https://paycorex.in/api/v1/create_order.php'),
+        'verify_url'       => env('PAYMENT_VERIFY_URL', 'https://paycorex.in/api/v1/check_order_status.php'),
+        'webhook_url'      => env('PAYMENT_WEBHOOK_URL', ''),
+        'api_key'          => env('PAYMENT_API_KEY', '2d7bcd6c2467d343d9f1110ebd59da51'),
+        'secret'           => env('PAYMENT_SECRET', ''),
+        'merchant_id'      => env('PAYMENT_MERCHANT_ID', '7494945476'),
+    ],
+
 ];

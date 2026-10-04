@@ -644,7 +644,7 @@ export default function Dashboard({
                 /* DASHBOARD OVERVIEW: No services show! Only stats, balance, and customer care */
                 <>
                     {/* 1. Small Compact Welcome Banner */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
                                 <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
@@ -664,6 +664,16 @@ export default function Dashboard({
                                 </p>
                             </div>
                         </div>
+
+                        {!isAdmin && (
+                            <Link
+                                href="/wallet/add"
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 shrink-0"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">add_card</span>
+                                <span>Add Money</span>
+                            </Link>
+                        )}
                     </div>
 
                     {/* 2. Stat Metric Cards in a row */}
@@ -715,12 +725,12 @@ export default function Dashboard({
                             <StatMetricCard
                                 index={1}
                                 colorTheme="blue"
-                                title="ADD BALANCE"
+                                title="ADD MONEY"
                                 badgeText="INSTANT QR"
-                                value="Add Balance"
-                                subtitle="Instant scan & automatic recharge"
+                                value="Add Money"
+                                subtitle="Instant scan & automatic wallet credit"
                                 icon="add_card"
-                                linkUrl="/admin/coin-requests"
+                                linkUrl="/wallet/add"
                                 isButton={true}
                             />
                             <StatMetricCard

@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             '/p/*/upload',
             'payment/paycorex/callback',
             '/payment/paycorex/callback',
+            'wallet/webhook',
+            '/wallet/webhook',
+            'wallet/callback',
+            '/wallet/callback',
         ]);
 
         $middleware->web(append: [

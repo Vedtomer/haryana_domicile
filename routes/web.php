@@ -1804,6 +1804,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('payment/paycorex/create-order', [\App\Http\Controllers\PaycorexPaymentController::class, 'createOrder'])->name('payment.paycorex.create-order');
         Route::post('payment/paycorex/check-status', [\App\Http\Controllers\PaycorexPaymentController::class, 'checkStatus'])->name('payment.paycorex.check-status');
 
+        // Secure Wallet Add Money routes
+        Route::get('wallet/add', [\App\Http\Controllers\Admin\CoinPurchaseRequestController::class, 'create'])->name('wallet.add');
+        Route::post('wallet/create-order', [\App\Http\Controllers\WalletPaymentController::class, 'createOrder'])->name('wallet.create-order');
+        Route::post('wallet/verify-payment', [\App\Http\Controllers\WalletPaymentController::class, 'verifyPayment'])->name('wallet.verify-payment');
+
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->middleware('admin');
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('admin');
         Route::post('users/{user}/add-coins', [\App\Http\Controllers\Admin\UserController::class, 'addCoins'])->name('users.add-coins')->middleware('admin');
@@ -1961,4 +1966,8 @@ Route::get('/storage/{path}', function ($path) {
 
 // PayCoreX Payment Gateway Redirect Callback
 Route::match(['get', 'post'], '/payment/paycorex/callback', [\App\Http\Controllers\PaycorexPaymentController::class, 'callback'])->name('payment.paycorex.callback');
+
+// Secure Wallet Webhook & Callback
+Route::post('/wallet/webhook', [\App\Http\Controllers\WalletPaymentController::class, 'webhook'])->name('wallet.webhook');
+Route::match(['get', 'post'], '/wallet/callback', [\App\Http\Controllers\WalletPaymentController::class, 'callback'])->name('wallet.callback');
 
