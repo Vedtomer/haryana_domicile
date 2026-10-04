@@ -668,7 +668,7 @@ export default function Dashboard({
 
                     {/* 2. Stat Metric Cards in a row */}
                     {isAdmin ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
                                 index={0}
                                 colorTheme="indigo"
@@ -681,16 +681,6 @@ export default function Dashboard({
                             />
                             <StatMetricCard
                                 index={1}
-                                colorTheme="amber"
-                                title="COIN REQUESTS"
-                                badgeText="PENDING"
-                                value={`${pendingCoins} Pending`}
-                                subtitle="Wallet recharge requests"
-                                icon="monetization_on"
-                                linkUrl="/admin/coin-requests"
-                            />
-                            <StatMetricCard
-                                index={2}
                                 colorTheme="purple"
                                 title="SERVICE PENDING REQUEST"
                                 badgeText="ORDERS"

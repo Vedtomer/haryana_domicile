@@ -19,6 +19,7 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
     const targetWhatsapp = (whatsappNumber || sharedWhatsapp || '380630323112').replace(/[^0-9]/g, '');
 
     const [amount, setAmount] = useState('100');
+    const [pnrNumber, setPnrNumber] = useState('');
     const [orderLoading, setOrderLoading] = useState(false);
     const [orderError, setOrderError] = useState(null);
     const [onlineOrder, setOnlineOrder] = useState(null);
@@ -106,11 +107,13 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
         setOrderError(null);
         setOnlineOrder(null);
         setVerifyNotice(null);
-        setVerifyUtr('');
+        setVerifyUtr(pnrNumber.trim());
 
         try {
             const res = await axios.post('/wallet/create-order', {
                 amount: numAmount,
+                pnr_number: pnrNumber.trim(),
+                utr_number: pnrNumber.trim(),
             });
 
             if (res.data && res.data.success) {
@@ -142,6 +145,8 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
                 order_id: onlineOrder.order_id,
                 transaction_id: clean,
                 utr: clean,
+                pnr: clean,
+                pnr_number: clean,
             });
 
             if (res.data && res.data.status === 'SUCCESS' && res.data.verified) {
@@ -246,30 +251,31 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
                                 </p>
                             </div>
 
-                            {/* Quick Select Amount Pills */}
+                            {/* PNR / UTR Number Line */}
                             <div>
-                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                                    Quick Select / तुरंत चुनें:
-                                </p>
-                                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                                    {QUICK_AMOUNTS.map((amt) => (
-                                        <button
-                                            key={amt}
-                                            type="button"
-                                            onClick={() => {
-                                                setAmount(String(amt));
-                                                setOrderError(null);
-                                            }}
-                                            className={`py-2 px-3 rounded-xl border text-xs font-black transition-all cursor-pointer ${
-                                                String(amount) === String(amt)
-                                                    ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-600 shadow-sm'
-                                                    : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-300 hover:bg-slate-50'
-                                            }`}
-                                        >
-                                            ₹{amt}
-                                        </button>
-                                    ))}
+                                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2 flex items-center justify-between">
+                                    <span>PNR Number / UTR No. (पीएनआर / यूटीआर नंबर)</span>
+                                    <span className="text-[10px] text-slate-400 font-semibold lowercase">(optional if paying now via QR)</span>
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[20px]">
+                                        tag
+                                    </span>
+                                    <input
+                                        type="text"
+                                        maxLength="30"
+                                        value={pnrNumber}
+                                        onChange={(e) => {
+                                            setPnrNumber(e.target.value.trim());
+                                            setOrderError(null);
+                                        }}
+                                        placeholder="Enter PNR / 12-Digit UTR Number (e.g. 428901849204)"
+                                        className="w-full pl-11 pr-4 py-3 text-sm font-mono font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:border-blue-600 focus:bg-white focus:outline-none transition-all"
+                                    />
                                 </div>
+                                <p className="text-[11px] text-slate-400 mt-1 font-medium">
+                                    UPI ऐप (GPay, PhonePe, Paytm) से भुगतान के बाद प्राप्त 12-अंकों का PNR / UTR नंबर यहाँ दर्ज करें। यह नंबर सीधे एडमिन को दिखाई देगा।
+                                </p>
                             </div>
 
                             {/* Error notice if any */}
@@ -392,12 +398,12 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
                                 {/* UTR Fast Track Verification Input */}
                                 <div className="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-2.5">
                                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                                        Paid? Verify With 12-Digit UTR / UPI Ref:
+                                        Paid? Verify With 12-Digit PNR / UTR Number:
                                     </label>
                                     <div className="flex gap-2">
                                         <input
                                             type="text"
-                                            maxLength="18"
+                                            maxLength="30"
                                             value={verifyUtr}
                                             onChange={(e) => setVerifyUtr(e.target.value.trim())}
                                             placeholder="e.g. 428901849204"
@@ -413,7 +419,7 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
                                         </button>
                                     </div>
                                     <p className="text-[11px] text-slate-400">
-                                        Google Pay, PhonePe या Paytm हिस्ट्री से 12 डिजिट का UPI Ref / UTR नंबर दर्ज करें।
+                                        Google Pay, PhonePe या Paytm हिस्ट्री से 12 डिजिट का PNR / UTR नंबर दर्ज करें।
                                     </p>
 
                                     {verifyNotice && (
@@ -443,7 +449,7 @@ export default function Create({ packages = [], myRequests = [], userCoins = 0, 
                                 <thead className="bg-slate-50 dark:bg-slate-800/50">
                                     <tr>
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Amount</th>
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Order ID / UTR</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Order ID / PNR</th>
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
                                         <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
                                     </tr>

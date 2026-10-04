@@ -40,6 +40,7 @@ class WalletPaymentController extends Controller
         ]);
 
         $amount = (float) $request->input('amount');
+        $pnrNumber = trim((string) ($request->input('pnr_number') ?: $request->input('utr_number') ?: $request->input('pnr', '')));
 
         // Generate cryptographically unique Order ID
         $orderId = 'WAL_' . $user->id . '_' . time() . '_' . strtoupper(Str::random(6));
@@ -49,6 +50,7 @@ class WalletPaymentController extends Controller
             'order_id'            => $orderId,
             'user_id'             => $user->id,
             'requested_amount'    => $amount,
+            'transaction_id'      => $pnrNumber ?: null,
             'payment_status'      => PaymentOrder::STATUS_PENDING,
             'verification_status' => PaymentOrder::VERIFY_UNVERIFIED,
             'payment_gateway'     => 'paycorex',
@@ -60,6 +62,7 @@ class WalletPaymentController extends Controller
             'order_id'           => $orderId,
             'package_amount'     => (int) $amount,
             'coins_requested'    => (int) $amount,
+            'utr_number'         => $pnrNumber ?: null,
             'gateway'            => 'paycorex',
             'status'             => CoinPurchaseRequest::STATUS_PENDING,
             'payment_screenshot' => null,
@@ -101,7 +104,7 @@ class WalletPaymentController extends Controller
         }
 
         $orderId = trim((string) $request->input('order_id', ''));
-        $transactionId = trim((string) ($request->input('transaction_id') ?: $request->input('utr', '')));
+        $transactionId = trim((string) ($request->input('transaction_id') ?: $request->input('utr') ?: $request->input('pnr') ?: $request->input('pnr_number', '')));
 
         if (!$orderId) {
             return response()->json(['status' => 'FAILED', 'verified' => false, 'message' => 'Order ID is required'], 400);
@@ -110,6 +113,11 @@ class WalletPaymentController extends Controller
         $order = PaymentOrder::where('order_id', $orderId)->first();
         if (!$order) {
             return response()->json(['status' => 'FAILED', 'verified' => false, 'message' => 'Order not found'], 404);
+        }
+
+        if ($transactionId) {
+            $order->update(['transaction_id' => $transactionId]);
+            CoinPurchaseRequest::where('order_id', $orderId)->update(['utr_number' => $transactionId]);
         }
 
         // Idempotency: If already credited, return current state immediately without duplicate crediting

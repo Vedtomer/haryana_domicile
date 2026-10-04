@@ -112,6 +112,14 @@ function ApproveModal({ request, onConfirm, onCancel }) {
                         </div>
                     </div>
 
+                    {/* PNR / UTR Number */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-500 uppercase">PNR / UTR Number:</span>
+                        <span className="font-mono font-black text-sm text-blue-700 bg-white px-3 py-1 rounded-lg border border-slate-200 select-all">
+                            {request.utr_number || request.order_id || 'Not Provided'}
+                        </span>
+                    </div>
+
                     {/* Screenshot */}
                     {request.payment_screenshot && (
                         <div>
@@ -245,8 +253,8 @@ export default function Index({ requests, isAdmin, canAction }) {
                         <thead>
                             <tr className="bg-slate-50">
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Package</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Coins</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">PNR / UTR</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Coins &amp; Amount</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Screenshot</th>
                                 <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
                                 {isAdmin && activeTab === 'pending' && canAction && (
@@ -278,17 +286,30 @@ export default function Index({ requests, isAdmin, canAction }) {
                                                 </div>
                                             </td>
 
-                                            {/* Package */}
+                                            {/* PNR / UTR */}
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="text-sm font-bold text-slate-700">₹{req.package_amount}</span>
+                                                {req.utr_number ? (
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-black bg-blue-50 text-blue-700 border border-blue-200 select-all tracking-wider">
+                                                        {req.utr_number}
+                                                    </span>
+                                                ) : req.order_id ? (
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200 select-all">
+                                                        {req.order_id}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400 italic">No PNR</span>
+                                                )}
                                             </td>
 
-                                            {/* Coins */}
+                                            {/* Coins & Amount */}
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                    {req.coins_requested}
-                                                </span>
+                                                <div className="flex flex-col">
+                                                    <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        {req.coins_requested} Coins
+                                                    </span>
+                                                    <span className="text-xs font-bold text-slate-500">₹{req.package_amount}</span>
+                                                </div>
                                             </td>
 
                                             {/* Screenshot */}

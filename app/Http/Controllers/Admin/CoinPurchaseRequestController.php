@@ -79,16 +79,18 @@ class CoinPurchaseRequestController extends Controller
             'package_amount'    => 'required|integer|min:1',
             'coins_requested'   => 'required|integer|min:1',
             'utr_number'        => 'nullable|string|max:100',
+            'pnr_number'        => 'nullable|string|max:100',
             'payment_screenshot'=> 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:4096',
         ]);
 
         $path = $request->file('payment_screenshot')->store('coin-screenshots', 'public');
+        $pnr = $data['pnr_number'] ?? ($data['utr_number'] ?? null);
 
         $coinRequest = CoinPurchaseRequest::create([
             'user_id'            => auth()->id(),
             'package_amount'     => $data['package_amount'],
             'coins_requested'    => $data['coins_requested'],
-            'utr_number'         => $data['utr_number'] ?? null,
+            'utr_number'         => $pnr,
             'payment_screenshot' => $path,
             'status'             => CoinPurchaseRequest::STATUS_PENDING,
         ]);
