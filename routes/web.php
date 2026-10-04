@@ -138,6 +138,29 @@ Route::get('/migrate-db', function () {
             $output .= "AadharToNpciStatus error: " . $npe->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To Name is updated with 19 coins in services table
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-name'],
+                [
+                    'name' => 'Aadhar To Name',
+                    'description' => 'Instantly retrieve beneficiary Name, local name and linked mobile number using 12-digit Aadhaar number.',
+                    'icon' => '🪪',
+                    'coin_cost' => 19,
+                    'kind' => 'module',
+                    'module_key' => 'aadhar_to_name',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 47,
+                ]
+            );
+            $output .= "=== AADHAR TO NAME UPSERTED ===\n\n";
+        } catch (\Throwable $ane) {
+            $output .= "AadharToName error: " . $ane->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1210,10 +1233,18 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
-        return Inertia::render('Utilities/AadharToName');
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+        return Inertia::render('Utilities/AadharToName', [
+            'coinCost' => $service ? (int) $service->coin_cost : 19,
+            'service' => $service,
+            'isAdmin' => (bool) $isStaff,
+            'apiUrl' => $isStaff ? \App\Models\Setting::get('aadhar_to_name_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php') : null,
+            'apiKey' => $isStaff ? \App\Models\Setting::get('aadhar_to_name_api_key', \App\Models\Setting::get('aadhar_to_npci_api_key', \App\Models\Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'))) : null,
+        ]);
     })->name('utilities.aadhar-to-name');
 
     Route::post('/utilities/aadhar-to-name/search', [\App\Http\Controllers\AadharToNameController::class, 'search'])->name('utilities.aadhar-to-name.search');
+    Route::post('/utilities/aadhar-to-name/update-api', [\App\Http\Controllers\AadharToNameController::class, 'updateApi'])->name('utilities.aadhar-to-name.update-api');
 
     Route::get('/utilities/aadhar-to-npci-status', [\App\Http\Controllers\AadharToNpciController::class, 'index'])->name('utilities.aadhar-to-npci-status');
     Route::post('/utilities/aadhar-to-npci-status/search', [\App\Http\Controllers\AadharToNpciController::class, 'search'])->name('utilities.aadhar-to-npci-status.search');
