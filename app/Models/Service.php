@@ -314,6 +314,12 @@ class Service extends Model
             'index' => '/utilities/pan-to-aadhar-unmasked',
             'create' => '/utilities/pan-to-aadhar-unmasked',
         ],
+        'pan_to_aadhar' => [
+            'label' => 'PAN To Aadhaar Unmasked Instant',
+            'model' => null,
+            'index' => '/utilities/pan-to-aadhar-unmasked',
+            'create' => '/utilities/pan-to-aadhar-unmasked',
+        ],
         'pan_to_uid_advance' => [
             'label' => 'Pan To Uid Advance Instant',
             'model' => null,

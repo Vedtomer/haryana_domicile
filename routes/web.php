@@ -403,6 +403,31 @@ Route::get('/migrate-db', function () {
             $output .= "PanFullDetails error: " . $pfe->getMessage() . "\n\n";
         }
 
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-to-aadhar-unmasked'],
+                [
+                    'name' => 'PAN To Aadhaar Unmasked Instant',
+                    'description' => 'Get unmasked Aadhaar details instantly using PAN, Name and DOB.',
+                    'icon' => 'badge',
+                    'coin_cost' => 99,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'pan_to_aadhar_unmasked',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 12,
+                ]
+            );
+            \App\Models\Setting::set('pan_to_aadhar_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php');
+            \App\Models\Setting::set('nexus_pan_to_aadhar_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php');
+            \App\Models\Setting::set('pan_to_aadhar_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== PAN TO AADHAAR UNMASKED UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $pae) {
+            $output .= "PanToAadhar error: " . $pae->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1595,16 +1620,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/pan-full-details-instant', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-details-instant');
     Route::post('/utilities/pan-full-details-instant/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
 
-    Route::get('/utilities/pan-to-aadhar-unmasked', function () {
-        $service = \App\Models\Service::where('slug', 'pan-to-aadhar-unmasked')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
-        return Inertia::render('Utilities/PanToAadhar');
-    })->name('utilities.pan-to-aadhar-unmasked');
-
+    Route::get('/utilities/pan-to-aadhar-unmasked', [\App\Http\Controllers\PanToAadharController::class, 'index'])->name('utilities.pan-to-aadhar-unmasked');
     Route::post('/utilities/pan-to-aadhar-unmasked/search', [\App\Http\Controllers\PanToAadharController::class, 'search'])->name('utilities.pan-to-aadhar-unmasked.search');
+    Route::post('/utilities/pan-to-aadhar-unmasked/update-api', [\App\Http\Controllers\PanToAadharController::class, 'updateApi'])->name('utilities.pan-to-aadhar-unmasked.update-api');
+
+    Route::get('/utilities/pan-to-aadhar', [\App\Http\Controllers\PanToAadharController::class, 'index'])->name('utilities.pan-to-aadhar');
+    Route::post('/utilities/pan-to-aadhar/search', [\App\Http\Controllers\PanToAadharController::class, 'search'])->name('utilities.pan-to-aadhar.search');
+    Route::post('/utilities/pan-to-aadhar/update-api', [\App\Http\Controllers\PanToAadharController::class, 'updateApi'])->name('utilities.pan-to-aadhar.update-api');
 
     Route::get('/utilities/pan-to-uid-advance', function () {
         $service = \App\Models\Service::where('slug', 'pan-to-uid-advance')->first();
