@@ -184,7 +184,7 @@ export const SERVICE_CATEGORIES = [
         name: 'PAN Card Services',
         hindiName: 'पैन कार्ड सेवाएं',
         shortName: 'PAN Card',
-        description: 'Manual PAN card maker, PAN to Aadhaar, search unmasked & NSDL/UTI PVC',
+        description: 'Manual PAN card maker, PAN to Aadhaar, PAN to GST, search unmasked & NSDL/UTI PVC',
         color: 'from-cyan-500 to-blue-600',
         border: 'border-cyan-400 dark:border-cyan-500',
         badgeBg: 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border-cyan-200/70 dark:border-cyan-800/60',
@@ -539,7 +539,9 @@ export function getServiceCategory(service) {
     // 15. PAN Card Services
     if (
         (text.includes('pan') && !text.includes('company')) ||
-        slug.includes('pan')
+        slug.includes('pan') ||
+        slug.includes('gst') ||
+        text.includes('gst')
     ) {
         return SERVICE_CATEGORIES.find(c => c.id === 'pan');
     }

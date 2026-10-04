@@ -320,6 +320,12 @@ class Service extends Model
             'index' => '/utilities/pan-to-aadhar-unmasked',
             'create' => '/utilities/pan-to-aadhar-unmasked',
         ],
+        'pan_to_gst' => [
+            'label' => 'PAN To GST Number Instant',
+            'model' => null,
+            'index' => '/utilities/pan-to-gst',
+            'create' => '/utilities/pan-to-gst',
+        ],
         'pan_to_uid_advance' => [
             'label' => 'Pan To Uid Advance Instant',
             'model' => null,

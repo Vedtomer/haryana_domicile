@@ -428,6 +428,30 @@ Route::get('/migrate-db', function () {
             $output .= "PanToAadhar error: " . $pae->getMessage() . "\n\n";
         }
 
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-to-gst'],
+                [
+                    'name' => 'PAN To GST Number Instant',
+                    'description' => 'Find all GST numbers, business legal names and registration details using PAN.',
+                    'icon' => 'domain',
+                    'coin_cost' => 19,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'pan_to_gst',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 56,
+                ]
+            );
+            \App\Models\Setting::set('pan_to_gst_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_gst.php');
+            \App\Models\Setting::set('pan_to_gst_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== PAN TO GST UPSERTED (19 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $pge) {
+            $output .= "PanToGst error: " . $pge->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1627,6 +1651,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/pan-to-aadhar', [\App\Http\Controllers\PanToAadharController::class, 'index'])->name('utilities.pan-to-aadhar');
     Route::post('/utilities/pan-to-aadhar/search', [\App\Http\Controllers\PanToAadharController::class, 'search'])->name('utilities.pan-to-aadhar.search');
     Route::post('/utilities/pan-to-aadhar/update-api', [\App\Http\Controllers\PanToAadharController::class, 'updateApi'])->name('utilities.pan-to-aadhar.update-api');
+
+    Route::get('/utilities/pan-to-gst', [\App\Http\Controllers\PanToGstController::class, 'index'])->name('utilities.pan-to-gst');
+    Route::post('/utilities/pan-to-gst/search', [\App\Http\Controllers\PanToGstController::class, 'search'])->name('utilities.pan-to-gst.search');
+    Route::post('/utilities/pan-to-gst/update-api', [\App\Http\Controllers\PanToGstController::class, 'updateApi'])->name('utilities.pan-to-gst.update-api');
 
     Route::get('/utilities/pan-to-uid-advance', function () {
         $service = \App\Models\Service::where('slug', 'pan-to-uid-advance')->first();
