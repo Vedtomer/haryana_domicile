@@ -374,6 +374,8 @@ export function getServiceCategory(service) {
         moduleKey === 'ration_card_pdf' ||
         slug === 'ration-to-aadhar-all-state' ||
         moduleKey === 'ration_to_aadhar_all_state' ||
+        slug === 'ration-to-aadhar-up' ||
+        moduleKey === 'ration_to_aadhar_up' ||
         slug.includes('ration') ||
         slug.includes('rasan') ||
         text.includes('ration') ||

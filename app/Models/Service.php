@@ -231,6 +231,13 @@ class Service extends Model
             'index' => '/utilities/ration-to-aadhar-all-state',
             'create' => '/utilities/ration-to-aadhar-all-state',
         ],
+        'ration_to_aadhar_up' => [
+            'label' => 'Ration To Aadhar Find UP',
+            'icon' => 'verified_user',
+            'model' => null,
+            'index' => '/utilities/ration-to-aadhar-up',
+            'create' => '/utilities/ration-to-aadhar-up',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,
