@@ -70,6 +70,8 @@ export default function Edit({ settings = {} }) {
         ration_to_aadhar_all_state_api_key: settings.ration_to_aadhar_all_state_api_key || '',
         ration_to_aadhar_up_api_url: settings.ration_to_aadhar_up_api_url || '',
         ration_to_aadhar_up_api_key: settings.ration_to_aadhar_up_api_key || '',
+        ration_advance_details_api_url: settings.ration_advance_details_api_url || '',
+        ration_advance_details_api_key: settings.ration_advance_details_api_key || '',
         aadhar_update_api_key: settings.aadhar_update_api_key || '',
         aadhar_update_mobile_update_url: settings.aadhar_update_mobile_update_url || '',
         aadhar_update_dob_change_url: settings.aadhar_update_dob_change_url || '',
@@ -589,6 +591,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('ration_to_aadhar_up_api_url', 'Ration To Aadhar UP Endpoint URL', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_up.php')}
                                         {renderKeyInput('ration_to_aadhar_up_api_key', 'Ration To Aadhar UP API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Ration Advance Details (Good-API-Point) */}
+                                <div className="p-4 bg-amber-50/40 dark:bg-amber-950/20 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                                            Ration Advanse Details API (UP Ration Advance & PDF)
+                                        </h4>
+                                        <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('ration_advance_details_api_url', 'Ration Advance Details Endpoint URL', 'https://good-api-point.com/apis_partner/v1/ration_card_api/up_ration_details.php')}
+                                        {renderKeyInput('ration_advance_details_api_key', 'Ration Advance Details API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 

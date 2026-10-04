@@ -238,6 +238,20 @@ class Service extends Model
             'index' => '/utilities/ration-to-aadhar-up',
             'create' => '/utilities/ration-to-aadhar-up',
         ],
+        'ration_advance_details' => [
+            'label' => 'Ration Advanse Details',
+            'icon' => 'receipt_long',
+            'model' => null,
+            'index' => '/utilities/ration-advance-details',
+            'create' => '/utilities/ration-advance-details',
+        ],
+        'ration_advanse_details' => [
+            'label' => 'Ration Advanse Details',
+            'icon' => 'receipt_long',
+            'model' => null,
+            'index' => '/utilities/ration-advance-details',
+            'create' => '/utilities/ration-advance-details',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,

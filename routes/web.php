@@ -621,6 +621,33 @@ Route::get('/migrate-db', function () {
             $output .= "RcPdfServer2 error: " . $rpe2->getMessage() . "\n\n";
         }
 
+        // Ensure Ration Advance Details is configured with 39 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'ration-advance-details'],
+                [
+                    'name' => 'Ration Advanse Details',
+                    'description' => 'UP Ration Card Advance Details & Official PDF Download.',
+                    'icon' => 'receipt_long',
+                    'coin_cost' => 39,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'ration_advance_details',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 63,
+                ]
+            );
+            \App\Models\Setting::set('ration_advance_details_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/up_ration_details.php');
+            if (empty(\App\Models\Setting::get('ration_advance_details_api_key'))) {
+                \App\Models\Setting::set('ration_advance_details_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== RATION ADVANCE DETAILS UPSERTED (39 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $rade) {
+            $output .= "RationAdvanceDetails error: " . $rade->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1095,6 +1122,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'rc_pdf_server_2',
             'sort_order' => 18,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'ration-advance-details'],
+        [
+            'name' => 'Ration Advanse Details',
+            'description' => 'UP Ration Card Advance Details & Official PDF Download.',
+            'icon' => 'receipt_long',
+            'coin_cost' => 39,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ration_advance_details',
+            'sort_order' => 19,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -1963,6 +2006,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/ration-to-aadhar-up', [\App\Http\Controllers\RationToAadharUpController::class, 'index'])->name('utilities.ration-to-aadhar-up');
     Route::post('/utilities/ration-to-aadhar-up/search', [\App\Http\Controllers\RationToAadharUpController::class, 'search'])->name('utilities.ration-to-aadhar-up.search');
     Route::post('/utilities/ration-to-aadhar-up/update-api', [\App\Http\Controllers\RationToAadharUpController::class, 'updateApi'])->name('utilities.ration-to-aadhar-up.update-api');
+
+    Route::get('/utilities/ration-advance-details', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'index'])->name('utilities.ration-advance-details');
+    Route::post('/utilities/ration-advance-details/search', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'search'])->name('utilities.ration-advance-details.search');
+    Route::post('/utilities/ration-advance-details/update-api', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'updateApi'])->name('utilities.ration-advance-details.update-api');
+
+    Route::get('/utilities/ration-advanse-details', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'index'])->name('utilities.ration-advanse-details');
+    Route::post('/utilities/ration-advanse-details/search', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'search'])->name('utilities.ration-advanse-details.search');
+    Route::post('/utilities/ration-advanse-details/update-api', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'updateApi'])->name('utilities.ration-advanse-details.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
