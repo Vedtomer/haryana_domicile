@@ -150,6 +150,8 @@ class ApiSettingController extends Controller
             'mobile_to_info_api_key',
             'aadhar_to_info_api_url',
             'aadhar_to_info_api_key',
+            'aadhar_to_name_api_url',
+            'aadhar_to_name_api_key',
             'aadhar_to_npci_api_url',
             'aadhar_to_npci_api_key',
             'aadhar_update_api_key',

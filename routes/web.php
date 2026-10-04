@@ -156,7 +156,15 @@ Route::get('/migrate-db', function () {
                     'sort_order' => 47,
                 ]
             );
-            $output .= "=== AADHAR TO NAME UPSERTED ===\n\n";
+            \App\Models\Setting::set('aadhar_to_name_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
+            \App\Models\Setting::set('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
+            if (!\App\Models\Setting::get('aadhar_to_name_api_key')) {
+                $syncKey = \App\Models\Setting::get('aadhar_to_npci_api_key') ?: \App\Models\Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386');
+                if ($syncKey) {
+                    \App\Models\Setting::set('aadhar_to_name_api_key', $syncKey);
+                }
+            }
+            $output .= "=== AADHAR TO NAME UPSERTED (URL: " . \App\Models\Setting::get('aadhar_to_name_api_url') . ") ===\n\n";
         } catch (\Throwable $ane) {
             $output .= "AadharToName error: " . $ane->getMessage() . "\n\n";
         }

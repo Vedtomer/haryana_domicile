@@ -44,6 +44,8 @@ export default function Edit({ settings = {} }) {
         // Aadhaar Info & Updates
         aadhar_to_info_api_url: settings.aadhar_to_info_api_url || '',
         aadhar_to_info_api_key: settings.aadhar_to_info_api_key || '',
+        aadhar_to_name_api_url: settings.aadhar_to_name_api_url || '',
+        aadhar_to_name_api_key: settings.aadhar_to_name_api_key || '',
         aadhar_to_npci_api_url: settings.aadhar_to_npci_api_url || '',
         aadhar_to_npci_api_key: settings.aadhar_to_npci_api_key || '',
         aadhar_update_api_key: settings.aadhar_update_api_key || '',
@@ -437,6 +439,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('aadhar_to_npci_api_url', 'NPCI Status Endpoint URL', 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php')}
                                         {renderKeyInput('aadhar_to_npci_api_key', 'NPCI Partner API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Aadhar To Name (Good-API-Point) */}
+                                <div className="p-4 bg-blue-50/40 dark:bg-blue-950/20 rounded-2xl border border-blue-200/60 dark:border-blue-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-blue-900 dark:text-blue-300 uppercase tracking-wider">
+                                            Aadhar To Name Verification API
+                                        </h4>
+                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('aadhar_to_name_api_url', 'Aadhar To Name Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')}
+                                        {renderKeyInput('aadhar_to_name_api_key', 'Aadhar To Name API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 

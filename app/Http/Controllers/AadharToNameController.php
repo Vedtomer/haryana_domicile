@@ -35,7 +35,10 @@ class AadharToNameController extends Controller
         }
 
         $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
-        $baseUrl = trim(Setting::get('aadhar_to_name_api_url') ?: Setting::get('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php'));
+        $baseUrl = trim(Setting::get('aadhar_to_name_api_url') ?: '');
+        if (empty($baseUrl) || str_contains($baseUrl, 'nexus-dashboard.space')) {
+            $baseUrl = 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php';
+        }
         $apiKey = trim(Setting::get('aadhar_to_name_api_key') ?: Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')));
 
         if (empty($apiKey)) {
