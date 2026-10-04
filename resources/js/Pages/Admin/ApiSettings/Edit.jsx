@@ -46,6 +46,8 @@ export default function Edit({ settings = {} }) {
         aadhar_to_info_api_key: settings.aadhar_to_info_api_key || '',
         aadhar_to_name_api_url: settings.aadhar_to_name_api_url || '',
         aadhar_to_name_api_key: settings.aadhar_to_name_api_key || '',
+        aadhar_to_mask_pan_api_url: settings.aadhar_to_mask_pan_api_url || '',
+        aadhar_to_mask_pan_api_key: settings.aadhar_to_mask_pan_api_key || '',
         aadhar_to_npci_api_url: settings.aadhar_to_npci_api_url || '',
         aadhar_to_npci_api_key: settings.aadhar_to_npci_api_key || '',
         aadhar_update_api_key: settings.aadhar_update_api_key || '',
@@ -453,6 +455,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('aadhar_to_name_api_url', 'Aadhar To Name Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')}
                                         {renderKeyInput('aadhar_to_name_api_key', 'Aadhar To Name API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Aadhar To Mask PAN (Good-API-Point) */}
+                                <div className="p-4 bg-amber-50/40 dark:bg-amber-950/20 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                                            Aadhar To Mask PAN Verification API
+                                        </h4>
+                                        <span className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('aadhar_to_mask_pan_api_url', 'Aadhar To Mask PAN Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php')}
+                                        {renderKeyInput('aadhar_to_mask_pan_api_key', 'Aadhar To Mask PAN API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 

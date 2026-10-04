@@ -171,6 +171,37 @@ Route::get('/migrate-db', function () {
             $output .= "AadharToName error: " . $ane->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To Mask PAN is updated in services table
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-mask-pan'],
+                [
+                    'name' => 'Aadhar To Mask PAN',
+                    'description' => 'Instantly retrieve linked Masked PAN Card number using 12-digit Aadhaar number.',
+                    'icon' => '💳',
+                    'coin_cost' => 19,
+                    'kind' => 'module',
+                    'module_key' => 'aadhar_to_mask_pan',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 48,
+                ]
+            );
+            \App\Models\Setting::set('aadhar_to_mask_pan_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
+            \App\Models\Setting::set('nexus_aadhar_to_mask_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
+            if (!\App\Models\Setting::get('aadhar_to_mask_pan_api_key')) {
+                $syncKey = \App\Models\Setting::get('aadhar_to_name_api_key') ?: (\App\Models\Setting::get('aadhar_to_npci_api_key') ?: \App\Models\Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
+                if ($syncKey) {
+                    \App\Models\Setting::set('aadhar_to_mask_pan_api_key', $syncKey);
+                }
+            }
+            $output .= "=== AADHAR TO MASK PAN UPSERTED (URL: " . \App\Models\Setting::get('aadhar_to_mask_pan_api_url') . ") ===\n\n";
+        } catch (\Throwable $ampe) {
+            $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1377,10 +1408,18 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
-        return Inertia::render('Utilities/AadharToMaskPan');
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+        return Inertia::render('Utilities/AadharToMaskPan', [
+            'coinCost' => $service ? (int) $service->coin_cost : 19,
+            'service' => $service,
+            'isAdmin' => (bool) $isStaff,
+            'apiUrl' => $isStaff ? \App\Models\Setting::get('aadhar_to_mask_pan_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php') : null,
+            'apiKey' => $isStaff ? \App\Models\Setting::get('aadhar_to_mask_pan_api_key', \App\Models\Setting::get('aadhar_to_name_api_key', \App\Models\Setting::get('aadhar_to_npci_api_key', \App\Models\Setting::get('nexus_api_key', '')))) : null,
+        ]);
     })->name('utilities.aadhar-to-mask-pan');
 
     Route::post('/utilities/aadhar-to-mask-pan/search', [\App\Http\Controllers\AadharToMaskPanController::class, 'search'])->name('utilities.aadhar-to-mask-pan.search');
+    Route::post('/utilities/aadhar-to-mask-pan/update-api', [\App\Http\Controllers\AadharToMaskPanController::class, 'updateApi'])->name('utilities.aadhar-to-mask-pan.update-api');
 
     Route::get('/utilities/aadhar-to-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-pan')->first();

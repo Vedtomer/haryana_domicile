@@ -2,81 +2,159 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CoinTransaction;
+use App\Models\Service;
+use App\Models\ServiceRequest;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class AadharToMaskPanController extends Controller
 {
     public function search(Request $request)
     {
         $request->validate([
-            'aadhar' => 'required|digits:12'
+            'aadhar' => ['required', 'string', 'regex:/^[0-9]{12}$/']
+        ], [
+            'aadhar.required' => 'Please enter a 12-digit Aadhaar number.',
+            'aadhar.regex' => 'Aadhaar number must be exactly 12 numeric digits.'
         ]);
 
-        $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
+        $service = Service::where('slug', 'aadhar-to-mask-pan')->first();
         $user = auth()->user();
 
-        $coinCost = $service ? $service->coin_cost : 19;
-        if ($user->coins < $coinCost && !$user->isAdmin() && !$user->hasRole('super_admin')) {
-            return response()->json(['success' => false, 'message' => "Insufficient coins. This service requires {$coinCost} coins."]);
+        $coinCost = $service ? (int) $service->coin_cost : 19;
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        if (!$isStaff && $user->coins < $coinCost) {
+            return response()->json([
+                'success' => false,
+                'message' => "Insufficient coins. This service requires {$coinCost} coins. Please recharge your wallet."
+            ]);
         }
 
-        $aadhar = $request->input('aadhar');
-        $baseUrl = trim(\App\Models\Setting::get('nexus_aadhar_to_mask_pan_url') ?: 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_mask_pan.php');
-        $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
+        $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
+        
+        $baseUrl = trim(Setting::get('aadhar_to_mask_pan_api_url') ?: Setting::get('nexus_aadhar_to_mask_pan_url', ''));
+        if (empty($baseUrl) || str_contains($baseUrl, 'nexus-dashboard.space')) {
+            $baseUrl = 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php';
+        }
+
+        $apiKey = trim(Setting::get('aadhar_to_mask_pan_api_key') ?: Setting::get('aadhar_to_name_api_key', Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'))));
+
+        if (empty($apiKey)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
+            ]);
+        }
 
         if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{uid}') || str_contains($baseUrl, '{aadhar}')) {
-            $url = str_replace(['{apiKey}', '{uid}', '{aadhar}'], [urlencode($apiKey), urlencode($aadhar), urlencode($aadhar)], $baseUrl);
+            $url = str_replace(
+                ['{apiKey}', '{uid}', '{aadhar}'],
+                [urlencode($apiKey), urlencode($cleanAadhar), urlencode($cleanAadhar)],
+                $baseUrl
+            );
         } else {
             $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($aadhar);
+            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($cleanAadhar);
         }
 
         try {
-            $response = Http::connectTimeout(5)->timeout(15)->get($url);
+            $response = Http::connectTimeout(8)->timeout(25)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();
 
-                if (isset($data['Status']) && $data['Status'] === 'Success' && isset($data['data']['pan'])) {
-                    if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
-                        $user->deductCoins($coinCost, \App\Models\CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Aadhar To Mask PAN: ' . $aadhar);
+                $isSuccess = (isset($data['Status']) && strtolower($data['Status']) === 'success') ||
+                             (isset($data['StatusCode']) && (int) $data['StatusCode'] === 100);
+
+                $item = $data['data'] ?? [];
+                $pan = is_array($item) ? ($item['pan'] ?? ($item['pan_number'] ?? ($item['masked_pan'] ?? null))) : null;
+                if (!$pan && isset($data['pan'])) {
+                    $pan = $data['pan'];
+                }
+
+                if ($isSuccess && !empty($pan)) {
+                    if (!$isStaff && $coinCost > 0) {
+                        $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, 'Aadhar To Mask PAN: ' . $cleanAadhar);
                     }
 
-                    \App\Models\ServiceRequest::create([
-                        'user_id'       => $user->id,
-                        'service_id'    => $service ? $service->id : null,
-                        'service_name'  => $service ? $service->name : 'Aadhar To Pan Mask',
-                        'input_data'    => ['Aadhar Number' => $aadhar, 'Masked PAN' => $data['data']['pan']],
-                        'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
-                        'status'        => \App\Models\ServiceRequest::STATUS_COMPLETED,
-                        'completed_at'  => now(),
-                    ]);
+                    try {
+                        ServiceRequest::create([
+                            'user_id' => $user->id,
+                            'service_id' => $service ? $service->id : null,
+                            'service_name' => $service ? $service->name : 'Aadhar To Pan Mask',
+                            'input_data' => ['Aadhaar Number' => $cleanAadhar, 'Masked PAN' => $pan],
+                            'coins_charged' => $isStaff ? 0 : $coinCost,
+                            'status' => ServiceRequest::STATUS_COMPLETED,
+                            'completed_at' => now(),
+                        ]);
+                    } catch (\Throwable $logEx) {
+                        Log::error('ServiceRequest create error in AadharToMaskPan: ' . $logEx->getMessage());
+                    }
 
                     return response()->json([
                         'success' => true,
-                        'pan'     => $data['data']['pan'],
-                        'message' => $data['data']['message'] ?? 'PAN found successfully.',
+                        'pan' => $pan,
+                        'data' => $item,
+                        'application_no' => $data['application_no'] ?? ($data['tracking_no'] ?? null),
+                        'transaction_id' => $data['transaction_id'] ?? null,
+                        'checked_at' => now()->format('d M Y, h:i A'),
+                        'message' => $data['message'] ?? 'Masked PAN found successfully.',
                     ]);
                 }
 
-                // API returned failure with a message
+                $errMsg = $data['message'] ?? 'Masked PAN not found for this Aadhaar Number.';
                 return response()->json([
                     'success' => false,
-                    'message' => $data['message'] ?? 'PAN not found for this Aadhar Number.',
+                    'message' => $errMsg
                 ]);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Details not found for this Aadhar Number.',
+                'message' => 'External server returned an error (HTTP ' . $response->status() . '). Please try again later.'
             ]);
 
         } catch (\Exception $e) {
+            Log::error('AadharToMaskPan API communication error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error communicating with the external server.',
+                'message' => 'Error communicating with the external server.'
             ]);
         }
+    }
+
+    public function updateApi(Request $request)
+    {
+        $user = auth()->user();
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+        if (!$isStaff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Only admins can configure API credentials.'
+            ], 403);
+        }
+
+        $request->validate([
+            'api_url' => 'required|url',
+            'api_key' => 'nullable|string',
+        ]);
+
+        Setting::set('aadhar_to_mask_pan_api_url', trim($request->input('api_url')));
+        Setting::set('nexus_aadhar_to_mask_pan_url', trim($request->input('api_url')));
+        
+        if ($request->filled('api_key')) {
+            Setting::set('aadhar_to_mask_pan_api_key', trim($request->input('api_key')));
+            Setting::set('aadhar_to_name_api_key', trim($request->input('api_key')));
+            Setting::set('aadhar_to_npci_api_key', trim($request->input('api_key')));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Aadhar to Mask PAN API settings updated successfully.'
+        ]);
     }
 }
