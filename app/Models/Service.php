@@ -210,6 +210,13 @@ class Service extends Model
             'index' => '/utilities/bihar-ration-card-maker',
             'create' => '/utilities/bihar-ration-card-maker',
         ],
+        'aadhar_to_ration' => [
+            'label' => 'Aadhar To Ration Find',
+            'icon' => 'receipt_long',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-ration',
+            'create' => '/utilities/aadhar-to-ration',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,

@@ -368,6 +368,8 @@ export function getServiceCategory(service) {
 
     // 5. Ration Card Services (User requested: "ration card ka alg colum bana d")
     if (
+        slug === 'aadhar-to-ration' ||
+        moduleKey === 'aadhar_to_ration' ||
         slug.includes('ration') ||
         slug.includes('rasan') ||
         text.includes('ration') ||

@@ -225,6 +225,31 @@ Route::get('/migrate-db', function () {
             $output .= "SimNoToAadhar error: " . $sme->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To Ration Find is configured with 39 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-ration'],
+                [
+                    'name' => 'Aadhar To Ration Find',
+                    'description' => 'Enter 12-digit Aadhaar Number to find Ration Card Number, Member Details & download official Ration Card slip.',
+                    'icon' => 'receipt_long',
+                    'coin_cost' => 39,
+                    'kind' => 'module',
+                    'module_key' => 'aadhar_to_ration',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 50,
+                ]
+            );
+            \App\Models\Setting::set('aadhar_to_ration_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/uid_to_ration_no.php');
+            \App\Models\Setting::set('aadhar_to_ration_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== AADHAR TO RATION FIND UPSERTED (39 COINS) ===\n\n";
+        } catch (\Throwable $atre) {
+            $output .= "AadharToRation error: " . $atre->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1526,6 +1551,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/aadhar-to-pan/search', [\App\Http\Controllers\AadharToPanController::class, 'search'])->name('utilities.aadhar-to-pan.search');
     Route::post('/utilities/aadhar-to-pan/update-api', [\App\Http\Controllers\AadharToPanController::class, 'updateApi'])->name('utilities.aadhar-to-pan.update-api');
+
+    Route::get('/utilities/aadhar-to-ration', [\App\Http\Controllers\AadharToRationController::class, 'index'])->name('utilities.aadhar-to-ration');
+    Route::post('/utilities/aadhar-to-ration/search', [\App\Http\Controllers\AadharToRationController::class, 'search'])->name('utilities.aadhar-to-ration.search');
+    Route::post('/utilities/aadhar-to-ration/download-pdf', [\App\Http\Controllers\AadharToRationController::class, 'downloadPdf'])->name('utilities.aadhar-to-ration.download-pdf');
+    Route::post('/utilities/aadhar-to-ration/update-api', [\App\Http\Controllers\AadharToRationController::class, 'updateApi'])->name('utilities.aadhar-to-ration.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
