@@ -224,6 +224,13 @@ class Service extends Model
             'index' => '/utilities/ration-card-pdf',
             'create' => '/utilities/ration-card-pdf',
         ],
+        'ration_to_aadhar_all_state' => [
+            'label' => 'Ration to Aadhaar Find All State',
+            'icon' => 'badge',
+            'model' => null,
+            'index' => '/utilities/ration-to-aadhar-all-state',
+            'create' => '/utilities/ration-to-aadhar-all-state',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,

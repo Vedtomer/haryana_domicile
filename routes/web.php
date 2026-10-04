@@ -275,6 +275,31 @@ Route::get('/migrate-db', function () {
             $output .= "RationCardPdf error: " . $rcpe->getMessage() . "\n\n";
         }
 
+        // Ensure Ration to Aadhaar Find All State is configured with 119 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'ration-to-aadhar-all-state'],
+                [
+                    'name' => 'Ration to Aadhaar Find All State',
+                    'description' => 'Select State and enter Ration Card Number to retrieve all family members linked Aadhaar UID numbers.',
+                    'icon' => 'badge',
+                    'coin_cost' => 119,
+                    'kind' => 'module',
+                    'module_key' => 'ration_to_aadhar_all_state',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 52,
+                ]
+            );
+            \App\Models\Setting::set('ration_to_aadhar_all_state_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_all.php');
+            \App\Models\Setting::set('ration_to_aadhar_all_state_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== RATION TO AADHAAR ALL STATE UPSERTED (119 COINS) ===\n\n";
+        } catch (\Throwable $rtae) {
+            $output .= "RationToAadharAllState error: " . $rtae->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1585,6 +1610,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/ration-card-pdf', [\App\Http\Controllers\RationCardPdfController::class, 'index'])->name('utilities.ration-card-pdf');
     Route::post('/utilities/ration-card-pdf/download', [\App\Http\Controllers\RationCardPdfController::class, 'download'])->name('utilities.ration-card-pdf.download');
     Route::post('/utilities/ration-card-pdf/update-api', [\App\Http\Controllers\RationCardPdfController::class, 'updateApi'])->name('utilities.ration-card-pdf.update-api');
+
+    Route::get('/utilities/ration-to-aadhar-all-state', [\App\Http\Controllers\RationToAadharAllStateController::class, 'index'])->name('utilities.ration-to-aadhar-all-state');
+    Route::post('/utilities/ration-to-aadhar-all-state/search', [\App\Http\Controllers\RationToAadharAllStateController::class, 'search'])->name('utilities.ration-to-aadhar-all-state.search');
+    Route::post('/utilities/ration-to-aadhar-all-state/update-api', [\App\Http\Controllers\RationToAadharAllStateController::class, 'updateApi'])->name('utilities.ration-to-aadhar-all-state.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
