@@ -274,7 +274,7 @@ export const SERVICE_CATEGORIES = [
         name: 'Vehicle & RTO Services',
         hindiName: 'वाहन एवं आरटीओ सेवाएं',
         shortName: 'Vehicle & DL',
-        description: 'Vehicle RC details, mobile lookup, PUC download, Driving Licence cards',
+        description: 'Vehicle RC details, Challan check, mobile lookup, PUC download, Driving Licence cards',
         color: 'from-slate-700 to-slate-900',
         border: 'border-slate-500 dark:border-slate-600',
         badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
@@ -579,6 +579,8 @@ export function getServiceCategory(service) {
     if (
         text.includes('vehicle') ||
         text.includes('vahan') ||
+        text.includes('challan') ||
+        slug.includes('challan') ||
         text.includes('puc') ||
         text.includes('rc ') ||
         text.includes('rc-') ||

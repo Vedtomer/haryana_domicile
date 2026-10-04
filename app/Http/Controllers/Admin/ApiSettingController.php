@@ -62,6 +62,8 @@ class ApiSettingController extends Controller
                 'vehicle_to_mobile_api_key'   => Setting::get('vehicle_to_mobile_api_key', 'DuXxZxX'),
                 'vehicle_details_api_url'     => Setting::get('vehicle_details_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'vehicle_details_api_key'     => Setting::get('vehicle_details_api_key', 'SamXverma'),
+                'vahan_challan_api_url'       => Setting::get('vahan_challan_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php'),
+                'vahan_challan_api_key'       => Setting::get('vahan_challan_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
 
                 // Aadhaar Info & Updates
                 'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210'),
@@ -181,6 +183,8 @@ class ApiSettingController extends Controller
             'vehicle_to_mobile_api_key',
             'vehicle_details_api_url',
             'vehicle_details_api_key',
+            'vahan_challan_api_url',
+            'vahan_challan_api_key',
 
             // Aadhaar Info & Updates
             'mobile_to_info_api_url',

@@ -500,6 +500,30 @@ Route::get('/migrate-db', function () {
             $output .= "PanToUid error: " . $pue->getMessage() . "\n\n";
         }
 
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'vehicle-challan-check'],
+                [
+                    'name' => 'Vehicle Challan Check',
+                    'description' => 'Check traffic e-challan details, fine amount, and violation status by vehicle registration number.',
+                    'icon' => 'receipt_long',
+                    'coin_cost' => 14,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'vehicle_challan_check',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 59,
+                ]
+            );
+            \App\Models\Setting::set('vahan_challan_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php');
+            \App\Models\Setting::set('vahan_challan_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== VEHICLE CHALLAN CHECK UPSERTED (14 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $vce) {
+            $output .= "VehicleChallan error: " . $vce->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1882,6 +1906,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.vehicle-to-mobile');
 
     Route::post('/utilities/vehicle-to-mobile/search', [\App\Http\Controllers\VehicleToMobileController::class, 'search'])->name('utilities.vehicle-to-mobile.search');
+
+    Route::get('/utilities/vehicle-challan-check', [\App\Http\Controllers\VehicleChallanController::class, 'index'])->name('utilities.vehicle-challan-check');
+    Route::post('/utilities/vehicle-challan-check/search', [\App\Http\Controllers\VehicleChallanController::class, 'search'])->name('utilities.vehicle-challan-check.search');
+    Route::post('/utilities/vehicle-challan-check/update-api', [\App\Http\Controllers\VehicleChallanController::class, 'updateApi'])->name('utilities.vehicle-challan-check.update-api');
+    Route::get('/utilities/challan-check', fn() => redirect()->route('utilities.vehicle-challan-check'));
+    Route::get('/utilities/challan-find', fn() => redirect()->route('utilities.vehicle-challan-check'));
 
     Route::get('/utilities/verify-ifsc-code', [\App\Http\Controllers\IfscVerificationController::class, 'index'])->name('utilities.verify-ifsc-code');
     Route::post('/utilities/verify-ifsc-code/verify', [\App\Http\Controllers\IfscVerificationController::class, 'verify'])->name('utilities.verify-ifsc-code.verify');

@@ -344,6 +344,18 @@ class Service extends Model
             'index' => '/utilities/pan-to-uid-advance',
             'create' => '/utilities/pan-to-uid-advance',
         ],
+        'vehicle_challan_check' => [
+            'label' => 'Vehicle Challan Check',
+            'model' => null,
+            'index' => '/utilities/vehicle-challan-check',
+            'create' => '/utilities/vehicle-challan-check',
+        ],
+        'challan_check' => [
+            'label' => 'Vehicle Challan Check',
+            'model' => null,
+            'index' => '/utilities/vehicle-challan-check',
+            'create' => '/utilities/vehicle-challan-check',
+        ],
         'learning_licence_pdf' => [
             'label' => 'Learning Licence Download',
             'model' => null,
