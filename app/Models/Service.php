@@ -412,6 +412,18 @@ class Service extends Model
             'index' => '/utilities/voter-advance-info',
             'create' => '/utilities/voter-advance-info',
         ],
+        'voter_name_find' => [
+            'label' => 'Voter Name Find',
+            'model' => null,
+            'index' => '/utilities/voter-name-find',
+            'create' => '/utilities/voter-name-find',
+        ],
+        'voter_to_name' => [
+            'label' => 'Voter Name Find',
+            'model' => null,
+            'index' => '/utilities/voter-name-find',
+            'create' => '/utilities/voter-name-find',
+        ],
         'mobile_to_pan' => [
             'label' => 'Mobile To Pan No. Instant',
             'model' => null,

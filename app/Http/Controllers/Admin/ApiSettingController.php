@@ -106,6 +106,8 @@ class ApiSettingController extends Controller
                 'voter_mobile_update_key'  => Setting::get('voter_mobile_update_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
                 'voter_advance_api_url'    => Setting::get('voter_advance_api_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php'),
                 'voter_advance_api_key'    => Setting::get('voter_advance_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
+                'voter_name_find_url'      => Setting::get('voter_name_find_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php'),
+                'voter_name_find_key'      => Setting::get('voter_name_find_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
 
                 // Card Maker Tools & PDF Editor
                 'card_maker_api_key'                 => Setting::get('card_maker_api_key', config('services.card_maker.api_key', '')),
@@ -239,6 +241,8 @@ class ApiSettingController extends Controller
             'voter_mobile_update_key',
             'voter_advance_api_url',
             'voter_advance_api_key',
+            'voter_name_find_url',
+            'voter_name_find_key',
 
             // Card Maker & PDF
             'card_maker_api_key',

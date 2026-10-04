@@ -92,6 +92,8 @@ export default function Edit({ settings = {} }) {
         voter_mobile_update_key: settings.voter_mobile_update_key || '',
         voter_advance_api_url: settings.voter_advance_api_url || '',
         voter_advance_api_key: settings.voter_advance_api_key || '',
+        voter_name_find_url: settings.voter_name_find_url || '',
+        voter_name_find_key: settings.voter_name_find_key || '',
 
         // Card Maker Tools & PDF Editor
         card_maker_api_key: settings.card_maker_api_key || '',
@@ -748,6 +750,11 @@ export default function Edit({ settings = {} }) {
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">3. Voter Advanse Info (Good-API-Point)</span>
                                     {renderUrlInput('voter_advance_api_url', 'Voter Advance Endpoint URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php')}
                                     {renderKeyInput('voter_advance_api_key', 'Voter Advance API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
+                                </div>
+                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">4. Voter Name Find (Good-API-Point)</span>
+                                    {renderUrlInput('voter_name_find_url', 'Voter Name Find URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php')}
+                                    {renderKeyInput('voter_name_find_key', 'Voter Name Find Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                 </div>
                             </div>
                         </div>

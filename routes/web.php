@@ -687,6 +687,33 @@ Route::get('/migrate-db', function () {
             $output .= "VoterMobileUpdate error: " . $vmue->getMessage() . "\n\n";
         }
 
+        // Ensure Voter Name Find is configured with 9 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'voter-name-find'],
+                [
+                    'name' => 'Voter Name Find',
+                    'description' => 'Retrieve Voter Name and Electoral details instantly by Voter ID / EPIC number.',
+                    'icon' => 'person_search',
+                    'coin_cost' => 9,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'voter_name_find',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 65,
+                ]
+            );
+            \App\Models\Setting::set('voter_name_find_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php');
+            if (empty(\App\Models\Setting::get('voter_name_find_key'))) {
+                \App\Models\Setting::set('voter_name_find_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== VOTER NAME FIND UPSERTED (9 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $vnfe) {
+            $output .= "VoterNameFind error: " . $vnfe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1193,6 +1220,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'voter_advance_info',
             'sort_order' => 20,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'voter-name-find'],
+        [
+            'name' => 'Voter Name Find',
+            'description' => 'Retrieve Voter Name and Electoral details instantly by Voter ID / EPIC number.',
+            'icon' => 'person_search',
+            'coin_cost' => 9,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_name_find',
+            'sort_order' => 21,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2070,6 +2113,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/voter-advanse-info', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'index'])->name('utilities.voter-advanse-info');
     Route::post('/utilities/voter-advanse-info/search', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'search'])->name('utilities.voter-advanse-info.search');
     Route::post('/utilities/voter-advanse-info/update-api', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'updateApi'])->name('utilities.voter-advanse-info.update-api');
+
+    Route::get('/utilities/voter-name-find', [\App\Http\Controllers\VoterNameFindController::class, 'index'])->name('utilities.voter-name-find');
+    Route::post('/utilities/voter-name-find/search', [\App\Http\Controllers\VoterNameFindController::class, 'search'])->name('utilities.voter-name-find.search');
+    Route::post('/utilities/voter-name-find/update-api', [\App\Http\Controllers\VoterNameFindController::class, 'updateApi'])->name('utilities.voter-name-find.update-api');
+
+    Route::get('/utilities/voter-to-name', [\App\Http\Controllers\VoterNameFindController::class, 'index'])->name('utilities.voter-to-name');
+    Route::post('/utilities/voter-to-name/search', [\App\Http\Controllers\VoterNameFindController::class, 'search'])->name('utilities.voter-to-name.search');
+    Route::post('/utilities/voter-to-name/update-api', [\App\Http\Controllers\VoterNameFindController::class, 'updateApi'])->name('utilities.voter-to-name.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
