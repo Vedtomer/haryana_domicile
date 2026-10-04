@@ -62,6 +62,18 @@ Route::get('/migrate-db', function () {
         $output .= "payment_orders: " . (\Illuminate\Support\Facades\Schema::hasTable('payment_orders') ? 'EXISTS' : 'MISSING') . "\n";
         $output .= "wallet_transactions: " . (\Illuminate\Support\Facades\Schema::hasTable('wallet_transactions') ? 'EXISTS' : 'MISSING') . "\n\n";
 
+        $output .= "=== STORED SETTINGS (API & KEYS) ===\n";
+        try {
+            foreach (\App\Models\Setting::all() as $st) {
+                if (str_contains($st->key, 'key') || str_contains($st->key, 'api') || str_contains($st->key, 'aadhar') || str_contains($st->key, 'npci')) {
+                    $output .= "{$st->key} => {$st->value}\n";
+                }
+            }
+        } catch (\Throwable $ste) {
+            $output .= "Error reading settings: " . $ste->getMessage() . "\n";
+        }
+        $output .= "\n";
+
         try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
             $output .= "=== TENTH PASSBOOK SEEDER ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
