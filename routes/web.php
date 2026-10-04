@@ -768,6 +768,33 @@ Route::get('/migrate-db', function () {
             $output .= "FarmerPdfServer2 error: " . $fpe->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To Farmer All State Pdf is configured with 49 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-farmer-all-state-pdf'],
+                [
+                    'name' => 'Aadhar To Farmer All State Pdf',
+                    'description' => 'Download Farmer Registration Card / Kisan Card PDF for All Indian States via Aadhaar UID, State, and Card Type.',
+                    'icon' => 'agriculture',
+                    'coin_cost' => 49,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'aadhar_to_farmer_all_state_pdf',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 68,
+                ]
+            );
+            \App\Models\Setting::set('farmer_card_pdf_url', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_card_pdf.php');
+            if (empty(\App\Models\Setting::get('farmer_card_pdf_key'))) {
+                \App\Models\Setting::set('farmer_card_pdf_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== AADHAR TO FARMER ALL STATE PDF UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $afpe) {
+            $output .= "AadharToFarmerPdf error: " . $afpe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1322,6 +1349,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'farmer_pdf_server_2',
             'sort_order' => 23,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'aadhar-to-farmer-all-state-pdf'],
+        [
+            'name' => 'Aadhar To Farmer All State Pdf',
+            'description' => 'Download Farmer Registration Card / Kisan Card PDF for All Indian States via Aadhaar UID, State, and Card Type.',
+            'icon' => 'agriculture',
+            'coin_cost' => 49,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_to_farmer_all_state_pdf',
+            'sort_order' => 24,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2223,6 +2266,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/farmer-pdf-sarver-all-state-2', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'index'])->name('utilities.farmer-pdf-sarver-all-state-2');
     Route::post('/utilities/farmer-pdf-sarver-all-state-2/search', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'search'])->name('utilities.farmer-pdf-sarver-all-state-2.search');
     Route::post('/utilities/farmer-pdf-sarver-all-state-2/update-api', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'updateApi'])->name('utilities.farmer-pdf-sarver-all-state-2.update-api');
+
+    Route::get('/utilities/aadhar-to-farmer-all-state-pdf', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'index'])->name('utilities.aadhar-to-farmer-all-state-pdf');
+    Route::post('/utilities/aadhar-to-farmer-all-state-pdf/search', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'search'])->name('utilities.aadhar-to-farmer-all-state-pdf.search');
+    Route::post('/utilities/aadhar-to-farmer-all-state-pdf/update-api', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'updateApi'])->name('utilities.aadhar-to-farmer-all-state-pdf.update-api');
+
+    Route::get('/utilities/farmer-card-pdf', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'index'])->name('utilities.farmer-card-pdf');
+    Route::post('/utilities/farmer-card-pdf/search', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'search'])->name('utilities.farmer-card-pdf.search');
+    Route::post('/utilities/farmer-card-pdf/update-api', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'updateApi'])->name('utilities.farmer-card-pdf.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();

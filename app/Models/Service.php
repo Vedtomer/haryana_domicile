@@ -484,6 +484,18 @@ class Service extends Model
             'index' => '/utilities/farmer-pdf-server-2',
             'create' => '/utilities/farmer-pdf-server-2',
         ],
+        'aadhar_to_farmer_all_state_pdf' => [
+            'label' => 'Aadhar To Farmer All State Pdf',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-farmer-all-state-pdf',
+            'create' => '/utilities/aadhar-to-farmer-all-state-pdf',
+        ],
+        'farmer_card_pdf' => [
+            'label' => 'Aadhar To Farmer All State Pdf',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-farmer-all-state-pdf',
+            'create' => '/utilities/aadhar-to-farmer-all-state-pdf',
+        ],
         'pvc_card_maker' => [
             'label' => 'Smart PVC Card Maker',
             'model' => null,
@@ -823,6 +835,10 @@ class Service extends Model
     {
         if ($this->module_key && isset(self::MODULES[$this->module_key])) {
             return self::MODULES[$this->module_key]['index'];
+        }
+
+        if ($this->slug === 'aadhar-to-farmer-all-state-pdf' || $this->slug === 'farmer-card-pdf') {
+            return '/utilities/aadhar-to-farmer-all-state-pdf';
         }
 
         if ($this->slug === 'birth-certificate-download' || $this->slug === 'crs-birth-portal') {

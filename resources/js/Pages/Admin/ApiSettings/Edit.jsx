@@ -60,6 +60,8 @@ export default function Edit({ settings = {} }) {
         id_intelligence_api_key: settings.id_intelligence_api_key || '',
         farmer_pdf_server2_url: settings.farmer_pdf_server2_url || '',
         farmer_pdf_server2_key: settings.farmer_pdf_server2_key || '',
+        farmer_card_pdf_url: settings.farmer_card_pdf_url || '',
+        farmer_card_pdf_key: settings.farmer_card_pdf_key || '',
         aadhar_to_name_api_url: settings.aadhar_to_name_api_url || '',
         aadhar_to_name_api_key: settings.aadhar_to_name_api_key || '',
         aadhar_to_mask_pan_api_url: settings.aadhar_to_mask_pan_api_url || '',
@@ -557,6 +559,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('farmer_pdf_server2_url', 'Farmer PDF Server 2 Endpoint URL', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_pdf_server2.php')}
                                         {renderKeyInput('farmer_pdf_server2_key', 'Farmer PDF Server 2 API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Aadhar To Farmer All State Pdf (Good-API-Point) */}
+                                <div className="p-4 bg-green-50/40 dark:bg-green-950/20 rounded-2xl border border-green-200/60 dark:border-green-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-green-900 dark:text-green-300 uppercase tracking-wider">
+                                            Aadhar To Farmer All State Pdf API (किसान कार्ड ऑल स्टेट PDF)
+                                        </h4>
+                                        <span className="text-[11px] text-green-700 dark:text-green-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('farmer_card_pdf_url', 'Aadhar To Farmer PDF Endpoint URL', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_card_pdf.php')}
+                                        {renderKeyInput('farmer_card_pdf_key', 'Aadhar To Farmer PDF API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 
