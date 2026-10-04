@@ -11,6 +11,38 @@ const renderServiceIcon = (icon) => {
     return icon;
 };
 
+const formatInputKey = (key) => {
+    if (!key) return '';
+    const clean = String(key)
+        .replace(/_/g, ' ')
+        .replace(/([A-Z])/g, ' $1')
+        .trim();
+    const map = {
+        'vehicle registration number': 'Vehicle No',
+        'registration number': 'Reg No',
+        'aadhar number': 'Aadhaar',
+        'aadhaar number': 'Aadhaar',
+        'aadhaar': 'Aadhaar',
+        'pan number': 'PAN',
+        'mask pan': 'Mask PAN',
+        'ration number': 'Ration No',
+        'ration card number': 'Ration No',
+        'voter number': 'Voter No',
+        'epic number': 'EPIC No',
+        'mobile number': 'Mobile',
+        'phone number': 'Phone',
+        'account number': 'A/C No',
+        'customer id': 'Cust ID',
+    };
+    const lower = clean.toLowerCase();
+    if (map[lower]) return map[lower];
+    return clean
+        .split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ')
+        .slice(0, 16);
+};
+
 export default function Index({ requests, isAdmin, statuses, stats, servicesList, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [copiedId, setCopiedId] = useState(null);
@@ -231,18 +263,20 @@ export default function Index({ requests, isAdmin, statuses, stats, servicesList
 
                 {/* Service Requests Table */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 text-xs uppercase font-extrabold tracking-wider border-b border-slate-100 dark:border-slate-800">
+                    <div className="overflow-x-auto custom-table-scrollbar">
+                        <table className="w-full text-left text-sm min-w-[860px] xl:min-w-full">
+                            <thead className="bg-slate-50/90 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase font-extrabold tracking-wider border-b border-slate-100 dark:border-slate-800">
                                 <tr>
-                                    <th className="px-5 py-4"># ID</th>
-                                    <th className="px-5 py-4">Service</th>
-                                    {isAdmin && <th className="px-5 py-4">Customer / User</th>}
-                                    <th className="px-5 py-4">Submitted Input / Data</th>
-                                    <th className="px-5 py-4">Coins</th>
-                                    <th className="px-5 py-4">Status</th>
-                                    <th className="px-5 py-4">Date & Time</th>
-                                    <th className="px-5 py-4 text-right">Action</th>
+                                    <th className="px-3.5 py-3.5 whitespace-nowrap"># ID</th>
+                                    <th className="px-3.5 py-3.5 whitespace-nowrap">Service</th>
+                                    {isAdmin && <th className="px-3.5 py-3.5 whitespace-nowrap">Customer / User</th>}
+                                    <th className="px-3.5 py-3.5 whitespace-nowrap">Submitted Data</th>
+                                    <th className="px-3 py-3.5 whitespace-nowrap text-center">Coins</th>
+                                    <th className="px-3 py-3.5 whitespace-nowrap text-center">Status</th>
+                                    <th className="px-3.5 py-3.5 whitespace-nowrap">Date & Time</th>
+                                    <th className="px-3.5 py-3.5 whitespace-nowrap text-right sticky right-0 bg-slate-50/95 dark:bg-slate-800/95 z-20 shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.4)]">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
@@ -252,35 +286,35 @@ export default function Index({ requests, isAdmin, statuses, stats, servicesList
                                     const rowNumber = totalCount - offset;
 
                                     return (
-                                        <tr key={item.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
+                                        <tr key={item.id} className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition">
                                             {/* Row / ID */}
-                                            <td className="px-5 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="font-bold text-slate-900 dark:text-white">#{item.id}</span>
+                                            <td className="px-3.5 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">#{item.id}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleCopy(String(item.id), item.id)}
-                                                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
                                                         title="Copy Request ID"
                                                     >
-                                                        <span className="material-symbols-outlined text-[15px]">
+                                                        <span className="material-symbols-outlined text-[14px]">
                                                             {copiedId === item.id ? 'check' : 'content_copy'}
                                                         </span>
                                                     </button>
                                                 </div>
-                                                <span className="text-[11px] text-slate-400">Order #{rowNumber}</span>
+                                                <span className="text-[10px] text-slate-400 block font-medium">Order #{rowNumber}</span>
                                             </td>
 
                                             {/* Service Name & Icon */}
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-2.5">
-                                                    <span className="text-xl flex-shrink-0">{renderServiceIcon(item.service?.icon)}</span>
-                                                    <div>
-                                                        <div className="font-extrabold text-slate-900 dark:text-white">
+                                            <td className="px-3.5 py-3">
+                                                <div className="flex items-center gap-2 max-w-[210px]">
+                                                    <span className="text-lg flex-shrink-0">{renderServiceIcon(item.service?.icon)}</span>
+                                                    <div className="min-w-0">
+                                                        <div className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm truncate" title={item.service_name}>
                                                             {item.service_name}
                                                         </div>
                                                         {item.service?.slug && (
-                                                            <div className="text-[11px] text-slate-400 font-mono">
+                                                            <div className="text-[10px] text-slate-400 font-mono truncate" title={item.service.slug}>
                                                                 {item.service.slug}
                                                             </div>
                                                         )}
@@ -290,17 +324,17 @@ export default function Index({ requests, isAdmin, statuses, stats, servicesList
 
                                             {/* User Details (For Admin) */}
                                             {isAdmin && (
-                                                <td className="px-5 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-black text-xs flex items-center justify-center flex-shrink-0 border border-indigo-200 dark:border-indigo-800">
+                                                <td className="px-3.5 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0 shadow-2xs">
                                                             {(item.user?.name || 'U').charAt(0).toUpperCase()}
                                                         </div>
-                                                        <div>
-                                                            <div className="font-bold text-slate-800 dark:text-white text-sm">
+                                                        <div className="min-w-0">
+                                                            <div className="font-bold text-slate-800 dark:text-white text-xs truncate max-w-[130px]" title={item.user?.name}>
                                                                 {item.user?.name || 'Unknown User'}
                                                             </div>
-                                                            <div className="flex items-center gap-1 text-xs text-slate-500 font-mono">
-                                                                <span>{item.user?.phone || item.user?.email || '—'}</span>
+                                                            <div className="flex items-center gap-1 text-[11px] text-slate-500 font-mono">
+                                                                <span className="truncate max-w-[120px]">{item.user?.phone || item.user?.email || '—'}</span>
                                                                 {item.user?.phone && (
                                                                     <button
                                                                         type="button"
@@ -320,87 +354,88 @@ export default function Index({ requests, isAdmin, statuses, stats, servicesList
                                             )}
 
                                             {/* Input Data Preview */}
-                                            <td className="px-5 py-4 max-w-xs">
+                                            <td className="px-3.5 py-3 max-w-[210px] xl:max-w-[260px]">
                                                 {item.input_data && Object.keys(item.input_data).length > 0 ? (
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-0.5">
                                                         {Object.entries(item.input_data).slice(0, 3).map(([k, v]) => (
-                                                            <div key={k} className="text-xs truncate">
-                                                                <span className="text-slate-400 font-semibold">{k}: </span>
+                                                            <div key={k} className="text-xs truncate flex items-center gap-1">
+                                                                <span className="text-slate-400 font-medium text-[11px] flex-shrink-0">{formatInputKey(k)}:</span>
                                                                 {v && typeof v === 'object' && v.type === 'file' ? (
                                                                     <a
                                                                         href={`/storage/${v.path}`}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                                                                        className="inline-flex items-center gap-0.5 text-blue-500 font-bold hover:underline truncate text-xs"
                                                                     >
-                                                                        <span>📎 {v.name}</span>
+                                                                        <span>📎 {v.name || 'File'}</span>
                                                                     </a>
                                                                 ) : (
-                                                                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
+                                                                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200 text-xs truncate" title={String(v)}>
                                                                         {String(v)}
                                                                     </span>
                                                                 )}
                                                             </div>
                                                         ))}
                                                         {Object.keys(item.input_data).length > 3 && (
-                                                            <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                                                                +{Object.keys(item.input_data).length - 3} more fields...
+                                                            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
+                                                                +{Object.keys(item.input_data).length - 3} more...
                                                             </div>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-slate-400">Automatic Request</span>
+                                                    <span className="text-xs text-slate-400">Auto Request</span>
                                                 )}
                                             </td>
 
                                             {/* Coins Charged */}
-                                            <td className="px-5 py-4 whitespace-nowrap">
+                                            <td className="px-3 py-3 whitespace-nowrap text-center">
                                                 {item.coins_charged > 0 ? (
-                                                    <span className={`inline-flex items-center gap-1 font-bold ${
+                                                    <span className={`inline-flex items-center gap-1 font-bold text-xs ${
                                                         item.refunded_at
                                                             ? 'text-slate-400 line-through'
-                                                            : 'text-amber-600 dark:text-amber-400'
+                                                            : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200/50 dark:border-amber-800/50'
                                                     }`}>
                                                         <span>🪙</span>
                                                         <span>{item.coins_charged}</span>
                                                     </span>
                                                 ) : (
-                                                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200/50">
+                                                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
                                                         Free
                                                     </span>
                                                 )}
                                             </td>
 
                                             {/* Status */}
-                                            <td className="px-5 py-4 whitespace-nowrap">
+                                            <td className="px-3 py-3 whitespace-nowrap text-center">
                                                 <StatusBadge status={item.status} />
                                             </td>
 
                                             {/* Submitted Date & Time */}
-                                            <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">
-                                                <div className="font-semibold text-slate-700 dark:text-slate-200">
+                                            <td className="px-3.5 py-3 whitespace-nowrap text-xs">
+                                                <div className="font-semibold text-slate-800 dark:text-slate-200">
                                                     {new Date(item.created_at).toLocaleDateString('en-IN', {
                                                         day: '2-digit',
                                                         month: 'short',
                                                         year: 'numeric',
                                                     })}
                                                 </div>
-                                                <div className="text-[11px] text-slate-400 font-mono">
+                                                <div className="text-[10px] text-slate-400 font-mono">
                                                     {new Date(item.created_at).toLocaleTimeString('en-IN', {
                                                         hour: '2-digit',
                                                         minute: '2-digit',
+                                                        hour12: true,
                                                     })}
                                                 </div>
                                             </td>
 
-                                            {/* Actions */}
-                                            <td className="px-5 py-4 whitespace-nowrap text-right">
+                                            {/* Actions (Sticky Right Column) */}
+                                            <td className="px-3.5 py-3 whitespace-nowrap text-right sticky right-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 z-10 shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.4)] transition-colors">
                                                 <Link
                                                     href={`/admin/service-requests/${item.id}`}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800 transition"
+                                                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow transition"
                                                 >
                                                     <span>{isAdmin ? 'Review' : 'View'}</span>
-                                                    <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                                                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                                                 </Link>
                                             </td>
                                         </tr>
