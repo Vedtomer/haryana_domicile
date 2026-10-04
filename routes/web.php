@@ -820,6 +820,19 @@ Route::get('/migrate-db', function () {
             $output .= "=== RATION SLEEP PHOTO UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rspe) {
             $output .= "RationSleepPhoto error: " . $rspe->getMessage() . "\n\n";
+        // Deactivate old passport-maker service and rename photo-signature-resizer to Passport Photo Maker
+        try {
+            \App\Models\Service::where('slug', 'passport-maker')->update([
+                'is_active' => false,
+            ]);
+            \App\Models\Service::where('slug', 'photo-signature-resizer')->update([
+                'name' => 'Passport Photo Maker',
+                'description' => 'Online Passport size photo maker with Name, DOP, DOB, Signature strip & Direct A4 6-per-line sheet printing',
+                'icon' => 'badge',
+            ]);
+            $output .= "=== PASSPORT PHOTO MAKER RENAMED & OLD PASSPORT MAKER DEACTIVATED ===\n\n";
+        } catch (\Throwable $pme) {
+            $output .= "PassportMaker update notice: " . $pme->getMessage() . "\n\n";
         }
 
         // Ensure all users have access to all active services
@@ -2401,8 +2414,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/verify-ifsc-code', [\App\Http\Controllers\IfscVerificationController::class, 'index'])->name('utilities.verify-ifsc-code');
     Route::post('/utilities/verify-ifsc-code/verify', [\App\Http\Controllers\IfscVerificationController::class, 'verify'])->name('utilities.verify-ifsc-code.verify');
 
-    Route::get('/utilities/passport-maker', [\App\Http\Controllers\PassportMakerController::class, 'index'])->name('utilities.passport-maker');
-    Route::post('/utilities/passport-maker/deduct-coins', [\App\Http\Controllers\PassportMakerController::class, 'deductCoins'])->name('utilities.passport-maker.deduct-coins');
+    Route::get('/utilities/passport-maker', fn() => redirect()->route('utilities.photo-signature-resizer'))->name('utilities.passport-maker');
+    Route::post('/utilities/passport-maker/deduct-coins', fn() => response()->json(['success' => true]));
 
     // Passport Apply Service
     Route::get('/utilities/passport-apply', [\App\Http\Controllers\PassportApplyController::class, 'index'])->name('utilities.passport-apply');

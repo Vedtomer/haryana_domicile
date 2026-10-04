@@ -2,172 +2,49 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 
-const PRESETS = [
-    {
-        id: 'ssc_photo',
-        category: 'photo',
-        title: 'SSC / HSSC / Police Photo',
-        desc: '3.5 x 4.5 cm (20 KB - 50 KB)',
-        width: 350,
-        height: 450,
-        minKb: 20,
-        maxKb: 50,
-        aspectRatio: 350 / 450,
-        allowNameDate: true,
-    },
-    {
-        id: 'ssc_sign',
-        category: 'sign',
-        title: 'SSC / HSSC / Police Signature',
-        desc: '4.0 x 2.0 cm (10 KB - 20 KB)',
-        width: 400,
-        height: 200,
-        minKb: 10,
-        maxKb: 20,
-        aspectRatio: 400 / 200,
-        cleanPaperDefault: true,
-    },
-    {
-        id: 'upsc_photo',
-        category: 'photo',
-        title: 'UPSC / NDA / CDS Photo',
-        desc: '350 x 350 px (20 KB - 100 KB)',
-        width: 350,
-        height: 350,
-        minKb: 20,
-        maxKb: 100,
-        aspectRatio: 1,
-        allowNameDate: true,
-    },
-    {
-        id: 'upsc_sign',
-        category: 'sign',
-        title: 'UPSC Signature',
-        desc: '350 x 350 px (20 KB - 100 KB)',
-        width: 350,
-        height: 350,
-        minKb: 20,
-        maxKb: 100,
-        aspectRatio: 1,
-        cleanPaperDefault: true,
-    },
-    {
-        id: 'nta_photo',
-        category: 'photo',
-        title: 'NTA NEET / JEE Photo',
-        desc: '3.5 x 4.5 cm (10 KB - 200 KB)',
-        width: 350,
-        height: 450,
-        minKb: 10,
-        maxKb: 200,
-        aspectRatio: 350 / 450,
-        allowNameDate: true,
-    },
-    {
-        id: 'nta_sign',
-        category: 'sign',
-        title: 'NTA NEET / JEE Signature',
-        desc: '4.0 x 2.0 cm (4 KB - 30 KB)',
-        width: 400,
-        height: 200,
-        minKb: 4,
-        maxKb: 30,
-        aspectRatio: 400 / 200,
-        cleanPaperDefault: true,
-    },
-    {
-        id: 'pan_photo',
-        category: 'photo',
-        title: 'PAN Card Photo (NSDL / UTI)',
-        desc: '213 x 213 px (under 30 KB)',
-        width: 213,
-        height: 213,
-        minKb: 10,
-        maxKb: 30,
-        aspectRatio: 1,
-    },
-    {
-        id: 'pan_sign',
-        category: 'sign',
-        title: 'PAN Card Signature',
-        desc: '400 x 200 px (under 30 KB)',
-        width: 400,
-        height: 200,
-        minKb: 10,
-        maxKb: 30,
-        aspectRatio: 2,
-        cleanPaperDefault: true,
-    },
-    {
-        id: 'passport_std',
-        category: 'photo',
-        title: 'Passport Size Photo (Standard)',
-        desc: '3.5 x 4.5 cm (413 x 531 px, 30-100 KB)',
-        width: 413,
-        height: 531,
-        minKb: 30,
-        maxKb: 100,
-        aspectRatio: 413 / 531,
-        allowNameDate: true,
-    },
-    {
-        id: 'custom',
-        category: 'custom',
-        title: 'Custom Dimensions & Size',
-        desc: 'अपनी पसंद के अनुसार साइज सेट करें',
-        width: 350,
-        height: 450,
-        minKb: 10,
-        maxKb: 100,
-        aspectRatio: 350 / 450,
-    }
-];
+// Standard Indian Passport Photo Dimensions (3.5 cm × 4.5 cm at 300 DPI)
+const TARGET_WIDTH = 413;
+const TARGET_HEIGHT = 531;
 
 export default function PhotoSignatureResizer() {
-    const [selectedTab, setSelectedTab] = useState('photo'); // 'photo' | 'sign' | 'custom'
-    const [selectedPresetId, setSelectedPresetId] = useState('ssc_photo');
-
-    // Canvas & Image State
+    // Canvas & Candidate Photo State
     const [imageSrc, setImageSrc] = useState(null);
     const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
     const [originalSizeKb, setOriginalSizeKb] = useState(0);
 
-    // Edit controls
-    const [targetWidth, setTargetWidth] = useState(350);
-    const [targetHeight, setTargetHeight] = useState(450);
-    const [minKb, setMinKb] = useState(20);
-    const [maxKb, setMaxKb] = useState(50);
-    const [zoom, setZoom] = useState(1);
+    // Image Adjustments
     const [rotation, setRotation] = useState(0);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [brightness, setBrightness] = useState(100);
     const [contrast, setContrast] = useState(100);
-    const [cleanWhitePaper, setCleanWhitePaper] = useState(false);
-    const [cleanThreshold, setCleanThreshold] = useState(180);
 
     // Helper to format date in DD/MM/YYYY
     const getFormattedDate = (d = new Date()) => {
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     };
 
-    // Name & Date on Photo Controls (DOB, DOP, Name)
-    const [addNameDate, setAddNameDate] = useState(false);
-    // Mark checkboxes
-    const [showName, setShowName] = useState(true);
-    const [showDop, setShowDop] = useState(true); // Date of Photo
-    const [showDob, setShowDob] = useState(false); // Date of Birth
-    // Values
+    // Permanent Options on Photo (Name, DOP, DOB, Signature)
+    const [showName, setShowName] = useState(false);
     const [candidateName, setCandidateName] = useState('');
-    const [dopDate, setDopDate] = useState(() => getFormattedDate());
-    const [dobDate, setDobDate] = useState('');
-    // Formatting & layout
-    const [showDopPrefix, setShowDopPrefix] = useState(true);
-    const [showDobPrefix, setShowDobPrefix] = useState(true);
-    const [stripTheme, setStripTheme] = useState('white'); // 'white' | 'black'
-    const [combineDates, setCombineDates] = useState(false);
 
-    // A4 Sheet Maker State
-    const [a4Count, setA4Count] = useState(6);
+    const [showDop, setShowDop] = useState(false);
+    const [dopDate, setDopDate] = useState(() => getFormattedDate());
+    const [showDopPrefix, setShowDopPrefix] = useState(true);
+
+    const [showDob, setShowDob] = useState(false);
+    const [dobDate, setDobDate] = useState('');
+    const [showDobPrefix, setShowDobPrefix] = useState(true);
+
+    const [combineDates, setCombineDates] = useState(false);
+    const [stripTheme, setStripTheme] = useState('white'); // 'white' | 'black'
+
+    // Signature Option
+    const [showSignature, setShowSignature] = useState(false);
+    const [signatureSrc, setSignatureSrc] = useState(null);
+    const [signatureImgObj, setSignatureImgObj] = useState(null);
+
+    // A4 Sheet Maker State (1 line = 6 photos, total 36 photos)
+    const [a4Count, setA4Count] = useState(36);
     const [a4HasBorder, setA4HasBorder] = useState(true);
     const [a4Gap, setA4Gap] = useState(3); // mm
     const [a4PreviewUrl, setA4PreviewUrl] = useState(null);
@@ -185,32 +62,10 @@ export default function PhotoSignatureResizer() {
     const panStartRef = useRef({ x: 0, y: 0 });
 
     const fileInputRef = useRef(null);
+    const sigInputRef = useRef(null);
     const canvasRef = useRef(null);
 
-    // Apply preset
-    const applyPreset = (preset) => {
-        setSelectedPresetId(preset.id);
-        setTargetWidth(preset.width);
-        setTargetHeight(preset.height);
-        setMinKb(preset.minKb);
-        setMaxKb(preset.maxKb);
-        if (preset.cleanPaperDefault) {
-            setCleanWhitePaper(true);
-        } else if (preset.category === 'photo') {
-            setCleanWhitePaper(false);
-        }
-    };
-
-    // Handle Tab Change
-    const handleTabChange = (tab) => {
-        setSelectedTab(tab);
-        const match = PRESETS.find(p => p.category === tab);
-        if (match) {
-            applyPreset(match);
-        }
-    };
-
-    // Handle File Input
+    // Handle Candidate Photo File Input
     const handleFile = (file) => {
         if (!file || !file.type.startsWith('image/')) {
             alert('कृपया केवल इमेज (JPG, PNG) फाइल चुनें!');
@@ -224,14 +79,36 @@ export default function PhotoSignatureResizer() {
             img.onload = () => {
                 setOriginalDimensions({ width: img.naturalWidth, height: img.naturalHeight });
                 setImageSrc(e.target.result);
-                // Reset zoom and pan
-                setZoom(1);
                 setPan({ x: 0, y: 0 });
                 setRotation(0);
             };
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
+    };
+
+    // Handle Signature File Input
+    const handleSignatureFile = (file) => {
+        if (!file || !file.type.startsWith('image/')) {
+            alert('कृपया हस्ताक्षर के लिए इमेज (JPG, PNG) फाइल चुनें!');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                setSignatureImgObj(img);
+                setSignatureSrc(e.target.result);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveSignature = () => {
+        setSignatureSrc(null);
+        setSignatureImgObj(null);
+        if (sigInputRef.current) sigInputRef.current.value = '';
     };
 
     // Paste from clipboard support
@@ -251,7 +128,7 @@ export default function PhotoSignatureResizer() {
         return () => window.removeEventListener('paste', handlePaste);
     }, []);
 
-    // Render & Compress Canvas to Target KB
+    // Render Canvas whenever inputs change
     useEffect(() => {
         if (!imageSrc) return;
 
@@ -260,7 +137,7 @@ export default function PhotoSignatureResizer() {
 
         const timer = setTimeout(() => {
             processImage();
-        }, 150);
+        }, 120);
 
         return () => {
             active = false;
@@ -268,215 +145,170 @@ export default function PhotoSignatureResizer() {
         };
     }, [
         imageSrc,
-        targetWidth,
-        targetHeight,
-        minKb,
-        maxKb,
-        zoom,
         rotation,
         pan,
         brightness,
         contrast,
-        cleanWhitePaper,
-        cleanThreshold,
-        addNameDate,
         showName,
-        showDop,
-        showDob,
         candidateName,
+        showDop,
         dopDate,
-        dobDate,
         showDopPrefix,
+        showDob,
+        dobDate,
         showDobPrefix,
         stripTheme,
         combineDates,
+        showSignature,
+        signatureSrc,
+        signatureImgObj,
     ]);
 
     const processImage = () => {
         const canvas = canvasRef.current || document.createElement('canvas');
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
+        canvas.width = TARGET_WIDTH;
+        canvas.height = TARGET_HEIGHT;
         const ctx = canvas.getContext('2d');
 
         // Fill background white
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, targetWidth, targetHeight);
+        ctx.fillRect(0, 0, TARGET_WIDTH, TARGET_HEIGHT);
+
+        if (!imageSrc) {
+            setIsProcessing(false);
+            return;
+        }
 
         const img = new Image();
         img.onload = () => {
-            ctx.save();
-            // Center transformation
-            ctx.translate(targetWidth / 2 + pan.x, targetHeight / 2 + pan.y);
-            ctx.rotate((rotation * Math.PI) / 180);
-            ctx.scale(zoom, zoom);
+            // 1. Signature box height (if enabled)
+            const sigBoxHeight = showSignature ? 116 : 0;
+            const sigBoxY = TARGET_HEIGHT - sigBoxHeight;
 
-            // Filters
+            // 2. Text lines for Name / DOP / DOB strip
+            const textLines = [];
+            if (showName && candidateName.trim()) {
+                textLines.push({ text: candidateName.trim().toUpperCase(), isName: true });
+            }
+            if (showDob && dobDate.trim() && showDop && dopDate.trim() && combineDates) {
+                const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
+                const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
+                textLines.push({ text: `${dobStr}  |  ${dopStr}`, isName: false });
+            } else {
+                if (showDob && dobDate.trim()) {
+                    const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
+                    textLines.push({ text: dobStr, isName: false });
+                }
+                if (showDop && dopDate.trim()) {
+                    const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
+                    textLines.push({ text: dopStr, isName: false });
+                }
+            }
+
+            const lineCount = textLines.length;
+            const stripHeight = lineCount > 0 ? Math.max(lineCount * 26 + 12, lineCount === 1 ? 52 : (lineCount === 2 ? 78 : 102)) : 0;
+            const stripY = sigBoxY - stripHeight;
+
+            // 3. Height available for candidate's photo
+            const photoAreaHeight = Math.max(120, stripY);
+
+            // Draw Photo inside clipped area
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, TARGET_WIDTH, photoAreaHeight);
+            ctx.clip();
+
+            ctx.translate(TARGET_WIDTH / 2 + pan.x, photoAreaHeight / 2 + pan.y);
+            ctx.rotate((rotation * Math.PI) / 180);
             ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
 
-            // Draw image centered
             const drawW = img.naturalWidth;
             const drawH = img.naturalHeight;
-            // Fit aspect ratio base
-            const scale = Math.max(targetWidth / drawW, targetHeight / drawH);
+            const scale = Math.max(TARGET_WIDTH / drawW, photoAreaHeight / drawH);
             const w = drawW * scale;
             const h = drawH * scale;
 
             ctx.drawImage(img, -w / 2, -h / 2, w, h);
             ctx.restore();
 
-            // Paper cleaner / White background filter for signatures
-            if (cleanWhitePaper) {
-                const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
-                const data = imgData.data;
-                const threshold = cleanThreshold;
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-                    // Grayscale luminance
-                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-                    if (lum > threshold) {
-                        // Whiten background
-                        data[i] = 255;
-                        data[i + 1] = 255;
-                        data[i + 2] = 255;
-                    } else {
-                        // Darken ink
-                        const factor = lum / threshold;
-                        data[i] = Math.round(r * factor * 0.7);
-                        data[i + 1] = Math.round(g * factor * 0.7);
-                        data[i + 2] = Math.round(b * factor * 0.7);
-                    }
-                }
-                ctx.putImageData(imgData, 0, 0);
+            // 4. Draw Name, DOP, DOB Strip (if enabled)
+            if (lineCount > 0) {
+                const isDark = stripTheme === 'black';
+                ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
+                ctx.fillRect(0, stripY, TARGET_WIDTH, stripHeight);
+
+                // Strip border line
+                ctx.strokeStyle = isDark ? '#334155' : '#000000';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, stripY);
+                ctx.lineTo(TARGET_WIDTH, stripY);
+                ctx.stroke();
+
+                // Strip text
+                ctx.fillStyle = isDark ? '#FFFFFF' : '#000000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const baseFontSize = Math.max(12, Math.round((stripHeight / (lineCount + 0.5)) * 0.7));
+
+                textLines.forEach((line, idx) => {
+                    const yPos = stripY + (stripHeight * (idx + 0.55)) / lineCount;
+                    const fontSize = line.isName ? Math.round(baseFontSize * 1.08) : Math.round(baseFontSize * 0.92);
+                    const fontWeight = line.isName ? 'bold' : '600';
+                    ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
+                    ctx.fillText(line.text, TARGET_WIDTH / 2, yPos);
+                });
             }
 
-            // Name, DOB, DOP strip at bottom if enabled
-            if (addNameDate) {
-                const linesToPrint = [];
+            // 5. Draw Signature Box (if enabled)
+            if (showSignature) {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, sigBoxY, TARGET_WIDTH, sigBoxHeight);
 
-                if (showName && candidateName.trim()) {
-                    linesToPrint.push({
-                        text: candidateName.trim().toUpperCase(),
-                        isName: true,
-                    });
-                }
+                // Top divider line for signature box
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, sigBoxY);
+                ctx.lineTo(TARGET_WIDTH, sigBoxY);
+                ctx.stroke();
 
-                if (showDob && dobDate.trim() && showDop && dopDate.trim() && combineDates) {
-                    const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
-                    const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
-                    linesToPrint.push({
-                        text: `${dobStr}  |  ${dopStr}`,
-                        isName: false,
-                    });
+                if (signatureImgObj) {
+                    // Draw uploaded signature centered
+                    const padX = 24;
+                    const padY = 10;
+                    const maxSigW = TARGET_WIDTH - padX * 2;
+                    const maxSigH = sigBoxHeight - padY * 2;
+                    const sigScale = Math.min(maxSigW / signatureImgObj.naturalWidth, maxSigH / signatureImgObj.naturalHeight);
+                    const sw = signatureImgObj.naturalWidth * sigScale;
+                    const sh = signatureImgObj.naturalHeight * sigScale;
+                    const sx = (TARGET_WIDTH - sw) / 2;
+                    const sy = sigBoxY + (sigBoxHeight - sh) / 2;
+
+                    ctx.save();
+                    ctx.filter = 'contrast(125%)';
+                    ctx.drawImage(signatureImgObj, sx, sy, sw, sh);
+                    ctx.restore();
                 } else {
-                    if (showDob && dobDate.trim()) {
-                        const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
-                        linesToPrint.push({
-                            text: dobStr,
-                            isName: false,
-                        });
-                    }
-                    if (showDop && dopDate.trim()) {
-                        const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
-                        linesToPrint.push({
-                            text: dopStr,
-                            isName: false,
-                        });
-                    }
-                }
-
-                if (linesToPrint.length > 0) {
-                    const lineCount = linesToPrint.length;
-                    const heightMultiplier = lineCount === 1 ? 0.13 : (lineCount === 2 ? 0.18 : 0.24);
-                    const stripHeight = Math.max(lineCount * 22 + 10, Math.round(targetHeight * heightMultiplier));
-                    const stripY = targetHeight - stripHeight;
-
-                    // Strip background (White or Black)
-                    const isDark = stripTheme === 'black';
-                    ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
-                    ctx.fillRect(0, stripY, targetWidth, stripHeight);
-
-                    // Top border line
-                    ctx.strokeStyle = isDark ? '#FFFFFF' : '#000000';
-                    ctx.lineWidth = Math.max(1.5, Math.round(targetHeight / 300));
-                    ctx.beginPath();
-                    ctx.moveTo(0, stripY);
-                    ctx.lineTo(targetWidth, stripY);
-                    ctx.stroke();
-
-                    // Text styling
-                    ctx.fillStyle = isDark ? '#FFFFFF' : '#000000';
+                    // Placeholder text when signature is not yet uploaded
+                    ctx.fillStyle = '#94A3B8';
+                    ctx.font = 'bold 13px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-
-                    const baseFontSize = Math.max(10, Math.round((stripHeight / (lineCount + 0.6)) * 0.72));
-
-                    linesToPrint.forEach((line, idx) => {
-                        const yPos = stripY + (stripHeight * (idx + 0.55)) / lineCount;
-                        const fontSize = line.isName ? Math.round(baseFontSize * 1.05) : Math.round(baseFontSize * 0.9);
-                        const fontWeight = line.isName ? 'bold' : '600';
-                        ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
-                        ctx.fillText(line.text, targetWidth / 2, yPos);
-                    });
+                    ctx.fillText('✍️ [ यहाँ हस्ताक्षर दिखेगा - नीचे से अपलोड करें ]', TARGET_WIDTH / 2, sigBoxY + sigBoxHeight / 2);
                 }
             }
 
-            // Binary search / compress to target KB
-            compressToTarget(canvas, minKb, maxKb);
-        };
-        img.src = imageSrc;
-    };
-
-    const compressToTarget = (canvas, minK, maxK) => {
-        let low = 0.05;
-        let high = 0.98;
-        let bestBlob = null;
-        let bestQuality = 0.85;
-
-        // Try standard quality first
-        canvas.toBlob((initialBlob) => {
-            if (!initialBlob) {
-                setIsProcessing(false);
-                return;
-            }
-
-            const initialKb = initialBlob.size / 1024;
-            if (initialKb <= maxK && initialKb >= minK) {
-                applyBlob(initialBlob);
-                return;
-            }
-
-            // Binary search 6 iterations for best fit
-            const runSearch = (iterationsRemaining, qLow, qHigh) => {
-                if (iterationsRemaining <= 0) {
-                    applyBlob(bestBlob || initialBlob);
+            // Export to high-quality JPEG
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    setIsProcessing(false);
                     return;
                 }
-
-                const mid = (qLow + qHigh) / 2;
-                canvas.toBlob((blob) => {
-                    if (!blob) {
-                        applyBlob(bestBlob || initialBlob);
-                        return;
-                    }
-
-                    const kb = blob.size / 1024;
-                    bestBlob = blob;
-
-                    if (kb > maxK) {
-                        runSearch(iterationsRemaining - 1, qLow, mid);
-                    } else if (kb < minK) {
-                        runSearch(iterationsRemaining - 1, mid, qHigh);
-                    } else {
-                        // Perfect match inside range
-                        applyBlob(blob);
-                    }
-                }, 'image/jpeg', mid);
-            };
-
-            runSearch(6, low, high);
-        }, 'image/jpeg', 0.85);
+                applyBlob(blob);
+            }, 'image/jpeg', 0.94);
+        };
+        img.src = imageSrc;
     };
 
     const applyBlob = (blob) => {
@@ -515,19 +347,19 @@ export default function PhotoSignatureResizer() {
         isDraggingRef.current = false;
     };
 
-    // Download action
+    // Download Single Photo Action
     const handleDownload = () => {
         if (!outputUrl) return;
         const a = document.createElement('a');
         a.href = outputUrl;
-        const safeName = candidateName.trim() ? candidateName.toLowerCase().replace(/\s+/g, '_') : 'sarkari';
-        a.download = `${selectedPresetId}_${safeName}_${Math.round(outputKb)}kb.jpg`;
+        const safeName = candidateName.trim() ? candidateName.toLowerCase().replace(/\s+/g, '_') : 'passport';
+        a.download = `passport_photo_${safeName}.jpg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     };
 
-    // Generate A4 Canvas (2480 x 3508 px at 300 DPI, 6 photos per row)
+    // Generate A4 Canvas (2480 x 3508 px at 300 DPI, 6 photos per row starting at top)
     const generateA4Canvas = (imageElement, count, options = {}) => {
         const {
             hasBorder = true,
@@ -556,8 +388,7 @@ export default function PhotoSignatureResizer() {
 
         const availableWidth = a4Width - (2 * marginX) - ((cols - 1) * gapX);
         const photoWidth = Math.round(availableWidth / cols);
-
-        const ratio = (targetHeight && targetWidth) ? (targetHeight / targetWidth) : (450 / 350);
+        const ratio = TARGET_HEIGHT / TARGET_WIDTH; // 3.5 x 4.5 cm proportion
         const photoHeight = Math.round(photoWidth * ratio);
 
         for (let i = 0; i < count; i++) {
@@ -609,7 +440,7 @@ export default function PhotoSignatureResizer() {
         return () => {
             active = false;
         };
-    }, [a4Count, a4HasBorder, a4Gap, outputUrl, targetWidth, targetHeight]);
+    }, [a4Count, a4HasBorder, a4Gap, outputUrl]);
 
     // Download A4 Sheet Image
     const handleDownloadA4 = () => {
@@ -623,8 +454,8 @@ export default function PhotoSignatureResizer() {
             });
             const safeName = candidateName.trim() ? candidateName.toLowerCase().replace(/\s+/g, '_') : 'passport';
             const a = document.createElement('a');
-            a.download = `A4_Sheet_${a4Count}_Photos_${safeName}.jpg`;
             a.href = canvas.toDataURL('image/jpeg', 0.95);
+            a.download = `passport_a4_sheet_${a4Count}photos_${safeName}.jpg`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -644,16 +475,16 @@ export default function PhotoSignatureResizer() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                         <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-blue-600 text-2xl">crop</span>
+                            <span className="material-symbols-outlined text-blue-600 text-2xl">badge</span>
                             <h1 className="text-xl font-black text-slate-800 dark:text-white leading-tight">
-                                Sarkari Photo & Signature Resizer
+                                Passport Photo Maker (पासपोर्ट फोटो मेकर)
                             </h1>
                             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                100% Free & Accurate
+                                3.5 × 4.5 cm Standard
                             </span>
                         </div>
                         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            SSC, HSSC, UPSC, NTA, Railway और सभी सरकारी फॉर्म्स के लिए सटीक साइज़ और KB में फोटो/साइन बनाएं
+                            ऑनलाइन पासपोर्ट साइज़ फोटो • नाम, DOP, DOB व हस्ताक्षर जोड़ें • 1 लाइन में 6 फोटो A4 शीट प्रिंट
                         </p>
                     </div>
 
@@ -672,88 +503,21 @@ export default function PhotoSignatureResizer() {
                                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 text-sm transition-all transform active:scale-95 cursor-pointer"
                             >
                                 <span className="material-symbols-outlined text-xl">download</span>
-                                Single ({outputKb} KB)
+                                सिंगल फोटो डाउनलोड
                             </button>
                         </div>
                     )}
                 </div>
             }
         >
-            <Head title="Sarkari Photo & Signature Resizer" />
+            <Head title="Passport Photo Maker" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                {/* Category Selection Tabs */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={() => handleTabChange('photo')}
-                        className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                            selectedTab === 'photo'
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-xl">account_box</span>
-                        Photo Resizer (फोटो)
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleTabChange('sign')}
-                        className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                            selectedTab === 'sign'
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-xl">draw</span>
-                        Signature Resizer (हस्ताक्षर)
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleTabChange('custom')}
-                        className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                            selectedTab === 'custom'
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-xl">tune</span>
-                        Custom Dimensions (कस्टम)
-                    </button>
-                </div>
-
-                {/* Presets Row */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                    {PRESETS.filter(p => selectedTab === 'custom' ? true : p.category === selectedTab).map((preset) => {
-                        const isSelected = selectedPresetId === preset.id;
-                        return (
-                            <button
-                                key={preset.id}
-                                type="button"
-                                onClick={() => applyPreset(preset)}
-                                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative overflow-hidden ${
-                                    isSelected
-                                        ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/30 text-blue-900 dark:text-blue-100 shadow-sm'
-                                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
-                                }`}
-                            >
-                                <div className="font-bold text-xs sm:text-sm truncate">{preset.title}</div>
-                                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{preset.desc}</div>
-                                {isSelected && (
-                                    <span className="material-symbols-outlined text-blue-600 text-base absolute top-2 right-2">
-                                        check_circle
-                                    </span>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
-
                 {/* Main Workspace: Left Controls + Right Live Canvas */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left: Controls & Upload */}
-                    <div className="lg:col-span-6 space-y-6">
-                        {/* File Upload Box */}
+                    <div className="lg:col-span-6 space-y-5">
+                        {/* 1. File Upload Box */}
                         <div
                             onClick={() => fileInputRef.current?.click()}
                             onDragOver={(e) => e.preventDefault()}
@@ -763,7 +527,7 @@ export default function PhotoSignatureResizer() {
                                     handleFile(e.dataTransfer.files[0]);
                                 }
                             }}
-                            className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-2xl p-6 text-center cursor-pointer transition-colors group"
+                            className="bg-white dark:bg-slate-900 border-2 border-dashed border-blue-300 dark:border-blue-700/60 hover:border-blue-500 dark:hover:border-blue-400 rounded-3xl p-6 text-center cursor-pointer transition-colors group shadow-sm"
                         >
                             <input
                                 ref={fileInputRef}
@@ -772,90 +536,39 @@ export default function PhotoSignatureResizer() {
                                 className="hidden"
                                 onChange={(e) => handleFile(e.target.files?.[0])}
                             />
-                            <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                            <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3 shadow-xs">
                                 <span className="material-symbols-outlined text-3xl">add_photo_alternate</span>
                             </div>
                             <h3 className="font-bold text-slate-800 dark:text-white text-base">
-                                फोटो या साइन चुनें / Drag & Drop करें
+                                पासपोर्ट फोटो चुनें / Drag & Drop करें
                             </h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                या स्क्रीनशॉट लेकर यहाँ <strong>Ctrl + V</strong> दबाएं
+                                या स्क्रीनशॉट कॉपी करके यहाँ <strong>Ctrl + V</strong> दबाएं
                             </p>
 
                             {originalDimensions.width > 0 && (
-                                <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300">
-                                    <span>Original: {originalDimensions.width} x {originalDimensions.height} px</span>
+                                <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                    <span>Original: {originalDimensions.width} × {originalDimensions.height} px</span>
                                     <span>•</span>
                                     <span>{originalSizeKb} KB</span>
                                 </div>
                             )}
                         </div>
 
-                        {/* Adjustments & Fine Tuning */}
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-5">
-                            <h3 className="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
-                                <span className="material-symbols-outlined text-blue-600 text-lg">tune</span>
-                                इमेज साइज व क्वालिटी एडजस्टमेंट
-                            </h3>
-
-                            {/* Dimensions & KB Setting */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                <div>
-                                    <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                        चौड़ाई (Width px)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={targetWidth}
-                                        onChange={(e) => setTargetWidth(Number(e.target.value))}
-                                        className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                        ऊंचाई (Height px)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={targetHeight}
-                                        onChange={(e) => setTargetHeight(Number(e.target.value))}
-                                        className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                        Min KB
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={minKb}
-                                        onChange={(e) => setMinKb(Number(e.target.value))}
-                                        className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                        Max KB
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={maxKb}
-                                        onChange={(e) => setMaxKb(Number(e.target.value))}
-                                        className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Zoom & Rotation */}
-                            <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
-                                    <span>Zoom ({Math.round(zoom * 100)}%)</span>
-                                    <div className="flex gap-2">
+                        {/* 2. Photo Rotation & Color Adjustments */}
+                        {imageSrc && (
+                            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3">
+                                <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                                    <span className="flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-blue-600 text-base">rotate_right</span>
+                                        फोटो रोटेशन व अलाइनमेंट:
+                                    </span>
+                                    <div className="flex gap-1.5">
                                         <button
                                             type="button"
                                             onClick={() => setRotation((r) => (r - 90) % 360)}
-                                            className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-center gap-1 cursor-pointer"
-                                            title="Rotate Left 90°"
+                                            className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1 cursor-pointer transition"
+                                            title="बाएँ घुमाएँ 90°"
                                         >
                                             <span className="material-symbols-outlined text-sm">rotate_left</span>
                                             -90°
@@ -863,8 +576,8 @@ export default function PhotoSignatureResizer() {
                                         <button
                                             type="button"
                                             onClick={() => setRotation((r) => (r + 90) % 360)}
-                                            className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-center gap-1 cursor-pointer"
-                                            title="Rotate Right 90°"
+                                            className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1 cursor-pointer transition"
+                                            title="दाएँ घुमाएँ 90°"
                                         >
                                             <span className="material-symbols-outlined text-sm">rotate_right</span>
                                             +90°
@@ -872,386 +585,317 @@ export default function PhotoSignatureResizer() {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setZoom(1);
                                                 setPan({ x: 0, y: 0 });
                                                 setRotation(0);
+                                                setBrightness(100);
+                                                setContrast(100);
                                             }}
-                                            className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-center gap-1 cursor-pointer"
+                                            className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition"
                                         >
                                             <span className="material-symbols-outlined text-sm">restart_alt</span>
-                                            Reset
+                                            रिसेट
                                         </button>
                                     </div>
                                 </div>
-                                <input
-                                    type="range"
-                                    min="0.4"
-                                    max="3.0"
-                                    step="0.05"
-                                    value={zoom}
-                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                    className="w-full accent-blue-600 cursor-pointer"
-                                />
-                                <p className="text-[11px] text-slate-400">
-                                    💡 <em>दाएं तरफ फोटो को पकड़कर ड्रैग (Drag) करके बीच में सेट कर सकते हैं।</em>
-                                </p>
-                            </div>
 
-                            {/* White Background & Paper Cleaner for Signature */}
-                            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                                <label className="flex items-center justify-between cursor-pointer">
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-amber-500">auto_fix_high</span>
-                                        <div>
-                                            <span className="text-xs font-bold text-slate-800 dark:text-white">
-                                                White Paper & Dark Ink Booster (कागज़ साफ करें)
-                                            </span>
-                                            <p className="text-[11px] text-slate-500">
-                                                हस्ताक्षर के पीछे की पीली/धुंधली छाया हटाकर साफ सफेद बैकग्राउंड बनाता है
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        checked={cleanWhitePaper}
-                                        onChange={(e) => setCleanWhitePaper(e.target.checked)}
-                                        className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
-                                    />
-                                </label>
-
-                                {cleanWhitePaper && (
-                                    <div className="pl-6 space-y-2">
-                                        <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
-                                            <span>सफेदी थ्रेशोल्ड (Threshold): {cleanThreshold}</span>
+                                {/* Brightness & Contrast */}
+                                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                                    <div>
+                                        <div className="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                            <span>चमक (Brightness)</span>
+                                            <span>{brightness}%</span>
                                         </div>
                                         <input
                                             type="range"
-                                            min="100"
-                                            max="240"
-                                            value={cleanThreshold}
-                                            onChange={(e) => setCleanThreshold(Number(e.target.value))}
-                                            className="w-full accent-amber-500 cursor-pointer"
+                                            min="60"
+                                            max="140"
+                                            value={brightness}
+                                            onChange={(e) => setBrightness(Number(e.target.value))}
+                                            className="w-full accent-blue-600 cursor-pointer"
                                         />
                                     </div>
-                                )}
+                                    <div>
+                                        <div className="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                            <span>कंट्रास्ट (Contrast)</span>
+                                            <span>{contrast}%</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="60"
+                                            max="140"
+                                            value={contrast}
+                                            onChange={(e) => setContrast(Number(e.target.value))}
+                                            className="w-full accent-blue-600 cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-[11px] text-slate-400 italic">
+                                    💡 <em>दाईं तरफ फोटो को माउस से पकड़कर ड्रैग करके चेहरे को सेंटर में सेट करें।</em>
+                                </p>
+                            </div>
+                        )}
+
+                        {/* 3. PERMANENT OPTIONS ON PHOTO (Name, DOP, DOB, Signature) */}
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-indigo-600 text-xl">fact_check</span>
+                                    <h3 className="font-black text-slate-800 dark:text-white text-sm sm:text-base">
+                                        फोटो पर क्या-क्या जोड़ना है? (Photo Details)
+                                    </h3>
+                                </div>
+                                <span className="text-[11px] font-bold text-slate-400">
+                                    मार्क करें और विवरण भरें
+                                </span>
                             </div>
 
-                            {/* Candidate Name, DOB & DOP Strip (Only on Photo Mode) */}
-                            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                                <label className="flex items-center justify-between cursor-pointer">
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-indigo-500">badge</span>
-                                        <div>
-                                            <span className="text-xs font-bold text-slate-800 dark:text-white">
-                                                Add Name, DOB & DOP on Photo (फोटो पर नाम, DOB या DOP पट्टी)
+                            {/* 4 Clear Options */}
+                            <div className="space-y-3">
+                                {/* Option 1: Name Add */}
+                                <div className={`p-3.5 rounded-2xl border transition ${showName ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-800' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/80'}`}>
+                                    <label className="flex items-center justify-between cursor-pointer">
+                                        <div className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                checked={showName}
+                                                onChange={(e) => setShowName(e.target.checked)}
+                                                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                            />
+                                            <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
+                                                1. Name Add (उम्मीदवार का नाम जोड़ें)
                                             </span>
-                                            <p className="text-[11px] text-slate-500">
-                                                SSC, HSSC, Police, Railway व सरकारी फॉर्म नियमों के अनुसार नाम, जन्म तिथि (DOB) या फोटो की तारीख (DOP) जोड़ें
-                                            </p>
                                         </div>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        checked={addNameDate}
-                                        onChange={(e) => setAddNameDate(e.target.checked)}
-                                        className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                    />
-                                </label>
+                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${showName ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
+                                            {showName ? 'चालू' : 'बंद'}
+                                        </span>
+                                    </label>
 
-                                {addNameDate && (
-                                    <div className="space-y-3.5 bg-slate-50/80 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80">
-                                        {/* Quick Preset Buttons */}
-                                        <div>
-                                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-xs text-amber-500">bolt</span>
-                                                Quick Presets (एक-क्लिक में चुनें):
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setShowName(true);
-                                                        setShowDop(true);
-                                                        setShowDob(false);
-                                                        setShowDopPrefix(true);
-                                                    }}
-                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
-                                                        showName && showDop && !showDob
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                                    }`}
-                                                >
-                                                    <span>Name + DOP (SSC/Police)</span>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setShowName(true);
-                                                        setShowDob(true);
-                                                        setShowDop(false);
-                                                        setShowDobPrefix(true);
-                                                    }}
-                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
-                                                        showName && showDob && !showDop
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                                    }`}
-                                                >
-                                                    <span>Name + DOB (State/Board)</span>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setShowName(false);
-                                                        setShowDop(true);
-                                                        setShowDob(false);
-                                                        setShowDopPrefix(true);
-                                                    }}
-                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
-                                                        !showName && showDop && !showDob
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                                    }`}
-                                                >
-                                                    <span>Only DOP</span>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setShowName(false);
-                                                        setShowDob(true);
-                                                        setShowDop(false);
-                                                        setShowDobPrefix(true);
-                                                    }}
-                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
-                                                        !showName && !showDop && showDob
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                                    }`}
-                                                >
-                                                    <span>Only DOB</span>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setShowName(true);
-                                                        setShowDob(true);
-                                                        setShowDop(true);
-                                                        setShowDopPrefix(true);
-                                                        setShowDobPrefix(true);
-                                                    }}
-                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
-                                                        showName && showDop && showDob
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                                    }`}
-                                                >
-                                                    <span>Name + DOB + DOP (All)</span>
-                                                </button>
-                                            </div>
+                                    {showName && (
+                                        <div className="mt-2.5 pl-6">
+                                            <input
+                                                type="text"
+                                                value={candidateName}
+                                                onChange={(e) => setCandidateName(e.target.value)}
+                                                placeholder="जैसे: RAHUL SHARMA (उम्मीदवार का नाम लिखें)"
+                                                className="w-full px-3.5 py-2 rounded-xl text-xs sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold uppercase tracking-wider"
+                                            />
                                         </div>
+                                    )}
+                                </div>
 
-                                        {/* Checkbox Options ("mark krke jo jo krna hai") */}
-                                        <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700/80">
-                                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                                                Select Details to Print (मार्क करें जो जो जोड़ना है):
-                                            </div>
+                                {/* Option 2: DOP Add (Date of Photo) */}
+                                <div className={`p-3.5 rounded-2xl border transition ${showDop ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-800' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/80'}`}>
+                                    <label className="flex items-center justify-between cursor-pointer">
+                                        <div className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                checked={showDop}
+                                                onChange={(e) => setShowDop(e.target.checked)}
+                                                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                            />
+                                            <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
+                                                2. DOP Add (फोटो की तारीख - Date of Photo)
+                                            </span>
+                                        </div>
+                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${showDop ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
+                                            {showDop ? 'चालू' : 'बंद'}
+                                        </span>
+                                    </label>
 
-                                            {/* 1. Candidate Name */}
-                                            <div className={`p-3 rounded-xl border transition ${
-                                                showName
-                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
-                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
-                                            }`}>
-                                                <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={showName}
-                                                        onChange={(e) => setShowName(e.target.checked)}
-                                                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                                    />
-                                                    <span>उम्मीदवार का नाम (Candidate Name)</span>
-                                                    {showName && <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 font-bold">सक्रिय</span>}
-                                                </label>
-                                                {showName && (
-                                                    <div className="mt-2 pl-6">
-                                                        <input
-                                                            type="text"
-                                                            value={candidateName}
-                                                            onChange={(e) => setCandidateName(e.target.value)}
-                                                            placeholder="e.g. AMIT KUMAR"
-                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold uppercase"
-                                                        />
+                                    {showDop && (
+                                        <div className="mt-2.5 pl-6 flex flex-col sm:flex-row gap-2 items-center">
+                                            <input
+                                                type="text"
+                                                value={dopDate}
+                                                onChange={(e) => setDopDate(e.target.value)}
+                                                placeholder="DD/MM/YYYY (उदा. 04/10/2026)"
+                                                className="flex-1 px-3.5 py-2 rounded-xl text-xs sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                                            />
+                                            <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showDopPrefix}
+                                                    onChange={(e) => setShowDopPrefix(e.target.checked)}
+                                                    className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
+                                                />
+                                                <span>'DOP: ' उपसर्ग लगाएं</span>
+                                            </label>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Option 3: DOB Add (Date of Birth) */}
+                                <div className={`p-3.5 rounded-2xl border transition ${showDob ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-800' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/80'}`}>
+                                    <label className="flex items-center justify-between cursor-pointer">
+                                        <div className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                checked={showDob}
+                                                onChange={(e) => setShowDob(e.target.checked)}
+                                                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                            />
+                                            <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
+                                                3. DOB Add (जन्म तिथि - Date of Birth)
+                                            </span>
+                                        </div>
+                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${showDob ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
+                                            {showDob ? 'चालू' : 'बंद'}
+                                        </span>
+                                    </label>
+
+                                    {showDob && (
+                                        <div className="mt-2.5 pl-6 flex flex-col sm:flex-row gap-2 items-center">
+                                            <input
+                                                type="text"
+                                                value={dobDate}
+                                                onChange={(e) => setDobDate(e.target.value)}
+                                                placeholder="DD/MM/YYYY (उदा. 15/08/1998)"
+                                                className="flex-1 px-3.5 py-2 rounded-xl text-xs sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                                            />
+                                            <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showDobPrefix}
+                                                    onChange={(e) => setShowDobPrefix(e.target.checked)}
+                                                    className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
+                                                />
+                                                <span>'DOB: ' उपसर्ग लगाएं</span>
+                                            </label>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Option 4: Signature Add (फोटो के नीचे हस्ताक्षर जोड़ें) */}
+                                <div className={`p-3.5 rounded-2xl border transition ${showSignature ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-800' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/80'}`}>
+                                    <label className="flex items-center justify-between cursor-pointer">
+                                        <div className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                checked={showSignature}
+                                                onChange={(e) => setShowSignature(e.target.checked)}
+                                                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                            />
+                                            <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
+                                                4. Signature Add (फोटो के नीचे हस्ताक्षर जोड़ें)
+                                            </span>
+                                        </div>
+                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${showSignature ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
+                                            {showSignature ? 'चालू' : 'बंद'}
+                                        </span>
+                                    </label>
+
+                                    {showSignature && (
+                                        <div className="mt-3 pl-6 space-y-2.5">
+                                            <input
+                                                ref={sigInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => handleSignatureFile(e.target.files?.[0])}
+                                            />
+
+                                            {signatureSrc ? (
+                                                <div className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-20 h-10 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden flex items-center justify-center p-1">
+                                                            <img
+                                                                src={signatureSrc}
+                                                                alt="Signature"
+                                                                className="max-w-full max-h-full object-contain"
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                            हस्ताक्षर फोटो के नीचे सेट है
+                                                        </span>
                                                     </div>
-                                                )}
-                                            </div>
-
-                                            {/* 2. Date of Photo (DOP) */}
-                                            <div className={`p-3 rounded-xl border transition ${
-                                                showDop
-                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
-                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
-                                            }`}>
-                                                <div className="flex items-center justify-between">
-                                                    <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={showDop}
-                                                            onChange={(e) => setShowDop(e.target.checked)}
-                                                            className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                                        />
-                                                        <span>Date of Photo (DOP - फोटो खींचने की तारीख)</span>
-                                                        {showDop && <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 font-bold">DOP</span>}
-                                                    </label>
-                                                    {showDop && (
+                                                    <div className="flex items-center gap-1.5">
                                                         <button
                                                             type="button"
-                                                            onClick={() => setDopDate(getFormattedDate())}
-                                                            className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
-                                                            title="आज की तारीख सेट करें"
+                                                            onClick={() => sigInputRef.current?.click()}
+                                                            className="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer transition"
                                                         >
-                                                            <span className="material-symbols-outlined text-xs">today</span>
-                                                            Today (आज)
+                                                            बदलें
                                                         </button>
-                                                    )}
-                                                </div>
-                                                {showDop && (
-                                                    <div className="mt-2 pl-6 space-y-2">
-                                                        <input
-                                                            type="text"
-                                                            value={dopDate}
-                                                            onChange={(e) => setDopDate(e.target.value)}
-                                                            placeholder="DD/MM/YYYY (e.g. 04/10/2026)"
-                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold font-mono"
-                                                        />
-                                                        <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={showDopPrefix}
-                                                                onChange={(e) => setShowDopPrefix(e.target.checked)}
-                                                                className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
-                                                            />
-                                                            <span>'DOP:' प्रिफिक्स लगाएं (जैसे: <strong>DOP: {dopDate || '04/10/2026'}</strong>)</span>
-                                                        </label>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleRemoveSignature}
+                                                            className="px-2 py-1 text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-950/60 text-red-600 rounded-lg cursor-pointer transition"
+                                                            title="हटाएं"
+                                                        >
+                                                            हटाएं
+                                                        </button>
                                                     </div>
-                                                )}
-                                            </div>
-
-                                            {/* 3. Date of Birth (DOB) */}
-                                            <div className={`p-3 rounded-xl border transition ${
-                                                showDob
-                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
-                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
-                                            }`}>
-                                                <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={showDob}
-                                                        onChange={(e) => setShowDob(e.target.checked)}
-                                                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                                    />
-                                                    <span>Date of Birth (DOB - जन्म तिथि)</span>
-                                                    {showDob && <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/80 text-amber-600 font-bold">DOB</span>}
-                                                </label>
-                                                {showDob && (
-                                                    <div className="mt-2 pl-6 space-y-2">
-                                                        <input
-                                                            type="text"
-                                                            value={dobDate}
-                                                            onChange={(e) => setDobDate(e.target.value)}
-                                                            placeholder="DD/MM/YYYY (e.g. 15/08/2000)"
-                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold font-mono"
-                                                        />
-                                                        <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={showDobPrefix}
-                                                                onChange={(e) => setShowDobPrefix(e.target.checked)}
-                                                                className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
-                                                            />
-                                                            <span>'DOB:' प्रिफिक्स लगाएं (जैसे: <strong>DOB: {dobDate || '15/08/2000'}</strong>)</span>
-                                                        </label>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Options when both DOB & DOP are enabled */}
-                                            {showDob && showDop && (
-                                                <div className="pl-2">
-                                                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={combineDates}
-                                                            onChange={(e) => setCombineDates(e.target.checked)}
-                                                            className="w-4 h-4 rounded text-indigo-600 cursor-pointer"
-                                                        />
-                                                        <span>DOB और DOP दोनों को एक ही लाइन में रखें (DOB: ... | DOP: ...)</span>
-                                                    </label>
                                                 </div>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => sigInputRef.current?.click()}
+                                                    className="w-full py-3 px-4 border-2 border-dashed border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-800/80 hover:bg-indigo-50/50 dark:hover:bg-slate-800 rounded-xl text-center cursor-pointer transition flex items-center justify-center gap-2 text-xs font-bold text-indigo-700 dark:text-indigo-300"
+                                                >
+                                                    <span className="material-symbols-outlined text-base">draw</span>
+                                                    ✍️ उम्मीदवार का हस्ताक्षर अपलोड करें (PNG/JPG)
+                                                </button>
                                             )}
-
-                                            {/* Strip Theme Selection */}
-                                            <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs">
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">पट्टी का रंग (Strip Theme):</span>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setStripTheme('white')}
-                                                        className={`px-2.5 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
-                                                            stripTheme === 'white'
-                                                                ? 'bg-white text-slate-900 border-indigo-600 ring-2 ring-indigo-500/20 shadow-xs'
-                                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
-                                                        }`}
-                                                    >
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400"></span>
-                                                        सफेद पट्टी
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setStripTheme('black')}
-                                                        className={`px-2.5 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
-                                                            stripTheme === 'black'
-                                                                ? 'bg-slate-900 text-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
-                                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
-                                                        }`}
-                                                    >
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600"></span>
-                                                        काली पट्टी
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
+
+                            {/* Strip Background Theme Option */}
+                            {(showName || showDop || showDob) && (
+                                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                                    <span className="font-bold text-slate-600 dark:text-slate-400">
+                                        नाम व तारीख पट्टी का रंग:
+                                    </span>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setStripTheme('white')}
+                                            className={`px-3 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                                                stripTheme === 'white'
+                                                    ? 'bg-white text-slate-900 border-indigo-600 ring-2 ring-indigo-500/20 shadow-xs'
+                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                                            }`}
+                                        >
+                                            <span className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400"></span>
+                                            सफेद पट्टी
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setStripTheme('black')}
+                                            className={`px-3 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                                                stripTheme === 'black'
+                                                    ? 'bg-slate-900 text-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
+                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                                            }`}
+                                        >
+                                            <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600"></span>
+                                            काली पट्टी
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* Right: Live Interactive Canvas & Download */}
+                    {/* Right: Live Interactive Canvas & Download + A4 Sheet Studio */}
                     <div className="lg:col-span-6 space-y-4">
-                        <div className="bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center min-h-[460px] relative overflow-hidden">
-                            {/* Target size badge */}
-                            <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
-                                <span className="px-3 py-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm border border-slate-200/50 dark:border-slate-700/50">
-                                    Target: {targetWidth} × {targetHeight} px
-                                </span>
-                                <span className="px-3 py-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50">
-                                    Limit: {minKb} - {maxKb} KB
+                        {/* Single Passport Photo Preview Box */}
+                        <div className="bg-slate-100 dark:bg-slate-950 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center min-h-[460px] relative overflow-hidden">
+                            {/* Standard Passport Size Badge */}
+                            <div className="absolute top-4 left-4 z-10">
+                                <span className="px-3.5 py-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur rounded-full text-xs font-black text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-700/50">
+                                    3.5 × 4.5 cm (Online Passport Photo)
                                 </span>
                             </div>
 
                             {/* Live Result Size Badge */}
                             {outputKb > 0 && (
                                 <div className="absolute top-4 right-4 z-10">
-                                    <span className={`px-3 py-1 rounded-full text-xs font-black shadow-sm flex items-center gap-1 ${
-                                        outputKb <= maxKb && outputKb >= minKb
-                                            ? 'bg-emerald-500 text-white'
-                                            : 'bg-amber-500 text-white'
-                                    }`}>
-                                        <span className="material-symbols-outlined text-sm">
-                                            {outputKb <= maxKb && outputKb >= minKb ? 'check_circle' : 'warning'}
-                                        </span>
-                                        Size: {outputKb} KB
+                                    <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500 text-white shadow-sm flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                                        HD: {outputKb} KB
                                     </span>
                                 </div>
                             )}
@@ -1264,9 +908,9 @@ export default function PhotoSignatureResizer() {
                                     onMouseUp={handleMouseUp}
                                     onMouseLeave={handleMouseUp}
                                     style={{
-                                        aspectRatio: `${targetWidth} / ${targetHeight}`,
-                                        width: targetWidth > targetHeight ? '90%' : 'auto',
-                                        height: targetHeight >= targetWidth ? '380px' : 'auto',
+                                        aspectRatio: `${TARGET_WIDTH} / ${TARGET_HEIGHT}`,
+                                        width: 'auto',
+                                        height: '380px',
                                     }}
                                 >
                                     {outputUrl ? (
@@ -1277,7 +921,7 @@ export default function PhotoSignatureResizer() {
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center text-slate-400 text-xs">
-                                            Processing...
+                                            प्रोसेसिंग हो रही है...
                                         </div>
                                     )}
 
@@ -1292,13 +936,13 @@ export default function PhotoSignatureResizer() {
                             ) : (
                                 <div className="text-center py-12 px-4 space-y-3">
                                     <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800 mx-auto flex items-center justify-center text-slate-400">
-                                        <span className="material-symbols-outlined text-3xl">image</span>
+                                        <span className="material-symbols-outlined text-3xl">account_box</span>
                                     </div>
                                     <p className="font-bold text-slate-600 dark:text-slate-300 text-sm">
                                         यहाँ कोई इमेज अपलोड नहीं है
                                     </p>
                                     <p className="text-xs text-slate-400 max-w-xs">
-                                        बाईं ओर से फोटो या हस्ताक्षर अपलोड करें, तुरंत लाइव प्रिव्यू और सटीक साइज़ दिखेगा।
+                                        बाईं ओर से पासपोर्ट फोटो अपलोड करें, तुरंत लाइव प्रिव्यू और A4 शीट दिखेगी।
                                     </p>
                                 </div>
                             )}
@@ -1311,15 +955,15 @@ export default function PhotoSignatureResizer() {
                                     <button
                                         type="button"
                                         onClick={handleDownload}
-                                        className="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/20 text-center transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+                                        className="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-600/20 text-center transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
                                     >
                                         <span className="material-symbols-outlined text-xl">download</span>
-                                        सिंगल फोटो डाउनलोड ({outputKb} KB)
+                                        सिंगल पासपोर्ट फोटो डाउनलोड ({outputKb} KB)
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="py-3.5 px-5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-center text-xs cursor-pointer transition flex items-center justify-center gap-1.5"
+                                        className="py-3.5 px-5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl text-center text-xs cursor-pointer transition flex items-center justify-center gap-1.5"
                                     >
                                         <span className="material-symbols-outlined text-lg">refresh</span>
                                         नई फोटो बदलें
@@ -1339,7 +983,7 @@ export default function PhotoSignatureResizer() {
                                                     A4 पासपोर्ट फोटो शीट प्रिंटर (A4 Sheet Maker)
                                                 </h3>
                                                 <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-                                                    ऊपर 6 फोटो प्रति लाइन • सीधा प्रिंट निकालें या A4 शीट JPG डाउनलोड करें
+                                                    ऊपर 1 लाइन में 6 फोटो • कुल 36 फोटो • 1-क्लिक में A4 शीट प्रिंट व डाउनलोड
                                                 </p>
                                             </div>
                                         </div>
@@ -1356,7 +1000,7 @@ export default function PhotoSignatureResizer() {
                                                 लाइन चुनें (Quick Line Presets):
                                             </span>
                                             <span className="text-[11px] font-semibold text-slate-400">
-                                                1 लाइन = 6 फोटो
+                                                1 लाइन = 6 फोटो • कुल 36 फोटो
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2">
@@ -1395,7 +1039,7 @@ export default function PhotoSignatureResizer() {
                                         {/* Fine-tune Counter */}
                                         <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
                                             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                                                कस्टम फोटो संख्या (1 से 36):
+                                                कस्टम फोटो संख्या (1 से 36+):
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <button
@@ -1408,17 +1052,17 @@ export default function PhotoSignatureResizer() {
                                                 <input
                                                     type="number"
                                                     min="1"
-                                                    max="36"
+                                                    max="72"
                                                     value={a4Count}
                                                     onChange={(e) => {
                                                         const val = parseInt(e.target.value) || 1;
-                                                        setA4Count(Math.max(1, Math.min(36, val)));
+                                                        setA4Count(Math.max(1, val));
                                                     }}
                                                     className="flex-1 py-1.5 text-center font-black text-lg bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => setA4Count((c) => Math.min(36, c + 1))}
+                                                    onClick={() => setA4Count((c) => c + 1)}
                                                     className="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-black text-base text-slate-700 dark:text-slate-200 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs"
                                                 >
                                                     +
@@ -1501,7 +1145,7 @@ export default function PhotoSignatureResizer() {
                                                     कागज़ बचत टिप (Paper Saver):
                                                 </div>
                                                 <p className="text-[11px] leading-relaxed opacity-90">
-                                                    पहली 6 फोटो A4 पेपर के बिल्कुल ऊपर (Top Row) सेट होती हैं। प्रिंट करने के बाद कैंची से ऊपर की पट्टी काटकर बाकी बचे पूरे A4 पेपर को दोबारा प्रिंटर में इस्तेमाल कर सकते हैं!
+                                                    ऊपर की पहली 6 फोटो A4 पेपर के टॉप रो में सेट होती हैं। प्रिंट करने के बाद कैंची से ऊपर की पट्टी काटकर बाकी बचे A4 पेपर को दोबारा इस्तेमाल कर सकते हैं!
                                                 </p>
                                             </div>
 
