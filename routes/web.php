@@ -594,6 +594,33 @@ Route::get('/migrate-db', function () {
             $output .= "RcPdf error: " . $rpe->getMessage() . "\n\n";
         }
 
+        // Ensure RC PDF Server 2 is configured with 149 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'rc-pdf-server-2'],
+                [
+                    'name' => 'Rc Pdf Sarver 2',
+                    'description' => 'Vehicle RC PDF Server 2 - Smart Chip & PVC Card Official PDF Download.',
+                    'icon' => 'drive_eta',
+                    'coin_cost' => 149,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'rc_pdf_server_2',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 62,
+                ]
+            );
+            \App\Models\Setting::set('vahan_rc_pdf2_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf2.php');
+            if (empty(\App\Models\Setting::get('vahan_rc_pdf2_key'))) {
+                \App\Models\Setting::set('vahan_rc_pdf2_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== RC PDF SERVER 2 UPSERTED (149 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $rpe2) {
+            $output .= "RcPdfServer2 error: " . $rpe2->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1052,6 +1079,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'rc_pdf_owner_book_print',
             'sort_order' => 17,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'rc-pdf-server-2'],
+        [
+            'name' => 'Rc Pdf Sarver 2',
+            'description' => 'Vehicle RC PDF Server 2 - Smart Chip & PVC Card Official PDF Download.',
+            'icon' => 'drive_eta',
+            'coin_cost' => 149,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'rc_pdf_server_2',
+            'sort_order' => 18,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -1856,6 +1899,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/rc-pdf-instant', [\App\Http\Controllers\RcPdfController::class, 'index'])->name('utilities.rc-pdf-instant');
     Route::post('/utilities/rc-pdf-instant/search', [\App\Http\Controllers\RcPdfController::class, 'search'])->name('utilities.rc-pdf-instant.search');
     Route::post('/utilities/rc-pdf-instant/update-api', [\App\Http\Controllers\RcPdfController::class, 'updateApi'])->name('utilities.rc-pdf-instant.update-api');
+
+    Route::get('/utilities/rc-pdf-server-2', [\App\Http\Controllers\RcPdfServer2Controller::class, 'index'])->name('utilities.rc-pdf-server-2');
+    Route::post('/utilities/rc-pdf-server-2/search', [\App\Http\Controllers\RcPdfServer2Controller::class, 'search'])->name('utilities.rc-pdf-server-2.search');
+    Route::post('/utilities/rc-pdf-server-2/update-api', [\App\Http\Controllers\RcPdfServer2Controller::class, 'updateApi'])->name('utilities.rc-pdf-server-2.update-api');
+
+    Route::get('/utilities/rc-pdf-sarver-2', [\App\Http\Controllers\RcPdfServer2Controller::class, 'index'])->name('utilities.rc-pdf-sarver-2');
+    Route::post('/utilities/rc-pdf-sarver-2/search', [\App\Http\Controllers\RcPdfServer2Controller::class, 'search'])->name('utilities.rc-pdf-sarver-2.search');
+    Route::post('/utilities/rc-pdf-sarver-2/update-api', [\App\Http\Controllers\RcPdfServer2Controller::class, 'updateApi'])->name('utilities.rc-pdf-sarver-2.update-api');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();

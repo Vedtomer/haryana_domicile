@@ -404,6 +404,18 @@ class Service extends Model
             'index' => '/utilities/rc-pdf-owner-book-print',
             'create' => '/utilities/rc-pdf-owner-book-print',
         ],
+        'rc_pdf_server_2' => [
+            'label' => 'Rc Pdf Sarver 2',
+            'model' => null,
+            'index' => '/utilities/rc-pdf-server-2',
+            'create' => '/utilities/rc-pdf-server-2',
+        ],
+        'rc_pdf_sarver_2' => [
+            'label' => 'Rc Pdf Sarver 2',
+            'model' => null,
+            'index' => '/utilities/rc-pdf-server-2',
+            'create' => '/utilities/rc-pdf-server-2',
+        ],
         'pvc_card_maker' => [
             'label' => 'Smart PVC Card Maker',
             'model' => null,

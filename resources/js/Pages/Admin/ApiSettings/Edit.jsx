@@ -36,6 +36,8 @@ export default function Edit({ settings = {} }) {
         vahan_puc_verify_otp_url: settings.vahan_puc_verify_otp_url || '',
         vahan_rc_pdf_url: settings.vahan_rc_pdf_url || '',
         vahan_rc_pdf_key: settings.vahan_rc_pdf_key || '',
+        vahan_rc_pdf2_url: settings.vahan_rc_pdf2_url || '',
+        vahan_rc_pdf2_key: settings.vahan_rc_pdf2_key || '',
         vahan_learning_licence_url: settings.vahan_learning_licence_url || '',
         vahan_learning_licence_key: settings.vahan_learning_licence_key || '',
         vehicle_to_mobile_api_url: settings.vehicle_to_mobile_api_url || '',
@@ -376,6 +378,10 @@ export default function Edit({ settings = {} }) {
                                         <div className="space-y-3">
                                             {renderUrlInput('vahan_rc_pdf_url', 'Rc Pdf Owner Book Print URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php')}
                                             {renderKeyInput('vahan_rc_pdf_key', 'RC PDF API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
+                                        </div>
+                                        <div className="space-y-3">
+                                            {renderUrlInput('vahan_rc_pdf2_url', 'Rc Pdf Sarver 2 URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf2.php')}
+                                            {renderKeyInput('vahan_rc_pdf2_key', 'RC PDF Sarver 2 Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                         </div>
                                         <div className="space-y-3">
                                             {renderUrlInput('vahan_learning_licence_url', 'Learning Licence PDF Download URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php')}
