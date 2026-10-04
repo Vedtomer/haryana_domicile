@@ -21,7 +21,7 @@ class AadharToNpciController extends Controller
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
 
-        $coinCost = $service ? (int) $service->coin_cost : 20;
+        $coinCost = $service ? (int) $service->coin_cost : 14;
         $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
 
         return Inertia::render('Utilities/AadharToNpciStatus', [
@@ -76,7 +76,7 @@ class AadharToNpciController extends Controller
 
         $service = Service::where('slug', 'aadhar-to-npci-status')->first();
         $user = auth()->user();
-        $coinCost = $service ? (int) $service->coin_cost : 20;
+        $coinCost = $service ? (int) $service->coin_cost : 14;
         $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
 
         if (!$isStaff && $user->coins < $coinCost) {

@@ -123,7 +123,7 @@ Route::get('/migrate-db', function () {
                     'name' => 'Aadhar To Check Ncpi Status',
                     'description' => 'Check real-time Aadhaar to NPCI / DBT Bank Linking and seeding status with Bank Name, Active Status, Mobile & PAN.',
                     'icon' => '🏦',
-                    'coin_cost' => 20,
+                    'coin_cost' => 14,
                     'kind' => 'module',
                     'module_key' => 'aadhar_to_npci_status',
                     'is_active' => true,

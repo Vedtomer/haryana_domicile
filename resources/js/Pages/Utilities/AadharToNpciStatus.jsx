@@ -4,7 +4,7 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function AadharToNpciStatus() {
-    const { currentService, coinCost = 20, isAdmin = false, apiUrl: propApiUrl = '', apiKey: propApiKey = '' } = usePage().props;
+    const { currentService, coinCost = 14, isAdmin = false, apiUrl: propApiUrl = '', apiKey: propApiKey = '' } = usePage().props;
     const [aadhar, setAadhar] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
