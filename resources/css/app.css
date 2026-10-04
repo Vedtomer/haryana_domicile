@@ -249,19 +249,21 @@
 
 
 /* ==========================================================================
-   Universal Form Controls & Service Forms: Crisp Black Text
-   Ensure that words typed in any input, textarea, or select are always black
+   Universal Form Controls & Service Forms:
+   - Light Mode: Crisp Black Text (#000000)
+   - Dark Mode: Pure Crisp White Text (#ffffff)
    ========================================================================== */
 
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
-textarea,
-select {
+/* Light mode: Words typed in any input, textarea, or select are always black */
+html:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
 }
 
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"])::placeholder,
-textarea::placeholder {
+html:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"])::placeholder,
+html:not(.dark) textarea::placeholder {
     color: #64748b !important;
     -webkit-text-fill-color: #64748b !important;
     opacity: 0.8 !important;
@@ -302,25 +304,37 @@ html:not(.dark) .MuiPaper-root label {
 /* In dark mode, ensure text and labels on dark cards are crisp light text */
 html.dark .dark\:bg-slate-900,
 html.dark .dark\:bg-slate-800,
-html.dark .dark\:bg-slate-950 {
+html.dark .dark\:bg-slate-950,
+.dark .dark\:bg-slate-900,
+.dark .dark\:bg-slate-800,
+.dark .dark\:bg-slate-950 {
     color: #f1f5f9;
 }
 
 html.dark .dark\:bg-slate-900 label,
 html.dark .dark\:bg-slate-800 label,
-html.dark .dark\:bg-slate-950 label {
+html.dark .dark\:bg-slate-950 label,
+.dark .dark\:bg-slate-900 label,
+.dark .dark\:bg-slate-800 label,
+.dark .dark\:bg-slate-950 label {
     color: #cbd5e1;
 }
 
+/* Dark mode inputs across ALL services: Always Pure Crisp White Text */
 html.dark input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
 html.dark textarea,
-html.dark select {
+html.dark select,
+.dark input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
 
 html.dark input::placeholder,
-html.dark textarea::placeholder {
+html.dark textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
     color: #94a3b8 !important;
     -webkit-text-fill-color: #94a3b8 !important;
 }
