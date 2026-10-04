@@ -48,6 +48,7 @@ Route::get('/migrate-db', function () {
         $output .= "Base Path: " . base_path() . "\n";
         $output .= "Public Path: " . public_path() . "\n";
         $output .= "Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'none') . "\n";
+        $output .= "Server Outbound IP: " . trim((string) @file_get_contents('https://api.ipify.org')) . "\n";
         $output .= "Git Log Before: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n";
 
         // Pull latest from GitHub directly
