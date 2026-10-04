@@ -78,6 +78,8 @@ export default function Edit({ settings = {} }) {
         ration_to_aadhar_up_api_key: settings.ration_to_aadhar_up_api_key || '',
         ration_advance_details_api_url: settings.ration_advance_details_api_url || '',
         ration_advance_details_api_key: settings.ration_advance_details_api_key || '',
+        ration_sleep_photo_api_url: settings.ration_sleep_photo_api_url || '',
+        ration_sleep_photo_api_key: settings.ration_sleep_photo_api_key || '',
         aadhar_update_api_key: settings.aadhar_update_api_key || '',
         aadhar_update_mobile_update_url: settings.aadhar_update_mobile_update_url || '',
         aadhar_update_dob_change_url: settings.aadhar_update_dob_change_url || '',
@@ -657,6 +659,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('ration_advance_details_api_url', 'Ration Advance Details Endpoint URL', 'https://good-api-point.com/apis_partner/v1/ration_card_api/up_ration_details.php')}
                                         {renderKeyInput('ration_advance_details_api_key', 'Ration Advance Details API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Ration Sleep Photo (Good-API-Point) */}
+                                <div className="p-4 bg-blue-50/40 dark:bg-blue-950/20 rounded-2xl border border-blue-200/60 dark:border-blue-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-blue-900 dark:text-blue-300 uppercase tracking-wider">
+                                            Ration Sleep Photo API (राशन पर्ची / स्लिप फोटो सहित)
+                                        </h4>
+                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('ration_sleep_photo_api_url', 'Ration Sleep Photo Endpoint URL', 'https://good-api-point.com/apis_partner/v1/ration_card_api/bihar_ration_slip.php')}
+                                        {renderKeyInput('ration_sleep_photo_api_key', 'Ration Sleep Photo API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 

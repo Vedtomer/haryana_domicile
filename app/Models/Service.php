@@ -252,6 +252,27 @@ class Service extends Model
             'index' => '/utilities/ration-advance-details',
             'create' => '/utilities/ration-advance-details',
         ],
+        'ration_sleep_photo' => [
+            'label' => 'Ration Sleep Photo',
+            'icon' => 'photo_camera',
+            'model' => null,
+            'index' => '/utilities/ration-sleep-photo',
+            'create' => '/utilities/ration-sleep-photo',
+        ],
+        'ration_slip_photo' => [
+            'label' => 'Ration Sleep Photo',
+            'icon' => 'photo_camera',
+            'model' => null,
+            'index' => '/utilities/ration-sleep-photo',
+            'create' => '/utilities/ration-sleep-photo',
+        ],
+        'bihar_ration_slip' => [
+            'label' => 'Ration Sleep Photo',
+            'icon' => 'photo_camera',
+            'model' => null,
+            'index' => '/utilities/ration-sleep-photo',
+            'create' => '/utilities/ration-sleep-photo',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,
@@ -839,6 +860,10 @@ class Service extends Model
 
         if ($this->slug === 'aadhar-to-farmer-all-state-pdf' || $this->slug === 'farmer-card-pdf') {
             return '/utilities/aadhar-to-farmer-all-state-pdf';
+        }
+
+        if ($this->slug === 'ration-sleep-photo' || $this->slug === 'ration-slip-photo' || $this->slug === 'bihar-ration-slip') {
+            return '/utilities/ration-sleep-photo';
         }
 
         if ($this->slug === 'birth-certificate-download' || $this->slug === 'crs-birth-portal') {

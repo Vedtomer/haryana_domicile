@@ -795,6 +795,33 @@ Route::get('/migrate-db', function () {
             $output .= "AadharToFarmerPdf error: " . $afpe->getMessage() . "\n\n";
         }
 
+        // Ensure Ration Sleep Photo is configured with 49 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'ration-sleep-photo'],
+                [
+                    'name' => 'Ration Sleep Photo',
+                    'description' => 'Download and View Ration Card Slip with Photo (पर्ची / स्लिप फोटो सहित) via Ration Card Number.',
+                    'icon' => 'receipt_long',
+                    'coin_cost' => 49,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'ration_sleep_photo',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 69,
+                ]
+            );
+            \App\Models\Setting::set('ration_sleep_photo_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/bihar_ration_slip.php');
+            if (empty(\App\Models\Setting::get('ration_sleep_photo_api_key'))) {
+                \App\Models\Setting::set('ration_sleep_photo_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== RATION SLEEP PHOTO UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $rspe) {
+            $output .= "RationSleepPhoto error: " . $rspe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1365,6 +1392,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'aadhar_to_farmer_all_state_pdf',
             'sort_order' => 24,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'ration-sleep-photo'],
+        [
+            'name' => 'Ration Sleep Photo',
+            'description' => 'Download and View Ration Card Slip with Photo (पर्ची / स्लिप फोटो सहित) via Ration Card Number.',
+            'icon' => 'receipt_long',
+            'coin_cost' => 49,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'ration_sleep_photo',
+            'sort_order' => 25,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2274,6 +2317,18 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/farmer-card-pdf', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'index'])->name('utilities.farmer-card-pdf');
     Route::post('/utilities/farmer-card-pdf/search', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'search'])->name('utilities.farmer-card-pdf.search');
     Route::post('/utilities/farmer-card-pdf/update-api', [\App\Http\Controllers\AadharToFarmerPdfController::class, 'updateApi'])->name('utilities.farmer-card-pdf.update-api');
+
+    Route::get('/utilities/ration-sleep-photo', [\App\Http\Controllers\RationSleepPhotoController::class, 'index'])->name('utilities.ration-sleep-photo');
+    Route::post('/utilities/ration-sleep-photo/search', [\App\Http\Controllers\RationSleepPhotoController::class, 'search'])->name('utilities.ration-sleep-photo.search');
+    Route::post('/utilities/ration-sleep-photo/update-api', [\App\Http\Controllers\RationSleepPhotoController::class, 'updateApi'])->name('utilities.ration-sleep-photo.update-api');
+
+    Route::get('/utilities/ration-slip-photo', [\App\Http\Controllers\RationSleepPhotoController::class, 'index'])->name('utilities.ration-slip-photo');
+    Route::post('/utilities/ration-slip-photo/search', [\App\Http\Controllers\RationSleepPhotoController::class, 'search'])->name('utilities.ration-slip-photo.search');
+    Route::post('/utilities/ration-slip-photo/update-api', [\App\Http\Controllers\RationSleepPhotoController::class, 'updateApi'])->name('utilities.ration-slip-photo.update-api');
+
+    Route::get('/utilities/bihar-ration-slip', [\App\Http\Controllers\RationSleepPhotoController::class, 'index'])->name('utilities.bihar-ration-slip');
+    Route::post('/utilities/bihar-ration-slip/search', [\App\Http\Controllers\RationSleepPhotoController::class, 'search'])->name('utilities.bihar-ration-slip.search');
+    Route::post('/utilities/bihar-ration-slip/update-api', [\App\Http\Controllers\RationSleepPhotoController::class, 'updateApi'])->name('utilities.bihar-ration-slip.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
