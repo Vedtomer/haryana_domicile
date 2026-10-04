@@ -370,6 +370,8 @@ export function getServiceCategory(service) {
     if (
         slug === 'aadhar-to-ration' ||
         moduleKey === 'aadhar_to_ration' ||
+        slug === 'ration-card-pdf' ||
+        moduleKey === 'ration_card_pdf' ||
         slug.includes('ration') ||
         slug.includes('rasan') ||
         text.includes('ration') ||

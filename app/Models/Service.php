@@ -217,6 +217,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-ration',
             'create' => '/utilities/aadhar-to-ration',
         ],
+        'ration_card_pdf' => [
+            'label' => 'Ration Card PDF Download',
+            'icon' => 'picture_as_pdf',
+            'model' => null,
+            'index' => '/utilities/ration-card-pdf',
+            'create' => '/utilities/ration-card-pdf',
+        ],
         'aadhaar_services' => [
             'label' => 'Aadhaar Services',
             'model' => null,
