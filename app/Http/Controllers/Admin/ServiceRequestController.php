@@ -22,24 +22,68 @@ class ServiceRequestController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        $isStaff = $this->isStaff();
 
-        $requests = ServiceRequest::with(['user:id,name,phone,email', 'service:id,name,icon'])
+        $baseQuery = ServiceRequest::visibleTo($user);
+
+        // Aggregate statistics for quick overview
+        $stats = [
+            'all'         => (clone $baseQuery)->count(),
+            'pending'     => (clone $baseQuery)->where('status', ServiceRequest::STATUS_PENDING)->count(),
+            'in_progress' => (clone $baseQuery)->where('status', ServiceRequest::STATUS_IN_PROGRESS)->count(),
+            'completed'   => (clone $baseQuery)->whereIn('status', [ServiceRequest::STATUS_COMPLETED, ServiceRequest::STATUS_ACCEPTED])->count(),
+            'rejected'    => (clone $baseQuery)->where('status', ServiceRequest::STATUS_REJECTED)->count(),
+            'today'       => (clone $baseQuery)->whereDate('created_at', today())->count(),
+            'total_coins' => (clone $baseQuery)->sum('coins_charged'),
+        ];
+
+        $requests = ServiceRequest::with(['user:id,name,phone,email', 'service:id,name,icon,slug'])
             ->visibleTo($user)
-            ->when($request->status, function ($q, $status) {
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $search = trim($request->search);
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('id', $search)
+                        ->orWhere('service_name', 'like', "%{$search}%")
+                        ->orWhere('input_data', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($uq) use ($search) {
+                            $uq->where('name', 'like', "%{$search}%")
+                                ->orWhere('phone', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('user_id'), function ($q) use ($request) {
+                $q->where('user_id', $request->user_id);
+            })
+            ->when($request->filled('service_id'), function ($q) use ($request) {
+                $q->where('service_id', $request->service_id);
+            })
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $status = $request->status;
                 if ($status === 'completed') {
                     return $q->whereIn('status', ['completed', 'accepted']);
                 }
                 return $q->where('status', $status);
             })
             ->latest()
-            ->paginate(15)
+            ->paginate($request->integer('per_page', 20))
             ->withQueryString();
 
+        $servicesList = Service::select('id', 'name')->orderBy('name')->get();
+
         return Inertia::render('Admin/ServiceRequests/Index', [
-            'requests' => $requests,
-            'isAdmin' => $this->isStaff(),
-            'statuses' => ServiceRequest::STATUSES,
-            'filters' => ['status' => $request->status],
+            'requests'     => $requests,
+            'isAdmin'      => $isStaff,
+            'statuses'     => ServiceRequest::STATUSES,
+            'stats'        => $stats,
+            'servicesList' => $servicesList,
+            'filters'      => [
+                'status'     => $request->status ?? '',
+                'search'     => $request->search ?? '',
+                'user_id'    => $request->user_id ?? '',
+                'service_id' => $request->service_id ?? '',
+                'per_page'   => $request->per_page ?? 20,
+            ],
         ]);
     }
 

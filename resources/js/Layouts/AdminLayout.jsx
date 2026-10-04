@@ -51,7 +51,9 @@ export default function AdminLayout({ header, children }) {
         return () => clearInterval(timer);
     }, [auth?.user?.id]);
 
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const pendingRequestsCount = props?.pendingRequestsCount ?? 0;
+    const isServiceRequests = url.startsWith('/admin/service-requests');
     const isAdmin = Boolean(
         auth?.user?.is_admin ||
         auth?.user?.is_staff ||
@@ -209,6 +211,28 @@ export default function AdminLayout({ header, children }) {
                     >
                         <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
                         <span>Dashboard</span>
+                    </Link>
+
+                    {/* Top Action 2: Service Requests / Orders Button */}
+                    <Link
+                        href="/admin/service-requests"
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
+                            isServiceRequests
+                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/25 ring-2 ring-emerald-400/30'
+                                : 'bg-slate-100/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800/80'
+                        }`}
+                    >
+                        <div className="flex items-center gap-3 min-w-0">
+                            <span className="material-symbols-outlined text-[20px] text-emerald-500">
+                                {isAdmin ? 'assignment_turned_in' : 'receipt_long'}
+                            </span>
+                            <span className="truncate">{isAdmin ? 'All Service Requests' : 'My Requests'}</span>
+                        </div>
+                        {pendingRequestsCount > 0 && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-amber-950 flex-shrink-0 animate-pulse">
+                                {pendingRequestsCount}
+                            </span>
+                        )}
                     </Link>
 
                     {/* Section Label: SERVICES */}
@@ -378,6 +402,23 @@ export default function AdminLayout({ header, children }) {
                                 >
                                     <span className="material-symbols-outlined text-[18px]">account_circle</span>
                                     <span>My Profile</span>
+                                </Link>
+                                <Link
+                                    href="/admin/service-requests"
+                                    onClick={() => setDropdownOpen(false)}
+                                    className="flex items-center justify-between px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-[18px] text-emerald-500">
+                                            {isAdmin ? 'assignment_turned_in' : 'receipt_long'}
+                                        </span>
+                                        <span>{isAdmin ? 'All Service Requests' : 'My Requests'}</span>
+                                    </div>
+                                    {pendingRequestsCount > 0 && (
+                                        <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-400 text-amber-950">
+                                            {pendingRequestsCount}
+                                        </span>
+                                    )}
                                 </Link>
                                 {isAdmin && (
                                     <button

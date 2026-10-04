@@ -764,7 +764,7 @@ export default function Dashboard({
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
                                 index={0}
                                 colorTheme="emerald"
@@ -795,6 +795,16 @@ export default function Dashboard({
                                 subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
                                 icon="history"
                                 linkUrl="/admin/profile#coin-ledger"
+                            />
+                            <StatMetricCard
+                                index={3}
+                                colorTheme="indigo"
+                                title="MY REQUESTS"
+                                badgeText="ORDERS"
+                                value="Service Orders"
+                                subtitle="Track your submitted services & downloads"
+                                icon="receipt_long"
+                                linkUrl="/admin/service-requests"
                             />
                         </div>
                     )}

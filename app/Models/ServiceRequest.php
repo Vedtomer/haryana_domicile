@@ -71,7 +71,26 @@ class ServiceRequest extends Model
      */
     public function scopeVisibleTo($query, $user)
     {
-        if (!$user->hasRole('super_admin') && !$user->isAdmin()) {
+        if (!$user) {
+            return $query->whereRaw('0 = 1');
+        }
+
+        $type = strtolower(trim((string) ($user->type ?? '')));
+        $isStaff = in_array($type, ['admin', 'super_admin'])
+            || !empty($user->is_admin)
+            || (method_exists($user, 'isAdmin') && $user->isAdmin())
+            || (method_exists($user, 'isStaff') && $user->isStaff());
+
+        if (!$isStaff) {
+            try {
+                if (method_exists($user, 'hasRole') && ($user->hasRole('super_admin') || $user->hasRole('admin'))) {
+                    $isStaff = true;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // Regular users only see their own requests. Admins see ALL users' requests.
+        if (!$isStaff) {
             $query->where('user_id', $user->id);
         }
 

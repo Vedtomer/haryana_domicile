@@ -85,6 +85,11 @@ class HandleInertiaRequests extends Middleware
                 'submitted_request' => $request->session()->get('submitted_request'),
                 'generated_key'     => $request->session()->get('generated_key'),
             ],
+            'pendingRequestsCount' => fn () => $user ? (
+                ($user->isAdmin() || in_array($user->type ?? '', ['admin', 'super_admin']))
+                    ? \App\Models\ServiceRequest::where('status', 'pending')->count()
+                    : \App\Models\ServiceRequest::where('user_id', $user->id)->where('status', 'pending')->count()
+            ) : 0,
 
             // Cached WhatsApp setting
             'whatsappNumber' => fn () => \Illuminate\Support\Facades\Cache::remember(
