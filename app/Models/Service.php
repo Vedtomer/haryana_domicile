@@ -189,6 +189,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-info',
             'create' => '/utilities/aadhar-to-info',
         ],
+        'mobile_no_to_aadhar_number' => [
+            'label' => 'Sim No. To Aadhar Number',
+            'icon' => 'sim_card',
+            'model' => null,
+            'index' => '/utilities/mobile-no-to-aadhar-number',
+            'create' => '/utilities/mobile-no-to-aadhar-number',
+        ],
         'mobile_to_info' => [
             'label' => 'Mobile to Info',
             'icon' => '📱',
@@ -652,6 +659,10 @@ class Service extends Model
 
         if ($this->slug === 'birth-certificate-download' || $this->slug === 'crs-birth-portal') {
             return '/utilities/birth-certificate';
+        }
+
+        if ($this->slug === 'mobile-no-to-aadhar-number') {
+            return '/utilities/mobile-no-to-aadhar-number';
         }
 
         if ($this->slug === 'birth-certificate') {

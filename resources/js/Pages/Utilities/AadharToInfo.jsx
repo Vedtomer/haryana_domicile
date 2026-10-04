@@ -3,7 +3,13 @@ import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
-export default function AadharToInfo({ coinCost = 99 }) {
+export default function AadharToInfo({
+    coinCost = 99,
+    service,
+    isAdmin = false,
+    apiUrl: initialApiUrl = '',
+    apiKey: initialApiKey = ''
+}) {
     const { auth } = usePage().props;
     const [aadhar, setAadhar] = useState('');
     const [loading, setLoading] = useState(false);
@@ -14,6 +20,35 @@ export default function AadharToInfo({ coinCost = 99 }) {
     const [error, setError] = useState(null);
     const [copiedIndex, setCopiedIndex] = useState(null);
     const [copiedAddressIndex, setCopiedAddressIndex] = useState(null);
+
+    // Admin Quick Settings State
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [adminApiUrl, setAdminApiUrl] = useState(initialApiUrl || 'https://api.paanel.shop/api/gateway.php');
+    const [adminApiKey, setAdminApiKey] = useState(initialApiKey || 'SamXverma');
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [settingMsg, setSettingMsg] = useState(null);
+
+    const handleSaveAdminSettings = async (e) => {
+        e.preventDefault();
+        setSavingSettings(true);
+        setSettingMsg(null);
+        try {
+            const res = await axios.post('/utilities/aadhar-to-info/update-api', {
+                api_url: adminApiUrl,
+                api_key: adminApiKey,
+            });
+            if (res.data.success) {
+                setSettingMsg({ type: 'success', text: res.data.message });
+                setTimeout(() => setShowAdminModal(false), 1200);
+            } else {
+                setSettingMsg({ type: 'error', text: res.data.message || 'Failed to save settings.' });
+            }
+        } catch (err) {
+            setSettingMsg({ type: 'error', text: 'Error saving settings.' });
+        } finally {
+            setSavingSettings(false);
+        }
+    };
 
     const handleCopy = (text, index, isAddress = false) => {
         if (!text || text === 'N/A') return;
@@ -55,7 +90,8 @@ export default function AadharToInfo({ coinCost = 99 }) {
 
         try {
             const response = await axios.post('/utilities/aadhar-to-info/search', {
-                aadhar: cleanNo
+                aadhar: cleanNo,
+                service_slug: service?.slug,
             });
 
             if (response.data.success) {
@@ -116,29 +152,41 @@ export default function AadharToInfo({ coinCost = 99 }) {
 
     const currentPrimary = records && records[activeRecordIndex] ? records[activeRecordIndex] : records?.[0];
 
+    const serviceTitle = service?.name || 'Sim No. To Aadhar Number';
+
     return (
         <AdminLayout
             header={
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">badge</span>
-                            Aadhaar No. To Info & Card Download
+                        <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                            <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">sim_card</span>
+                            {serviceTitle}
                         </h1>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5 font-medium">
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5 font-medium">
                             Lookup linked mobile numbers, telecom circle, address & generate printable CR80 PVC Smart Card
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                         <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-700 shadow-xs">
                             <span>🪙</span>
                             <span>{coinCost} Coins Per Lookup</span>
                         </span>
+                        {isAdmin && (
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(true)}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-all shadow-sm cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-base text-blue-500">tune</span>
+                                API Config (Admin)
+                            </button>
+                        )}
                     </div>
                 </div>
             }
         >
-            <Head title="Aadhaar No. To Info & PVC Card Download" />
+            <Head title={serviceTitle} />
 
             <div className="max-w-5xl mx-auto mt-6 px-4 sm:px-6 lg:px-8 pb-20">
                 
@@ -653,6 +701,88 @@ export default function AadharToInfo({ coinCost = 99 }) {
                 )}
 
             </div>
+
+            {/* Admin API Quick Settings Modal */}
+            {isAdmin && showAdminModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5">
+                        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-2.5">
+                                <span className="material-symbols-outlined text-blue-500">tune</span>
+                                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                                    {serviceTitle} API Settings
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(false)}
+                                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        {settingMsg && (
+                            <div className={`p-3 rounded-xl text-xs font-bold ${
+                                settingMsg.type === 'success'
+                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                    : 'bg-red-50 text-red-800 border border-red-200'
+                            }`}>
+                                {settingMsg.text}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSaveAdminSettings} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5">
+                                    Gateway Endpoint URL
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiUrl}
+                                    onChange={(e) => setAdminApiUrl(e.target.value)}
+                                    placeholder="https://api.paanel.shop/api/gateway.php"
+                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
+                                    required
+                                />
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+                                    Parameters <code>key</code> and <code>aadhar</code> will be automatically handled.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5">
+                                    Gateway Key
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiKey}
+                                    onChange={(e) => setAdminApiKey(e.target.value)}
+                                    placeholder="e.g. SamXverma"
+                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAdminModal(false)}
+                                    className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingSettings}
+                                    className="px-5 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                                >
+                                    {savingSettings ? 'Saving...' : 'Save Configuration'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

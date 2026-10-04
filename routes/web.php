@@ -196,10 +196,33 @@ Route::get('/migrate-db', function () {
             \App\Models\Setting::set('goodapi_token_id', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22');
             \App\Models\Setting::set('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
             $output .= "=== AADHAR TO MASK PAN & UNMASKED PAN UPSERTED ===\n\n";
-            $allServicesList = \App\Models\Service::pluck('name', 'slug')->toArray();
-            $output .= "=== ALL SERVICES IN DB ===\n" . json_encode($allServicesList, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n\n";
         } catch (\Throwable $ampe) {
             $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";
+        }
+
+        // Ensure Sim No. To Aadhar Number is configured as module pointing to AadharToInfo
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'mobile-no-to-aadhar-number'],
+                [
+                    'name' => 'Sim No. To Aadhar Number',
+                    'description' => 'Enter 12-digit Aadhaar Number to retrieve all linked SIMs, mobile numbers, circle & address details.',
+                    'icon' => 'sim_card',
+                    'coin_cost' => 99,
+                    'kind' => 'module',
+                    'module_key' => 'mobile_no_to_aadhar_number',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 14,
+                ]
+            );
+            \App\Models\Setting::set('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php');
+            \App\Models\Setting::set('aadhar_to_info_api_key', 'SamXverma');
+            $output .= "=== SIM NO TO AADHAR NUMBER UPSERTED (GATEWAY READY) ===\n\n";
+        } catch (\Throwable $sme) {
+            $output .= "SimNoToAadhar error: " . $sme->getMessage() . "\n\n";
         }
 
         // Ensure all users have access to all active services
@@ -1333,14 +1356,41 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
         return Inertia::render('Utilities/AadharToInfo', [
-            'coinCost' => $service ? $service->coin_cost : 99,
+            'coinCost' => $service ? (int) $service->coin_cost : 99,
+            'service' => $service,
+            'isAdmin' => (bool) $isStaff,
+            'apiUrl' => $isStaff ? \App\Models\Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php') : null,
+            'apiKey' => $isStaff ? \App\Models\Setting::get('aadhar_to_info_api_key', 'SamXverma') : null,
         ]);
     })->name('utilities.aadhar-to-info');
 
     Route::post('/utilities/aadhar-to-info/search', [\App\Http\Controllers\AadharToInfoController::class, 'search'])->name('utilities.aadhar-to-info.search');
+    Route::post('/utilities/aadhar-to-info/update-api', [\App\Http\Controllers\AadharToInfoController::class, 'updateApi'])->name('utilities.aadhar-to-info.update-api');
     Route::get('/utilities/aadhar-to-info/download-pdf', [\App\Http\Controllers\AadharToInfoController::class, 'downloadPdf'])->name('utilities.aadhar-to-info.download-pdf');
     Route::post('/utilities/aadhar-to-info/download-pdf', [\App\Http\Controllers\AadharToInfoController::class, 'downloadPdf'])->name('utilities.aadhar-to-info.download-pdf.post');
+
+    Route::get('/utilities/mobile-no-to-aadhar-number', function () {
+        $service = \App\Models\Service::where('slug', 'mobile-no-to-aadhar-number')->first()
+            ?: \App\Models\Service::where('slug', 'aadhar-to-info')->first();
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        return Inertia::render('Utilities/AadharToInfo', [
+            'coinCost' => $service ? (int) $service->coin_cost : 99,
+            'service' => $service,
+            'isAdmin' => (bool) $isStaff,
+            'apiUrl' => $isStaff ? \App\Models\Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php') : null,
+            'apiKey' => $isStaff ? \App\Models\Setting::get('aadhar_to_info_api_key', 'SamXverma') : null,
+        ]);
+    })->name('utilities.mobile-no-to-aadhar-number');
+
+    Route::post('/utilities/mobile-no-to-aadhar-number/search', [\App\Http\Controllers\AadharToInfoController::class, 'search'])->name('utilities.mobile-no-to-aadhar-number.search');
 
     Route::get('/utilities/bihar-ration-card-maker', [\App\Http\Controllers\BiharRationCardMakerController::class, 'index'])->name('utilities.bihar-ration-card-maker');
     Route::post('/utilities/bihar-ration-card-maker/deduct-coins', [\App\Http\Controllers\BiharRationCardMakerController::class, 'deductCoins'])->name('utilities.bihar-ration-card-maker.deduct-coins');
