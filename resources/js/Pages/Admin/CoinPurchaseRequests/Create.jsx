@@ -55,7 +55,7 @@ function PackageCard({ pkg, selected, onSelect }) {
     );
 }
 
-export default function Create({ packages, myRequests, userCoins, upiId, upiName, whatsappNumber, paycorexEnabled = true }) {
+export default function Create({ packages, myRequests, userCoins, upiId, upiName, whatsappNumber, paycorexEnabled = true, manualPaymentEnabled = true }) {
     const { auth, flash, whatsappNumber: sharedWhatsapp } = usePage().props;
     const targetWhatsapp = (whatsappNumber || sharedWhatsapp || '380630323112').replace(/[^0-9]/g, '');
 
@@ -66,7 +66,8 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
     const [successData, setSuccessData] = useState(null);
 
     // Gateway states
-    const [paymentMode, setPaymentMode] = useState(paycorexEnabled ? 'online' : 'manual');
+    const defaultMode = paycorexEnabled ? 'online' : (manualPaymentEnabled ? 'manual' : 'online');
+    const [paymentMode, setPaymentMode] = useState(defaultMode);
     const [orderLoading, setOrderLoading] = useState(false);
     const [orderError, setOrderError] = useState(null);
     const [onlineOrder, setOnlineOrder] = useState(null);
@@ -302,12 +303,12 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
         ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${selectedPackage.amount}&cu=INR&tn=CoinPurchase`)}`
         : null;
 
-    // Online PayCoreX QR Image source
+    // Online QR Image source (supports PayCoreX base64, dynamic qr_url, or fallback)
     const ONLINE_QR_SRC = onlineOrder?.qr_base64
         ? (onlineOrder.qr_base64.startsWith('data:') ? onlineOrder.qr_base64 : `data:image/png;base64,${onlineOrder.qr_base64}`)
-        : (onlineOrder?.upi_id
-            ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`upi://pay?pa=${onlineOrder.upi_id}&pn=${encodeURIComponent(onlineOrder.merchant_name || upiName)}&am=${onlineOrder.amount}&cu=INR&tn=CoinRecharge`)}`
-            : MANUAL_QR_IMAGE);
+        : (onlineOrder?.qr_url || (onlineOrder?.upi_id
+            ? `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${onlineOrder.upi_id}&pn=${encodeURIComponent(onlineOrder.merchant_name || upiName)}&am=${onlineOrder.amount}&cu=INR&tn=${onlineOrder.order_id || 'CoinRecharge'}`)}`
+            : MANUAL_QR_IMAGE));
 
     return (
         <AdminLayout>
@@ -417,37 +418,51 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
 
                             <div className="flex items-center gap-2">
                                 {/* Mode Selector Tabs */}
-                                <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setPaymentMode('online');
-                                            if (!onlineOrder) {
-                                                createPaycorexOrder(selectedPackage.amount, selectedPackage.coins_requested);
-                                            }
-                                        }}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                                            paymentMode === 'online'
-                                                ? 'bg-blue-600 text-white shadow-sm'
-                                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-                                        }`}
-                                    >
+                                {paycorexEnabled && manualPaymentEnabled && (
+                                    <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPaymentMode('online');
+                                                if (!onlineOrder) {
+                                                    createPaycorexOrder(selectedPackage.amount, selectedPackage.coins_requested);
+                                                }
+                                            }}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                                paymentMode === 'online'
+                                                    ? 'bg-blue-600 text-white shadow-sm'
+                                                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                                            }`}
+                                        >
+                                            <span>⚡</span>
+                                            <span>Instant Auto Pay</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentMode('manual')}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                                paymentMode === 'manual'
+                                                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                                            }`}
+                                        >
+                                            <span>📝</span>
+                                            <span>Manual QR / Upload</span>
+                                        </button>
+                                    </div>
+                                )}
+                                {paycorexEnabled && !manualPaymentEnabled && (
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 text-xs font-bold">
                                         <span>⚡</span>
                                         <span>Instant Auto Pay</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMode('manual')}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                                            paymentMode === 'manual'
-                                                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-                                        }`}
-                                    >
+                                    </div>
+                                )}
+                                {!paycorexEnabled && manualPaymentEnabled && (
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 text-xs font-bold">
                                         <span>📝</span>
                                         <span>Manual QR / Upload</span>
-                                    </button>
-                                </div>
+                                    </div>
+                                )}
 
                                 <button
                                     type="button"
@@ -470,9 +485,15 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                 <div>
                                     <p className="font-bold">Gateway Notice (गेटवे सूचना):</p>
                                     <p className="mt-0.5">{orderError}</p>
-                                    <p className="mt-1 font-medium text-amber-700 dark:text-amber-400">
-                                        आप नीचे दिए गए Direct UPI QR कोड से पेमेंट करके स्क्रीनशॉट अपलोड कर सकते हैं, आपके कॉइन तुरंत प्रोसेस कर दिए जाएंगे।
-                                    </p>
+                                    {manualPaymentEnabled ? (
+                                        <p className="mt-1 font-medium text-amber-700 dark:text-amber-400">
+                                            आप Direct UPI QR कोड से पेमेंट करके स्क्रीनशॉट अपलोड कर सकते हैं, आपके कॉइन तुरंत प्रोसेस कर दिए जाएंगे।
+                                        </p>
+                                    ) : (
+                                        <p className="mt-1 font-medium text-amber-700 dark:text-amber-400">
+                                            कृपया पुनः प्रयास करें या सहायता के लिए WhatsApp पर संपर्क करें।
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -518,8 +539,6 @@ export default function Create({ packages, myRequests, userCoins, upiId, upiName
                                             {onlineOrder.payment_url && (
                                                 <a
                                                     href={onlineOrder.payment_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
                                                     className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-extrabold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
                                                 >
                                                     <span className="material-symbols-outlined text-base">payments</span>

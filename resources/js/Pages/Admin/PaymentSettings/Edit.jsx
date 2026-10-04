@@ -5,13 +5,14 @@ import axios from 'axios';
 
 export default function Edit({ settings }) {
     const { data, setData, put, processing, errors } = useForm({
-        upi_id:             settings.upi_id             || '',
-        upi_name:           settings.upi_name           || '',
-        whatsapp_number:    settings.whatsapp_number    || '',
-        paycorex_enabled:   settings.paycorex_enabled === '1' || settings.paycorex_enabled === true || settings.paycorex_enabled === 1,
-        paycorex_username:  settings.paycorex_username  || '7494945476',
-        paycorex_api_key:   settings.paycorex_api_key   || '2d7bcd6c2467d343d9f1110ebd59da51',
-        paycorex_base_url:  settings.paycorex_base_url  || 'https://paycorex.in/api/v1',
+        upi_id:                 settings.upi_id                 || '',
+        upi_name:               settings.upi_name               || '',
+        whatsapp_number:        settings.whatsapp_number        || '',
+        manual_payment_enabled: settings.manual_payment_enabled === '1' || settings.manual_payment_enabled === true || settings.manual_payment_enabled === 1,
+        paycorex_enabled:       settings.paycorex_enabled === '1' || settings.paycorex_enabled === true || settings.paycorex_enabled === 1,
+        paycorex_username:      settings.paycorex_username      || '7494945476',
+        paycorex_api_key:       settings.paycorex_api_key       || '2d7bcd6c2467d343d9f1110ebd59da51',
+        paycorex_base_url:      settings.paycorex_base_url      || 'https://paycorex.in/api/v1',
     });
 
     const [testLoading, setTestLoading] = useState(false);
@@ -164,9 +165,29 @@ export default function Edit({ settings }) {
 
                     {/* Section 2: Manual UPI & WhatsApp Fallback */}
                     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
-                        <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white">Manual UPI & WhatsApp Fallback</h3>
-                            <p className="text-xs text-slate-500">Backup QR code and WhatsApp support number if online gateway is unavailable.</p>
+                        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black shadow-md">
+                                    📝
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Manual UPI Payment & Screenshot (मैन्युअल पेमेंट विकल्प)</h3>
+                                    <p className="text-xs text-slate-500">Enable/disable manual UPI QR code and payment screenshot upload option for users</p>
+                                </div>
+                            </div>
+
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={data.manual_payment_enabled}
+                                    onChange={e => setData('manual_payment_enabled', e.target.checked)}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                                <span className="ml-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                                    {data.manual_payment_enabled ? 'Enabled' : 'Disabled'}
+                                </span>
+                            </label>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

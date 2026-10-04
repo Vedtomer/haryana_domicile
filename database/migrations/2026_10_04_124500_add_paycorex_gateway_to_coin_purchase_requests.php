@@ -35,10 +35,11 @@ return new class extends Migration
         // Seed default PayCoreX settings
         if (Schema::hasTable('settings')) {
             $defaultSettings = [
-                'paycorex_enabled'  => '1',
-                'paycorex_username' => '7494945476',
-                'paycorex_api_key'  => '2d7bcd6c2467d343d9f1110ebd59da51',
-                'paycorex_base_url' => 'https://paycorex.in/api/v1',
+                'manual_payment_enabled' => '1',
+                'paycorex_enabled'       => '1',
+                'paycorex_username'      => '7494945476',
+                'paycorex_api_key'       => '2d7bcd6c2467d343d9f1110ebd59da51',
+                'paycorex_base_url'      => 'https://paycorex.in/api/v1',
             ];
 
             foreach ($defaultSettings as $key => $val) {

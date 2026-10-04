@@ -59,13 +59,14 @@ class CoinPurchaseRequestController extends Controller
         }
 
         return Inertia::render('Admin/CoinPurchaseRequests/Create', [
-            'packages'        => $packages,
-            'myRequests'      => $myRequests,
-            'userCoins'       => auth()->user()->coins,
-            'upiId'           => Setting::get('upi_id',   'cspjaankari@upi'),
-            'upiName'         => Setting::get('upi_name', 'CSP Jaankari'),
-            'whatsappNumber'  => Setting::get('whatsapp_number', '380630323112'),
-            'paycorexEnabled' => filter_var(Setting::get('paycorex_enabled', '1'), FILTER_VALIDATE_BOOLEAN),
+            'packages'             => $packages,
+            'myRequests'           => $myRequests,
+            'userCoins'            => auth()->user()->coins,
+            'upiId'                => Setting::get('upi_id',   'cspjaankari@upi'),
+            'upiName'              => Setting::get('upi_name', 'CSP Jaankari'),
+            'whatsappNumber'       => Setting::get('whatsapp_number', '380630323112'),
+            'paycorexEnabled'      => filter_var(Setting::get('paycorex_enabled', '1'), FILTER_VALIDATE_BOOLEAN),
+            'manualPaymentEnabled' => filter_var(Setting::get('manual_payment_enabled', '1'), FILTER_VALIDATE_BOOLEAN),
         ]);
     }
 
@@ -73,6 +74,10 @@ class CoinPurchaseRequestController extends Controller
     {
         if (auth()->user()->type !== 'user') {
             abort(403);
+        }
+
+        if (!filter_var(Setting::get('manual_payment_enabled', '1'), FILTER_VALIDATE_BOOLEAN)) {
+            return back()->with('error', 'Manual UPI payment is currently disabled. Please use Instant Online Payment.');
         }
 
         $data = $request->validate([

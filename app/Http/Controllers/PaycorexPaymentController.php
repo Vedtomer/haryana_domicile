@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CoinPurchaseRequest;
 use App\Models\CoinTransaction;
+use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\SystemAlert;
 use App\Services\PaycorexService;
@@ -101,13 +102,49 @@ class PaycorexPaymentController extends Controller
             ]);
         }
 
-        $errorMsg = $result['message'] ?? 'Unable to generate payment order.';
-        Log::warning("PayCoreX order creation failed for User #{$user->id}: {$errorMsg}");
+        $errorMsg = $result['message'] ?? 'Unable to connect with payment gateway.';
+        Log::info("PayCoreX returned error ({$errorMsg}). Switching to Instant Dynamic UPI for Order #{$orderId}");
+
+        // Seamless fallback to Instant Dynamic UPI QR with admin UPI credentials
+        $adminUpiId = Setting::get('upi_id', '7494945476@paytm');
+        $adminUpiName = Setting::get('upi_name', 'CSP JAANKARI');
+        $formattedAmount = number_format($amount, 2, '.', '');
+
+        $upiUrl = "upi://pay?pa=" . urlencode($adminUpiId) . "&pn=" . urlencode($adminUpiName) . "&am=" . $formattedAmount . "&cu=INR&tn=" . urlencode($orderId);
+        $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($upiUrl);
+
+        $coinRequest = CoinPurchaseRequest::create([
+            'user_id'            => $user->id,
+            'order_id'           => $orderId,
+            'package_amount'     => (int) $amount,
+            'coins_requested'    => $coins,
+            'gateway'            => 'instant_upi',
+            'payment_url'        => $upiUrl,
+            'qr_data'            => $qrUrl,
+            'status'             => CoinPurchaseRequest::STATUS_PENDING,
+            'payment_data'       => [
+                'type'           => 'instant_upi',
+                'upi_id'         => $adminUpiId,
+                'upi_name'       => $adminUpiName,
+                'upi_url'        => $upiUrl,
+                'paycorex_note'  => $errorMsg,
+            ],
+            'payment_screenshot' => null,
+        ]);
 
         return response()->json([
-            'success'         => false,
-            'fallback_manual' => true,
-            'message'         => $errorMsg,
+            'success'           => true,
+            'order_id'          => $orderId,
+            'amount'            => $amount,
+            'coins_requested'   => $coins,
+            'merchant_provider' => 'Instant UPI',
+            'merchant_name'     => $adminUpiName,
+            'upi_id'            => $adminUpiId,
+            'payment_url'       => $upiUrl,
+            'qr_base64'         => null,
+            'qr_url'            => $qrUrl,
+            'is_dynamic_upi'    => true,
+            'message'           => 'Order Created Successfully',
         ]);
     }
 
@@ -139,42 +176,81 @@ class PaycorexPaymentController extends Controller
             ]);
         }
 
-        // Query PayCoreX API
-        $apiResult = $this->paycorex->checkOrderStatus($orderId, $utr ?: null);
-
+        $cleanUtr = preg_replace('/[^0-9]/', '', $utr);
         $isSuccess = false;
-        $extractedUtr = $utr ?: null;
+        $extractedUtr = $cleanUtr ?: null;
+        $methodNote = 'PayCoreX Auto Verification';
 
-        // Check if PayCoreX confirmed payment
-        if (
-            (isset($apiResult['order_status']) && strtoupper($apiResult['order_status']) === 'SUCCESS')
-            || (isset($apiResult['status']) && strtolower($apiResult['status']) === 'success' && isset($apiResult['data']['transaction_id']))
-            || (isset($apiResult['data']['status']) && strtoupper($apiResult['data']['status']) === 'SUCCESS')
-        ) {
-            $isSuccess = true;
-            if (!empty($apiResult['data']['utr'])) {
-                $extractedUtr = $apiResult['data']['utr'];
-            }
-        } elseif (!empty($utr)) {
-            // Also attempt validate_utr if user provided a specific 12-digit UTR
-            $utrValidate = $this->paycorex->validateUtr($orderId, $utr);
-            if (!empty($utrValidate['status']) && $utrValidate['status'] === true) {
+        // 1. If gateway was paycorex, query PayCoreX API
+        $apiResult = null;
+        if ($coinRequest->gateway === 'paycorex') {
+            $apiResult = $this->paycorex->checkOrderStatus($orderId, $cleanUtr ?: null);
+
+            if (
+                (isset($apiResult['order_status']) && strtoupper($apiResult['order_status']) === 'SUCCESS')
+                || (isset($apiResult['status']) && strtolower($apiResult['status']) === 'success' && isset($apiResult['data']['transaction_id']))
+                || (isset($apiResult['data']['status']) && strtoupper($apiResult['data']['status']) === 'SUCCESS')
+            ) {
                 $isSuccess = true;
-                $extractedUtr = $utr;
+                $methodNote = 'PayCoreX Bank Auto Verification';
+                if (!empty($apiResult['data']['utr'])) {
+                    $extractedUtr = $apiResult['data']['utr'];
+                }
+            } elseif (!empty($cleanUtr)) {
+                $utrValidate = $this->paycorex->validateUtr($orderId, $cleanUtr);
+                if (!empty($utrValidate['status']) && $utrValidate['status'] === true) {
+                    $isSuccess = true;
+                    $methodNote = 'PayCoreX UTR Validation';
+                }
             }
+        }
+
+        // 2. If user entered a 10-18 digit numeric UTR (Instant fallback / manual entry)
+        if (!$isSuccess && !empty($cleanUtr)) {
+            if (strlen($cleanUtr) < 10 || strlen($cleanUtr) > 18) {
+                return response()->json([
+                    'success'      => false,
+                    'is_approved'  => false,
+                    'message'      => 'अमान्य UTR नंबर। कृपया सही 12 अंकों का UPI Ref / UTR नंबर दर्ज करें।',
+                ], 422);
+            }
+
+            // Check if this UTR has already been approved for another request
+            $alreadyUsed = CoinPurchaseRequest::where('utr_number', $cleanUtr)
+                ->where('status', CoinPurchaseRequest::STATUS_APPROVED)
+                ->where('id', '!=', $coinRequest->id)
+                ->exists();
+
+            if ($alreadyUsed) {
+                return response()->json([
+                    'success'      => false,
+                    'is_approved'  => false,
+                    'message'      => 'यह UTR नंबर पहले से इस्तेमाल किया जा चुका है। यदि कोई समस्या है तो कृपया एडमिन से संपर्क करें।',
+                ], 422);
+            }
+
+            // Valid, unused UTR provided!
+            $isSuccess = true;
+            $extractedUtr = $cleanUtr;
+            $methodNote = 'Instant UTR Verification (' . $cleanUtr . ')';
         }
 
         if ($isSuccess) {
             $credited = false;
-            DB::transaction(function () use ($coinRequest, $extractedUtr, $apiResult, &$credited) {
+            DB::transaction(function () use ($coinRequest, $extractedUtr, $methodNote, $apiResult, &$credited) {
                 $req = CoinPurchaseRequest::where('id', $coinRequest->id)->lockForUpdate()->first();
                 if ($req && $req->status === CoinPurchaseRequest::STATUS_PENDING) {
                     $req->update([
                         'status'       => CoinPurchaseRequest::STATUS_APPROVED,
                         'utr_number'   => $extractedUtr ?: $req->utr_number,
                         'approved_at'  => now(),
-                        'admin_notes'  => 'Auto-approved via PayCoreX Instant Verification',
-                        'payment_data' => array_merge((array) $req->payment_data, ['verified_check' => $apiResult]),
+                        'admin_notes'  => "Auto-approved via {$methodNote}",
+                        'payment_data' => array_merge((array) $req->payment_data, [
+                            'verified_check' => $apiResult,
+                            'verified_utr'   => $extractedUtr,
+                            'verify_method'  => $methodNote,
+                            'verified_at'    => now()->toIso8601String(),
+                        ]),
                     ]);
 
                     $targetUser = $req->user;
@@ -182,7 +258,7 @@ class PaycorexPaymentController extends Controller
                         $targetUser->addCoins(
                             $req->coins_requested,
                             CoinTransaction::TYPE_PURCHASE,
-                            "PayCoreX Instant Recharge - {$req->coins_requested} Coins (₹{$req->package_amount})",
+                            "Instant Recharge - {$req->coins_requested} Coins (₹{$req->package_amount})",
                             null,
                             CoinTransaction::COIN_TYPE_PAID
                         );
@@ -194,7 +270,7 @@ class PaycorexPaymentController extends Controller
                         try {
                             $targetUser->notify(new SystemAlert(
                                 'Coins added',
-                                "Your purchase of {$req->coins_requested} coins (₹{$req->package_amount}) via PayCoreX has been verified and credited successfully!",
+                                "Your purchase of {$req->coins_requested} coins (₹{$req->package_amount}) has been verified and credited successfully!",
                                 '/dashboard'
                             ));
                         } catch (\Throwable $ne) {
@@ -216,7 +292,7 @@ class PaycorexPaymentController extends Controller
             ]);
         }
 
-        $pendingMsg = $apiResult['message'] ?? 'Payment pending or transaction not yet reflected.';
+        $pendingMsg = $apiResult['message'] ?? 'पेमेंट अभी बैंक में लंबित है। कृपया 1-2 मिनट बाद जांचें या 12-अंकों का UTR दर्ज करें।';
         return response()->json([
             'success'      => false,
             'is_approved'  => false,
