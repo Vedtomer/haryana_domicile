@@ -820,6 +820,8 @@ Route::get('/migrate-db', function () {
             $output .= "=== RATION SLEEP PHOTO UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rspe) {
             $output .= "RationSleepPhoto error: " . $rspe->getMessage() . "\n\n";
+        }
+
         // Deactivate old passport-maker service and rename photo-signature-resizer to Passport Photo Maker
         try {
             \App\Models\Service::where('slug', 'passport-maker')->update([
