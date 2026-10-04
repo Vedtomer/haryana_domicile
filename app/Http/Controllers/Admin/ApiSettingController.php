@@ -102,8 +102,8 @@ class ApiSettingController extends Controller
                 // Voter Services
                 'voter_api_key'            => Setting::get('voter_api_key', config('services.voter.api_key', '')),
                 'voter_sir_voter_list_url' => Setting::get('voter_sir_voter_list_url', config('services.voter.sir_voter_list_url', '')),
-                'voter_mobile_update_url'  => Setting::get('voter_mobile_update_url', 'https://nexus-dashboard.space/api/v1/voter_card_api/voter_mobile_link.php'),
-                'voter_mobile_update_key'  => Setting::get('voter_mobile_update_key', ''),
+                'voter_mobile_update_url'  => Setting::get('voter_mobile_update_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php'),
+                'voter_mobile_update_key'  => Setting::get('voter_mobile_update_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
                 'voter_advance_api_url'    => Setting::get('voter_advance_api_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php'),
                 'voter_advance_api_key'    => Setting::get('voter_advance_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
-const InfoRow = ({ label, value, icon }) => {
+const InfoRow = ({ label, value, icon, copyable = false, onCopy = null }) => {
     if (!value || value === 'N/A' || value === '') return null;
     return (
         <div className="flex items-start gap-3 py-3 border-b border-slate-100 dark:border-slate-800 last:border-0">
@@ -12,51 +12,126 @@ const InfoRow = ({ label, value, icon }) => {
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">{label}</p>
-                <p className="text-sm font-bold text-slate-800 dark:text-white break-words">{value}</p>
+                <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white break-words">{value}</p>
+                    {copyable && onCopy && (
+                        <button
+                            type="button"
+                            onClick={() => onCopy(value)}
+                            className="text-slate-400 hover:text-indigo-600 transition-colors"
+                            title="Copy to clipboard"
+                        >
+                            <span className="material-symbols-outlined text-[15px]">content_copy</span>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
 };
 
 export default function VoterMobileUpdate() {
-    const { currentService } = usePage().props;
+    const {
+        service,
+        currentService,
+        coinCost = 149,
+        isAdmin = false,
+        apiUrl: propApiUrl = '',
+        apiKey: propApiKey = '',
+        auth,
+    } = usePage().props;
+
     const [epic, setEpic] = useState('');
     const [mobile, setMobile] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [copiedText, setCopiedText] = useState(null);
+
+    const displayCoinCost = currentService?.coin_cost ?? service?.coin_cost ?? coinCost ?? 149;
+    const isUserAdmin = auth?.user?.is_admin || auth?.user?.type === 'super_admin' || auth?.user?.type === 'admin' || isAdmin;
+
+    // Admin Quick Settings Modal
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php');
+    const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [settingMsg, setSettingMsg] = useState(null);
+
+    const handleCopy = (text) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        setCopiedText(text);
+        setTimeout(() => setCopiedText(null), 2000);
+    };
+
+    const handleSaveAdminSettings = async (e) => {
+        e.preventDefault();
+        setSavingSettings(true);
+        setSettingMsg(null);
+        try {
+            const resp = await axios.post('/utilities/voter-mobile-update/update-api', {
+                api_url: adminApiUrl,
+                api_key: adminApiKey,
+            });
+            if (resp.data.success) {
+                setSettingMsg({ type: 'success', text: resp.data.message || 'API settings saved successfully!' });
+                setTimeout(() => setShowAdminModal(false), 1500);
+            } else {
+                setSettingMsg({ type: 'error', text: resp.data.message || 'Failed to save settings.' });
+            }
+        } catch (err) {
+            setSettingMsg({ type: 'error', text: err.response?.data?.message || 'Error saving API settings.' });
+        } finally {
+            setSavingSettings(false);
+        }
+    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        const cleanEpic = epic.trim().toUpperCase();
+        const cleanEpic = epic.trim().toUpperCase().replace(/[^A-Za-z0-9]/g, '');
         const cleanMobile = mobile.trim();
-        
-        if (!cleanEpic) {
-            setError('Please enter a valid EPIC number.');
+
+        if (!cleanEpic || cleanEpic.length < 5) {
+            setError('Please enter a valid EPIC / Voter ID number (at least 5 characters).');
             return;
         }
         if (!/^[0-9]{10}$/.test(cleanMobile)) {
             setError('Please enter a valid 10-digit mobile number.');
             return;
         }
-        
+
+        if (!isUserAdmin && (auth?.user?.coins ?? 0) < displayCoinCost) {
+            setError(`Insufficient coins. This service requires ${displayCoinCost} Coins. (Your balance: ${auth?.user?.coins ?? 0} coins)`);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         setResult(null);
-        
+
         try {
-            const response = await axios.post('/utilities/voter-mobile-update/search', { 
+            const response = await axios.post('/utilities/voter-mobile-update/search', {
                 epic: cleanEpic,
-                mobile: cleanMobile
+                mobile: cleanMobile,
             });
-            
+
             if (response.data.success) {
-                setResult(response.data.data);
+                setResult({
+                    ...(response.data.data || {}),
+                    epic: response.data.epic || cleanEpic,
+                    mobile: response.data.mobile || cleanMobile,
+                    message: response.data.message || 'Mobile number updated successfully.',
+                });
+
+                if (!isUserAdmin && auth?.user) {
+                    auth.user.coins -= displayCoinCost;
+                }
             } else {
-                setError(response.data.message || 'Details not found or failed to update.');
+                setError(response.data.message || 'Failed to update mobile number. Please check the EPIC number.');
             }
         } catch (err) {
-            setError('An error occurred while communicating with the server.');
+            setError(err.response?.data?.message || 'An error occurred while communicating with the server.');
         } finally {
             setLoading(false);
         }
@@ -65,125 +140,272 @@ export default function VoterMobileUpdate() {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Voter Mobile Update Instant
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Link mobile number to Voter ID (EPIC) instantly
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
+                            <span className="material-symbols-outlined text-2xl">contact_phone</span>
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2.5">
+                                <h1 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
+                                    Voter Mobile Update Instant
+                                </h1>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300">
+                                    {displayCoinCost} Coins
+                                </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Link or update mobile number with Voter ID (EPIC) instantly
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {isUserAdmin && (
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(true)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">tune</span>
+                                API Settings
+                            </button>
+                        )}
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                            Dashboard
+                        </Link>
+                    </div>
                 </div>
             }
         >
             <Head title="Voter Mobile Update Instant" />
 
-            <div className="max-w-xl mx-auto mt-8 space-y-6">
+            <div className="max-w-xl mx-auto py-6 px-4 space-y-6">
                 {/* Input Card */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
-                    <div className="p-8">
-                        <div className="flex items-center justify-center w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full mb-6 mx-auto">
-                            <span className="material-symbols-outlined text-3xl">contact_phone</span>
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800 overflow-hidden p-6 sm:p-8">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                            <span className="material-symbols-outlined text-2xl">smartphone</span>
                         </div>
-                        <h2 className="text-2xl font-black text-center text-slate-800 dark:text-white mb-2 tracking-tight">
-                            Update Voter Mobile
-                        </h2>
-                        <p className="text-center text-slate-500 mb-8 font-medium">
-                            Enter the EPIC number and mobile number to update instantly.
-                        </p>
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                                Update Voter Mobile Number
+                            </h2>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Enter the EPIC number and new 10-digit mobile number
+                            </p>
+                        </div>
+                    </div>
 
-                        <form onSubmit={handleSearch} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    EPIC Number
-                                </label>
+                    <form onSubmit={handleSearch} className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                Voter ID / EPIC Number (मतदाता पहचान पत्र संख्या) *
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">
+                                    badge
+                                </span>
                                 <input
                                     type="text"
                                     value={epic}
                                     onChange={(e) => {
-                                        setEpic(e.target.value.toUpperCase().replace(/[^A-Z0-9\/]/g, ''));
+                                        setEpic(e.target.value.toUpperCase().replace(/[^A-Za-z0-9]/g, ''));
                                     }}
-                                    placeholder="Enter EPIC / Voter ID"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-widest font-black transition-all text-center dark:text-white uppercase"
+                                    placeholder="Enter EPIC / Voter ID (e.g. ABC1234567)"
+                                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl font-mono text-base font-bold text-slate-800 dark:text-white placeholder:text-slate-400 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all tracking-wider"
+                                    required
+                                    autoFocus
                                 />
                             </div>
-                            
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                                    Mobile Number
-                                </label>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                New Mobile Number (नया मोबाइल नंबर) *
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">
+                                    phone_android
+                                </span>
                                 <input
-                                    type="text"
+                                    type="tel"
                                     maxLength="10"
                                     value={mobile}
                                     onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="Enter 10 digit mobile number"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-xl tracking-widest font-black transition-all text-center dark:text-white"
+                                    placeholder="Enter 10-digit mobile number"
+                                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl font-mono text-base font-bold text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all tracking-wider"
+                                    required
                                 />
                             </div>
+                        </div>
 
+                        <div className="pt-2">
                             <button
                                 type="submit"
                                 disabled={loading || !epic.trim() || mobile.length !== 10}
-                                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-black text-lg rounded-xl shadow-lg shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mt-4"
+                                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 hover:from-indigo-700 hover:to-violet-700 text-white font-black text-base rounded-2xl shadow-lg shadow-indigo-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {loading ? (
                                     <>
-                                        <svg className="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Processing Update...
+                                        <span>Linking Mobile Number...</span>
                                     </>
                                 ) : (
                                     <>
-                                        <span className="material-symbols-outlined font-bold">system_update_alt</span>
-                                        Update Mobile ({currentService?.coin_cost ?? 19} Coins)
+                                        <span className="material-symbols-outlined text-xl">system_update_alt</span>
+                                        <span>Update Mobile ({displayCoinCost} Coins)</span>
                                     </>
                                 )}
                             </button>
-                        </form>
-
-                        {error && (
-                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-                                <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0">error</span>
-                                <p className="text-red-700 dark:text-red-300 font-medium">{error}</p>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-8">
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                            Live instant server processing
-                        </p>
-                        <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
-                            <span className="material-symbols-outlined text-[16px]">monetization_on</span>
-                            {currentService?.coin_cost ?? 19} Coins
                         </div>
+                    </form>
+
+                    <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Live Election Commission Gateway
+                        </span>
+                        <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                            Charges: {displayCoinCost} Coins / Update
+                        </span>
                     </div>
+
+                    {error && (
+                        <div className="mt-5 p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 flex items-start gap-3 text-red-700 dark:text-red-400">
+                            <span className="material-symbols-outlined text-xl shrink-0 mt-0.5">error</span>
+                            <div className="text-sm font-medium leading-relaxed">{error}</div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Result Card */}
                 {result && (
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-5 flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-white text-2xl">verified</span>
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-white text-2xl">check_circle</span>
                             </div>
                             <div>
-                                <p className="text-indigo-200 text-xs font-bold uppercase tracking-wider">Success</p>
-                                <p className="text-white font-black text-xl tracking-widest">Mobile Updated</p>
+                                <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-md">
+                                    Success
+                                </span>
+                                <h3 className="text-xl font-black mt-0.5">
+                                    Mobile Number Linked Successfully
+                                </h3>
+                                <p className="text-xs text-emerald-100 mt-0.5">
+                                    {result.message || 'Mobile number updated successfully.'}
+                                </p>
                             </div>
                         </div>
                         <div className="p-6 space-y-1">
-                            <InfoRow label="EPIC Number"    value={epic} icon="badge" />
-                            <InfoRow label="Mobile Number"  value={mobile} icon="smartphone" />
-                            {result.reference_id && <InfoRow label="Reference ID" value={result.reference_id} icon="tag" />}
+                            <InfoRow label="EPIC / Voter ID" value={result.epic || epic.toUpperCase()} icon="badge" copyable={true} onCopy={handleCopy} />
+                            <InfoRow label="Linked Mobile" value={result.mobile || mobile} icon="smartphone" copyable={true} onCopy={handleCopy} />
+                            {(result.reference_id || result.ref_no || result.reference_no) && (
+                                <InfoRow
+                                    label="Reference Number / ID"
+                                    value={result.reference_id || result.ref_no || result.reference_no}
+                                    icon="tag"
+                                    copyable={true}
+                                    onCopy={handleCopy}
+                                />
+                            )}
                             {result.status && <InfoRow label="Status" value={result.status} icon="info" />}
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Admin Quick API Settings Modal */}
+            {showAdminModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-2.5">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400">tune</span>
+                                <h3 className="font-bold text-base text-slate-800 dark:text-white">
+                                    Voter Mobile Update API Settings
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(false)}
+                                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSaveAdminSettings} className="mt-4 space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                    API Endpoint URL
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiUrl}
+                                    onChange={(e) => setAdminApiUrl(e.target.value)}
+                                    placeholder="https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php"
+                                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    required
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Parameter format: ?apiKey=...&epic=...&mobile=...
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                    API Key (Good-API-Point)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiKey}
+                                    onChange={(e) => setAdminApiKey(e.target.value)}
+                                    placeholder="Enter your API Key"
+                                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                            </div>
+
+                            {settingMsg && (
+                                <div
+                                    className={`p-3 rounded-xl text-xs font-bold ${
+                                        settingMsg.type === 'success'
+                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                                            : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                                    }`}
+                                >
+                                    {settingMsg.text}
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAdminModal(false)}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingSettings}
+                                    className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow transition disabled:opacity-50"
+                                >
+                                    {savingSettings ? 'Saving...' : 'Save Settings'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
