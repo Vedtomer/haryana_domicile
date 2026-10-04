@@ -145,13 +145,26 @@ export default function PhotoSignatureResizer() {
     const [cleanWhitePaper, setCleanWhitePaper] = useState(false);
     const [cleanThreshold, setCleanThreshold] = useState(180);
 
-    // Name & Date on Photo
+    // Helper to format date in DD/MM/YYYY
+    const getFormattedDate = (d = new Date()) => {
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    };
+
+    // Name & Date on Photo Controls (DOB, DOP, Name)
     const [addNameDate, setAddNameDate] = useState(false);
+    // Mark checkboxes
+    const [showName, setShowName] = useState(true);
+    const [showDop, setShowDop] = useState(true); // Date of Photo
+    const [showDob, setShowDob] = useState(false); // Date of Birth
+    // Values
     const [candidateName, setCandidateName] = useState('');
-    const [photoDate, setPhotoDate] = useState(() => {
-        const today = new Date();
-        return `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-    });
+    const [dopDate, setDopDate] = useState(() => getFormattedDate());
+    const [dobDate, setDobDate] = useState('');
+    // Formatting & layout
+    const [showDopPrefix, setShowDopPrefix] = useState(true);
+    const [showDobPrefix, setShowDobPrefix] = useState(true);
+    const [stripTheme, setStripTheme] = useState('white'); // 'white' | 'black'
+    const [combineDates, setCombineDates] = useState(false);
 
     // Processed Output
     const [outputUrl, setOutputUrl] = useState(null);
@@ -260,8 +273,16 @@ export default function PhotoSignatureResizer() {
         cleanWhitePaper,
         cleanThreshold,
         addNameDate,
+        showName,
+        showDop,
+        showDob,
         candidateName,
-        photoDate,
+        dopDate,
+        dobDate,
+        showDopPrefix,
+        showDobPrefix,
+        stripTheme,
+        combineDates,
     ]);
 
     const processImage = () => {
@@ -323,36 +344,74 @@ export default function PhotoSignatureResizer() {
                 ctx.putImageData(imgData, 0, 0);
             }
 
-            // Name and Date strip at bottom if enabled
-            if (addNameDate && (candidateName.trim() || photoDate.trim())) {
-                const stripHeight = Math.max(48, Math.round(targetHeight * 0.18));
-                const stripY = targetHeight - stripHeight;
+            // Name, DOB, DOP strip at bottom if enabled
+            if (addNameDate) {
+                const linesToPrint = [];
 
-                // White bar
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, stripY, targetWidth, stripHeight);
-                // Top border line
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(0, stripY);
-                ctx.lineTo(targetWidth, stripY);
-                ctx.stroke();
+                if (showName && candidateName.trim()) {
+                    linesToPrint.push({
+                        text: candidateName.trim().toUpperCase(),
+                        isName: true,
+                    });
+                }
 
-                // Candidate Name
-                ctx.fillStyle = '#000000';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                const fontSize = Math.max(12, Math.round(stripHeight * 0.34));
-                ctx.font = `bold ${fontSize}px sans-serif`;
-
-                if (candidateName.trim() && photoDate.trim()) {
-                    ctx.fillText(candidateName.toUpperCase(), targetWidth / 2, stripY + stripHeight * 0.32);
-                    ctx.font = `600 ${Math.max(10, fontSize - 2)}px sans-serif`;
-                    ctx.fillText(`DOB / DOP: ${photoDate}`, targetWidth / 2, stripY + stripHeight * 0.72);
+                if (showDob && dobDate.trim() && showDop && dopDate.trim() && combineDates) {
+                    const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
+                    const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
+                    linesToPrint.push({
+                        text: `${dobStr}  |  ${dopStr}`,
+                        isName: false,
+                    });
                 } else {
-                    const singleText = candidateName.trim() ? candidateName.toUpperCase() : `DOP: ${photoDate}`;
-                    ctx.fillText(singleText, targetWidth / 2, stripY + stripHeight * 0.5);
+                    if (showDob && dobDate.trim()) {
+                        const dobStr = showDobPrefix ? `DOB: ${dobDate.trim()}` : dobDate.trim();
+                        linesToPrint.push({
+                            text: dobStr,
+                            isName: false,
+                        });
+                    }
+                    if (showDop && dopDate.trim()) {
+                        const dopStr = showDopPrefix ? `DOP: ${dopDate.trim()}` : dopDate.trim();
+                        linesToPrint.push({
+                            text: dopStr,
+                            isName: false,
+                        });
+                    }
+                }
+
+                if (linesToPrint.length > 0) {
+                    const lineCount = linesToPrint.length;
+                    const heightMultiplier = lineCount === 1 ? 0.13 : (lineCount === 2 ? 0.18 : 0.24);
+                    const stripHeight = Math.max(lineCount * 22 + 10, Math.round(targetHeight * heightMultiplier));
+                    const stripY = targetHeight - stripHeight;
+
+                    // Strip background (White or Black)
+                    const isDark = stripTheme === 'black';
+                    ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
+                    ctx.fillRect(0, stripY, targetWidth, stripHeight);
+
+                    // Top border line
+                    ctx.strokeStyle = isDark ? '#FFFFFF' : '#000000';
+                    ctx.lineWidth = Math.max(1.5, Math.round(targetHeight / 300));
+                    ctx.beginPath();
+                    ctx.moveTo(0, stripY);
+                    ctx.lineTo(targetWidth, stripY);
+                    ctx.stroke();
+
+                    // Text styling
+                    ctx.fillStyle = isDark ? '#FFFFFF' : '#000000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    const baseFontSize = Math.max(10, Math.round((stripHeight / (lineCount + 0.6)) * 0.72));
+
+                    linesToPrint.forEach((line, idx) => {
+                        const yPos = stripY + (stripHeight * (idx + 0.55)) / lineCount;
+                        const fontSize = line.isName ? Math.round(baseFontSize * 1.05) : Math.round(baseFontSize * 0.9);
+                        const fontWeight = line.isName ? 'bold' : '600';
+                        ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
+                        ctx.fillText(line.text, targetWidth / 2, yPos);
+                    });
                 }
             }
 
@@ -749,17 +808,17 @@ export default function PhotoSignatureResizer() {
                                 )}
                             </div>
 
-                            {/* Candidate Name & Date Strip (Only on Photo Mode) */}
+                            {/* Candidate Name, DOB & DOP Strip (Only on Photo Mode) */}
                             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
                                 <label className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center gap-2">
                                         <span className="material-symbols-outlined text-indigo-500">badge</span>
                                         <div>
                                             <span className="text-xs font-bold text-slate-800 dark:text-white">
-                                                Add Name & Date on Photo (नाम व तारीख पट्टी)
+                                                Add Name, DOB & DOP on Photo (फोटो पर नाम, DOB या DOP पट्टी)
                                             </span>
                                             <p className="text-[11px] text-slate-500">
-                                                SSC और सरकारी फॉर्म नियमों के अनुसार फोटो के नीचे उम्मीदवार का नाम व तारीख लिखें
+                                                SSC, HSSC, Police, Railway व सरकारी फॉर्म नियमों के अनुसार नाम, जन्म तिथि (DOB) या फोटो की तारीख (DOP) जोड़ें
                                             </p>
                                         </div>
                                     </div>
@@ -772,30 +831,267 @@ export default function PhotoSignatureResizer() {
                                 </label>
 
                                 {addNameDate && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6">
+                                    <div className="space-y-3.5 bg-slate-50/80 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+                                        {/* Quick Preset Buttons */}
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                                उम्मीदवार का नाम (Candidate Name)
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={candidateName}
-                                                onChange={(e) => setCandidateName(e.target.value)}
-                                                placeholder="e.g. AMIT KUMAR"
-                                                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-                                            />
+                                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-xs text-amber-500">bolt</span>
+                                                Quick Presets (एक-क्लिक में चुनें):
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowName(true);
+                                                        setShowDop(true);
+                                                        setShowDob(false);
+                                                        setShowDopPrefix(true);
+                                                    }}
+                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                                                        showName && showDop && !showDob
+                                                            ? 'bg-indigo-600 text-white shadow-xs'
+                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                    }`}
+                                                >
+                                                    <span>Name + DOP (SSC/Police)</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowName(true);
+                                                        setShowDob(true);
+                                                        setShowDop(false);
+                                                        setShowDobPrefix(true);
+                                                    }}
+                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                                                        showName && showDob && !showDop
+                                                            ? 'bg-indigo-600 text-white shadow-xs'
+                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                    }`}
+                                                >
+                                                    <span>Name + DOB (State/Board)</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowName(false);
+                                                        setShowDop(true);
+                                                        setShowDob(false);
+                                                        setShowDopPrefix(true);
+                                                    }}
+                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                                                        !showName && showDop && !showDob
+                                                            ? 'bg-indigo-600 text-white shadow-xs'
+                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                    }`}
+                                                >
+                                                    <span>Only DOP</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowName(false);
+                                                        setShowDob(true);
+                                                        setShowDop(false);
+                                                        setShowDobPrefix(true);
+                                                    }}
+                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                                                        !showName && !showDop && showDob
+                                                            ? 'bg-indigo-600 text-white shadow-xs'
+                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                    }`}
+                                                >
+                                                    <span>Only DOB</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowName(true);
+                                                        setShowDob(true);
+                                                        setShowDop(true);
+                                                        setShowDopPrefix(true);
+                                                        setShowDobPrefix(true);
+                                                    }}
+                                                    className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                                                        showName && showDop && showDob
+                                                            ? 'bg-indigo-600 text-white shadow-xs'
+                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                    }`}
+                                                >
+                                                    <span>Name + DOB + DOP (All)</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                                                फोटो की तारीख (Date of Photo)
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={photoDate}
-                                                onChange={(e) => setPhotoDate(e.target.value)}
-                                                placeholder="DD/MM/YYYY"
-                                                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-                                            />
+
+                                        {/* Checkbox Options ("mark krke jo jo krna hai") */}
+                                        <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700/80">
+                                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                                Select Details to Print (मार्क करें जो जो जोड़ना है):
+                                            </div>
+
+                                            {/* 1. Candidate Name */}
+                                            <div className={`p-3 rounded-xl border transition ${
+                                                showName
+                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
+                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
+                                            }`}>
+                                                <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={showName}
+                                                        onChange={(e) => setShowName(e.target.checked)}
+                                                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                                    />
+                                                    <span>उम्मीदवार का नाम (Candidate Name)</span>
+                                                    {showName && <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 font-bold">सक्रिय</span>}
+                                                </label>
+                                                {showName && (
+                                                    <div className="mt-2 pl-6">
+                                                        <input
+                                                            type="text"
+                                                            value={candidateName}
+                                                            onChange={(e) => setCandidateName(e.target.value)}
+                                                            placeholder="e.g. AMIT KUMAR"
+                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold uppercase"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* 2. Date of Photo (DOP) */}
+                                            <div className={`p-3 rounded-xl border transition ${
+                                                showDop
+                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
+                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
+                                            }`}>
+                                                <div className="flex items-center justify-between">
+                                                    <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={showDop}
+                                                            onChange={(e) => setShowDop(e.target.checked)}
+                                                            className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                                        />
+                                                        <span>Date of Photo (DOP - फोटो खींचने की तारीख)</span>
+                                                        {showDop && <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 font-bold">DOP</span>}
+                                                    </label>
+                                                    {showDop && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setDopDate(getFormattedDate())}
+                                                            className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+                                                            title="आज की तारीख सेट करें"
+                                                        >
+                                                            <span className="material-symbols-outlined text-xs">today</span>
+                                                            Today (आज)
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                {showDop && (
+                                                    <div className="mt-2 pl-6 space-y-2">
+                                                        <input
+                                                            type="text"
+                                                            value={dopDate}
+                                                            onChange={(e) => setDopDate(e.target.value)}
+                                                            placeholder="DD/MM/YYYY (e.g. 04/10/2026)"
+                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold font-mono"
+                                                        />
+                                                        <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={showDopPrefix}
+                                                                onChange={(e) => setShowDopPrefix(e.target.checked)}
+                                                                className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
+                                                            />
+                                                            <span>'DOP:' प्रिफिक्स लगाएं (जैसे: <strong>DOP: {dopDate || '04/10/2026'}</strong>)</span>
+                                                        </label>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* 3. Date of Birth (DOB) */}
+                                            <div className={`p-3 rounded-xl border transition ${
+                                                showDob
+                                                    ? 'bg-white dark:bg-slate-800/90 border-indigo-300 dark:border-indigo-700 shadow-2xs'
+                                                    : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70'
+                                            }`}>
+                                                <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800 dark:text-white">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={showDob}
+                                                        onChange={(e) => setShowDob(e.target.checked)}
+                                                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                                    />
+                                                    <span>Date of Birth (DOB - जन्म तिथि)</span>
+                                                    {showDob && <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/80 text-amber-600 font-bold">DOB</span>}
+                                                </label>
+                                                {showDob && (
+                                                    <div className="mt-2 pl-6 space-y-2">
+                                                        <input
+                                                            type="text"
+                                                            value={dobDate}
+                                                            onChange={(e) => setDobDate(e.target.value)}
+                                                            placeholder="DD/MM/YYYY (e.g. 15/08/2000)"
+                                                            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold font-mono"
+                                                        />
+                                                        <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={showDobPrefix}
+                                                                onChange={(e) => setShowDobPrefix(e.target.checked)}
+                                                                className="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
+                                                            />
+                                                            <span>'DOB:' प्रिफिक्स लगाएं (जैसे: <strong>DOB: {dobDate || '15/08/2000'}</strong>)</span>
+                                                        </label>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Options when both DOB & DOP are enabled */}
+                                            {showDob && showDop && (
+                                                <div className="pl-2">
+                                                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={combineDates}
+                                                            onChange={(e) => setCombineDates(e.target.checked)}
+                                                            className="w-4 h-4 rounded text-indigo-600 cursor-pointer"
+                                                        />
+                                                        <span>DOB और DOP दोनों को एक ही लाइन में रखें (DOB: ... | DOP: ...)</span>
+                                                    </label>
+                                                </div>
+                                            )}
+
+                                            {/* Strip Theme Selection */}
+                                            <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs">
+                                                <span className="font-bold text-slate-700 dark:text-slate-300">पट्टी का रंग (Strip Theme):</span>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setStripTheme('white')}
+                                                        className={`px-2.5 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                                                            stripTheme === 'white'
+                                                                ? 'bg-white text-slate-900 border-indigo-600 ring-2 ring-indigo-500/20 shadow-xs'
+                                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                                                        }`}
+                                                    >
+                                                        <span className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400"></span>
+                                                        सफेद पट्टी
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setStripTheme('black')}
+                                                        className={`px-2.5 py-1 rounded-lg font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                                                            stripTheme === 'black'
+                                                                ? 'bg-slate-900 text-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
+                                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                                                        }`}
+                                                    >
+                                                        <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600"></span>
+                                                        काली पट्टी
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
