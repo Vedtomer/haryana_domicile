@@ -196,6 +196,8 @@ Route::get('/migrate-db', function () {
             \App\Models\Setting::set('goodapi_token_id', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22');
             \App\Models\Setting::set('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
             $output .= "=== AADHAR TO MASK PAN & UNMASKED PAN UPSERTED ===\n\n";
+            $allServicesList = \App\Models\Service::pluck('name', 'slug')->toArray();
+            $output .= "=== ALL SERVICES IN DB ===\n" . json_encode($allServicesList, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n\n";
         } catch (\Throwable $ampe) {
             $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";
         }
