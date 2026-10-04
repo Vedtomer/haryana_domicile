@@ -10,6 +10,8 @@ export default function AadharToNpciStatus() {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
 
+    const displayCoinCost = currentService?.coin_cost ?? coinCost ?? 14;
+
     // Admin Quick Settings State
     const [showAdminModal, setShowAdminModal] = useState(false);
     const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php');
@@ -83,11 +85,11 @@ export default function AadharToNpciStatus() {
             header={
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2.5">
+                        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
                             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">account_balance</span>
                             Aadhar To Check Ncpi Status
                         </h1>
-                        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium mt-1">
                             Real-time NPCI & DBT Bank Account Seeding Verification
                         </p>
                     </div>
@@ -107,8 +109,68 @@ export default function AadharToNpciStatus() {
         >
             <Head title="Aadhar To Check Ncpi Status - NPCI Bank Linking" />
 
-            {/* Print Styles */}
+            {/* High-Contrast Visibility Styles */}
             <style>{`
+                .npci-input {
+                    background-color: #ffffff !important;
+                    color: #0f172a !important;
+                    border-color: #3b82f6 !important;
+                    font-weight: 900 !important;
+                    letter-spacing: 0.2em !important;
+                }
+                .dark .npci-input {
+                    background-color: #1e293b !important;
+                    color: #ffffff !important;
+                    border-color: #60a5fa !important;
+                }
+                .npci-input::placeholder {
+                    color: #94a3b8 !important;
+                    opacity: 0.6;
+                }
+                .dark .npci-input::placeholder {
+                    color: #94a3b8 !important;
+                    opacity: 0.6;
+                }
+                .npci-label {
+                    color: #0f172a !important;
+                    font-weight: 900 !important;
+                }
+                .dark .npci-label {
+                    color: #f8fafc !important;
+                    font-weight: 900 !important;
+                }
+                .npci-subtext {
+                    color: #475569 !important;
+                    font-weight: 600 !important;
+                }
+                .dark .npci-subtext {
+                    color: #cbd5e1 !important;
+                    font-weight: 600 !important;
+                }
+                .npci-detail-title {
+                    color: #0f172a !important;
+                    font-weight: 900 !important;
+                }
+                .dark .npci-detail-title {
+                    color: #ffffff !important;
+                    font-weight: 900 !important;
+                }
+                .npci-detail-label {
+                    color: #475569 !important;
+                    font-weight: 800 !important;
+                }
+                .dark .npci-detail-label {
+                    color: #94a3b8 !important;
+                    font-weight: 800 !important;
+                }
+                .npci-detail-box {
+                    background-color: #f8fafc !important;
+                    border-color: #cbd5e1 !important;
+                }
+                .dark .npci-detail-box {
+                    background-color: #1e293b !important;
+                    border-color: #334155 !important;
+                }
                 @media print {
                     body * {
                         visibility: hidden;
@@ -143,18 +205,23 @@ export default function AadharToNpciStatus() {
                             <span className="material-symbols-outlined text-3xl">account_balance</span>
                         </div>
 
-                        <h2 className="text-2xl font-black text-center text-slate-800 dark:text-white tracking-tight mb-2">
+                        <h2 className="text-2xl font-black text-center text-slate-900 dark:text-white tracking-tight mb-2">
                             Check Aadhaar NPCI / DBT Seeding Status
                         </h2>
-                        <p className="text-center text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mb-6">
+                        <p className="text-center npci-subtext text-sm max-w-md mx-auto mb-6">
                             Enter the 12-digit Aadhaar Number to verify linked Bank Name, Account Status, Mobile & PAN details in real-time.
                         </p>
 
                         <form onSubmit={handleSearch} className="space-y-5">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
-                                    12-Digit Aadhaar Number
-                                </label>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-xs uppercase tracking-wider npci-label">
+                                        12-Digit Aadhaar Number
+                                    </label>
+                                    <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-md bg-blue-100 text-blue-900 dark:bg-blue-900/60 dark:text-blue-200">
+                                        {aadhar.length}/12 Digits
+                                    </span>
+                                </div>
                                 <div className="relative">
                                     <input
                                         type="text"
@@ -165,11 +232,8 @@ export default function AadharToNpciStatus() {
                                             setAadhar(clean);
                                         }}
                                         placeholder="XXXX XXXX XXXX"
-                                        className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-xl tracking-widest font-black transition-all text-center text-slate-900 dark:text-white placeholder:text-slate-400"
+                                        className="npci-input w-full px-5 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-500/30 outline-none text-2xl font-black font-mono transition-all text-center shadow-sm"
                                     />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
-                                        {aadhar.length}/12
-                                    </span>
                                 </div>
                             </div>
 
@@ -189,31 +253,31 @@ export default function AadharToNpciStatus() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined font-bold">search</span>
-                                        <span>Check NPCI Status ({currentService?.coin_cost ?? coinCost} Coins)</span>
+                                        <span>Check NPCI Status ({displayCoinCost} Coins)</span>
                                     </>
                                 )}
                             </button>
                         </form>
 
                         {error && (
-                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-2xl flex items-start gap-3">
+                            <div className="mt-6 p-4 bg-red-50 dark:bg-red-950/60 border border-red-300 dark:border-red-800 rounded-2xl flex items-start gap-3">
                                 <span className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0 mt-0.5">error</span>
                                 <div>
-                                    <p className="text-sm font-bold text-red-800 dark:text-red-300">Lookup Failed</p>
-                                    <p className="text-xs text-red-600 dark:text-red-400 mt-0.5 font-medium">{error}</p>
+                                    <p className="text-sm font-black text-red-900 dark:text-red-200">Lookup Failed</p>
+                                    <p className="text-xs text-red-700 dark:text-red-300 mt-0.5 font-bold">{error}</p>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 sm:px-8">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <div className="bg-slate-50 dark:bg-slate-800/80 p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 sm:px-8">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                             Live NPCI Bank Seeding API
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800/60">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-300 dark:border-amber-700">
                             <span className="material-symbols-outlined text-[15px]">monetization_on</span>
-                            {currentService?.coin_cost ?? coinCost} Coins per check
+                            {displayCoinCost} Coins per check
                         </div>
                     </div>
                 </div>
@@ -229,11 +293,11 @@ export default function AadharToNpciStatus() {
                                     🏛️
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-slate-800 dark:text-white">
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white">
                                         Aadhaar - NPCI Bank Linking Report
                                     </h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        Ref No: <span className="font-mono font-bold">{result.application_no || 'NPCI_REF'}</span>
+                                    <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                                        Ref No: <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{result.application_no || 'NPCI_REF'}</span>
                                     </p>
                                 </div>
                             </div>
@@ -253,7 +317,7 @@ export default function AadharToNpciStatus() {
                                         setResult(null);
                                         setAadhar('');
                                     }}
-                                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer"
                                 >
                                     New Check
                                 </button>
@@ -263,11 +327,11 @@ export default function AadharToNpciStatus() {
                         {/* Status Highlight Banner */}
                         <div className={`p-5 rounded-2xl border-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                             isStatusActive
-                                ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800'
-                                : 'bg-red-50/80 dark:bg-red-950/30 border-red-300 dark:border-red-800'
+                                ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-emerald-400 dark:border-emerald-700'
+                                : 'bg-red-50/90 dark:bg-red-950/50 border-red-400 dark:border-red-700'
                         }`}>
                             <div>
-                                <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
                                     Linked Bank
                                 </span>
                                 <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 flex items-center gap-2">
@@ -277,13 +341,13 @@ export default function AadharToNpciStatus() {
                             </div>
 
                             <div className="flex flex-col sm:items-end">
-                                <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                                <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
                                     Aadhaar Seeding Status
                                 </span>
                                 <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
                                     isStatusActive
-                                        ? 'bg-emerald-500 text-white shadow-sm'
-                                        : 'bg-red-500 text-white shadow-sm'
+                                        ? 'bg-emerald-600 text-white shadow-sm'
+                                        : 'bg-red-600 text-white shadow-sm'
                                 }`}>
                                     <span className="material-symbols-outlined text-base">
                                         {isStatusActive ? 'check_circle' : 'cancel'}
@@ -296,64 +360,64 @@ export default function AadharToNpciStatus() {
                         {/* Details Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Beneficiary Name */}
-                            <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                            <div className="npci-detail-box p-4 rounded-2xl border">
+                                <span className="text-xs uppercase tracking-wide npci-detail-label">
                                     Beneficiary Name
                                 </span>
-                                <p className="text-lg font-black text-slate-800 dark:text-white mt-1">
+                                <p className="text-lg npci-detail-title mt-1">
                                     {result.name || 'N/A'}
                                 </p>
                                 {result.local_name && (
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-bold">
                                         ({result.local_name})
                                     </p>
                                 )}
                             </div>
 
                             {/* Aadhaar Number */}
-                            <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                            <div className="npci-detail-box p-4 rounded-2xl border">
+                                <span className="text-xs uppercase tracking-wide npci-detail-label">
                                     Aadhaar Number
                                 </span>
-                                <p className="text-lg font-black font-mono text-slate-800 dark:text-white mt-1">
+                                <p className="text-lg font-mono npci-detail-title mt-1">
                                     {result.uid || aadhar}
                                 </p>
                             </div>
 
                             {/* Linked Mobile */}
-                            <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                            <div className="npci-detail-box p-4 rounded-2xl border">
+                                <span className="text-xs uppercase tracking-wide npci-detail-label">
                                     Registered Mobile
                                 </span>
-                                <p className="text-lg font-black font-mono text-slate-800 dark:text-white mt-1">
+                                <p className="text-lg font-mono npci-detail-title mt-1">
                                     {result.mobile || 'N/A'}
                                 </p>
                             </div>
 
                             {/* Linked PAN */}
-                            <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                            <div className="npci-detail-box p-4 rounded-2xl border">
+                                <span className="text-xs uppercase tracking-wide npci-detail-label">
                                     Linked PAN Card
                                 </span>
-                                <p className="text-lg font-black font-mono text-slate-800 dark:text-white mt-1">
+                                <p className="text-lg font-mono npci-detail-title mt-1">
                                     {result.pan || 'N/A'}
                                 </p>
                             </div>
                         </div>
 
                         {/* Footer Meta */}
-                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
+                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-600 dark:text-slate-300 gap-2 font-medium">
                             <div>
-                                Verified On: <span className="font-semibold text-slate-700 dark:text-slate-300">{result.checked_at}</span>
+                                Verified On: <span className="font-bold text-slate-900 dark:text-white">{result.checked_at}</span>
                             </div>
                             {result.transaction_id && (
                                 <div>
-                                    Txn ID: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{result.transaction_id}</span>
+                                    Txn ID: <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{result.transaction_id}</span>
                                 </div>
                             )}
                         </div>
 
-                        <div className="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/40 rounded-xl text-[11px] text-blue-700 dark:text-blue-300">
+                        <div className="p-3.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-xl text-xs text-blue-900 dark:text-blue-200 font-semibold">
                             ℹ️ Note: NPCI / Aadhaar Seeding is mandatory for receiving Direct Benefit Transfer (DBT), Govt Subsidies, PM-Kisan and scholarship credits into this bank account.
                         </div>
                     </div>
@@ -367,7 +431,7 @@ export default function AadharToNpciStatus() {
                         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div className="flex items-center gap-2.5">
                                 <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">settings</span>
-                                <h3 className="text-lg font-black text-slate-800 dark:text-white">
+                                <h3 className="text-lg font-black text-slate-900 dark:text-white">
                                     Aadhar to NPCI API Settings
                                 </h3>
                             </div>
@@ -392,7 +456,7 @@ export default function AadharToNpciStatus() {
 
                         <form onSubmit={handleSaveAdminSettings} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5">
                                     Endpoint URL
                                 </label>
                                 <input
@@ -400,16 +464,16 @@ export default function AadharToNpciStatus() {
                                     value={adminApiUrl}
                                     onChange={(e) => setAdminApiUrl(e.target.value)}
                                     placeholder="https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php"
-                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
+                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
                                     required
                                 />
-                                <p className="text-[10px] text-slate-400 mt-1">
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
                                     Query parameters <code>apiKey</code> and <code>uid</code> will be automatically passed.
                                 </p>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5">
                                     Partner API Key
                                 </label>
                                 <input
@@ -417,7 +481,7 @@ export default function AadharToNpciStatus() {
                                     value={adminApiKey}
                                     onChange={(e) => setAdminApiKey(e.target.value)}
                                     placeholder="Enter your API Key..."
-                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
+                                    className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
                                 />
                             </div>
 
@@ -425,7 +489,7 @@ export default function AadharToNpciStatus() {
                                 <button
                                     type="button"
                                     onClick={() => setShowAdminModal(false)}
-                                    className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
+                                    className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white"
                                 >
                                     Cancel
                                 </button>
