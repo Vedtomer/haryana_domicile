@@ -441,6 +441,13 @@ export function getServiceCategory(service) {
             moduleKey === 'verify_ifsc_code' ||
             slug.includes('tenth-passbook') ||
             moduleKey === 'tenth_passbook' ||
+            slug.includes('npci') ||
+            slug.includes('ncpi') ||
+            moduleKey === 'aadhar_to_npci_status' ||
+            slug === 'aadhar-to-npci-status' ||
+            text.includes('npci') ||
+            text.includes('ncpi') ||
+            text.includes('dbt') ||
             text.includes('ifsc') ||
             text.includes('passbook') ||
             text.includes('bank')

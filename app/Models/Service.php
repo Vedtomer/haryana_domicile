@@ -539,6 +539,13 @@ class Service extends Model
             'index' => '/utilities/courier-slip-maker',
             'create' => '/utilities/courier-slip-maker',
         ],
+        'aadhar_to_npci_status' => [
+            'label' => 'Aadhar To Check Ncpi Status',
+            'icon' => '🏦',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-npci-status',
+            'create' => '/utilities/aadhar-to-npci-status',
+        ],
     ];
 
     protected $fillable = [

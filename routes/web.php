@@ -115,6 +115,29 @@ Route::get('/migrate-db', function () {
             $output .= "CourierSlipMaker error: " . $cpe->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To Check Ncpi Status is in services table
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-npci-status'],
+                [
+                    'name' => 'Aadhar To Check Ncpi Status',
+                    'description' => 'Check real-time Aadhaar to NPCI / DBT Bank Linking and seeding status with Bank Name, Active Status, Mobile & PAN.',
+                    'icon' => '🏦',
+                    'coin_cost' => 20,
+                    'kind' => 'module',
+                    'module_key' => 'aadhar_to_npci_status',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 46,
+                ]
+            );
+            $output .= "=== AADHAR TO NPCI STATUS UPSERTED ===\n\n";
+        } catch (\Throwable $npe) {
+            $output .= "AadharToNpciStatus error: " . $npe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1191,6 +1214,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.aadhar-to-name');
 
     Route::post('/utilities/aadhar-to-name/search', [\App\Http\Controllers\AadharToNameController::class, 'search'])->name('utilities.aadhar-to-name.search');
+
+    Route::get('/utilities/aadhar-to-npci-status', [\App\Http\Controllers\AadharToNpciController::class, 'index'])->name('utilities.aadhar-to-npci-status');
+    Route::post('/utilities/aadhar-to-npci-status/search', [\App\Http\Controllers\AadharToNpciController::class, 'search'])->name('utilities.aadhar-to-npci-status.search');
+    Route::post('/utilities/aadhar-to-npci-status/update-api', [\App\Http\Controllers\AadharToNpciController::class, 'updateApi'])->name('utilities.aadhar-to-npci-status.update-api');
 
     Route::get('/utilities/aadhar-to-info', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-info')->first();
