@@ -167,7 +167,6 @@ export default function PhotoSignatureResizer() {
     const [combineDates, setCombineDates] = useState(false);
 
     // A4 Sheet Maker State
-    const [showA4Modal, setShowA4Modal] = useState(false);
     const [a4Count, setA4Count] = useState(6);
     const [a4HasBorder, setA4HasBorder] = useState(true);
     const [a4Gap, setA4Gap] = useState(3); // mm
@@ -582,7 +581,7 @@ export default function PhotoSignatureResizer() {
 
     // Live Generate A4 Sheet Preview
     useEffect(() => {
-        if (!showA4Modal || !outputUrl) return;
+        if (!outputUrl) return;
 
         let active = true;
         setIsGeneratingA4(true);
@@ -610,7 +609,7 @@ export default function PhotoSignatureResizer() {
         return () => {
             active = false;
         };
-    }, [showA4Modal, a4Count, a4HasBorder, a4Gap, outputUrl, targetWidth, targetHeight]);
+    }, [a4Count, a4HasBorder, a4Gap, outputUrl, targetWidth, targetHeight]);
 
     // Download A4 Sheet Image
     const handleDownloadA4 = () => {
@@ -662,11 +661,11 @@ export default function PhotoSignatureResizer() {
                         <div className="flex items-center gap-2">
                             <button
                                 type="button"
-                                onClick={() => setShowA4Modal(true)}
+                                onClick={() => document.getElementById('a4-sheet-studio')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 text-xs sm:text-sm transition-all cursor-pointer"
                             >
                                 <span className="material-symbols-outlined text-lg">print</span>
-                                A4 शीट (6 फोटो/लाइन)
+                                🖨️ A4 शीट (6 फोटो/लाइन)
                             </button>
                             <button
                                 onClick={handleDownload}
@@ -1305,9 +1304,9 @@ export default function PhotoSignatureResizer() {
                             )}
                         </div>
 
-                        {/* Action Buttons */}
+                        {/* Action Buttons & Direct A4 Sheet Studio */}
                         {outputUrl && (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <button
                                         type="button"
@@ -1319,20 +1318,216 @@ export default function PhotoSignatureResizer() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setShowA4Modal(true)}
-                                        className="flex-1 py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black rounded-xl shadow-lg shadow-indigo-600/25 text-center transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="py-3.5 px-5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-center text-xs cursor-pointer transition flex items-center justify-center gap-1.5"
                                     >
-                                        <span className="material-symbols-outlined text-xl">print</span>
-                                        A4 शीट बनाएं (ऊपर 6 फोटो)
+                                        <span className="material-symbols-outlined text-lg">refresh</span>
+                                        नई फोटो बदलें
                                     </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="w-full py-2.5 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-center text-xs cursor-pointer transition"
-                                >
-                                    🔄 नई फोटो या साइन अपलोड करें
-                                </button>
+
+                                {/* Direct Outside 6-Line A4 Sheet Studio */}
+                                <div id="a4-sheet-studio" className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-indigo-200 dark:border-indigo-900/60 p-4 sm:p-5 shadow-xl space-y-4">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30">
+                                                <span className="material-symbols-outlined text-xl">grid_view</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
+                                                    A4 पासपोर्ट फोटो शीट प्रिंटर (A4 Sheet Maker)
+                                                </h3>
+                                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                                                    ऊपर 6 फोटो प्रति लाइन • सीधा प्रिंट निकालें या A4 शीट JPG डाउनलोड करें
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className="px-2.5 py-1 rounded-full text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
+                                            {a4Count} फोटो ({Math.ceil(a4Count / 6)} लाइन)
+                                        </span>
+                                    </div>
+
+                                    {/* 6 Line Preset Buttons (1 Line to 6 Lines) */}
+                                    <div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                                <span className="material-symbols-outlined text-base text-indigo-600">view_week</span>
+                                                लाइन चुनें (Quick Line Presets):
+                                            </span>
+                                            <span className="text-[11px] font-semibold text-slate-400">
+                                                1 लाइन = 6 फोटो
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2">
+                                            {[
+                                                { count: 6, line: '1 लाइन', qty: '6 फोटो' },
+                                                { count: 12, line: '2 लाइन', qty: '12 फोटो' },
+                                                { count: 18, line: '3 लाइन', qty: '18 फोटो' },
+                                                { count: 24, line: '4 लाइन', qty: '24 फोटो' },
+                                                { count: 30, line: '5 लाइन', qty: '30 फोटो' },
+                                                { count: 36, line: '6 लाइन', qty: '36 फोटो (फुल)' },
+                                            ].map((p) => {
+                                                const isSelected = a4Count === p.count;
+                                                return (
+                                                    <button
+                                                        key={p.count}
+                                                        type="button"
+                                                        onClick={() => setA4Count(p.count)}
+                                                        className={`p-2 rounded-xl text-center transition cursor-pointer border ${
+                                                            isSelected
+                                                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30 ring-2 ring-indigo-500/30'
+                                                                : 'bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
+                                                        }`}
+                                                    >
+                                                        <div className="font-black text-xs">{p.line}</div>
+                                                        <div className={`text-[10px] ${isSelected ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                            {p.qty}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Quantity Counter + Cutting Border & Gap */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                        {/* Fine-tune Counter */}
+                                        <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                                                कस्टम फोटो संख्या (1 से 36):
+                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setA4Count((c) => Math.max(1, c - 1))}
+                                                    className="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-black text-base text-slate-700 dark:text-slate-200 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs"
+                                                >
+                                                    −
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="36"
+                                                    value={a4Count}
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value) || 1;
+                                                        setA4Count(Math.max(1, Math.min(36, val)));
+                                                    }}
+                                                    className="flex-1 py-1.5 text-center font-black text-lg bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setA4Count((c) => Math.min(36, c + 1))}
+                                                    className="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-black text-base text-slate-700 dark:text-slate-200 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Border & Gap */}
+                                        <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+                                            <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800 dark:text-white">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={a4HasBorder}
+                                                    onChange={(e) => setA4HasBorder(e.target.checked)}
+                                                    className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                                />
+                                                <span>कटिंग बॉर्डर लाइन (Cutting Border)</span>
+                                            </label>
+                                            <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200 dark:border-slate-700/80">
+                                                <span className="font-semibold text-slate-600 dark:text-slate-400">दूरी (Gap):</span>
+                                                <div className="flex gap-1">
+                                                    {[
+                                                        { gap: 2, label: '2mm' },
+                                                        { gap: 3, label: '3mm' },
+                                                        { gap: 4, label: '4mm' },
+                                                    ].map((g) => (
+                                                        <button
+                                                            key={g.gap}
+                                                            type="button"
+                                                            onClick={() => setA4Gap(g.gap)}
+                                                            className={`px-2 py-0.5 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
+                                                                a4Gap === g.gap
+                                                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                                                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                                                            }`}
+                                                        >
+                                                            {g.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Live A4 Sheet Preview & Direct Print / Download Buttons */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-slate-100 dark:bg-slate-950/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+                                        {/* A4 Sheet Realistic Thumbnail */}
+                                        <div className="sm:col-span-5 flex flex-col items-center justify-center">
+                                            <div className="w-full max-w-[180px] sm:max-w-[190px] bg-white rounded-lg shadow-xl border border-slate-300 dark:border-slate-700 overflow-hidden relative" style={{ aspectRatio: '210 / 297' }}>
+                                                {isGeneratingA4 ? (
+                                                    <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-[1px] flex items-center justify-center z-10">
+                                                        <span className="material-symbols-outlined animate-spin text-indigo-600 text-2xl">
+                                                            progress_activity
+                                                        </span>
+                                                    </div>
+                                                ) : null}
+
+                                                {a4PreviewUrl ? (
+                                                    <img
+                                                        src={a4PreviewUrl}
+                                                        alt="A4 Sheet Preview"
+                                                        className="w-full h-full object-contain pointer-events-none"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-[10px]">
+                                                        A4 शीट बन रही है...
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-slate-500 font-bold mt-1.5">
+                                                A4 शीट लाइव प्रिव्यू ({a4Count} फोटो)
+                                            </span>
+                                        </div>
+
+                                        {/* Paper Saver Tip & Direct Buttons */}
+                                        <div className="sm:col-span-7 space-y-3">
+                                            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 space-y-1">
+                                                <div className="font-bold flex items-center gap-1.5">
+                                                    <span className="material-symbols-outlined text-base">lightbulb</span>
+                                                    कागज़ बचत टिप (Paper Saver):
+                                                </div>
+                                                <p className="text-[11px] leading-relaxed opacity-90">
+                                                    पहली 6 फोटो A4 पेपर के बिल्कुल ऊपर (Top Row) सेट होती हैं। प्रिंट करने के बाद कैंची से ऊपर की पट्टी काटकर बाकी बचे पूरे A4 पेपर को दोबारा प्रिंटर में इस्तेमाल कर सकते हैं!
+                                                </p>
+                                            </div>
+
+                                            {/* Direct Action Buttons: Print & Download */}
+                                            <div className="space-y-2 pt-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={handlePrintA4}
+                                                    className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition text-xs sm:text-sm"
+                                                >
+                                                    <span className="material-symbols-outlined text-xl">print</span>
+                                                    🖨️ A4 शीट प्रिंट करें (Print Sheet)
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={handleDownloadA4}
+                                                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer transition text-xs"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">download</span>
+                                                    📥 A4 शीट डाउनलोड करें (HD JPG)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -1387,224 +1582,6 @@ export default function PhotoSignatureResizer() {
                     }
                 }
             `}</style>
-
-            {/* Interactive A4 Sheet Maker Modal */}
-            {showA4Modal && (
-                <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
-                        {/* Modal Header */}
-                        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30">
-                                    <span className="material-symbols-outlined text-xl">grid_view</span>
-                                </div>
-                                <div>
-                                    <h3 className="font-black text-base sm:text-lg text-slate-900 dark:text-white leading-tight">
-                                        A4 पासपोर्ट फोटो शीट प्रिंटर (A4 Sheet Photo Maker)
-                                    </h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        ऊपर की लाइन में 6 फोटो • जितनी चाहे फोटो जोड़ें और A4 पेपर पर सीधे प्रिंट निकालें
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setShowA4Modal(false)}
-                                className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300 flex items-center justify-center transition cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-lg">close</span>
-                            </button>
-                        </div>
-
-                        {/* Modal Body */}
-                        <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-12 gap-6 flex-1">
-                            {/* Left: Controls ("kitni kitni add krni hai") */}
-                            <div className="md:col-span-6 space-y-4">
-                                {/* Quantity Selector */}
-                                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                                            फोटो की संख्या (Total Photos)
-                                        </span>
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                                            {a4Count} Photos ({Math.ceil(a4Count / 6)} Lines)
-                                        </span>
-                                    </div>
-
-                                    {/* Increment / Decrement Counter */}
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => setA4Count((c) => Math.max(1, c - (c > 6 && c % 6 === 0 ? 6 : 1)))}
-                                            className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-black text-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs"
-                                        >
-                                            −
-                                        </button>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max="36"
-                                            value={a4Count}
-                                            onChange={(e) => {
-                                                const val = parseInt(e.target.value) || 1;
-                                                setA4Count(Math.max(1, Math.min(36, val)));
-                                            }}
-                                            className="flex-1 py-2 text-center font-black text-xl bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setA4Count((c) => Math.min(36, c + (c < 36 && c % 6 === 0 ? 6 : 1)))}
-                                            className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-black text-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-
-                                    {/* Quick Presets */}
-                                    <div>
-                                        <div className="text-[11px] font-bold text-slate-400 mb-1.5">
-                                            एक क्लिक में लाइन चुनें (Quick Preset Lines):
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-1.5">
-                                            {[
-                                                { count: 6, label: '6 फोटो (1 लाइन)' },
-                                                { count: 12, label: '12 फोटो (2 लाइन)' },
-                                                { count: 18, label: '18 फोटो (3 लाइन)' },
-                                                { count: 24, label: '24 फोटो (4 लाइन)' },
-                                                { count: 30, label: '30 फोटो (5 लाइन)' },
-                                                { count: 36, label: '36 फोटो (फुल A4)' },
-                                            ].map((p) => (
-                                                <button
-                                                    key={p.count}
-                                                    type="button"
-                                                    onClick={() => setA4Count(p.count)}
-                                                    className={`py-2 px-1.5 rounded-xl text-xs font-bold transition text-center cursor-pointer ${
-                                                        a4Count === p.count
-                                                            ? 'bg-indigo-600 text-white shadow-xs'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-300'
-                                                    }`}
-                                                >
-                                                    {p.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Layout Settings */}
-                                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-3">
-                                    <span className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 block">
-                                        कटिंग व बॉर्डर सेटिंग्स (Cutting & Border)
-                                    </span>
-
-                                    <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-800 dark:text-white">
-                                        <input
-                                            type="checkbox"
-                                            checked={a4HasBorder}
-                                            onChange={(e) => setA4HasBorder(e.target.checked)}
-                                            className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                        />
-                                        <span>काटने के लिए कटिंग लाइन (Cutting Border Line)</span>
-                                    </label>
-
-                                    {/* Gap selector */}
-                                    <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200 dark:border-slate-700/80">
-                                        <span className="font-semibold text-slate-600 dark:text-slate-400">फोटो के बीच दूरी (Gap):</span>
-                                        <div className="flex gap-1.5">
-                                            {[
-                                                { gap: 2, label: '2 mm' },
-                                                { gap: 3, label: '3 mm (स्टैंडर्ड)' },
-                                                { gap: 4, label: '4 mm' },
-                                            ].map((g) => (
-                                                <button
-                                                    key={g.gap}
-                                                    type="button"
-                                                    onClick={() => setA4Gap(g.gap)}
-                                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
-                                                        a4Gap === g.gap
-                                                            ? 'bg-indigo-600 text-white border-indigo-600'
-                                                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-                                                    }`}
-                                                >
-                                                    {g.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Pro Paper Saving Tip */}
-                                <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl text-xs text-amber-800 dark:text-amber-300 space-y-1">
-                                    <div className="font-bold flex items-center gap-1.5">
-                                        <span className="material-symbols-outlined text-base">lightbulb</span>
-                                        कागज़ बचत टिप (Paper Saver):
-                                    </div>
-                                    <p className="text-[11px] leading-relaxed opacity-90">
-                                        पहली 6 फोटो A4 पेपर के बिल्कुल ऊपर (Top Row) सेट होती हैं। प्रिंट करने के बाद कैंची या कटर से ऊपर की 6 फोटो काटकर बाकी बचे पूरे A4 पेपर को दोबारा प्रिंटर में इस्तेमाल कर सकते हैं!
-                                    </p>
-                                </div>
-
-                                {/* Print & Download Action Buttons */}
-                                <div className="space-y-2 pt-1">
-                                    <button
-                                        type="button"
-                                        onClick={handlePrintA4}
-                                        className="w-full py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition text-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-xl">print</span>
-                                        🖨️ A4 शीट प्रिंट करें (Print Now)
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadA4}
-                                        className="w-full py-3 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer transition text-xs sm:text-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-lg">download</span>
-                                        📥 A4 शीट डाउनलोड करें (HD JPG)
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Right: Realistic A4 Sheet Live Preview */}
-                            <div className="md:col-span-6 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-950/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
-                                <div className="w-full flex items-center justify-between text-[11px] font-bold text-slate-500 mb-2 px-1">
-                                    <span>A4 Sheet Preview (210 × 297 mm)</span>
-                                    <span className="text-indigo-600 dark:text-indigo-400">
-                                        ऊपर लाइन: 6 फोटो
-                                    </span>
-                                </div>
-
-                                <div className="w-full max-w-[270px] sm:max-w-[310px] bg-white rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden relative" style={{ aspectRatio: '210 / 297' }}>
-                                    {isGeneratingA4 ? (
-                                        <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-[1px] flex items-center justify-center z-10">
-                                            <span className="material-symbols-outlined animate-spin text-indigo-600 text-3xl">
-                                                progress_activity
-                                            </span>
-                                        </div>
-                                    ) : null}
-
-                                    {a4PreviewUrl ? (
-                                        <img
-                                            src={a4PreviewUrl}
-                                            alt="A4 Sheet Preview"
-                                            className="w-full h-full object-contain pointer-events-none"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
-                                            A4 शीट तैयार हो रही है...
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="mt-3 text-center text-[11px] text-slate-400">
-                                    {a4Count} पासपोर्ट फोटो A4 शीट पर सेट हैं ({Math.ceil(a4Count / 6)} लाइन)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </AdminLayout>
     );
 }
