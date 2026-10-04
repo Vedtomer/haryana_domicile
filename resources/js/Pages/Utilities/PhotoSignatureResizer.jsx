@@ -15,6 +15,7 @@ export default function PhotoSignatureResizer() {
     // Image Adjustments
     const [rotation, setRotation] = useState(0);
     const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [photoZoom, setPhotoZoom] = useState(1);
     const [brightness, setBrightness] = useState(100);
     const [contrast, setContrast] = useState(100);
 
@@ -42,6 +43,7 @@ export default function PhotoSignatureResizer() {
     const [showSignature, setShowSignature] = useState(false);
     const [signatureSrc, setSignatureSrc] = useState(null);
     const [signatureImgObj, setSignatureImgObj] = useState(null);
+    const [signatureZoom, setSignatureZoom] = useState(1);
 
     // A4 Sheet Maker State (1 line = 6 photos, total 36 photos)
     const [a4Count, setA4Count] = useState(36);
@@ -108,6 +110,7 @@ export default function PhotoSignatureResizer() {
     const handleRemoveSignature = () => {
         setSignatureSrc(null);
         setSignatureImgObj(null);
+        setSignatureZoom(1);
         if (sigInputRef.current) sigInputRef.current.value = '';
     };
 
@@ -147,6 +150,7 @@ export default function PhotoSignatureResizer() {
         imageSrc,
         rotation,
         pan,
+        photoZoom,
         brightness,
         contrast,
         showName,
@@ -162,6 +166,7 @@ export default function PhotoSignatureResizer() {
         showSignature,
         signatureSrc,
         signatureImgObj,
+        signatureZoom,
     ]);
 
     const processImage = () => {
@@ -220,6 +225,7 @@ export default function PhotoSignatureResizer() {
 
             ctx.translate(TARGET_WIDTH / 2 + pan.x, photoAreaHeight / 2 + pan.y);
             ctx.rotate((rotation * Math.PI) / 180);
+            ctx.scale(photoZoom, photoZoom);
             ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
 
             const drawW = img.naturalWidth;
@@ -274,18 +280,21 @@ export default function PhotoSignatureResizer() {
                 ctx.stroke();
 
                 if (signatureImgObj) {
-                    // Draw uploaded signature centered
-                    const padX = 24;
-                    const padY = 10;
+                    // Draw uploaded signature centered with zoom
+                    const padX = 20;
+                    const padY = 8;
                     const maxSigW = TARGET_WIDTH - padX * 2;
                     const maxSigH = sigBoxHeight - padY * 2;
-                    const sigScale = Math.min(maxSigW / signatureImgObj.naturalWidth, maxSigH / signatureImgObj.naturalHeight);
-                    const sw = signatureImgObj.naturalWidth * sigScale;
-                    const sh = signatureImgObj.naturalHeight * sigScale;
+                    const baseScale = Math.min(maxSigW / signatureImgObj.naturalWidth, maxSigH / signatureImgObj.naturalHeight);
+                    const sw = signatureImgObj.naturalWidth * baseScale * signatureZoom;
+                    const sh = signatureImgObj.naturalHeight * baseScale * signatureZoom;
                     const sx = (TARGET_WIDTH - sw) / 2;
                     const sy = sigBoxY + (sigBoxHeight - sh) / 2;
 
                     ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, sigBoxY, TARGET_WIDTH, sigBoxHeight);
+                    ctx.clip();
                     ctx.filter = 'contrast(125%)';
                     ctx.drawImage(signatureImgObj, sx, sy, sw, sh);
                     ctx.restore();
@@ -587,6 +596,7 @@ export default function PhotoSignatureResizer() {
                                             onClick={() => {
                                                 setPan({ x: 0, y: 0 });
                                                 setRotation(0);
+                                                setPhotoZoom(1);
                                                 setBrightness(100);
                                                 setContrast(100);
                                             }}
@@ -594,6 +604,53 @@ export default function PhotoSignatureResizer() {
                                         >
                                             <span className="material-symbols-outlined text-sm">restart_alt</span>
                                             रिसेट
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Photo Zoom In / Out Controls */}
+                                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="material-symbols-outlined text-blue-600 text-base">zoom_in</span>
+                                            फोटो ज़ूम (Photo Zoom In / Out):
+                                        </span>
+                                        <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[11px] font-black">
+                                            {Math.round(photoZoom * 100)}%
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPhotoZoom((z) => Math.max(0.5, Math.round((z - 0.05) * 100) / 100))}
+                                            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-black text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center cursor-pointer transition shadow-2xs"
+                                            title="Zoom Out (कम करें)"
+                                        >
+                                            −
+                                        </button>
+                                        <input
+                                            type="range"
+                                            min="0.5"
+                                            max="2.5"
+                                            step="0.05"
+                                            value={photoZoom}
+                                            onChange={(e) => setPhotoZoom(parseFloat(e.target.value))}
+                                            className="flex-1 accent-blue-600 cursor-pointer"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setPhotoZoom((z) => Math.min(2.5, Math.round((z + 0.05) * 100) / 100))}
+                                            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-black text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center cursor-pointer transition shadow-2xs"
+                                            title="Zoom In (बढ़ाएं)"
+                                        >
+                                            +
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPhotoZoom(1)}
+                                            className="px-2.5 py-1 text-[11px] font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+                                        >
+                                            100%
                                         </button>
                                     </div>
                                 </div>
@@ -795,36 +852,85 @@ export default function PhotoSignatureResizer() {
                                             />
 
                                             {signatureSrc ? (
-                                                <div className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-20 h-10 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden flex items-center justify-center p-1">
-                                                            <img
-                                                                src={signatureSrc}
-                                                                alt="Signature"
-                                                                className="max-w-full max-h-full object-contain"
-                                                            />
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-20 h-10 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden flex items-center justify-center p-1">
+                                                                <img
+                                                                    src={signatureSrc}
+                                                                    alt="Signature"
+                                                                    className="max-w-full max-h-full object-contain"
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                                हस्ताक्षर फोटो के नीचे सेट है
+                                                            </span>
                                                         </div>
-                                                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                                            <span className="material-symbols-outlined text-sm">check_circle</span>
-                                                            हस्ताक्षर फोटो के नीचे सेट है
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => sigInputRef.current?.click()}
+                                                                className="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer transition"
+                                                            >
+                                                                बदलें
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleRemoveSignature}
+                                                                className="px-2 py-1 text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-950/60 text-red-600 rounded-lg cursor-pointer transition"
+                                                                title="हटाएं"
+                                                            >
+                                                                हटाएं
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => sigInputRef.current?.click()}
-                                                            className="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer transition"
-                                                        >
-                                                            बदलें
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={handleRemoveSignature}
-                                                            className="px-2 py-1 text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-950/60 text-red-600 rounded-lg cursor-pointer transition"
-                                                            title="हटाएं"
-                                                        >
-                                                            हटाएं
-                                                        </button>
+
+                                                    {/* Signature Zoom In / Out Controls */}
+                                                    <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1.5">
+                                                        <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                            <span className="flex items-center gap-1.5">
+                                                                <span className="material-symbols-outlined text-indigo-600 text-base">zoom_in</span>
+                                                                हस्ताक्षर ज़ूम (Signature Zoom In / Out):
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-black">
+                                                                {Math.round(signatureZoom * 100)}%
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSignatureZoom((z) => Math.max(0.4, Math.round((z - 0.05) * 100) / 100))}
+                                                                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-black text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center cursor-pointer transition shadow-2xs border border-slate-200 dark:border-slate-600"
+                                                                title="Zoom Out (कम करें)"
+                                                            >
+                                                                −
+                                                            </button>
+                                                            <input
+                                                                type="range"
+                                                                min="0.4"
+                                                                max="2.5"
+                                                                step="0.05"
+                                                                value={signatureZoom}
+                                                                onChange={(e) => setSignatureZoom(parseFloat(e.target.value))}
+                                                                className="flex-1 accent-indigo-600 cursor-pointer"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSignatureZoom((z) => Math.min(2.5, Math.round((z + 0.05) * 100) / 100))}
+                                                                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-black text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center cursor-pointer transition shadow-2xs border border-slate-200 dark:border-slate-600"
+                                                                title="Zoom In (बढ़ाएं)"
+                                                            >
+                                                                +
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSignatureZoom(1)}
+                                                                className="px-2.5 py-1 text-[11px] font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer border border-slate-200 dark:border-slate-600"
+                                                            >
+                                                                100%
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ) : (
