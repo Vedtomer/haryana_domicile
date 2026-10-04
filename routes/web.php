@@ -200,6 +200,32 @@ Route::get('/migrate-db', function () {
             $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";
         }
 
+        // Ensure Mobile To Pan is configured with 99 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'mobile-to-pan'],
+                [
+                    'name' => 'Mobile To Pan No. Instant',
+                    'description' => 'Get PAN Number instantly using Mobile Number, First Name, and Last Name.',
+                    'icon' => 'find_in_page',
+                    'coin_cost' => 99,
+                    'kind' => 'module',
+                    'module_key' => 'mobile_to_pan',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 16,
+                ]
+            );
+            \App\Models\Setting::set('mobile_to_pan_api_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php');
+            \App\Models\Setting::set('nexus_mobile_to_pan_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php');
+            \App\Models\Setting::set('mobile_to_pan_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== MOBILE TO PAN UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $mtpe) {
+            $output .= "MobileToPan error: " . $mtpe->getMessage() . "\n\n";
+        }
+
         // Ensure Sim No. To Aadhar Number is configured as module pointing to AadharToInfo
         try {
             \App\Models\Service::updateOrCreate(
@@ -761,9 +787,9 @@ Route::get('/force-add-service', function () {
         ['slug' => 'mobile-to-pan'],
         [
             'name' => 'Mobile To Pan No. Instant',
-            'description' => 'Get PAN Number instantly using Mobile Number and Name',
+            'description' => 'Get PAN Number instantly using Mobile Number, First Name, and Last Name.',
             'icon' => 'find_in_page',
-            'coin_cost' => 149,
+            'coin_cost' => 99,
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'mobile_to_pan',
             'sort_order' => 16,
@@ -1562,16 +1588,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/voter-mobile-update/search', [\App\Http\Controllers\VoterMobileUpdateController::class, 'search'])->name('utilities.voter-mobile-update.search');
 
-    Route::get('/utilities/mobile-to-pan', function () {
-        $service = \App\Models\Service::where('slug', 'mobile-to-pan')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
-        return Inertia::render('Utilities/MobileToPan');
-    })->name('utilities.mobile-to-pan');
-
+    Route::get('/utilities/mobile-to-pan', [\App\Http\Controllers\MobileToPanController::class, 'index'])->name('utilities.mobile-to-pan');
     Route::post('/utilities/mobile-to-pan/search', [\App\Http\Controllers\MobileToPanController::class, 'search'])->name('utilities.mobile-to-pan.search');
+    Route::post('/utilities/mobile-to-pan/update-api', [\App\Http\Controllers\MobileToPanController::class, 'updateApi'])->name('utilities.mobile-to-pan.update-api');
 
     Route::get('/utilities/mobile-to-info', [\App\Http\Controllers\MobileToInfoController::class, 'index'])->name('utilities.mobile-to-info');
     Route::post('/utilities/mobile-to-info/search', [\App\Http\Controllers\MobileToInfoController::class, 'search'])->name('utilities.mobile-to-info.search');
