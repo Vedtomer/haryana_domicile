@@ -46,6 +46,8 @@ class ApiSettingController extends Controller
                 'nexus_pan_to_uid_url'         => Setting::get('nexus_pan_to_uid_url', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_uid_s1.php'),
                 'pan_to_gst_api_url'           => Setting::get('pan_to_gst_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_gst.php'),
                 'pan_to_gst_api_key'           => Setting::get('pan_to_gst_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
+                'pan_to_mask_uid_api_url'      => Setting::get('pan_to_mask_uid_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_mask_uid.php'),
+                'pan_to_mask_uid_api_key'      => Setting::get('pan_to_mask_uid_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
 
                 // Vahan & Transport
                 'vahan_api_key'               => Setting::get('vahan_api_key', config('services.vahan.api_key', '')),
@@ -161,6 +163,8 @@ class ApiSettingController extends Controller
             'nexus_pan_to_uid_url',
             'pan_to_gst_api_url',
             'pan_to_gst_api_key',
+            'pan_to_mask_uid_api_url',
+            'pan_to_mask_uid_api_key',
 
             // Vahan & Transport
             'vahan_api_key',

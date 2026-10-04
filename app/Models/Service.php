@@ -326,6 +326,18 @@ class Service extends Model
             'index' => '/utilities/pan-to-gst',
             'create' => '/utilities/pan-to-gst',
         ],
+        'pan_to_mask_aadhar' => [
+            'label' => 'PAN To Mask Aadhar',
+            'model' => null,
+            'index' => '/utilities/pan-to-mask-aadhar',
+            'create' => '/utilities/pan-to-mask-aadhar',
+        ],
+        'pan_to_mask_uid' => [
+            'label' => 'PAN To Mask Aadhar',
+            'model' => null,
+            'index' => '/utilities/pan-to-mask-aadhar',
+            'create' => '/utilities/pan-to-mask-aadhar',
+        ],
         'pan_to_uid_advance' => [
             'label' => 'Pan To Uid Advance Instant',
             'model' => null,

@@ -452,6 +452,30 @@ Route::get('/migrate-db', function () {
             $output .= "PanToGst error: " . $pge->getMessage() . "\n\n";
         }
 
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-to-mask-aadhar'],
+                [
+                    'name' => 'PAN To Mask Aadhar',
+                    'description' => 'Find linked masked Aadhaar card number using 10-character PAN Card number.',
+                    'icon' => 'fingerprint',
+                    'coin_cost' => 29,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'pan_to_mask_aadhar',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 57,
+                ]
+            );
+            \App\Models\Setting::set('pan_to_mask_uid_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_mask_uid.php');
+            \App\Models\Setting::set('pan_to_mask_uid_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== PAN TO MASK AADHAR UPSERTED (29 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $pme) {
+            $output .= "PanToMaskAadhar error: " . $pme->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1655,6 +1679,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/pan-to-gst', [\App\Http\Controllers\PanToGstController::class, 'index'])->name('utilities.pan-to-gst');
     Route::post('/utilities/pan-to-gst/search', [\App\Http\Controllers\PanToGstController::class, 'search'])->name('utilities.pan-to-gst.search');
     Route::post('/utilities/pan-to-gst/update-api', [\App\Http\Controllers\PanToGstController::class, 'updateApi'])->name('utilities.pan-to-gst.update-api');
+
+    Route::get('/utilities/pan-to-mask-aadhar', [\App\Http\Controllers\PanToMaskAadharController::class, 'index'])->name('utilities.pan-to-mask-aadhar');
+    Route::post('/utilities/pan-to-mask-aadhar/search', [\App\Http\Controllers\PanToMaskAadharController::class, 'search'])->name('utilities.pan-to-mask-aadhar.search');
+    Route::post('/utilities/pan-to-mask-aadhar/update-api', [\App\Http\Controllers\PanToMaskAadharController::class, 'updateApi'])->name('utilities.pan-to-mask-aadhar.update-api');
+    Route::get('/utilities/pan-to-mask-uid', fn() => redirect()->route('utilities.pan-to-mask-aadhar'));
 
     Route::get('/utilities/pan-to-uid-advance', function () {
         $service = \App\Models\Service::where('slug', 'pan-to-uid-advance')->first();

@@ -25,6 +25,8 @@ export default function Edit({ settings = {} }) {
         nexus_pan_to_uid_url: settings.nexus_pan_to_uid_url || '',
         pan_to_gst_api_url: settings.pan_to_gst_api_url || '',
         pan_to_gst_api_key: settings.pan_to_gst_api_key || '',
+        pan_to_mask_uid_api_url: settings.pan_to_mask_uid_api_url || '',
+        pan_to_mask_uid_api_key: settings.pan_to_mask_uid_api_key || '',
 
         // Vahan & Transport
         vahan_api_key: settings.vahan_api_key || '',
@@ -306,6 +308,7 @@ export default function Edit({ settings = {} }) {
                                     {renderUrlInput('nexus_pan_to_uid_url', '7. PAN To UID Advance URL', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_uid_s1.php')}
                                     {renderUrlInput('nexus_mobile_to_pan_url', '8. Mobile To PAN Endpoint URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php')}
                                     {renderUrlInput('pan_to_gst_api_url', '9. PAN To GST Endpoint URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_gst.php')}
+                                    {renderUrlInput('pan_to_mask_uid_api_url', '10. PAN To Mask Aadhaar Endpoint URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_mask_uid.php')}
                                 </div>
 
                                 <div className="p-4 bg-purple-50/50 dark:bg-purple-950/20 rounded-2xl border border-purple-100 dark:border-purple-900/30">
@@ -316,6 +319,7 @@ export default function Edit({ settings = {} }) {
                                         {renderKeyInput('nexus_mobile_to_pan_key', 'Mobile To PAN Dedicated Key', 'Khali chhodne par Master Good-API Key use hogi')}
                                         {renderKeyInput('pan_to_aadhar_api_key', 'PAN To Aadhaar Dedicated Key', 'Khali chhodne par Master Good-API Key use hogi')}
                                         {renderKeyInput('pan_to_gst_api_key', 'PAN To GST Dedicated Key', 'Khali chhodne par Master Good-API Key use hogi')}
+                                        {renderKeyInput('pan_to_mask_uid_api_key', 'PAN To Mask Aadhaar Dedicated Key', 'Khali chhodne par Master Good-API Key use hogi')}
                                     </div>
                                 </div>
                             </div>
