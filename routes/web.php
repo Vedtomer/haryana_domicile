@@ -714,6 +714,33 @@ Route::get('/migrate-db', function () {
             $output .= "VoterNameFind error: " . $vnfe->getMessage() . "\n\n";
         }
 
+        // Ensure Aadhar To ID Intelligence Details is configured with 199 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'aadhar-to-id-intelligence'],
+                [
+                    'name' => 'Aadhar To ID Intelligence Details',
+                    'description' => 'Telecom ID Intelligence & Associated Mobile SIM Records via Aadhaar Number.',
+                    'icon' => 'manage_search',
+                    'coin_cost' => 199,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'aadhar_to_id_intelligence',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 66,
+                ]
+            );
+            \App\Models\Setting::set('id_intelligence_api_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/id_intelligence.php');
+            if (empty(\App\Models\Setting::get('id_intelligence_api_key'))) {
+                \App\Models\Setting::set('id_intelligence_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== AADHAR TO ID INTELLIGENCE UPSERTED (199 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $idie) {
+            $output .= "AadharToIdIntelligence error: " . $idie->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1236,6 +1263,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'voter_name_find',
             'sort_order' => 21,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'aadhar-to-id-intelligence'],
+        [
+            'name' => 'Aadhar To ID Intelligence Details',
+            'description' => 'Telecom ID Intelligence & Associated Mobile SIM Records via Aadhaar Number.',
+            'icon' => 'manage_search',
+            'coin_cost' => 199,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'aadhar_to_id_intelligence',
+            'sort_order' => 22,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2121,6 +2164,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/voter-to-name', [\App\Http\Controllers\VoterNameFindController::class, 'index'])->name('utilities.voter-to-name');
     Route::post('/utilities/voter-to-name/search', [\App\Http\Controllers\VoterNameFindController::class, 'search'])->name('utilities.voter-to-name.search');
     Route::post('/utilities/voter-to-name/update-api', [\App\Http\Controllers\VoterNameFindController::class, 'updateApi'])->name('utilities.voter-to-name.update-api');
+
+    Route::get('/utilities/aadhar-to-id-intelligence', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'index'])->name('utilities.aadhar-to-id-intelligence');
+    Route::post('/utilities/aadhar-to-id-intelligence/search', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'search'])->name('utilities.aadhar-to-id-intelligence.search');
+    Route::post('/utilities/aadhar-to-id-intelligence/update-api', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'updateApi'])->name('utilities.aadhar-to-id-intelligence.update-api');
+
+    Route::get('/utilities/aadhar-to-id-intelligence-details', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'index'])->name('utilities.aadhar-to-id-intelligence-details');
+    Route::post('/utilities/aadhar-to-id-intelligence-details/search', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'search'])->name('utilities.aadhar-to-id-intelligence-details.search');
+    Route::post('/utilities/aadhar-to-id-intelligence-details/update-api', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'updateApi'])->name('utilities.aadhar-to-id-intelligence-details.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();

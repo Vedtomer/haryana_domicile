@@ -424,6 +424,18 @@ class Service extends Model
             'index' => '/utilities/voter-name-find',
             'create' => '/utilities/voter-name-find',
         ],
+        'aadhar_to_id_intelligence' => [
+            'label' => 'Aadhar To ID Intelligence Details',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-id-intelligence',
+            'create' => '/utilities/aadhar-to-id-intelligence',
+        ],
+        'id_intelligence' => [
+            'label' => 'Aadhar To ID Intelligence Details',
+            'model' => null,
+            'index' => '/utilities/aadhar-to-id-intelligence',
+            'create' => '/utilities/aadhar-to-id-intelligence',
+        ],
         'mobile_to_pan' => [
             'label' => 'Mobile To Pan No. Instant',
             'model' => null,

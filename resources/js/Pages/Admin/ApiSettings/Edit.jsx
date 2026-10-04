@@ -56,6 +56,8 @@ export default function Edit({ settings = {} }) {
         // Aadhaar Info & Updates
         aadhar_to_info_api_url: settings.aadhar_to_info_api_url || '',
         aadhar_to_info_api_key: settings.aadhar_to_info_api_key || '',
+        id_intelligence_api_url: settings.id_intelligence_api_url || '',
+        id_intelligence_api_key: settings.id_intelligence_api_key || '',
         aadhar_to_name_api_url: settings.aadhar_to_name_api_url || '',
         aadhar_to_name_api_key: settings.aadhar_to_name_api_key || '',
         aadhar_to_mask_pan_api_url: settings.aadhar_to_mask_pan_api_url || '',
@@ -525,6 +527,20 @@ export default function Edit({ settings = {} }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {renderUrlInput('aadhar_to_name_api_url', 'Aadhar To Name Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')}
                                         {renderKeyInput('aadhar_to_name_api_key', 'Aadhar To Name API Key', 'Enter Good-API-Point API Key')}
+                                    </div>
+                                </div>
+
+                                {/* Aadhar To ID Intelligence (Good-API-Point) */}
+                                <div className="p-4 bg-purple-50/40 dark:bg-purple-950/20 rounded-2xl border border-purple-200/60 dark:border-purple-900/40 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-black text-purple-900 dark:text-purple-300 uppercase tracking-wider">
+                                            Aadhar To ID Intelligence Verification API
+                                        </h4>
+                                        <span className="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Gateway: Good-API-Point</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {renderUrlInput('id_intelligence_api_url', 'ID Intelligence Endpoint URL', 'https://good-api-point.com/apis_partner/v1/telecom_api/id_intelligence.php')}
+                                        {renderKeyInput('id_intelligence_api_key', 'ID Intelligence API Key', 'Enter Good-API-Point API Key')}
                                     </div>
                                 </div>
 
