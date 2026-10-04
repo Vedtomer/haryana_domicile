@@ -351,6 +351,32 @@ Route::get('/migrate-db', function () {
             $output .= "RationToAadharUp error: " . $rtue->getMessage() . "\n\n";
         }
 
+        // Ensure Pan Details Server 2 is configured with 19 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-details-server-2'],
+                [
+                    'name' => 'Pan Details Server 2',
+                    'description' => 'Enter 10-character PAN Card number to verify instant PAN cardholder details, Father Name, DOB & Aadhaar link status.',
+                    'icon' => 'badge',
+                    'coin_cost' => 19,
+                    'kind' => 'module',
+                    'module_key' => 'pan_details_server_2',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 54,
+                ]
+            );
+            \App\Models\Setting::set('pan_details_server2_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php');
+            \App\Models\Setting::set('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php');
+            \App\Models\Setting::set('pan_details_server2_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== PAN DETAILS SERVER 2 UPSERTED (19 COINS) ===\n\n";
+        } catch (\Throwable $pdse) {
+            $output .= "PanDetailsServer2 error: " . $pdse->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1520,6 +1546,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::get('/utilities/bihar-ration-card-maker', [\App\Http\Controllers\BiharRationCardMakerController::class, 'index'])->name('utilities.bihar-ration-card-maker');
     Route::post('/utilities/bihar-ration-card-maker/deduct-coins', [\App\Http\Controllers\BiharRationCardMakerController::class, 'deductCoins'])->name('utilities.bihar-ration-card-maker.deduct-coins');
+
+    Route::get('/utilities/pan-details-server-2', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-details-server-2');
+    Route::post('/utilities/pan-details-server-2/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search'])->name('utilities.pan-details-server-2.search');
+    Route::post('/utilities/pan-details-server-2/update-api', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'updateApi'])->name('utilities.pan-details-server-2.update-api');
 
     Route::get('/utilities/pan-details-instant', function () {
         $service = \App\Models\Service::where('slug', 'pan-details-instant')->first();
