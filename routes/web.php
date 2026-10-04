@@ -162,12 +162,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('aadhar_to_name_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
             \App\Models\Setting::set('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
-            if (!\App\Models\Setting::get('aadhar_to_name_api_key')) {
-                $syncKey = \App\Models\Setting::get('aadhar_to_npci_api_key') ?: \App\Models\Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386');
-                if ($syncKey) {
-                    \App\Models\Setting::set('aadhar_to_name_api_key', $syncKey);
-                }
-            }
+            \App\Models\Setting::set('aadhar_to_name_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
             $output .= "=== AADHAR TO NAME UPSERTED (URL: " . \App\Models\Setting::get('aadhar_to_name_api_url') . ") ===\n\n";
         } catch (\Throwable $ane) {
             $output .= "AadharToName error: " . $ane->getMessage() . "\n\n";
@@ -193,12 +188,10 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('aadhar_to_mask_pan_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
             \App\Models\Setting::set('nexus_aadhar_to_mask_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
-            if (!\App\Models\Setting::get('aadhar_to_mask_pan_api_key')) {
-                $syncKey = \App\Models\Setting::get('aadhar_to_name_api_key') ?: (\App\Models\Setting::get('aadhar_to_npci_api_key') ?: \App\Models\Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
-                if ($syncKey) {
-                    \App\Models\Setting::set('aadhar_to_mask_pan_api_key', $syncKey);
-                }
-            }
+            \App\Models\Setting::set('aadhar_to_mask_pan_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            \App\Models\Setting::set('aadhar_to_npci_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            \App\Models\Setting::set('goodapi_token_id', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22');
+            \App\Models\Setting::set('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
             $output .= "=== AADHAR TO MASK PAN UPSERTED (URL: " . \App\Models\Setting::get('aadhar_to_mask_pan_api_url') . ") ===\n\n";
         } catch (\Throwable $ampe) {
             $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";

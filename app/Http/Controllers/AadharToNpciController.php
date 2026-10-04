@@ -29,7 +29,7 @@ class AadharToNpciController extends Controller
             'service' => $service,
             'isAdmin' => (bool) $isStaff,
             'apiUrl' => $isStaff ? Setting::get('aadhar_to_npci_api_url', 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php') : null,
-            'apiKey' => $isStaff ? Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')) : null,
+            'apiKey' => $isStaff ? Setting::get('aadhar_to_npci_api_key', Setting::get('aadhar_to_mask_pan_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')) : null,
         ]);
     }
 
@@ -88,7 +88,7 @@ class AadharToNpciController extends Controller
 
         $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
         $baseUrl = trim(Setting::get('aadhar_to_npci_api_url') ?: 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php');
-        $apiKey = trim(Setting::get('aadhar_to_npci_api_key') ?: Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
+        $apiKey = trim(Setting::get('aadhar_to_npci_api_key') ?: Setting::get('aadhar_to_mask_pan_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
 
         if (empty($apiKey)) {
             return response()->json([
