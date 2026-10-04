@@ -466,6 +466,24 @@ class Service extends Model
             'index' => '/utilities/rc-pdf-server-2',
             'create' => '/utilities/rc-pdf-server-2',
         ],
+        'farmer_pdf_server_2' => [
+            'label' => 'Farmer Pdf Sarver All State 2',
+            'model' => null,
+            'index' => '/utilities/farmer-pdf-server-2',
+            'create' => '/utilities/farmer-pdf-server-2',
+        ],
+        'farmer_pdf_server2' => [
+            'label' => 'Farmer Pdf Sarver All State 2',
+            'model' => null,
+            'index' => '/utilities/farmer-pdf-server-2',
+            'create' => '/utilities/farmer-pdf-server-2',
+        ],
+        'farmer_pdf_sarver_all_state_2' => [
+            'label' => 'Farmer Pdf Sarver All State 2',
+            'model' => null,
+            'index' => '/utilities/farmer-pdf-server-2',
+            'create' => '/utilities/farmer-pdf-server-2',
+        ],
         'pvc_card_maker' => [
             'label' => 'Smart PVC Card Maker',
             'model' => null,

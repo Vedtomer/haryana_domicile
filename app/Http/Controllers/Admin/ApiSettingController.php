@@ -93,6 +93,8 @@ class ApiSettingController extends Controller
                 'aadhar_update_full_name_change_url' => Setting::get('aadhar_update_full_name_change_url', config('services.aadhar_update.full_name_change_url', '')),
                 'id_intelligence_api_url'            => Setting::get('id_intelligence_api_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/id_intelligence.php'),
                 'id_intelligence_api_key'            => Setting::get('id_intelligence_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
+                'farmer_pdf_server2_url'             => Setting::get('farmer_pdf_server2_url', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_pdf_server2.php'),
+                'farmer_pdf_server2_key'             => Setting::get('farmer_pdf_server2_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
 
                 // PPP API (Parivar Pehchan Patra)
                 'ppp_api_key'           => Setting::get('ppp_api_key', config('services.ppp.api_key', '')),
@@ -230,6 +232,8 @@ class ApiSettingController extends Controller
             'aadhar_update_full_name_change_url',
             'id_intelligence_api_url',
             'id_intelligence_api_key',
+            'farmer_pdf_server2_url',
+            'farmer_pdf_server2_key',
 
             // PPP
             'ppp_api_key',

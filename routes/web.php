@@ -741,6 +741,33 @@ Route::get('/migrate-db', function () {
             $output .= "AadharToIdIntelligence error: " . $idie->getMessage() . "\n\n";
         }
 
+        // Ensure Farmer Pdf Sarver All State 2 is configured with 49 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'farmer-pdf-server-2'],
+                [
+                    'name' => 'Farmer Pdf Sarver All State 2',
+                    'description' => 'Download Farmer Registration Card / Kisan Card PDF for All Indian States via Aadhaar Number.',
+                    'icon' => 'agriculture',
+                    'coin_cost' => 49,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'farmer_pdf_server_2',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 67,
+                ]
+            );
+            \App\Models\Setting::set('farmer_pdf_server2_url', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_pdf_server2.php');
+            if (empty(\App\Models\Setting::get('farmer_pdf_server2_key'))) {
+                \App\Models\Setting::set('farmer_pdf_server2_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== FARMER PDF SERVER 2 UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $fpe) {
+            $output .= "FarmerPdfServer2 error: " . $fpe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1279,6 +1306,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'aadhar_to_id_intelligence',
             'sort_order' => 22,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'farmer-pdf-server-2'],
+        [
+            'name' => 'Farmer Pdf Sarver All State 2',
+            'description' => 'Download Farmer Registration Card / Kisan Card PDF for All Indian States via Aadhaar Number.',
+            'icon' => 'agriculture',
+            'coin_cost' => 49,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'farmer_pdf_server_2',
+            'sort_order' => 23,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2172,6 +2215,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/aadhar-to-id-intelligence-details', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'index'])->name('utilities.aadhar-to-id-intelligence-details');
     Route::post('/utilities/aadhar-to-id-intelligence-details/search', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'search'])->name('utilities.aadhar-to-id-intelligence-details.search');
     Route::post('/utilities/aadhar-to-id-intelligence-details/update-api', [\App\Http\Controllers\AadharToIdIntelligenceController::class, 'updateApi'])->name('utilities.aadhar-to-id-intelligence-details.update-api');
+
+    Route::get('/utilities/farmer-pdf-server-2', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'index'])->name('utilities.farmer-pdf-server-2');
+    Route::post('/utilities/farmer-pdf-server-2/search', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'search'])->name('utilities.farmer-pdf-server-2.search');
+    Route::post('/utilities/farmer-pdf-server-2/update-api', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'updateApi'])->name('utilities.farmer-pdf-server-2.update-api');
+
+    Route::get('/utilities/farmer-pdf-sarver-all-state-2', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'index'])->name('utilities.farmer-pdf-sarver-all-state-2');
+    Route::post('/utilities/farmer-pdf-sarver-all-state-2/search', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'search'])->name('utilities.farmer-pdf-sarver-all-state-2.search');
+    Route::post('/utilities/farmer-pdf-sarver-all-state-2/update-api', [\App\Http\Controllers\FarmerPdfServer2Controller::class, 'updateApi'])->name('utilities.farmer-pdf-sarver-all-state-2.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
