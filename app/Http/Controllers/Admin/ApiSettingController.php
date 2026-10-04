@@ -38,7 +38,9 @@ class ApiSettingController extends Controller
                 'nexus_pan_details_url'        => Setting::get('pan_details_server2_api_url', Setting::get('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')),
                 'pan_details_server2_api_url'  => Setting::get('pan_details_server2_api_url', Setting::get('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')),
                 'pan_details_server2_api_key'  => Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
-                'nexus_pan_full_details_url'   => Setting::get('nexus_pan_full_details_url', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_full_details.php'),
+                'nexus_pan_full_details_url'   => Setting::get('pan_full_details_api_url', Setting::get('nexus_pan_full_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php')),
+                'pan_full_details_api_url'     => Setting::get('pan_full_details_api_url', Setting::get('nexus_pan_full_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php')),
+                'pan_full_details_api_key'     => Setting::get('pan_full_details_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')),
                 'nexus_pan_to_aadhar_url'      => Setting::get('nexus_pan_to_aadhar_url', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_aadhar.php'),
                 'nexus_pan_to_uid_url'         => Setting::get('nexus_pan_to_uid_url', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_uid_s1.php'),
 
@@ -148,6 +150,8 @@ class ApiSettingController extends Controller
             'pan_details_server2_api_url',
             'pan_details_server2_api_key',
             'nexus_pan_full_details_url',
+            'pan_full_details_api_url',
+            'pan_full_details_api_key',
             'nexus_pan_to_aadhar_url',
             'nexus_pan_to_uid_url',
 

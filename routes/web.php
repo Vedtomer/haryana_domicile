@@ -377,6 +377,32 @@ Route::get('/migrate-db', function () {
             $output .= "PanDetailsServer2 error: " . $pdse->getMessage() . "\n\n";
         }
 
+        // Ensure PAN Full Details is configured with 29 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-full-details'],
+                [
+                    'name' => 'PAN Full Details',
+                    'description' => 'Enter 10-character PAN Card number to get complete cardholder profile, Father Name, DOB, Address, Mobile & Aadhaar link status.',
+                    'icon' => 'fingerprint',
+                    'coin_cost' => 29,
+                    'kind' => 'module',
+                    'module_key' => 'pan_full_details',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 55,
+                ]
+            );
+            \App\Models\Setting::set('pan_full_details_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php');
+            \App\Models\Setting::set('nexus_pan_full_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php');
+            \App\Models\Setting::set('pan_full_details_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            $output .= "=== PAN FULL DETAILS UPSERTED (29 COINS) ===\n\n";
+        } catch (\Throwable $pfe) {
+            $output .= "PanFullDetails error: " . $pfe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1562,16 +1588,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::post('/utilities/pan-details-instant/search', [\App\Http\Controllers\PanDetailsController::class, 'search'])->name('utilities.pan-details-instant.search');
 
-    Route::get('/utilities/pan-full-details-instant', function () {
-        $service = \App\Models\Service::where('slug', 'pan-full-details-instant')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
-        return Inertia::render('Utilities/PanFullDetails');
-    })->name('utilities.pan-full-details-instant');
+    Route::get('/utilities/pan-full-details', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-details');
+    Route::post('/utilities/pan-full-details/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search'])->name('utilities.pan-full-details.search');
+    Route::post('/utilities/pan-full-details/update-api', [\App\Http\Controllers\PanFullDetailsController::class, 'updateApi'])->name('utilities.pan-full-details.update-api');
 
-    Route::post('/utilities/pan-full-details-instant/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search'])->name('utilities.pan-full-details-instant.search');
+    Route::get('/utilities/pan-full-details-instant', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-details-instant');
+    Route::post('/utilities/pan-full-details-instant/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
 
     Route::get('/utilities/pan-to-aadhar-unmasked', function () {
         $service = \App\Models\Service::where('slug', 'pan-to-aadhar-unmasked')->first();

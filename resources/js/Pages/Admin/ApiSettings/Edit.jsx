@@ -298,7 +298,7 @@ export default function Edit({ settings = {} }) {
                                     {renderUrlInput('nexus_aadhar_to_mask_pan_url', '2. Aadhar To Mask PAN Endpoint URL', 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_mask_pan.php')}
                                     {renderUrlInput('nexus_aadhar_to_pan_url', '3. Aadhar To Unmasked PAN Endpoint URL', 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php')}
                                     {renderUrlInput('nexus_pan_details_url', '4. PAN Details (Server 2) URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')}
-                                    {renderUrlInput('nexus_pan_full_details_url', '5. PAN Full Details Instant URL', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_full_details.php')}
+                                    {renderUrlInput('nexus_pan_full_details_url', '5. PAN Full Details URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php')}
                                     {renderUrlInput('nexus_pan_to_aadhar_url', '6. PAN To Aadhaar Unmasked URL', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_aadhar.php')}
                                     {renderUrlInput('nexus_pan_to_uid_url', '7. PAN To UID Advance URL', 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_to_uid_s1.php')}
                                     {renderUrlInput('nexus_mobile_to_pan_url', '8. Mobile To PAN Endpoint URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php')}
