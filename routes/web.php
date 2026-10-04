@@ -535,6 +535,33 @@ Route::get('/migrate-db', function () {
             $output .= "LearningLicence error: " . $lle->getMessage() . "\n\n";
         }
 
+        // Ensure RC CARD INFO is configured with 14 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'rc-card-info'],
+                [
+                    'name' => 'RC CARD INFO',
+                    'description' => 'Instant Vehicle Registration & RC Smart Card Details with Official PDF Download.',
+                    'icon' => 'directions_car',
+                    'coin_cost' => 14,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'rc_card_info',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 60,
+                ]
+            );
+            \App\Models\Setting::set('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
+            if (empty(\App\Models\Setting::get('vahan_rc_info_api_key'))) {
+                \App\Models\Setting::set('vahan_rc_info_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== RC CARD INFO UPSERTED (14 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $rce) {
+            $output .= "RcInfo error: " . $rce->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1917,6 +1944,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/vehicle-challan-check/update-api', [\App\Http\Controllers\VehicleChallanController::class, 'updateApi'])->name('utilities.vehicle-challan-check.update-api');
     Route::get('/utilities/challan-check', fn() => redirect()->route('utilities.vehicle-challan-check'));
     Route::get('/utilities/challan-find', fn() => redirect()->route('utilities.vehicle-challan-check'));
+
+    Route::get('/utilities/rc-card-info', [\App\Http\Controllers\RcInfoController::class, 'index'])->name('utilities.rc-card-info');
+    Route::post('/utilities/rc-card-info/search', [\App\Http\Controllers\RcInfoController::class, 'search'])->name('utilities.rc-card-info.search');
+    Route::get('/utilities/rc-card-info/pdf', [\App\Http\Controllers\RcInfoController::class, 'downloadPdf'])->name('utilities.rc-card-info.pdf');
+    Route::post('/utilities/rc-card-info/update-api', [\App\Http\Controllers\RcInfoController::class, 'updateApi'])->name('utilities.rc-card-info.update-api');
+    Route::get('/utilities/rc-info', fn() => redirect()->route('utilities.rc-card-info'));
+    Route::get('/utilities/rc-card', fn() => redirect()->route('utilities.rc-card-info'));
 
     Route::get('/utilities/verify-ifsc-code', [\App\Http\Controllers\IfscVerificationController::class, 'index'])->name('utilities.verify-ifsc-code');
     Route::post('/utilities/verify-ifsc-code/verify', [\App\Http\Controllers\IfscVerificationController::class, 'verify'])->name('utilities.verify-ifsc-code.verify');

@@ -582,9 +582,12 @@ export function getServiceCategory(service) {
         text.includes('challan') ||
         slug.includes('challan') ||
         text.includes('puc') ||
+        slug.includes('rc') ||
         text.includes('rc ') ||
         text.includes('rc-') ||
         text.includes('rc_') ||
+        text.includes('rc card') ||
+        text.includes('rc info') ||
         text.includes('rc-pdf') ||
         text.includes('licence') ||
         text.includes('license') ||

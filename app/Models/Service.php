@@ -356,6 +356,18 @@ class Service extends Model
             'index' => '/utilities/vehicle-challan-check',
             'create' => '/utilities/vehicle-challan-check',
         ],
+        'rc_card_info' => [
+            'label' => 'RC CARD INFO',
+            'model' => null,
+            'index' => '/utilities/rc-card-info',
+            'create' => '/utilities/rc-card-info',
+        ],
+        'rc_info' => [
+            'label' => 'RC CARD INFO',
+            'model' => null,
+            'index' => '/utilities/rc-card-info',
+            'create' => '/utilities/rc-card-info',
+        ],
         'learning_licence_pdf' => [
             'label' => 'Learning Licence Download',
             'model' => null,

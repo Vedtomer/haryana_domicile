@@ -44,6 +44,8 @@ export default function Edit({ settings = {} }) {
         vehicle_details_api_key: settings.vehicle_details_api_key || '',
         vahan_challan_api_url: settings.vahan_challan_api_url || '',
         vahan_challan_api_key: settings.vahan_challan_api_key || '',
+        vahan_rc_info_api_url: settings.vahan_rc_info_api_url || '',
+        vahan_rc_info_api_key: settings.vahan_rc_info_api_key || '',
 
         // Mobile to Info API
         mobile_to_info_api_url: settings.mobile_to_info_api_url || '',
@@ -414,6 +416,23 @@ export default function Edit({ settings = {} }) {
                                         <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Challan Dedicated API Key</span>
                                             {renderKeyInput('vahan_challan_api_key', 'API Key (Optional override)', 'Khali chhodne par Master Good-API Key use hogi')}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* RC Card Info (Good-API-Point) */}
+                                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                    <h4 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3">
+                                        5. RC Card Info (Good-API-Point)
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">RC Card Info API URL</span>
+                                            {renderUrlInput('vahan_rc_info_api_url', 'Endpoint URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php')}
+                                        </div>
+                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">RC Info Dedicated API Key</span>
+                                            {renderKeyInput('vahan_rc_info_api_key', 'API Key (Optional override)', 'Khali chhodne par Master Good-API Key use hogi')}
                                         </div>
                                     </div>
                                 </div>
