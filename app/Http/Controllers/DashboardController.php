@@ -167,6 +167,20 @@ class DashboardController extends Controller
         $supportWhatsApp = \App\Models\Setting::get('whatsapp_number', '380630323112');
         $supportTelegram = \App\Models\Setting::get('telegram_handle', '@cspjaankari');
 
+        $noticesCount = 0;
+        try {
+            $noticesCount = \App\Models\Notice::count();
+        } catch (\Throwable $e) {
+            $noticesCount = 0;
+        }
+
+        $referralsCount = 0;
+        try {
+            $referralsCount = \App\Models\Referral::count();
+        } catch (\Throwable $e) {
+            $referralsCount = 0;
+        }
+
         return Inertia::render('Admin/Dashboard', [
             'siteName' => 'CSP Jaankari',
             'siteLogo' => '/images/logo.png',
@@ -180,6 +194,8 @@ class DashboardController extends Controller
             'pendingRequests' => $pendingRequests,
             'totalRequests' => $totalRequests,
             'servicesCount' => $servicesCount,
+            'noticesCount' => $noticesCount,
+            'referralsCount' => $referralsCount,
             'apiBalance' => 487.00,
             'userRole' => $isAdmin ? 'ADMINISTRATOR' : 'RETAILER',
             'supportWhatsApp' => $supportWhatsApp,

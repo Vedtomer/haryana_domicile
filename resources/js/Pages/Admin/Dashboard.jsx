@@ -502,6 +502,8 @@ export default function Dashboard({
     pendingRequests = 0,
     totalRequests = 0,
     servicesCount,
+    noticesCount = 0,
+    referralsCount = 0,
     apiBalance = 487.00,
     userRole = 'RETAILER',
     supportWhatsApp = '380630323112',
@@ -668,27 +670,98 @@ export default function Dashboard({
 
                     {/* 2. Stat Metric Cards in a row */}
                     {isAdmin ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6">
-                            <StatMetricCard
-                                index={0}
-                                colorTheme="indigo"
-                                title="TOTAL USERS"
-                                badgeText="MEMBERS"
-                                value={Number(totalUsers || 0).toLocaleString('en-IN')}
-                                subtitle="Registered portal users"
-                                icon="group"
-                                linkUrl="/admin/users"
-                            />
-                            <StatMetricCard
-                                index={1}
-                                colorTheme="purple"
-                                title="SERVICE PENDING REQUEST"
-                                badgeText="ORDERS"
-                                value={`${pendingRequests} Pending`}
-                                subtitle="Service requests pending action"
-                                icon="hourglass_top"
-                                linkUrl="/admin/service-requests?status=pending"
-                            />
+                        <div className="mb-8">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-extrabold text-slate-800 dark:text-white text-base sm:text-lg">
+                                            Administration Control Panel
+                                        </h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                            Manage users, coin requests, permissions, service requests & notices
+                                        </p>
+                                    </div>
+                                </div>
+                                <span className="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    Admin Hub
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                                <StatMetricCard
+                                    index={0}
+                                    colorTheme="indigo"
+                                    title="MANAGE USERS"
+                                    badgeText="USERS"
+                                    value={Number(totalUsers || 0).toLocaleString('en-IN')}
+                                    subtitle="Registered users • Search & edit"
+                                    icon="group"
+                                    linkUrl="/admin/users"
+                                />
+                                <StatMetricCard
+                                    index={1}
+                                    colorTheme="amber"
+                                    title="COIN REQUESTS"
+                                    badgeText="BALANCE"
+                                    value={`${pendingCoins} Pending`}
+                                    subtitle="Review, reset & approve balance"
+                                    icon="monetization_on"
+                                    linkUrl="/admin/coin-requests"
+                                />
+                                <StatMetricCard
+                                    index={2}
+                                    colorTheme="purple"
+                                    title="USER PERMISSIONS"
+                                    badgeText="ROLES"
+                                    value="Permissions"
+                                    subtitle="Service access & user roles"
+                                    icon="admin_panel_settings"
+                                    linkUrl="/admin/user-permissions"
+                                />
+                                <StatMetricCard
+                                    index={3}
+                                    colorTheme="blue"
+                                    title="MANAGE SERVICES"
+                                    badgeText="CATALOG"
+                                    value={`${servicesCount || availableServices.length || 0} Services`}
+                                    subtitle="Configure services & pricing"
+                                    icon="home_repair_service"
+                                    linkUrl="/admin/services"
+                                />
+                                <StatMetricCard
+                                    index={4}
+                                    colorTheme="emerald"
+                                    title="SERVICE REQUESTS"
+                                    badgeText="ORDERS"
+                                    value={`${pendingRequests} Pending`}
+                                    subtitle={`${totalRequests} Total orders submitted`}
+                                    icon="assignment"
+                                    linkUrl="/admin/service-requests"
+                                />
+                                <StatMetricCard
+                                    index={5}
+                                    colorTheme="indigo"
+                                    title="REFER & EARN"
+                                    badgeText="AFFILIATE"
+                                    value={`${referralsCount || 0} Referrals`}
+                                    subtitle="Referral settings & tracking"
+                                    icon="card_giftcard"
+                                    linkUrl="/admin/referrals"
+                                />
+                                <StatMetricCard
+                                    index={6}
+                                    colorTheme="purple"
+                                    title="BROADCAST NOTICE"
+                                    badgeText="NOTICES"
+                                    value={`${noticesCount || 0} Notices`}
+                                    subtitle="Publish alerts & marquee notices"
+                                    icon="campaign"
+                                    linkUrl="/admin/notices"
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6">
