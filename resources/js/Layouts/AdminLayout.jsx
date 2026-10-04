@@ -402,14 +402,6 @@ export default function AdminLayout({ header, children }) {
                                     <span className="material-symbols-outlined text-[18px] text-amber-500">monetization_on</span>
                                     <span>Coin Ledger</span>
                                 </Link>
-                                <Link
-                                    href="/wallet/add"
-                                    onClick={() => setDropdownOpen(false)}
-                                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-[18px] text-emerald-500">add_card</span>
-                                    <span>Add Wallet / Recharge</span>
-                                </Link>
                                 {isAdmin && (
                                     <>
                                         <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
@@ -431,17 +423,6 @@ export default function AdminLayout({ header, children }) {
                                         </Link>
                                     </>
                                 )}
-                                <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
-                                <Link
-                                    href="/logout"
-                                    method="post"
-                                    as="button"
-                                    onClick={() => setDropdownOpen(false)}
-                                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                                    <span>Logout</span>
-                                </Link>
                             </div>
                         </div>
 

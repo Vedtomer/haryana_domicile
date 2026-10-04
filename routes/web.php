@@ -476,6 +476,30 @@ Route::get('/migrate-db', function () {
             $output .= "PanToMaskAadhar error: " . $pme->getMessage() . "\n\n";
         }
 
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-to-uid-advance'],
+                [
+                    'name' => 'Pan To Uid Advance Instant',
+                    'description' => 'Get advanced UID details instantly using PAN.',
+                    'icon' => 'fingerprint',
+                    'coin_cost' => 199,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'pan_to_uid_advance',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 13,
+                ]
+            );
+            \App\Models\Setting::set('nexus_pan_to_uid_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php');
+            \App\Models\Setting::set('pan_to_uid_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php');
+            $output .= "=== PAN TO UID ADVANCE INSTANT UPSERTED (199 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $pue) {
+            $output .= "PanToUid error: " . $pue->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -850,7 +874,7 @@ Route::get('/force-add-service', function () {
             'name' => 'Pan To Uid Advance Instant',
             'description' => 'Get advanced UID details instantly using PAN.',
             'icon' => 'fingerprint',
-            'coin_cost' => 149,
+            'coin_cost' => 199,
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'pan_to_uid_advance',
             'sort_order' => 13,
@@ -1691,10 +1715,20 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
-        return Inertia::render('Utilities/PanToUid');
+        $coinCost = $service ? (int) $service->coin_cost : 199;
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        return Inertia::render('Utilities/PanToUid', [
+            'service'  => $service,
+            'coinCost' => $coinCost,
+            'isAdmin'  => (bool) $isStaff,
+            'apiUrl'   => $isStaff ? \App\Models\Setting::get('pan_to_uid_api_url', \App\Models\Setting::get('nexus_pan_to_uid_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php')) : null,
+            'apiKey'   => $isStaff ? \App\Models\Setting::get('pan_to_uid_api_key', \App\Models\Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')) : null,
+        ]);
     })->name('utilities.pan-to-uid-advance');
 
     Route::post('/utilities/pan-to-uid-advance/search', [\App\Http\Controllers\PanToUidController::class, 'search'])->name('utilities.pan-to-uid-advance.search');
+    Route::post('/utilities/pan-to-uid-advance/update-api', [\App\Http\Controllers\PanToUidController::class, 'updateApi'])->name('utilities.pan-to-uid-advance.update-api');
 
     Route::get('/utilities/learning-licence-pdf', function () {
         $service = \App\Models\Service::where('slug', 'learning-licence-pdf')->first();
