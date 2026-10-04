@@ -985,6 +985,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 
+        // Secure Wallet Add Money routes (Accessible to all authenticated users)
+        Route::get('/wallet/add', [\App\Http\Controllers\Admin\CoinPurchaseRequestController::class, 'create'])->name('wallet.add');
+        Route::post('/wallet/create-order', [\App\Http\Controllers\WalletPaymentController::class, 'createOrder'])->name('wallet.create-order');
+        Route::post('/wallet/verify-payment', [\App\Http\Controllers\WalletPaymentController::class, 'verifyPayment'])->name('wallet.verify-payment');
+
         // License Purchase & Activation Routes
         Route::post('/license/buy', [\App\Http\Controllers\LicenseController::class, 'buy'])->name('license.buy');
         Route::post('/license/activate', [\App\Http\Controllers\LicenseController::class, 'activate'])->name('license.activate');
@@ -1808,10 +1813,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('payment/paycorex/create-order', [\App\Http\Controllers\PaycorexPaymentController::class, 'createOrder'])->name('payment.paycorex.create-order');
         Route::post('payment/paycorex/check-status', [\App\Http\Controllers\PaycorexPaymentController::class, 'checkStatus'])->name('payment.paycorex.check-status');
 
-        // Secure Wallet Add Money routes
-        Route::get('wallet/add', [\App\Http\Controllers\Admin\CoinPurchaseRequestController::class, 'create'])->name('wallet.add');
-        Route::post('wallet/create-order', [\App\Http\Controllers\WalletPaymentController::class, 'createOrder'])->name('wallet.create-order');
-        Route::post('wallet/verify-payment', [\App\Http\Controllers\WalletPaymentController::class, 'verifyPayment'])->name('wallet.verify-payment');
+        // Secure Wallet Add Money alias routes
+        Route::get('wallet/add', [\App\Http\Controllers\Admin\CoinPurchaseRequestController::class, 'create'])->name('wallet.add.alias');
+        Route::post('wallet/create-order', [\App\Http\Controllers\WalletPaymentController::class, 'createOrder'])->name('wallet.create-order.alias');
+        Route::post('wallet/verify-payment', [\App\Http\Controllers\WalletPaymentController::class, 'verifyPayment'])->name('wallet.verify-payment.alias');
 
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->middleware('admin');
         Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('admin');

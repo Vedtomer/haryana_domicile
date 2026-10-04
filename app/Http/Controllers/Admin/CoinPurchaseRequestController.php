@@ -34,11 +34,6 @@ class CoinPurchaseRequestController extends Controller
 
     public function create()
     {
-        // Only regular users can buy coins
-        if (auth()->user()->type !== 'user') {
-            return redirect()->route('admin.coin-requests.index');
-        }
-
         $myRequests = CoinPurchaseRequest::where('user_id', auth()->id())
             ->latest()->take(5)->get();
 

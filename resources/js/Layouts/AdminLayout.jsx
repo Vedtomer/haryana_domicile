@@ -211,23 +211,6 @@ export default function AdminLayout({ header, children }) {
                         <span>Dashboard</span>
                     </Link>
 
-                    {/* Top Action 2: Add Wallet Instant */}
-                    <Link
-                        href="/admin/coin-requests"
-                        onClick={() => setSidebarOpen(false)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-sm transition-all duration-200 shadow-md group cursor-pointer"
-                    >
-                        <div className="flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-[20px] text-amber-400 group-hover:rotate-12 transition-transform">
-                                account_balance_wallet
-                            </span>
-                            <span>Add Wallet</span>
-                        </div>
-                        <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
-                            INSTANT
-                        </span>
-                    </Link>
-
                     {/* Section Label: SERVICES */}
                     <div className="flex items-center gap-1.5 px-2 pt-2 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
                         <span className="text-amber-500 text-xs">★</span>
@@ -535,7 +518,7 @@ export default function AdminLayout({ header, children }) {
                                     <span>Coin Ledger</span>
                                 </Link>
                                 <Link
-                                    href="/admin/coin-requests"
+                                    href="/wallet/add"
                                     onClick={() => setDropdownOpen(false)}
                                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                 >

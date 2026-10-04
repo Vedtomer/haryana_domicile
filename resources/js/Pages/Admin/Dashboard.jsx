@@ -664,16 +664,6 @@ export default function Dashboard({
                                 </p>
                             </div>
                         </div>
-
-                        {!isAdmin && (
-                            <Link
-                                href="/wallet/add"
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 shrink-0"
-                            >
-                                <span className="material-symbols-outlined text-[18px]">add_card</span>
-                                <span>Add Money</span>
-                            </Link>
-                        )}
                     </div>
 
                     {/* 2. Stat Metric Cards in a row */}
@@ -720,7 +710,7 @@ export default function Dashboard({
                                 value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
                                 subtitle="Available wallet coins"
                                 icon="account_balance_wallet"
-                                linkUrl="/admin/coin-requests"
+                                linkUrl="/admin/profile#coin-ledger"
                             />
                             <StatMetricCard
                                 index={1}
