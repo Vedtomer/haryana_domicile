@@ -56,7 +56,11 @@ Route::get('/migrate-db', function () {
         $output .= "Git Log After: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n\n";
 
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $output .= "=== MIGRATE OUTPUT ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n\n";
+        $output .= "=== MIGRATE OUTPUT ===\n" . \Illuminate\Support\Facades\Artisan::output() . "\n";
+        $output .= "=== TABLES CHECK ===\n";
+        $output .= "wallets: " . (\Illuminate\Support\Facades\Schema::hasTable('wallets') ? 'EXISTS' : 'MISSING') . "\n";
+        $output .= "payment_orders: " . (\Illuminate\Support\Facades\Schema::hasTable('payment_orders') ? 'EXISTS' : 'MISSING') . "\n";
+        $output .= "wallet_transactions: " . (\Illuminate\Support\Facades\Schema::hasTable('wallet_transactions') ? 'EXISTS' : 'MISSING') . "\n\n";
 
         try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
