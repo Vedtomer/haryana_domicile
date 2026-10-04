@@ -392,11 +392,17 @@ class Service extends Model
             'index' => '/utilities/mobile-to-pan',
             'create' => '/utilities/mobile-to-pan',
         ],
-        'rc_pdf_instant' => [
-            'label' => 'Rc Pdf Instant',
+        'rc_pdf_owner_book_print' => [
+            'label' => 'Rc Pdf Owner Book Print',
             'model' => null,
-            'index' => '/utilities/rc-pdf-instant',
-            'create' => '/utilities/rc-pdf-instant',
+            'index' => '/utilities/rc-pdf-owner-book-print',
+            'create' => '/utilities/rc-pdf-owner-book-print',
+        ],
+        'rc_pdf_instant' => [
+            'label' => 'Rc Pdf Owner Book Print',
+            'model' => null,
+            'index' => '/utilities/rc-pdf-owner-book-print',
+            'create' => '/utilities/rc-pdf-owner-book-print',
         ],
         'pvc_card_maker' => [
             'label' => 'Smart PVC Card Maker',

@@ -374,8 +374,8 @@ export default function Edit({ settings = {} }) {
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-3">
-                                            {renderUrlInput('vahan_rc_pdf_url', 'Vehicle RC PDF Download URL', 'https://nexus-dashboard.space/api/v1/vahan_service_api/vechil_rc_pdf.php')}
-                                            {renderKeyInput('vahan_rc_pdf_key', 'RC PDF API Key (Optional override)', 'Khali chhodne par Master Nexus Key use hogi')}
+                                            {renderUrlInput('vahan_rc_pdf_url', 'Rc Pdf Owner Book Print URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php')}
+                                            {renderKeyInput('vahan_rc_pdf_key', 'RC PDF API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                         </div>
                                         <div className="space-y-3">
                                             {renderUrlInput('vahan_learning_licence_url', 'Learning Licence PDF Download URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php')}

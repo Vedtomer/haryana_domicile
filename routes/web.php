@@ -562,6 +562,38 @@ Route::get('/migrate-db', function () {
             $output .= "RcInfo error: " . $rce->getMessage() . "\n\n";
         }
 
+        // Ensure RC PDF Owner Book Print is configured with 49 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'rc-pdf-owner-book-print'],
+                [
+                    'name' => 'Rc Pdf Owner Book Print',
+                    'description' => 'Vehicle RC PDF Owner Book Print - Download Official Registration Certificate PDF instantly.',
+                    'icon' => 'local_shipping',
+                    'coin_cost' => 49,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'rc_pdf_owner_book_print',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 61,
+                ]
+            );
+            \App\Models\Service::where('slug', 'rc-pdf-instant')->update([
+                'name' => 'Rc Pdf Owner Book Print',
+                'coin_cost' => 49,
+                'module_key' => 'rc_pdf_owner_book_print',
+            ]);
+            \App\Models\Setting::set('vahan_rc_pdf_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php');
+            if (empty(\App\Models\Setting::get('vahan_rc_pdf_key'))) {
+                \App\Models\Setting::set('vahan_rc_pdf_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== RC PDF OWNER BOOK PRINT UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $rpe) {
+            $output .= "RcPdf error: " . $rpe->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1011,14 +1043,14 @@ Route::get('/force-add-service', function () {
         ]
     );
     \App\Models\Service::updateOrCreate(
-        ['slug' => 'rc-pdf-instant'],
+        ['slug' => 'rc-pdf-owner-book-print'],
         [
-            'name' => 'Rc Pdf Instant',
-            'description' => 'Download Vehicle RC PDF instantly.',
+            'name' => 'Rc Pdf Owner Book Print',
+            'description' => 'Vehicle RC PDF Owner Book Print - Download Official Registration Certificate PDF instantly.',
             'icon' => 'local_shipping',
-            'coin_cost' => 99,
+            'coin_cost' => 49,
             'kind' => \App\Models\Service::KIND_MODULE,
-            'module_key' => 'rc_pdf_instant',
+            'module_key' => 'rc_pdf_owner_book_print',
             'sort_order' => 17,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
@@ -1817,16 +1849,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/mobile-to-info/search', [\App\Http\Controllers\MobileToInfoController::class, 'search'])->name('utilities.mobile-to-info.search');
     Route::post('/utilities/mobile-to-info/update-api', [\App\Http\Controllers\MobileToInfoController::class, 'updateApi'])->name('utilities.mobile-to-info.update-api');
 
-    Route::get('/utilities/rc-pdf-instant', function () {
-        $service = \App\Models\Service::where('slug', 'rc-pdf-instant')->first();
-        $user = auth()->user();
-        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
-            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
-        }
-        return Inertia::render('Utilities/RcPdf');
-    })->name('utilities.rc-pdf-instant');
+    Route::get('/utilities/rc-pdf-owner-book-print', [\App\Http\Controllers\RcPdfController::class, 'index'])->name('utilities.rc-pdf-owner-book-print');
+    Route::post('/utilities/rc-pdf-owner-book-print/search', [\App\Http\Controllers\RcPdfController::class, 'search'])->name('utilities.rc-pdf-owner-book-print.search');
+    Route::post('/utilities/rc-pdf-owner-book-print/update-api', [\App\Http\Controllers\RcPdfController::class, 'updateApi'])->name('utilities.rc-pdf-owner-book-print.update-api');
 
+    Route::get('/utilities/rc-pdf-instant', [\App\Http\Controllers\RcPdfController::class, 'index'])->name('utilities.rc-pdf-instant');
     Route::post('/utilities/rc-pdf-instant/search', [\App\Http\Controllers\RcPdfController::class, 'search'])->name('utilities.rc-pdf-instant.search');
+    Route::post('/utilities/rc-pdf-instant/update-api', [\App\Http\Controllers\RcPdfController::class, 'updateApi'])->name('utilities.rc-pdf-instant.update-api');
 
     Route::get('/utilities/aadhar-to-mask-pan', function () {
         $service = \App\Models\Service::where('slug', 'aadhar-to-mask-pan')->first();
