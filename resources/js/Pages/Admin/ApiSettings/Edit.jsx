@@ -90,6 +90,8 @@ export default function Edit({ settings = {} }) {
         voter_sir_voter_list_url: settings.voter_sir_voter_list_url || '',
         voter_mobile_update_url: settings.voter_mobile_update_url || '',
         voter_mobile_update_key: settings.voter_mobile_update_key || '',
+        voter_advance_api_url: settings.voter_advance_api_url || '',
+        voter_advance_api_key: settings.voter_advance_api_key || '',
 
         // Card Maker Tools & PDF Editor
         card_maker_api_key: settings.card_maker_api_key || '',
@@ -741,6 +743,11 @@ export default function Edit({ settings = {} }) {
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">2. Voter Mobile Link / Update Instant</span>
                                     {renderUrlInput('voter_mobile_update_url', 'Voter Mobile Update URL', 'https://nexus-dashboard.space/api/v1/voter_card_api/voter_mobile_link.php')}
                                     {renderKeyInput('voter_mobile_update_key', 'Dedicated Key (Optional override)', 'Khali chhodne par Master Nexus Key use hogi')}
+                                </div>
+                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">3. Voter Advanse Info (Good-API-Point)</span>
+                                    {renderUrlInput('voter_advance_api_url', 'Voter Advance Endpoint URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php')}
+                                    {renderKeyInput('voter_advance_api_key', 'Voter Advance API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                 </div>
                             </div>
                         </div>

@@ -400,6 +400,18 @@ class Service extends Model
             'index' => '/utilities/voter-mobile-update',
             'create' => '/utilities/voter-mobile-update',
         ],
+        'voter_advance_info' => [
+            'label' => 'Voter Advanse Info',
+            'model' => null,
+            'index' => '/utilities/voter-advance-info',
+            'create' => '/utilities/voter-advance-info',
+        ],
+        'voter_advanse_info' => [
+            'label' => 'Voter Advanse Info',
+            'model' => null,
+            'index' => '/utilities/voter-advance-info',
+            'create' => '/utilities/voter-advance-info',
+        ],
         'mobile_to_pan' => [
             'label' => 'Mobile To Pan No. Instant',
             'model' => null,

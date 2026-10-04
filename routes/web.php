@@ -648,6 +648,33 @@ Route::get('/migrate-db', function () {
             $output .= "RationAdvanceDetails error: " . $rade->getMessage() . "\n\n";
         }
 
+        // Ensure Voter Advance Info is configured with 99 coins and Good-API-Point endpoint
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'voter-advance-info'],
+                [
+                    'name' => 'Voter Advanse Info',
+                    'description' => 'Voter Advance Details & Official Electoral Roll PDF Download.',
+                    'icon' => 'how_to_reg',
+                    'coin_cost' => 99,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'voter_advance_info',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 64,
+                ]
+            );
+            \App\Models\Setting::set('voter_advance_api_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php');
+            if (empty(\App\Models\Setting::get('voter_advance_api_key'))) {
+                \App\Models\Setting::set('voter_advance_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815');
+            }
+            $output .= "=== VOTER ADVANCE INFO UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
+        } catch (\Throwable $vaie) {
+            $output .= "VoterAdvanceInfo error: " . $vaie->getMessage() . "\n\n";
+        }
+
         // Ensure all users have access to all active services
         try {
             $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
@@ -1138,6 +1165,22 @@ Route::get('/force-add-service', function () {
             'kind' => \App\Models\Service::KIND_MODULE,
             'module_key' => 'ration_advance_details',
             'sort_order' => 19,
+            'is_active' => true,
+            'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
+            'is_premium' => false,
+            'unlock_cost' => 0,
+        ]
+    );
+    \App\Models\Service::updateOrCreate(
+        ['slug' => 'voter-advance-info'],
+        [
+            'name' => 'Voter Advanse Info',
+            'description' => 'Voter Advance Details & Official Electoral Roll PDF Download.',
+            'icon' => 'how_to_reg',
+            'coin_cost' => 99,
+            'kind' => \App\Models\Service::KIND_MODULE,
+            'module_key' => 'voter_advance_info',
+            'sort_order' => 20,
             'is_active' => true,
             'visibility' => \App\Models\Service::VISIBILITY_PUBLIC,
             'is_premium' => false,
@@ -2014,6 +2057,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/ration-advanse-details', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'index'])->name('utilities.ration-advanse-details');
     Route::post('/utilities/ration-advanse-details/search', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'search'])->name('utilities.ration-advanse-details.search');
     Route::post('/utilities/ration-advanse-details/update-api', [\App\Http\Controllers\RationAdvanceDetailsController::class, 'updateApi'])->name('utilities.ration-advanse-details.update-api');
+
+    Route::get('/utilities/voter-advance-info', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'index'])->name('utilities.voter-advance-info');
+    Route::post('/utilities/voter-advance-info/search', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'search'])->name('utilities.voter-advance-info.search');
+    Route::post('/utilities/voter-advance-info/update-api', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'updateApi'])->name('utilities.voter-advance-info.update-api');
+
+    Route::get('/utilities/voter-advanse-info', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'index'])->name('utilities.voter-advanse-info');
+    Route::post('/utilities/voter-advanse-info/search', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'search'])->name('utilities.voter-advanse-info.search');
+    Route::post('/utilities/voter-advanse-info/update-api', [\App\Http\Controllers\VoterAdvanceInfoController::class, 'updateApi'])->name('utilities.voter-advanse-info.update-api');
 
     Route::get('/utilities/saral-status', function () {
         $service = \App\Models\Service::where('slug', 'saral-status')->first();
