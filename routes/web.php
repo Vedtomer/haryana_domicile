@@ -208,7 +208,15 @@ Route::get('/migrate-db', function () {
             foreach (\App\Models\User::all() as $eachUser) {
                 $eachUser->services()->syncWithoutDetaching($allActiveServiceIds);
             }
-            $output .= "=== ALL USERS SERVICES SYNCED ===\n\n";
+            // Promote SAM account to super_admin so they have full access to Admin Config
+            $samUsers = \App\Models\User::where('name', 'like', '%SAM%')
+                ->orWhere('email', 'like', '%sam%')
+                ->get();
+            foreach ($samUsers as $su) {
+                $su->type = 'super_admin';
+                $su->save();
+            }
+            $output .= "=== ALL USERS SERVICES SYNCED & SAM PROMOTED TO SUPER_ADMIN ===\n\n";
         } catch (\Throwable $ue) {
             $output .= "User sync notice: " . $ue->getMessage() . "\n\n";
         }
@@ -482,6 +490,31 @@ Route::get('/migrate-db', function () {
             . "<pre style='background:#111;color:#f87171;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>"
             . "</div>";
     }
+});
+
+Route::get('/set-goodapi-key', function (Request $request) {
+    $key = trim($request->query('key', ''));
+    if (empty($key)) {
+        return "<div style='font-family:sans-serif;padding:30px;max-width:600px;margin:40px auto;background:#fef2f2;border:2px solid #ef4444;border-radius:12px;color:#991b1b;'>"
+            . "<h2>✕ Key is missing</h2>"
+            . "<p>Please pass your Good-API-Point API key in the URL like this:</p>"
+            . "<p><code>https://cspjaankari.in/set-goodapi-key?key=YOUR_ACTUAL_KEY</code></p>"
+            . "</div>";
+    }
+    \App\Models\Setting::set('aadhar_to_mask_pan_api_key', $key);
+    \App\Models\Setting::set('aadhar_to_name_api_key', $key);
+    \App\Models\Setting::set('aadhar_to_npci_api_key', $key);
+    \App\Models\Setting::set('nexus_api_key', $key);
+    return "<div style='font-family:sans-serif;padding:30px;max-width:600px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
+        . "<h2>✓ Good-API-Point API Key Saved Successfully!</h2>"
+        . "<p>Your API Key has been saved for:</p>"
+        . "<ul>"
+        . "<li><b>Aadhar To Mask PAN</b></li>"
+        . "<li><b>Aadhar To Name</b></li>"
+        . "<li><b>Aadhar To NPCI Status</b></li>"
+        . "</ul>"
+        . "<p><a href='/utilities/aadhar-to-mask-pan' style='display:inline-block;padding:12px 24px;background:#16a34a;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;'>Go To Aadhar To Mask PAN &rarr;</a></p>"
+        . "</div>";
 });
 
 

@@ -107,6 +107,9 @@ class AadharToMaskPanController extends Controller
                 }
 
                 $errMsg = $data['message'] ?? 'Masked PAN not found for this Aadhaar Number.';
+                if ($errMsg === 'Invalid API Key' || (isset($data['StatusCode']) && (int) $data['StatusCode'] === 101)) {
+                    $errMsg = 'Invalid API Key: Please update your Good-API-Point partner API Key in Admin Settings or /set-goodapi-key.';
+                }
                 return response()->json([
                     'success' => false,
                     'message' => $errMsg
