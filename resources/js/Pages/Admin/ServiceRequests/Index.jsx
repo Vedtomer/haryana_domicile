@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import StatusBadge from '../../../Components/StatusBadge';
+import { extractPhoneNumber, formatServiceWhatsAppMessage, buildWhatsAppLink } from '../../../Utils/whatsappHelper';
 
 const renderServiceIcon = (icon) => {
     if (!icon) return '📄';
@@ -430,13 +431,28 @@ export default function Index({ requests, isAdmin, statuses, stats, servicesList
 
                                             {/* Actions (Sticky Right Column) */}
                                             <td className="px-3.5 py-3 whitespace-nowrap text-right sticky right-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/90 z-10 shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.4)] transition-colors">
-                                                <Link
-                                                    href={`/admin/service-requests/${item.id}`}
-                                                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow transition"
-                                                >
-                                                    <span>{isAdmin ? 'Review' : 'View'}</span>
-                                                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                                                </Link>
+                                                <div className="flex items-center justify-end gap-1.5">
+                                                    <a
+                                                        href={buildWhatsAppLink(
+                                                            extractPhoneNumber(item, item.user),
+                                                            formatServiceWhatsAppMessage(item, item.user)
+                                                        )}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        title="WhatsApp पर भेजें"
+                                                        className="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/50 shadow-xs hover:shadow transition"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[16px] block">chat</span>
+                                                    </a>
+
+                                                    <Link
+                                                        href={`/admin/service-requests/${item.id}`}
+                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow transition"
+                                                    >
+                                                        <span>{isAdmin ? 'Review' : 'View'}</span>
+                                                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     );

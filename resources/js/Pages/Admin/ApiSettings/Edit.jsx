@@ -125,7 +125,10 @@ export default function Edit({ settings = {} }) {
         ifsc_api_url: settings.ifsc_api_url || '',
         pincode_api_url: settings.pincode_api_url || '',
 
-        // CallMeBot WhatsApp Alerts
+        // WhatsApp Alerts & Gateway
+        whatsapp_gateway_url: settings.whatsapp_gateway_url || '',
+        whatsapp_gateway_key: settings.whatsapp_gateway_key || '',
+        whatsapp_auto_send: settings.whatsapp_auto_send !== undefined ? String(settings.whatsapp_auto_send) : '1',
         callmebot_phone: settings.callmebot_phone || '',
         callmebot_api_key: settings.callmebot_api_key || '',
     });
@@ -945,62 +948,128 @@ export default function Edit({ settings = {} }) {
                         </div>
                     )}
 
-                    {/* 10. CALLMEBOT WHATSAPP NOTIFICATIONS */}
+                    {/* 10. WHATSAPP GATEWAY & CALLMEBOT NOTIFICATIONS */}
                     {isVisible('callmebot') && (
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                            <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl border border-emerald-200 dark:border-emerald-900/50">
-                                        <span className="material-symbols-outlined">chat</span>
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white">
-                                                CallMeBot WhatsApp Notifications
-                                            </h3>
-                                            {data.callmebot_phone && data.callmebot_api_key ? (
-                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                                    ✓ ACTIVE
-                                                </span>
-                                            ) : (
-                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-yellow-100 dark:bg-yellow-950/60 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
-                                                    ⚠ INCOMPLETE
-                                                </span>
-                                            )}
+                        <div className="space-y-6">
+                            {/* WhatsApp Gateway for Customers */}
+                            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-emerald-200 dark:border-emerald-800/60 p-6 shadow-sm">
+                                <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl border border-emerald-200 dark:border-emerald-900/50">
+                                            <span className="material-symbols-outlined">send_and_archive</span>
                                         </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                            User jab coin buy request kare ya nayi service request dale, to Admin ko direct WhatsApp alert milega.
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white">
+                                                    WhatsApp Auto-Dispatch Gateway (Customer Alerts)
+                                                </h3>
+                                                {data.whatsapp_gateway_url ? (
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                        ✓ CONFIGURED
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                                        OPTIONAL
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                सर्विस रिक्वेस्ट ‘Completed’ होते ही कस्टमर/यूज़र के WhatsApp पर ऑटोमेटिक मैसेज भेजने के लिए। (UltraMsg, Wati, Fast2SMS, या अन्य गेटवे)
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <label className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-2 cursor-pointer">
+                                            <span>Auto-Send:</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={data.whatsapp_auto_send === '1'}
+                                                onChange={e => setData('whatsapp_auto_send', e.target.checked ? '1' : '0')}
+                                                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                            WhatsApp Gateway API URL / Webhook
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={data.whatsapp_gateway_url}
+                                            onChange={e => setData('whatsapp_gateway_url', e.target.value)}
+                                            placeholder="e.g. https://api.ultramsg.com/instance123/messages/chat or https://api.gateway.com/send?phone={phone}&text={text}&key={key}"
+                                            className="w-full text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-mono"
+                                        />
+                                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                                            Placeholders supported: <code>{'{phone}'}</code>, <code>{'{text}'}</code>, <code>{'{key}'}</code>
                                         </p>
                                     </div>
+
+                                    <div>
+                                        {renderKeyInput('whatsapp_gateway_key', 'Gateway Token / API Key', 'e.g. your_instance_token_here', 'गेटवे का ऑथराइजेशन टोकन या API Key')}
+                                    </div>
                                 </div>
-                                <a
-                                    href="https://www.callmebot.com/blog/free-api-whatsapp-messages/"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-semibold"
-                                >
-                                    <span>callmebot.com</span>
-                                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                                </a>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                        Admin WhatsApp Phone Number
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={data.callmebot_phone}
-                                        onChange={e => setData('callmebot_phone', e.target.value)}
-                                        placeholder="e.g. +91XXXXXXXXXX or +380630323112"
-                                        className="w-full text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                                    />
-                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Country code ke sath (e.g. +919876543210)</p>
+                            {/* CallMeBot Admin Notifications */}
+                            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                                <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl border border-emerald-200 dark:border-emerald-900/50">
+                                            <span className="material-symbols-outlined">chat</span>
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white">
+                                                    CallMeBot WhatsApp Notifications (Admin Alert)
+                                                </h3>
+                                                {data.callmebot_phone && data.callmebot_api_key ? (
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                        ✓ ACTIVE
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-yellow-100 dark:bg-yellow-950/60 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+                                                        ⚠ INCOMPLETE
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                User jab coin buy request kare ya nayi service request dale, to Admin ko direct WhatsApp alert milega.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href="https://www.callmebot.com/blog/free-api-whatsapp-messages/"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-semibold"
+                                    >
+                                        <span>callmebot.com</span>
+                                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                                    </a>
                                 </div>
 
-                                <div>
-                                    {renderKeyInput('callmebot_api_key', 'CallMeBot API Key', 'e.g. 4635705', 'CallMeBot bot se mila 6-7 digit apikey code')}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                            Admin WhatsApp Phone Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={data.callmebot_phone}
+                                            onChange={e => setData('callmebot_phone', e.target.value)}
+                                            placeholder="e.g. +91XXXXXXXXXX or +380630323112"
+                                            className="w-full text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                        />
+                                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Country code ke sath (e.g. +919876543210)</p>
+                                    </div>
+
+                                    <div>
+                                        {renderKeyInput('callmebot_api_key', 'CallMeBot API Key', 'e.g. 4635705', 'CallMeBot bot se mila 6-7 digit apikey code')}
+                                    </div>
                                 </div>
                             </div>
                         </div>

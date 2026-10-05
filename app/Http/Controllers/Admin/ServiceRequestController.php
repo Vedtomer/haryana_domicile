@@ -274,9 +274,120 @@ class ServiceRequestController extends Controller
             },
         ));
 
+        // Send automatic WhatsApp notification if completed
+        if ($data['status'] === ServiceRequest::STATUS_COMPLETED) {
+            $this->sendWhatsAppCompletionAlert($serviceRequest, $data['admin_response'] ?? null);
+        }
+
         return redirect()->route('admin.service-requests.index')
             ->with('success', 'Status updated and the user has been notified.'
                 . ($refunded ? " {$serviceRequest->coins_charged} coins refunded." : ''));
+    }
+
+    /**
+     * Automatically send WhatsApp notification on request completion.
+     */
+    protected function sendWhatsAppCompletionAlert(ServiceRequest $serviceRequest, ?string $adminResponse = null): void
+    {
+        try {
+            $user = $serviceRequest->user;
+            if (!$user) return;
+
+            // Determine recipient phone number (User's phone, or mobile in input_data)
+            $phone = $user->phone;
+            if (empty($phone) && is_array($serviceRequest->input_data)) {
+                foreach ($serviceRequest->input_data as $k => $v) {
+                    if (is_string($v) && (stripos($k, 'mobile') !== false || stripos($k, 'phone') !== false || stripos($k, 'whatsapp') !== false)) {
+                        $clean = preg_replace('/[^0-9]/', '', $v);
+                        if (strlen($clean) >= 10) {
+                            $phone = $clean;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (empty($phone)) return;
+            $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+            if (strlen($cleanPhone) === 10) {
+                $cleanPhone = '91' . $cleanPhone;
+            }
+
+            // Build clean, professional WhatsApp message
+            $msg = "*CSP Jaankari - सर्विस कार्य संपन्न* ✅\n\n";
+            $msg .= "नमस्ते *" . ($user->name ?? 'ग्राहक') . "* जी,\n";
+            $msg .= "आपकी सर्विस रिक्वेस्ट का कार्य सफलतापूर्वक पूरा कर दिया गया है।\n\n";
+            $msg .= "📌 *सर्विस:* " . ($serviceRequest->service_name ?? 'Service') . "\n";
+            $msg .= "🆔 *रिक्वेस्ट ID:* #" . $serviceRequest->id . "\n";
+            $msg .= "📅 *दिनांक:* " . now()->format('d M Y, h:i A') . "\n";
+
+            if (is_array($serviceRequest->input_data)) {
+                $msg .= "\n📋 *विवरण:*\n";
+                $count = 0;
+                foreach ($serviceRequest->input_data as $k => $v) {
+                    if (is_string($v) && !empty($v) && $count < 4) {
+                        $msg .= "• " . ucwords(str_replace('_', ' ', $k)) . ": " . $v . "\n";
+                        $count++;
+                    }
+                }
+            }
+
+            if (!empty($adminResponse)) {
+                $msg .= "\n📝 *रिमार्क्स:* " . $adminResponse . "\n";
+            }
+
+            $msg .= "\nपोर्टल पर लॉगिन करके अपना स्टेटस या दस्तावेज देख सकते हैं।\n";
+            $msg .= "धन्यवाद! 🙏\n*CSP Jaankari Portal*";
+
+            // 1. Check if custom WhatsApp Gateway is configured
+            $gatewayUrl = \App\Models\Setting::get('whatsapp_gateway_url');
+            $gatewayKey = \App\Models\Setting::get('whatsapp_gateway_key');
+            $autoSend = \App\Models\Setting::get('whatsapp_auto_send', '1');
+
+            if ($autoSend !== '0' && !empty($gatewayUrl)) {
+                app()->terminating(function () use ($gatewayUrl, $gatewayKey, $cleanPhone, $msg) {
+                    try {
+                        if (str_contains($gatewayUrl, '{phone}') || str_contains($gatewayUrl, '{text}')) {
+                            $url = str_replace(
+                                ['{phone}', '{text}', '{key}', '{apikey}'],
+                                [urlencode($cleanPhone), urlencode($msg), urlencode($gatewayKey ?? ''), urlencode($gatewayKey ?? '')],
+                                $gatewayUrl
+                            );
+                            \Illuminate\Support\Facades\Http::timeout(6)->get($url);
+                        } else {
+                            \Illuminate\Support\Facades\Http::timeout(6)->post($gatewayUrl, [
+                                'phone'   => $cleanPhone,
+                                'number'  => $cleanPhone,
+                                'message' => $msg,
+                                'text'    => $msg,
+                                'api_key' => $gatewayKey,
+                                'token'   => $gatewayKey,
+                            ]);
+                        }
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::error('WhatsApp Auto-Send Error: ' . $e->getMessage());
+                    }
+                });
+            }
+
+            // 2. Also send alert to Admin via CallMeBot if configured
+            $adminPhone = \App\Models\Setting::get('callmebot_phone') ?: config('services.callmebot.phone');
+            $adminKey = \App\Models\Setting::get('callmebot_api_key') ?: config('services.callmebot.api_key');
+            if (!empty($adminPhone) && !empty($adminKey)) {
+                $adminMsg = "*[Service Completed]*\nRequest #" . $serviceRequest->id . " (" . $serviceRequest->service_name . ") for " . $user->name . " has been completed.";
+                app()->terminating(function () use ($adminPhone, $adminKey, $adminMsg) {
+                    try {
+                        \Illuminate\Support\Facades\Http::timeout(5)->get('https://api.callmebot.com/whatsapp.php', [
+                            'phone'  => $adminPhone,
+                            'text'   => $adminMsg,
+                            'apikey' => $adminKey,
+                        ]);
+                    } catch (\Throwable $e) {}
+                });
+            }
+        } catch (\Throwable $globalEx) {
+            \Illuminate\Support\Facades\Log::error('sendWhatsAppCompletionAlert Exception: ' . $globalEx->getMessage());
+        }
     }
 
     /**

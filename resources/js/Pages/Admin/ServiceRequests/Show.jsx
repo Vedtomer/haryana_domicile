@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import StatusBadge from '../../../Components/StatusBadge';
+import { extractPhoneNumber, formatServiceWhatsAppMessage, buildWhatsAppLink } from '../../../Utils/whatsappHelper';
 
 const renderServiceIcon = (icon) => {
     if (!icon) return '📄';
@@ -17,6 +18,24 @@ export default function Show({ request, isAdmin, statuses }) {
         admin_response: request.admin_response ?? '',
         estimated_time: request.estimated_time ?? '',
     });
+
+    const [recipientPhone, setRecipientPhone] = useState(() => extractPhoneNumber(request, request.user));
+    const [whatsAppMsg, setWhatsAppMsg] = useState(() => formatServiceWhatsAppMessage(request, request.user, request.admin_response));
+    const [copied, setCopied] = useState(false);
+
+    // Update WhatsApp message dynamically when status or admin response in form changes
+    useEffect(() => {
+        const previewReq = { ...request, status: data.status, admin_response: data.admin_response };
+        setWhatsAppMsg(formatServiceWhatsAppMessage(previewReq, request.user, data.admin_response));
+    }, [data.status, data.admin_response]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(whatsAppMsg);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const waLink = buildWhatsAppLink(recipientPhone, whatsAppMsg);
 
     const input = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none';
 
@@ -148,6 +167,80 @@ export default function Show({ request, isAdmin, statuses }) {
                                 )}
                             </div>
                         )}
+                    </div>
+
+                    {/* WhatsApp Notification & Share Card */}
+                    <div className="bg-white rounded-xl border border-emerald-200 p-5 space-y-3.5 shadow-xs">
+                        <div className="flex items-center justify-between gap-2 border-b border-gray-100 pb-3">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold text-base shadow-xs">
+                                    💬
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-800 text-sm">WhatsApp सूचना भेजें</h3>
+                                    <p className="text-[11px] text-gray-500">कस्टमर / यूज़र को 1-क्लिक शेयर</p>
+                                </div>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                WA DIRECT
+                            </span>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1">
+                                मोबाइल नंबर (Recipient Mobile)
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <span className="px-2.5 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-mono font-bold text-gray-500">
+                                    +91
+                                </span>
+                                <input
+                                    type="text"
+                                    value={recipientPhone ? recipientPhone.replace(/^91/, '') : ''}
+                                    onChange={(e) => {
+                                        const clean = e.target.value.replace(/\D/g, '');
+                                        setRecipientPhone(clean ? (clean.startsWith('91') ? clean : `91${clean}`) : '');
+                                    }}
+                                    placeholder="10 digit mobile number"
+                                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center justify-between">
+                                <span>मैसेज प्रिव्यू (Live Preview)</span>
+                                <button
+                                    type="button"
+                                    onClick={handleCopy}
+                                    className="text-[11px] text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1 cursor-pointer"
+                                >
+                                    <span>{copied ? '✓ कॉपी हो गया' : '📋 कॉपी करें'}</span>
+                                </button>
+                            </label>
+                            <textarea
+                                rows={6}
+                                value={whatsAppMsg}
+                                onChange={(e) => setWhatsAppMsg(e.target.value)}
+                                className="w-full text-xs font-mono p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-gray-700 leading-relaxed resize-y"
+                            />
+                        </div>
+
+                        <div className="space-y-2 pt-1">
+                            <a
+                                href={waLink}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-sm hover:shadow transition-all text-center"
+                            >
+                                <span>🟢</span>
+                                <span>WhatsApp पर भेजें (Send Now)</span>
+                            </a>
+
+                            <p className="text-[11px] text-gray-500 text-center leading-normal">
+                                💡 स्टेटस <strong>Completed</strong> करने पर बैकग्राउंड में ऑटो-गेटवे द्वारा भी अलर्ट चला जाता है।
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

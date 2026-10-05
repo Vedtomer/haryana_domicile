@@ -139,9 +139,12 @@ class ApiSettingController extends Controller
                 'ifsc_api_url'                 => Setting::get('ifsc_api_url', 'https://ifsc.razorpay.com'),
                 'pincode_api_url'              => Setting::get('pincode_api_url', 'https://api.postalpincode.in/pincode'),
 
-                // CallMeBot WhatsApp Alerts
-                'callmebot_phone'   => Setting::get('callmebot_phone', config('services.callmebot.phone', '')),
-                'callmebot_api_key' => Setting::get('callmebot_api_key', config('services.callmebot.api_key', '')),
+                // WhatsApp Gateway & CallMeBot Alerts
+                'whatsapp_gateway_url'  => Setting::get('whatsapp_gateway_url', ''),
+                'whatsapp_gateway_key'  => Setting::get('whatsapp_gateway_key', ''),
+                'whatsapp_auto_send'    => Setting::get('whatsapp_auto_send', '1'),
+                'callmebot_phone'       => Setting::get('callmebot_phone', config('services.callmebot.phone', '')),
+                'callmebot_api_key'     => Setting::get('callmebot_api_key', config('services.callmebot.api_key', '')),
             ],
         ]);
     }
@@ -283,6 +286,9 @@ class ApiSettingController extends Controller
             'pincode_api_url',
 
             // WhatsApp
+            'whatsapp_gateway_url',
+            'whatsapp_gateway_key',
+            'whatsapp_auto_send',
             'callmebot_phone',
             'callmebot_api_key',
         ];

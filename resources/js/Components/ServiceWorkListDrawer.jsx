@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Link } from '@inertiajs/react';
+import { extractPhoneNumber, formatServiceWhatsAppMessage, buildWhatsAppLink } from '../Utils/whatsappHelper';
 
 export default function ServiceWorkListDrawer({ isOpen, onClose, service }) {
     const [loading, setLoading] = useState(false);
@@ -282,6 +283,19 @@ export default function ServiceWorkListDrawer({ isOpen, onClose, service }) {
                                         </span>
 
                                         <div className="flex items-center gap-1.5">
+                                            <a
+                                                href={buildWhatsAppLink(
+                                                    extractPhoneNumber(item, item.user),
+                                                    formatServiceWhatsAppMessage(item, item.user)
+                                                )}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition-all flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50"
+                                                title="WhatsApp पर भेजें"
+                                            >
+                                                <span className="material-symbols-outlined text-[14px]">chat</span>
+                                                <span>WhatsApp</span>
+                                            </a>
                                             {item.print_url && (
                                                 <a
                                                     href={item.print_url}
