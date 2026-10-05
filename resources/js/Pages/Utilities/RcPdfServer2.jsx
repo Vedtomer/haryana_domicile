@@ -519,7 +519,7 @@ export default function RcPdfServer2() {
                                     type="text"
                                     value={adminApiKey}
                                     onChange={(e) => setAdminApiKey(e.target.value)}
-                                    placeholder="ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41"
+                                    placeholder="ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1"
                                     className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white font-mono focus:ring-2 focus:ring-amber-500 outline-none"
                                 />
                             </div>

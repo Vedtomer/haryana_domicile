@@ -40,7 +40,7 @@ class PanToUidController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php';
         }
 
-        $apiKey = trim(Setting::get('pan_to_uid_api_key') ?: Setting::get('goodapi_api_key', Setting::get('nexus_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41')));
+        $apiKey = trim(Setting::get('pan_to_uid_api_key') ?: Setting::get('goodapi_api_key', Setting::get('nexus_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')));
 
         if (empty($apiKey)) {
             return response()->json([

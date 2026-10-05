@@ -34,7 +34,7 @@ class RcPdfServer2Controller extends Controller
 
         $rcPdf2Key = trim(Setting::get('vahan_rc_pdf2_key', ''));
         if (empty($rcPdf2Key)) {
-            $rcPdf2Key = trim(Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
+            $rcPdf2Key = trim(Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
         }
 
         return Inertia::render('Utilities/RcPdfServer2', [
@@ -88,7 +88,7 @@ class RcPdfServer2Controller extends Controller
 
         $apiKey = trim(Setting::get('vahan_rc_pdf2_key')
             ?: (Setting::get('goodapi_api_key')
-            ?: 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
+            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
 
         $queryParams = [
             'apiKey' => $apiKey,

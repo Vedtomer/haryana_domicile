@@ -30,7 +30,7 @@ class RationToAadharUpController extends Controller
             'coinCost' => $coinCost,
             'isAdmin' => (bool) $isStaff,
             'apiUrl' => $isStaff ? Setting::get('ration_to_aadhar_up_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_up.php') : null,
-            'apiKey' => $isStaff ? Setting::get('ration_to_aadhar_up_api_key', Setting::get('aadhar_to_ration_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41')) : null,
+            'apiKey' => $isStaff ? Setting::get('ration_to_aadhar_up_api_key', Setting::get('aadhar_to_ration_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')) : null,
         ]);
     }
 
@@ -62,7 +62,7 @@ class RationToAadharUpController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_up.php';
         }
 
-        $apiKey = trim(Setting::get('ration_to_aadhar_up_api_key', Setting::get('aadhar_to_ration_api_key', Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'))));
+        $apiKey = trim(Setting::get('ration_to_aadhar_up_api_key', Setting::get('aadhar_to_ration_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'))));
 
         if (empty($apiKey)) {
             return response()->json([

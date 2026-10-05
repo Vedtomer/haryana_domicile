@@ -78,7 +78,7 @@ Route::get('/migrate-db', function () {
         }
 
         // Update GoodAPI credentials to new regenerated key across all settings
-        $newGoodApiKey = 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41';
+        $newGoodApiKey = 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1';
         $newGoodApiToken = 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22';
 
         \App\Models\Setting::set('goodapi_api_key', $newGoodApiKey);
@@ -214,7 +214,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('aadhar_to_name_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
             \App\Models\Setting::set('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php');
-            \App\Models\Setting::set('aadhar_to_name_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('aadhar_to_name_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== AADHAR TO NAME UPSERTED (URL: " . \App\Models\Setting::get('aadhar_to_name_api_url') . ") ===\n\n";
         } catch (\Throwable $ane) {
             $output .= "AadharToName error: " . $ane->getMessage() . "\n\n";
@@ -240,13 +240,13 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('aadhar_to_mask_pan_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
             \App\Models\Setting::set('nexus_aadhar_to_mask_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php');
-            \App\Models\Setting::set('aadhar_to_mask_pan_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('aadhar_to_mask_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             \App\Models\Setting::set('aadhar_to_pan_api_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php');
             \App\Models\Setting::set('nexus_aadhar_to_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php');
-            \App\Models\Setting::set('aadhar_to_pan_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
-            \App\Models\Setting::set('aadhar_to_npci_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('aadhar_to_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
+            \App\Models\Setting::set('aadhar_to_npci_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             \App\Models\Setting::set('goodapi_token_id', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22');
-            \App\Models\Setting::set('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== AADHAR TO MASK PAN & UNMASKED PAN UPSERTED ===\n\n";
         } catch (\Throwable $ampe) {
             $output .= "AadharToMaskPan error: " . $ampe->getMessage() . "\n\n";
@@ -272,7 +272,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('mobile_to_pan_api_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php');
             \App\Models\Setting::set('nexus_mobile_to_pan_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php');
-            \App\Models\Setting::set('mobile_to_pan_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('mobile_to_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== MOBILE TO PAN UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $mtpe) {
             $output .= "MobileToPan error: " . $mtpe->getMessage() . "\n\n";
@@ -322,7 +322,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('aadhar_to_ration_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/uid_to_ration_no.php');
-            \App\Models\Setting::set('aadhar_to_ration_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('aadhar_to_ration_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== AADHAR TO RATION FIND UPSERTED (39 COINS) ===\n\n";
         } catch (\Throwable $atre) {
             $output .= "AadharToRation error: " . $atre->getMessage() . "\n\n";
@@ -347,7 +347,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('ration_card_pdf_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_card_pdf.php');
-            \App\Models\Setting::set('ration_card_pdf_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('ration_card_pdf_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== RATION CARD PDF DOWNLOAD UPSERTED (19 COINS) ===\n\n";
         } catch (\Throwable $rcpe) {
             $output .= "RationCardPdf error: " . $rcpe->getMessage() . "\n\n";
@@ -372,7 +372,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('ration_to_aadhar_all_state_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_all.php');
-            \App\Models\Setting::set('ration_to_aadhar_all_state_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('ration_to_aadhar_all_state_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== RATION TO AADHAAR ALL STATE UPSERTED (119 COINS) ===\n\n";
         } catch (\Throwable $rtae) {
             $output .= "RationToAadharAllState error: " . $rtae->getMessage() . "\n\n";
@@ -397,7 +397,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('ration_to_aadhar_up_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_up.php');
-            \App\Models\Setting::set('ration_to_aadhar_up_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('ration_to_aadhar_up_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== RATION TO AADHAAR UP UPSERTED (99 COINS) ===\n\n";
         } catch (\Throwable $rtue) {
             $output .= "RationToAadharUp error: " . $rtue->getMessage() . "\n\n";
@@ -423,7 +423,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('pan_details_server2_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php');
             \App\Models\Setting::set('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php');
-            \App\Models\Setting::set('pan_details_server2_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('pan_details_server2_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== PAN DETAILS SERVER 2 UPSERTED (19 COINS) ===\n\n";
         } catch (\Throwable $pdse) {
             $output .= "PanDetailsServer2 error: " . $pdse->getMessage() . "\n\n";
@@ -449,7 +449,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('pan_full_details_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php');
             \App\Models\Setting::set('nexus_pan_full_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php');
-            \App\Models\Setting::set('pan_full_details_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('pan_full_details_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== PAN FULL DETAILS UPSERTED (29 COINS) ===\n\n";
         } catch (\Throwable $pfe) {
             $output .= "PanFullDetails error: " . $pfe->getMessage() . "\n\n";
@@ -474,7 +474,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('pan_to_aadhar_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php');
             \App\Models\Setting::set('nexus_pan_to_aadhar_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php');
-            \App\Models\Setting::set('pan_to_aadhar_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('pan_to_aadhar_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== PAN TO AADHAAR UNMASKED UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $pae) {
             $output .= "PanToAadhar error: " . $pae->getMessage() . "\n\n";
@@ -498,7 +498,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('pan_to_gst_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_gst.php');
-            \App\Models\Setting::set('pan_to_gst_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('pan_to_gst_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== PAN TO GST UPSERTED (19 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $pge) {
             $output .= "PanToGst error: " . $pge->getMessage() . "\n\n";
@@ -522,7 +522,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('pan_to_mask_uid_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_mask_uid.php');
-            \App\Models\Setting::set('pan_to_mask_uid_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('pan_to_mask_uid_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== PAN TO MASK AADHAR UPSERTED (29 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $pme) {
             $output .= "PanToMaskAadhar error: " . $pme->getMessage() . "\n\n";
@@ -570,7 +570,7 @@ Route::get('/migrate-db', function () {
                 ]
             );
             \App\Models\Setting::set('vahan_challan_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php');
-            \App\Models\Setting::set('vahan_challan_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+            \App\Models\Setting::set('vahan_challan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             $output .= "=== VEHICLE CHALLAN CHECK UPSERTED (14 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $vce) {
             $output .= "VehicleChallan error: " . $vce->getMessage() . "\n\n";
@@ -580,7 +580,7 @@ Route::get('/migrate-db', function () {
         try {
             \App\Models\Setting::set('vahan_learning_licence_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php');
             if (empty(\App\Models\Setting::get('vahan_learning_licence_key'))) {
-                \App\Models\Setting::set('vahan_learning_licence_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('vahan_learning_licence_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== LEARNING LICENCE PDF UPDATED (GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $lle) {
@@ -607,7 +607,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
             if (empty(\App\Models\Setting::get('vahan_rc_info_api_key'))) {
-                \App\Models\Setting::set('vahan_rc_info_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('vahan_rc_info_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== RC CARD INFO UPSERTED (14 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rce) {
@@ -639,7 +639,7 @@ Route::get('/migrate-db', function () {
             ]);
             \App\Models\Setting::set('vahan_rc_pdf_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php');
             if (empty(\App\Models\Setting::get('vahan_rc_pdf_key'))) {
-                \App\Models\Setting::set('vahan_rc_pdf_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('vahan_rc_pdf_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== RC PDF OWNER BOOK PRINT UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rpe) {
@@ -666,7 +666,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('vahan_rc_pdf2_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf2.php');
             if (empty(\App\Models\Setting::get('vahan_rc_pdf2_key'))) {
-                \App\Models\Setting::set('vahan_rc_pdf2_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('vahan_rc_pdf2_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== RC PDF SERVER 2 UPSERTED (149 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rpe2) {
@@ -693,7 +693,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('ration_advance_details_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/up_ration_details.php');
             if (empty(\App\Models\Setting::get('ration_advance_details_api_key'))) {
-                \App\Models\Setting::set('ration_advance_details_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('ration_advance_details_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== RATION ADVANCE DETAILS UPSERTED (39 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rade) {
@@ -720,7 +720,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('voter_advance_api_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php');
             if (empty(\App\Models\Setting::get('voter_advance_api_key'))) {
-                \App\Models\Setting::set('voter_advance_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('voter_advance_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== VOTER ADVANCE INFO UPSERTED (99 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $vaie) {
@@ -732,7 +732,7 @@ Route::get('/migrate-db', function () {
             \App\Models\Setting::set('voter_mobile_update_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php');
             $currentVoterKey = \App\Models\Setting::get('voter_mobile_update_key');
             if (empty($currentVoterKey) || $currentVoterKey === '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386') {
-                \App\Models\Setting::set('voter_mobile_update_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('voter_mobile_update_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== VOTER MOBILE UPDATE API UPDATED (GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $vmue) {
@@ -759,7 +759,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('voter_name_find_url', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php');
             if (empty(\App\Models\Setting::get('voter_name_find_key'))) {
-                \App\Models\Setting::set('voter_name_find_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('voter_name_find_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== VOTER NAME FIND UPSERTED (9 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $vnfe) {
@@ -786,7 +786,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('id_intelligence_api_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/id_intelligence.php');
             if (empty(\App\Models\Setting::get('id_intelligence_api_key'))) {
-                \App\Models\Setting::set('id_intelligence_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('id_intelligence_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== AADHAR TO ID INTELLIGENCE UPSERTED (199 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $idie) {
@@ -813,7 +813,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('farmer_pdf_server2_url', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_pdf_server2.php');
             if (empty(\App\Models\Setting::get('farmer_pdf_server2_key'))) {
-                \App\Models\Setting::set('farmer_pdf_server2_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('farmer_pdf_server2_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== FARMER PDF SERVER 2 UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $fpe) {
@@ -840,7 +840,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('farmer_card_pdf_url', 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_card_pdf.php');
             if (empty(\App\Models\Setting::get('farmer_card_pdf_key'))) {
-                \App\Models\Setting::set('farmer_card_pdf_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('farmer_card_pdf_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== AADHAR TO FARMER ALL STATE PDF UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $afpe) {
@@ -867,7 +867,7 @@ Route::get('/migrate-db', function () {
             );
             \App\Models\Setting::set('ration_sleep_photo_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/bihar_ration_slip.php');
             if (empty(\App\Models\Setting::get('ration_sleep_photo_api_key'))) {
-                \App\Models\Setting::set('ration_sleep_photo_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41');
+                \App\Models\Setting::set('ration_sleep_photo_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
             }
             $output .= "=== RATION SLEEP PHOTO UPSERTED (49 COINS, GOOD-API-POINT) ===\n\n";
         } catch (\Throwable $rspe) {
@@ -2235,7 +2235,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
             'coinCost' => $coinCost,
             'isAdmin'  => (bool) $isStaff,
             'apiUrl'   => $isStaff ? \App\Models\Setting::get('pan_to_uid_api_url', \App\Models\Setting::get('nexus_pan_to_uid_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php')) : null,
-            'apiKey'   => $isStaff ? \App\Models\Setting::get('pan_to_uid_api_key', \App\Models\Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41')) : null,
+            'apiKey'   => $isStaff ? \App\Models\Setting::get('pan_to_uid_api_key', \App\Models\Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')) : null,
         ]);
     })->name('utilities.pan-to-uid-advance');
 
