@@ -77,8 +77,7 @@ Route::get('/migrate-db', function () {
             $output .= "=== USER {$vu->email} (ID: {$vu->id}) RESET TO REGULAR USER ('type' => 'user', role => 'public') ===\n";
         }
 
-        $allAdmins = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->orWhereHas('roles', fn($q) => $q->whereIn('name', ['admin', 'super_admin']))->get(['id', 'name', 'email', 'type']);
-        $output .= "=== ALL CURRENT ADMINS ===\n" . json_encode($allAdmins) . "\n\n";
+
 
 
 
