@@ -28,9 +28,9 @@ class User extends Authenticatable implements FilamentUser
         static::created(function (User $user) {
             if ($user->type === 'user') {
                 $user->assignRole('public');
-                // Automatically assign all currently active services to newly registered user
+                // Automatically assign all currently active public services to newly registered user
                 try {
-                    $activeServiceIds = Service::where('is_active', true)->pluck('id');
+                    $activeServiceIds = Service::where('is_active', true)->where('visibility', Service::VISIBILITY_PUBLIC)->pluck('id');
                     if ($activeServiceIds->isNotEmpty()) {
                         $user->services()->syncWithoutDetaching($activeServiceIds);
                     }

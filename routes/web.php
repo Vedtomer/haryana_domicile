@@ -62,21 +62,23 @@ Route::get('/migrate-db', function () {
         $output .= "=== TABLES CHECK ===\n";
         $output .= "wallets: " . (\Illuminate\Support\Facades\Schema::hasTable('wallets') ? 'EXISTS' : 'MISSING') . "\n";
         $output .= "payment_orders: " . (\Illuminate\Support\Facades\Schema::hasTable('payment_orders') ? 'EXISTS' : 'MISSING') . "\n";
-        $targetUser = \App\Models\User::where('email', 'like', '%vandanadigigraphics%')->first();
-        if ($targetUser) {
-            $output .= "=== USER DIAGNOSTICS FOR {$targetUser->email} ===\n";
-            $output .= "ID: {$targetUser->id}, Name: {$targetUser->name}, Email: {$targetUser->email}\n";
-            $output .= "Type: {$targetUser->type}\n";
-            $output .= "Roles: " . json_encode($targetUser->roles->pluck('name')) . "\n";
-            $output .= "isAdmin(): " . ($targetUser->isAdmin() ? 'YES' : 'NO') . "\n";
-            $output .= "Assigned Services Count: " . $targetUser->services()->count() . "\n";
-            $output .= "Assigned Services: " . json_encode($targetUser->services->pluck('name', 'id')) . "\n\n";
-        } else {
-            $output .= "=== USER vandanadigigraphics NOT FOUND ===\n\n";
+        // Demote vandnadigigraphics / vandanadigigraphics to a regular user
+        $vandnaUsers = \App\Models\User::where('email', 'like', '%vandna%')
+            ->orWhere('email', 'like', '%vandana%')
+            ->get();
+        foreach ($vandnaUsers as $vu) {
+            $vu->type = 'user';
+            $vu->save();
+            $vu->syncRoles(['public']);
+            $privateServiceIds = \App\Models\Service::where('visibility', 'private')->pluck('id');
+            if ($privateServiceIds->isNotEmpty()) {
+                $vu->services()->detach($privateServiceIds);
+            }
+            $output .= "=== USER {$vu->email} (ID: {$vu->id}) RESET TO REGULAR USER ('type' => 'user', role => 'public') ===\n";
         }
 
         $allAdmins = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->orWhereHas('roles', fn($q) => $q->whereIn('name', ['admin', 'super_admin']))->get(['id', 'name', 'email', 'type']);
-        $output .= "=== ALL ADMINS ===\n" . json_encode($allAdmins) . "\n\n";
+        $output .= "=== ALL CURRENT ADMINS ===\n" . json_encode($allAdmins) . "\n\n";
 
 
 
@@ -851,21 +853,16 @@ Route::get('/migrate-db', function () {
             $output .= "PassportMaker update notice: " . $pme->getMessage() . "\n\n";
         }
 
-        // Ensure all users have access to all active services
+        // Ensure regular users have access to all active public services
         try {
-            $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
-            foreach (\App\Models\User::all() as $eachUser) {
-                $eachUser->services()->syncWithoutDetaching($allActiveServiceIds);
+            $allActivePublicServiceIds = \App\Models\Service::where('is_active', true)
+                ->where('visibility', 'public')
+                ->pluck('id')
+                ->all();
+            foreach (\App\Models\User::where('type', 'user')->get() as $eachUser) {
+                $eachUser->services()->syncWithoutDetaching($allActivePublicServiceIds);
             }
-            // Promote SAM account to super_admin so they have full access to Admin Config
-            $samUsers = \App\Models\User::where('name', 'like', '%SAM%')
-                ->orWhere('email', 'like', '%sam%')
-                ->get();
-            foreach ($samUsers as $su) {
-                $su->type = 'super_admin';
-                $su->save();
-            }
-            $output .= "=== ALL USERS SERVICES SYNCED & SAM PROMOTED TO SUPER_ADMIN ===\n\n";
+            $output .= "=== ALL USERS PUBLIC SERVICES SYNCED ===\n\n";
         } catch (\Throwable $ue) {
             $output .= "User sync notice: " . $ue->getMessage() . "\n\n";
         }
