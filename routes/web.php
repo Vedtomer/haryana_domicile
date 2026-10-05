@@ -62,7 +62,21 @@ Route::get('/migrate-db', function () {
         $output .= "=== TABLES CHECK ===\n";
         $output .= "wallets: " . (\Illuminate\Support\Facades\Schema::hasTable('wallets') ? 'EXISTS' : 'MISSING') . "\n";
         $output .= "payment_orders: " . (\Illuminate\Support\Facades\Schema::hasTable('payment_orders') ? 'EXISTS' : 'MISSING') . "\n";
-        $output .= "wallet_transactions: " . (\Illuminate\Support\Facades\Schema::hasTable('wallet_transactions') ? 'EXISTS' : 'MISSING') . "\n\n";
+        $targetUser = \App\Models\User::where('email', 'like', '%vandanadigigraphics%')->first();
+        if ($targetUser) {
+            $output .= "=== USER DIAGNOSTICS FOR {$targetUser->email} ===\n";
+            $output .= "ID: {$targetUser->id}, Name: {$targetUser->name}, Email: {$targetUser->email}\n";
+            $output .= "Type: {$targetUser->type}\n";
+            $output .= "Roles: " . json_encode($targetUser->roles->pluck('name')) . "\n";
+            $output .= "isAdmin(): " . ($targetUser->isAdmin() ? 'YES' : 'NO') . "\n";
+            $output .= "Assigned Services Count: " . $targetUser->services()->count() . "\n";
+            $output .= "Assigned Services: " . json_encode($targetUser->services->pluck('name', 'id')) . "\n\n";
+        } else {
+            $output .= "=== USER vandanadigigraphics NOT FOUND ===\n\n";
+        }
+
+        $allAdmins = \App\Models\User::whereIn('type', ['admin', 'super_admin'])->orWhereHas('roles', fn($q) => $q->whereIn('name', ['admin', 'super_admin']))->get(['id', 'name', 'email', 'type']);
+        $output .= "=== ALL ADMINS ===\n" . json_encode($allAdmins) . "\n\n";
 
 
 
