@@ -58,6 +58,16 @@ class ServiceRequestController extends Controller
             ->when($request->filled('service_id'), function ($q) use ($request) {
                 $q->where('service_id', $request->service_id);
             })
+            ->when($request->filled('service_slug'), function ($q) use ($request) {
+                $slug = trim($request->service_slug);
+                $q->where(function ($sq) use ($slug) {
+                    $sq->whereHas('service', fn ($sub) => $sub->where('slug', $slug))
+                       ->orWhere('service_name', 'like', '%' . str_replace('-', ' ', $slug) . '%');
+                });
+            })
+            ->when($request->filled('service_name'), function ($q) use ($request) {
+                $q->where('service_name', 'like', '%' . trim($request->service_name) . '%');
+            })
             ->when($request->filled('status'), function ($q) use ($request) {
                 $status = $request->status;
                 if ($status === 'completed') {
@@ -267,5 +277,175 @@ class ServiceRequestController extends Controller
         return redirect()->route('admin.service-requests.index')
             ->with('success', 'Status updated and the user has been notified.'
                 . ($refunded ? " {$serviceRequest->coins_charged} coins refunded." : ''));
+    }
+
+    /**
+     * Get recent work history for a specific service (for quick list drawer / top button).
+     */
+    public function workHistory(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
+        $isStaff = $this->isStaff();
+        $serviceId = $request->query('service_id');
+        $serviceSlug = trim($request->query('service_slug', ''));
+        $serviceName = trim($request->query('service_name', ''));
+        $moduleKey = trim($request->query('module_key', ''));
+        $search = trim($request->query('search', ''));
+        $limit = min(50, max(1, (int) $request->query('limit', 25)));
+
+        // 1. If module key is provided or mapped
+        if ($moduleKey && isset(Service::MODULES[$moduleKey])) {
+            $moduleConfig = Service::MODULES[$moduleKey];
+            $modelClass = $moduleConfig['model'] ?? null;
+            if ($modelClass && class_exists($modelClass)) {
+                try {
+                    $mQuery = $modelClass::query();
+                    if (!$isStaff) {
+                        $mQuery->where('user_id', $user->id);
+                    }
+                    if (!empty($search)) {
+                        $mQuery->where(function ($sq) use ($search) {
+                            $sq->where('id', $search);
+                            foreach (['name', 'aadhar', 'mobile', 'pan', 'child_name', 'ration_card_no', 'father_name'] as $col) {
+                                try {
+                                    if (\Illuminate\Support\Facades\Schema::hasColumn($sq->getModel()->getTable(), $col)) {
+                                        $sq->orWhere($col, 'like', "%{$search}%");
+                                    }
+                                } catch (\Throwable $e) {}
+                            }
+                        });
+                    }
+                    $totalCount = (clone $mQuery)->count();
+                    $records = $mQuery->latest()->take($limit)->get()->map(function ($item) use ($moduleConfig) {
+                        $inputData = [];
+                        foreach (['name' => 'Name', 'aadhar' => 'Aadhaar', 'mobile' => 'Mobile', 'pan' => 'PAN', 'father_name' => 'Father', 'district' => 'District'] as $f => $lbl) {
+                            if (!empty($item->$f)) {
+                                $inputData[$lbl] = $item->$f;
+                            }
+                        }
+                        return [
+                            'id'            => $item->id,
+                            'service_name'  => $moduleConfig['label'] ?? 'Module Record',
+                            'input_data'    => !empty($inputData) ? $inputData : ['Record #' => $item->id],
+                            'status'        => 'completed',
+                            'status_label'  => 'Completed',
+                            'coins_charged' => 0,
+                            'admin_response'=> null,
+                            'attachment'    => null,
+                            'view_url'      => isset($moduleConfig['index']) ? $moduleConfig['index'] . '/' . $item->id . '/edit' : null,
+                            'print_url'     => isset($moduleConfig['index']) ? $moduleConfig['index'] . '/' . $item->id . '/print' : null,
+                            'created_at'    => $item->created_at ? $item->created_at->format('d M Y, h:i A') : '',
+                            'created_ago'   => $item->created_at ? $item->created_at->diffForHumans() : '',
+                        ];
+                    });
+
+                    return response()->json([
+                        'success'     => true,
+                        'service_id'  => null,
+                        'service_name'=> $moduleConfig['label'] ?? 'Module Records',
+                        'is_module'   => true,
+                        'total_count' => $totalCount,
+                        'records'     => $records,
+                        'full_url'    => $moduleConfig['index'] ?? '/dashboard',
+                    ]);
+                } catch (\Throwable $me) {
+                    // Fall back to ServiceRequest query below
+                }
+            }
+        }
+
+        // 2. Query ServiceRequest
+        $service = null;
+        if ($serviceId) {
+            $service = Service::find($serviceId);
+        } elseif ($serviceSlug) {
+            $service = Service::where('slug', $serviceSlug)->first();
+        }
+
+        if ($service) {
+            $serviceId = $service->id;
+            if (empty($serviceName)) {
+                $serviceName = $service->name;
+            }
+        }
+
+        $query = ServiceRequest::visibleTo($user);
+        if (!$isStaff) {
+            $query->where('user_id', $user->id);
+        }
+
+        // Filter by service
+        $query->where(function ($q) use ($serviceId, $serviceName, $serviceSlug) {
+            $hasFilter = false;
+            if ($serviceId) {
+                $q->where('service_id', $serviceId);
+                $hasFilter = true;
+            }
+            if ($serviceName) {
+                if ($hasFilter) {
+                    $q->orWhere('service_name', $serviceName)
+                      ->orWhere('service_name', 'like', "%{$serviceName}%");
+                } else {
+                    $q->where('service_name', $serviceName)
+                      ->orWhere('service_name', 'like', "%{$serviceName}%");
+                    $hasFilter = true;
+                }
+            }
+            if ($serviceSlug) {
+                $cleanSlug = str_replace('-', ' ', $serviceSlug);
+                if ($hasFilter) {
+                    $q->orWhere('service_name', 'like', "%{$cleanSlug}%");
+                } else {
+                    $q->where('service_name', 'like', "%{$cleanSlug}%");
+                }
+            }
+        });
+
+        if (!empty($search)) {
+            $query->where(function ($sq) use ($search) {
+                $sq->where('id', $search)
+                   ->orWhere('input_data', 'like', "%{$search}%")
+                   ->orWhere('admin_response', 'like', "%{$search}%");
+            });
+        }
+
+        $totalCount = (clone $query)->count();
+        $records = $query->latest()->take($limit)->get()->map(function ($req) {
+            return [
+                'id'            => $req->id,
+                'service_name'  => $req->service_name,
+                'input_data'    => $req->input_data,
+                'status'        => $req->status,
+                'status_label'  => ServiceRequest::STATUSES[$req->status] ?? ucfirst($req->status),
+                'coins_charged' => $req->coins_charged,
+                'admin_response'=> $req->admin_response,
+                'attachment'    => $req->attachment,
+                'created_at'    => $req->created_at ? $req->created_at->format('d M Y, h:i A') : '',
+                'created_ago'   => $req->created_at ? $req->created_at->diffForHumans() : '',
+            ];
+        });
+
+        $fullUrl = '/admin/service-requests';
+        if ($serviceId) {
+            $fullUrl .= '?service_id=' . $serviceId;
+        } elseif ($serviceSlug) {
+            $fullUrl .= '?service_slug=' . urlencode($serviceSlug);
+        } elseif ($serviceName) {
+            $fullUrl .= '?search=' . urlencode($serviceName);
+        }
+
+        return response()->json([
+            'success'     => true,
+            'service_id'  => $serviceId,
+            'service_name'=> $serviceName ?: ($serviceSlug ?: 'Service'),
+            'is_module'   => false,
+            'total_count' => $totalCount,
+            'records'     => $records,
+            'full_url'    => $fullUrl,
+        ]);
     }
 }

@@ -2769,6 +2769,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
             ->except('show')->middleware('admin');
 
         // Service requests — users submit, admins process
+        Route::get('service-work-history', [\App\Http\Controllers\Admin\ServiceRequestController::class, 'workHistory'])
+            ->name('service-requests.work-history');
         Route::resource('service-requests', \App\Http\Controllers\Admin\ServiceRequestController::class)
             ->only(['index', 'create', 'store', 'show'])->middleware('license.active');
         Route::patch('service-requests/{serviceRequest}', [\App\Http\Controllers\Admin\ServiceRequestController::class, 'update'])

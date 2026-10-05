@@ -15,12 +15,15 @@ import BroadcastNoticeBanner from '../Components/BroadcastNoticeBanner';
 import DailyBonusModal from '../Components/DailyBonusModal';
 import { groupServicesByCategory } from '../Utils/serviceCategories';
 import CategoryLogo from '../Components/CategoryLogo';
+import ServiceWorkListDrawer from '../Components/ServiceWorkListDrawer';
+import ServiceWorkListBar from '../Components/ServiceWorkListBar';
 
 export default function AdminLayout({ header, children }) {
     const { auth, navServices = [], flash, switchAccount } = usePage().props;
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [switchAccountModalOpen, setSwitchAccountModalOpen] = useState(false);
+    const [workListDrawerOpen, setWorkListDrawerOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     // Close dropdown on click outside
@@ -62,6 +65,75 @@ export default function AdminLayout({ header, children }) {
     );
     const isDashboard = url === '/dashboard' || url.startsWith('/dashboard?');
     const showSpellingWarning = url.includes('/create') || url.includes('/edit') || url.includes('/utilities/');
+
+    // Detect if current page is inside a specific service (utility, manual request, or module form)
+    const currentServiceInfo = useMemo(() => {
+        const nonServicePrefixes = [
+            '/dashboard',
+            '/admin/users',
+            '/admin/services',
+            '/admin/user-permissions',
+            '/admin/coin-requests',
+            '/admin/profile',
+            '/admin/notices',
+            '/admin/referrals',
+            '/admin/payment-settings',
+            '/admin/pdf-coordinates',
+            '/admin/api-settings',
+            '/admin/notifications',
+            '/admin/reactivation-requests',
+            '/admin/license-keys',
+        ];
+        if (nonServicePrefixes.some((p) => url === p || url.startsWith(p + '?') || url.startsWith(p + '/'))) {
+            return null;
+        }
+
+        // 1. Manual service request create form
+        if (url.startsWith('/admin/service-requests/create')) {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const slug = params.get('service');
+                if (slug) {
+                    const match = navServices.find((s) => s.slug === slug);
+                    if (match) return match;
+                    const humanName = slug
+                        .split('-')
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ');
+                    return { name: humanName, slug, id: null };
+                }
+            } catch (e) {}
+            return { name: 'Service Request', slug: 'service-request', id: null };
+        }
+
+        // 2. Utility pages (/utilities/...)
+        if (url.startsWith('/utilities/')) {
+            const cleanPath = url.split('?')[0];
+            const match = navServices.find((s) => s.url && s.url.split('?')[0] === cleanPath);
+            if (match) return match;
+            const slug = cleanPath.replace('/utilities/', '').replace(/\//g, '');
+            const bySlug = navServices.find((s) => s.slug === slug);
+            if (bySlug) return bySlug;
+            const humanName = slug
+                .split('-')
+                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(' ');
+            return { name: humanName, slug, url: cleanPath, id: null };
+        }
+
+        // 3. Module services (e.g. /admin/haryana-domicile, /admin/marriage-forms, etc.)
+        if (url.startsWith('/admin/')) {
+            if (url === '/admin/service-requests' || url.startsWith('/admin/service-requests?')) {
+                return null;
+            }
+            const match = navServices.find(
+                (s) => s.module_key && s.url && url.startsWith(s.url.split('?')[0])
+            );
+            if (match) return match;
+        }
+
+        return null;
+    }, [url, navServices]);
 
     // Real-time live clock (format: DD-MM-YYYY - hh:mm:ss AM/PM)
     const [currentTime, setCurrentTime] = useState('');
@@ -323,7 +395,7 @@ export default function AdminLayout({ header, children }) {
 
                 {/* Top Header Matching Screenshot */}
                 <header className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 shadow-2xs h-16 flex items-center justify-between px-3 sm:px-6 z-30 relative transition-colors duration-200 gap-3">
-                    {/* Left: Mobile hamburger */}
+                    {/* Left: Mobile hamburger & Page Header */}
                     <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                         <button
                             className="lg:hidden p-2 text-slate-600 hover:text-indigo-600 dark:text-slate-300 transition-colors"
@@ -334,10 +406,29 @@ export default function AdminLayout({ header, children }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
+                        {header && (
+                            <div className="min-w-0 flex-1 truncate">
+                                {header}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Right: Live Clock, Wallet, Notifications, Profile, Settings */}
+                    {/* Right: Work History button, Live Clock, Wallet, Notifications, Profile, Settings */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                        {/* Service Work List quick button in header */}
+                        {currentServiceInfo && (
+                            <button
+                                type="button"
+                                onClick={() => setWorkListDrawerOpen(true)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-black shadow-2xs transition-all cursor-pointer"
+                                title="इस सर्विस में किए गए काम की लिस्ट देखें"
+                            >
+                                <span className="material-symbols-outlined text-[17px] text-blue-600 dark:text-blue-400">
+                                    format_list_bulleted
+                                </span>
+                                <span className="hidden sm:inline">काम की लिस्ट</span>
+                            </button>
+                        )}
                         {/* Real-time Clock */}
                         {currentTime && (
                             <div className="hidden xl:flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
@@ -495,6 +586,16 @@ export default function AdminLayout({ header, children }) {
                         <BroadcastNoticeBanner />
                     </div>
 
+                    {/* Service Work History Top Option Bar */}
+                    {currentServiceInfo && (
+                        <div className="max-w-6xl mx-auto">
+                            <ServiceWorkListBar
+                                service={currentServiceInfo}
+                                onOpenDrawer={() => setWorkListDrawerOpen(true)}
+                            />
+                        </div>
+                    )}
+
                     {showSpellingWarning && (
                         <div className="mb-6 max-w-6xl mx-auto bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl overflow-hidden flex items-center shadow-xs">
                             <div className="px-3 py-2 bg-red-600 text-white font-bold flex items-center gap-2 z-10 shrink-0">
@@ -524,6 +625,15 @@ export default function AdminLayout({ header, children }) {
             <UserChatWidget user={auth?.user} />
             <UserScreenShareListener user={auth?.user} />
             <UserLocationTracker user={auth?.user} />
+
+            {/* Service Work List Drawer */}
+            {currentServiceInfo && (
+                <ServiceWorkListDrawer
+                    isOpen={workListDrawerOpen}
+                    onClose={() => setWorkListDrawerOpen(false)}
+                    service={currentServiceInfo}
+                />
+            )}
         </div>
     );
 }
