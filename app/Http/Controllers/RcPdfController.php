@@ -35,7 +35,7 @@ class RcPdfController extends Controller
 
         $rcPdfKey = trim(Setting::get('vahan_rc_pdf_key', ''));
         if (empty($rcPdfKey)) {
-            $rcPdfKey = trim(Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
+            $rcPdfKey = trim(Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
         }
 
         return Inertia::render('Utilities/RcPdf', [
@@ -86,7 +86,7 @@ class RcPdfController extends Controller
 
         $apiKey = trim(Setting::get('vahan_rc_pdf_key')
             ?: (Setting::get('goodapi_api_key')
-            ?: '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
+            ?: 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
 
         if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{vechil_no}') || str_contains($baseUrl, '{vehicle_number}')) {
             $url = str_replace(

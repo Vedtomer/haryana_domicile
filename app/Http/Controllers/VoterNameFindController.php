@@ -34,7 +34,7 @@ class VoterNameFindController extends Controller
 
         $apiKey = trim(Setting::get('voter_name_find_key', ''));
         if (empty($apiKey)) {
-            $apiKey = trim(Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
+            $apiKey = trim(Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
         }
 
         return Inertia::render('Utilities/VoterNameFind', [
@@ -85,7 +85,7 @@ class VoterNameFindController extends Controller
 
         $apiKey = trim(Setting::get('voter_name_find_key')
             ?: (Setting::get('goodapi_api_key')
-            ?: '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815'));
+            ?: 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41'));
 
         if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{epic}') || str_contains($baseUrl, '{voter_no}')) {
             $url = str_replace(

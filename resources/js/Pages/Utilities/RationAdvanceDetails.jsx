@@ -567,7 +567,7 @@ export default function RationAdvanceDetails() {
                                     type="text"
                                     value={adminApiKey}
                                     onChange={(e) => setAdminApiKey(e.target.value)}
-                                    placeholder="9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815"
+                                    placeholder="ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41"
                                     className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white font-mono focus:ring-2 focus:ring-amber-500 outline-none"
                                 />
                             </div>

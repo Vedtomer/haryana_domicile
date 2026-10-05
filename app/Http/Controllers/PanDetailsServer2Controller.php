@@ -30,7 +30,7 @@ class PanDetailsServer2Controller extends Controller
             'coinCost' => $coinCost,
             'isAdmin'  => (bool) $isStaff,
             'apiUrl'   => $isStaff ? Setting::get('pan_details_server2_api_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php') : null,
-            'apiKey'   => $isStaff ? Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')) : null,
+            'apiKey'   => $isStaff ? Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41')) : null,
         ]);
     }
 
@@ -63,7 +63,7 @@ class PanDetailsServer2Controller extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php';
         }
 
-        $apiKey = trim(Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815')));
+        $apiKey = trim(Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41')));
 
         if (empty($apiKey)) {
             return response()->json([
