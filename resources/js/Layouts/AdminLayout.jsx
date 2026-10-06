@@ -307,12 +307,19 @@ export default function AdminLayout({ header, children }) {
                     {/* My Account (Wallet Ledger & Profile) */}
                     <div className="pt-3 space-y-1">
                         <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            <span className="text-indigo-500 text-xs">👤</span>
-                            <span>MY ACCOUNT</span>
+                            <span className="text-indigo-500 text-xs">{isAdmin ? '👑' : '👤'}</span>
+                            <span>{isAdmin ? 'ADMIN PASSBOOK' : 'MY ACCOUNT'}</span>
                         </div>
 
                         <NavItem href="/admin/passbook" icon={<span className="material-symbols-outlined text-[19px]">history_edu</span>}>
-                            Wallet Ledger / Passbook
+                            <span className="flex items-center justify-between w-full">
+                                <span>{isAdmin ? 'User Service Passbook' : 'Wallet Ledger / Passbook'}</span>
+                                {isAdmin && (
+                                    <span className="ml-1 px-1.5 py-0.2 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[9px] font-black uppercase">
+                                        All Users
+                                    </span>
+                                )}
+                            </span>
                         </NavItem>
                         <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
                             My Profile &amp; Settings

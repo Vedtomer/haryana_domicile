@@ -872,6 +872,16 @@ export default function Dashboard({
                                 />
                                 <StatMetricCard
                                     index={5}
+                                    colorTheme="purple"
+                                    title="USER PASSBOOK"
+                                    badgeText="USER HISTORY"
+                                    value="All Users Passbook"
+                                    subtitle="Konsa user kya service use kiya with name & coins"
+                                    icon="history_edu"
+                                    linkUrl="/admin/passbook"
+                                />
+                                <StatMetricCard
+                                    index={5}
                                     colorTheme="amber"
                                     title="API SETTINGS"
                                     badgeText="GATEWAYS"
