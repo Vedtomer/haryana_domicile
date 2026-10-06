@@ -304,20 +304,6 @@ export default function AdminLayout({ header, children }) {
                         </span>
                     </Link>
 
-                    {/* 3. Add Money to Wallet */}
-                    <Link
-                        href="/wallet/add"
-                        onClick={() => setSidebarOpen(false)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
-                            url.startsWith('/wallet/add')
-                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/25 ring-2 ring-emerald-400/30'
-                                : 'bg-slate-100/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800/80'
-                        }`}
-                    >
-                        <span className="material-symbols-outlined text-[20px] text-emerald-500">add_card</span>
-                        <span>Add Money to Wallet</span>
-                    </Link>
-
                     {/* My Account (Wallet Ledger & Profile) */}
                     <div className="pt-3 space-y-1">
                         <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
