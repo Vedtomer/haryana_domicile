@@ -513,12 +513,44 @@ export default function Dashboard({
     supportTelegram = '@cspjaankari',
     siteName = 'CSP Jaankari',
     siteLogo = '/images/logo.png',
+    initialTab = 'overview',
 }) {
     const { auth, whatsappNumber } = usePage().props;
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedLetter, setSelectedLetter] = useState('ALL');
+
+    // Tab state: 'overview' vs 'services'
+    const [activeTab, setActiveTab] = useState(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const p = params.get('tab');
+            if (p === 'services' || p === 'overview') return p;
+        } catch (e) {}
+        return initialTab === 'services' ? 'services' : 'overview';
+    });
+
+    useEffect(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const p = params.get('tab');
+            if (p === 'services' && activeTab !== 'services') {
+                setActiveTab('services');
+            } else if (p === 'overview' && activeTab !== 'overview') {
+                setActiveTab('overview');
+            }
+        } catch (e) {}
+    }, [window.location.search]);
+
+    const handleTabSwitch = (t) => {
+        setActiveTab(t);
+        try {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('tab', t);
+            window.history.pushState({}, '', currentUrl);
+        } catch (e) {}
+    };
 
     // Balance values
     const effectiveBalance = walletBalance ?? auth?.user?.coins ?? 0;
@@ -638,8 +670,55 @@ export default function Dashboard({
         >
             <Head title="Dashboard" />
 
-            {/* 1. Small Compact Welcome Banner */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between gap-3">
+            {/* Top View Mode Switcher: Dashboard Hub vs All Services */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
+                <button
+                    type="button"
+                    onClick={() => handleTabSwitch('overview')}
+                    className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
+                        activeTab === 'overview'
+                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-400/30'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                >
+                    <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
+                    <span>Dashboard Overview</span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => handleTabSwitch('services')}
+                    className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
+                        activeTab === 'services'
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25 ring-2 ring-blue-400/30'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                >
+                    <span className="material-symbols-outlined text-[20px]">apps</span>
+                    <span>All Services ({availableServices.length})</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                        activeTab === 'services'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+                    }`}>
+                        A-Z
+                    </span>
+                </button>
+
+                <Link
+                    href="/wallet/add"
+                    className="ml-auto hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                >
+                    <span className="material-symbols-outlined text-[18px]">add_card</span>
+                    <span>Add Money (₹{Number(effectiveBalance).toLocaleString('en-IN')})</span>
+                </Link>
+            </div>
+
+            {/* TAB 1: OVERVIEW TAB (Promotions, Add Money Box, Admin Hub, Stats) */}
+            {activeTab === 'overview' && (
+                <div className="space-y-6">
+                    {/* 1. Small Compact Welcome Banner */}
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
                                 <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
@@ -655,15 +734,77 @@ export default function Dashboard({
                                     </span>
                                 </div>
                                 <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
-                                    Fast services, clear wallet records and quick processing.
+                                    Fast services, clear wallet records and instant processing.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    {/* 2. Stat Metric Cards in a row */}
-                    {isAdmin ? (
-                        <div className="mb-8">
+                    {/* 2. DEDICATED ADD MONEY TO WALLET BOX */}
+                    <div className="bg-gradient-to-br from-[#1e1b4b] via-[#1e3a8a] to-[#0f172a] text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-indigo-500/30">
+                        <div className="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute -bottom-20 -left-20 w-56 h-56 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                            <div className="space-y-2 max-w-xl">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/25 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
+                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                    <span>Instant Wallet Top-Up • 1 Coin = ₹1</span>
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                                    वॉलेट में पैसे / कॉइन जोड़ें (Add Money)
+                                </h3>
+                                <p className="text-blue-100/80 text-xs sm:text-sm">
+                                    UPI QR कोड स्कैन करें या ऑनलाइन पेमेंट गेटवे से तुरंत कॉइन प्राप्त करें। बैलेंस 1 सेकंड में स्वतः आपके वॉलेट में अपडेट हो जाएगा।
+                                </p>
+                                <div className="flex items-center gap-3 pt-1 text-[11px] text-cyan-300 font-semibold flex-wrap">
+                                    <span className="flex items-center gap-1">✓ ऑटोमैटिक कॉइन क्रेडिट</span>
+                                    <span className="flex items-center gap-1">✓ 100% सुरक्षित भुगतान</span>
+                                    <span className="flex items-center gap-1">✓ GPay, PhonePe, Paytm, BHIM UPI</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 lg:min-w-[400px] justify-between shadow-inner">
+                                <div>
+                                    <div className="text-[11px] uppercase tracking-wider text-blue-200 font-bold">
+                                        Available Wallet Balance
+                                    </div>
+                                    <div className="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-1.5 mt-0.5">
+                                        <span>🪙</span>
+                                        <span>{Number(effectiveBalance).toLocaleString('en-IN')} Coins</span>
+                                    </div>
+                                    <div className="text-[11px] text-blue-200/70">
+                                        ₹{Number(effectiveBalance).toLocaleString('en-IN')}.00 Live Funds
+                                    </div>
+                                </div>
+
+                                <div className="w-full sm:w-auto flex flex-col gap-2">
+                                    <Link
+                                        href="/wallet/add"
+                                        className="w-full sm:w-auto px-5 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] text-center"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">add_card</span>
+                                        <span>Add Money Now</span>
+                                    </Link>
+                                    <div className="flex items-center gap-1.5 justify-center">
+                                        {[50, 100, 200, 500].map((quick) => (
+                                            <Link
+                                                key={quick}
+                                                href={`/wallet/add?amount=${quick}`}
+                                                className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[10px] font-bold transition-colors"
+                                            >
+                                                +₹{quick}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 3. ADMINISTRATION CONTROL PANEL (FOR ADMIN) */}
+                    {isAdmin && (
+                        <div className="mb-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2.5">
                                     <div className="w-8 h-8 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
@@ -674,7 +815,7 @@ export default function Dashboard({
                                             Administration Control Panel
                                         </h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Manage users, coin requests, permissions, service requests & notices
+                                            Manage users, coin requests, permissions, API settings, payments &amp; notices
                                         </p>
                                     </div>
                                 </div>
@@ -736,6 +877,36 @@ export default function Dashboard({
                                 />
                                 <StatMetricCard
                                     index={5}
+                                    colorTheme="amber"
+                                    title="API SETTINGS"
+                                    badgeText="GATEWAYS"
+                                    value="API Config"
+                                    subtitle="Configure vendor keys & endpoints"
+                                    icon="settings_input_composite"
+                                    linkUrl="/admin/api-settings"
+                                />
+                                <StatMetricCard
+                                    index={6}
+                                    colorTheme="emerald"
+                                    title="PAYMENT SETTINGS"
+                                    badgeText="UPI / QR"
+                                    value="Payments"
+                                    subtitle="Manage QR codes & PayCorex gateway"
+                                    icon="payments"
+                                    linkUrl="/admin/payment-settings"
+                                />
+                                <StatMetricCard
+                                    index={7}
+                                    colorTheme="purple"
+                                    title="BROADCAST NOTICE"
+                                    badgeText="NOTICES"
+                                    value={`${noticesCount || 0} Notices`}
+                                    subtitle="Publish alerts & marquee notices"
+                                    icon="campaign"
+                                    linkUrl="/admin/notices"
+                                />
+                                <StatMetricCard
+                                    index={8}
                                     colorTheme="indigo"
                                     title="REFER & EARN"
                                     badgeText="AFFILIATE"
@@ -745,18 +916,31 @@ export default function Dashboard({
                                     linkUrl="/admin/referrals"
                                 />
                                 <StatMetricCard
-                                    index={6}
-                                    colorTheme="purple"
-                                    title="BROADCAST NOTICE"
-                                    badgeText="NOTICES"
-                                    value={`${noticesCount || 0} Notices`}
-                                    subtitle="Publish alerts & marquee notices"
-                                    icon="campaign"
-                                    linkUrl="/admin/notices"
+                                    index={9}
+                                    colorTheme="blue"
+                                    title="MOBILE RECHARGE API"
+                                    badgeText="RECHARGE"
+                                    value="Recharge Hub"
+                                    subtitle="apinice.in live balance & keys"
+                                    icon="phone_android"
+                                    linkUrl="/utilities/mobile-recharge"
+                                />
+                                <StatMetricCard
+                                    index={10}
+                                    colorTheme="orange"
+                                    title="LICENSE KEYS"
+                                    badgeText="LICENSES"
+                                    value="Key Manager"
+                                    subtitle="Device binding & activation"
+                                    icon="key"
+                                    linkUrl="/admin/license-keys"
                                 />
                             </div>
                         </div>
-                    ) : (
+                    )}
+
+                    {/* 4. RETAILER METRIC CARDS (FOR REGULAR USERS) */}
+                    {!isAdmin && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
                             <StatMetricCard
                                 index={0}
@@ -802,7 +986,37 @@ export default function Dashboard({
                         </div>
                     )}
 
-                    {/* 3. ALL SERVICES - ALPHABETICAL DIRECTORY (A to Z) */}
+                    {/* 5. BIG BANNER TO ACCESS ALL SERVICES */}
+                    <div
+                        onClick={() => handleTabSwitch('services')}
+                        className="p-5 sm:p-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white text-3xl group-hover:scale-110 transition-transform">
+                                📱
+                            </div>
+                            <div>
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider mb-1">
+                                    <span>{availableServices.length} Services Ready</span>
+                                </div>
+                                <h3 className="text-lg sm:text-xl font-black">
+                                    सभी सेवाएँ देखें (All Services A to Z Directory)
+                                </h3>
+                                <p className="text-xs sm:text-sm text-blue-100">
+                                    Aadhaar, PAN, Voter, Vehicle, Ration, Mobile Recharge, Passbook, Bijli Bill &amp; more
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 font-black text-sm bg-white text-slate-900 px-4 py-2.5 rounded-xl shadow-sm self-start sm:self-auto group-hover:translate-x-1 transition-transform">
+                            <span>Open Services Catalog</span>
+                            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* TAB 2: ALL SERVICES DIRECTORY (A to Z) */}
+            {activeTab === 'services' && (
                     <div id="services-directory" className="mb-10 space-y-6">
                         {/* Directory Header Card with Live Search */}
                         <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-7 shadow-xs">
@@ -988,8 +1202,9 @@ export default function Dashboard({
                             </div>
                         )}
                     </div>
+            )}
 
-                    {/* 4. Customer Care Section */}
+            {/* 4. Customer Care Section */}
                     <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">

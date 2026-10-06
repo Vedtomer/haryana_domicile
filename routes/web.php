@@ -1971,6 +1971,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/2fa/reset', [\App\Http\Controllers\TwoFactorController::class, 'resetSetup'])->name('2fa.reset');
 
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/all-services', [\App\Http\Controllers\DashboardController::class, 'allServices'])->name('services.all');
         Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 
         // Secure Wallet Add Money routes (Accessible to all authenticated users)

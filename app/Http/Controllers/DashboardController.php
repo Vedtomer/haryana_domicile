@@ -203,7 +203,14 @@ class DashboardController extends Controller
             'supportTelegram' => $supportTelegram,
             'referralCode' => $user->getActiveReferralCode(),
             'referralLink' => $user->referral_link,
+            'initialTab' => request()->query('tab', 'overview'),
         ]);
+    }
+
+    public function allServices()
+    {
+        request()->merge(['tab' => 'services']);
+        return $this->index();
     }
 
     private function userStats(User $user, int $servicesCount = 0): array
