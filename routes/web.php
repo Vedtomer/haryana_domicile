@@ -987,13 +987,22 @@ Route::get('/migrate-db', function () {
                     'sort_order' => 39,
                 ]
             );
-            \App\Models\Service::where('slug', 'voter-card-manual-maker')->update([
-                'name' => 'Voter PDF Manual Instant',
-                'description' => 'Generate Voter ID Card PDF with photo & local language support via Instant API',
-                'coin_cost' => 30,
-                'is_active' => true,
-                'visibility' => 'public',
-            ]);
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'voter-card-manual-maker'],
+                [
+                    'name' => 'Voter Card Manual Maker',
+                    'description' => 'Generate and print authentic Election Commission Voter ID PVC Card with front and back.',
+                    'icon' => 'how_to_vote',
+                    'coin_cost' => 20,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'voter_card_manual_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 38,
+                ]
+            );
 
             \App\Models\Setting::set('voter_pdf_manual_api_url', 'https://apinice.in/api/v2/voter-manual-pdf.php');
             \App\Models\Setting::set('voter_pdf_manual_api_key', 'Y3VK89K8V8');
@@ -2860,9 +2869,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/voter-pdf-manual-instant/generate', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'generate'])->name('utilities.voter-pdf-manual-instant.generate');
     Route::post('/utilities/voter-pdf-manual-instant/settings', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'updateSettings'])->name('utilities.voter-pdf-manual-instant.settings');
 
-    // Voter Card Manual Maker alias & legacy handler
-    Route::get('/utilities/voter-card-manual-maker', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'index'])->name('utilities.voter-card-manual-maker');
-    Route::post('/utilities/voter-card-manual-maker/generate', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'generate'])->name('utilities.voter-card-manual-maker.generate');
+    // Voter Card Manual Maker
+    Route::get('/utilities/voter-card-manual-maker', function () {
+        return Inertia::render('Utilities/VoterCardManualMaker');
+    })->name('utilities.voter-card-manual-maker');
+    Route::post('/utilities/voter-card-manual-maker/generate', [\App\Http\Controllers\VoterCardManualMakerController::class, 'generate'])->name('utilities.voter-card-manual-maker.generate');
 
     // 10. Aadhar Card Manual
     Route::get('/utilities/aadhar-card-manual', function () {

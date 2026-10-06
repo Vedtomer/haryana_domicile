@@ -101,8 +101,19 @@ class VoterPdfManualInstantController extends Controller
         $publicPhotoUrl = asset('storage/' . $storedPath);
 
         // API Configuration
-        $apiUrl = trim(Setting::get('voter_pdf_manual_api_url', self::DEFAULT_API_URL));
+        $baseUrl = trim(Setting::get('voter_pdf_manual_api_url', self::DEFAULT_API_URL));
         $apiKey = trim(Setting::get('voter_pdf_manual_api_key', self::DEFAULT_API_KEY));
+
+        // Normalize URL: ensure .php if using apinice voter-manual-pdf
+        if (str_contains($baseUrl, 'apinice.in/api/v2/voter-manual-pdf') && !str_contains($baseUrl, '.php')) {
+            $baseUrl = str_replace('voter-manual-pdf', 'voter-manual-pdf.php', $baseUrl);
+        }
+
+        // Always append api_key to URL query string because apinice requires it
+        $apiUrl = $baseUrl;
+        if (!str_contains($apiUrl, 'api_key=')) {
+            $apiUrl .= (str_contains($apiUrl, '?') ? '&' : '?') . 'api_key=' . urlencode($apiKey);
+        }
 
         $cfile = new \CURLFile($fullDiskPath, $file->getClientMimeType(), 'imagefile');
 
@@ -139,6 +150,8 @@ class VoterPdfManualInstantController extends Controller
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_HTTPHEADER     => [
                     'X-API-Key: ' . $apiKey,
+                    'x-api-key: ' . $apiKey,
+                    'api_key: ' . $apiKey,
                     'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 ],
                 CURLOPT_SSL_VERIFYPEER => false,
