@@ -88,19 +88,14 @@ Route::get('/migrate-db', function () {
                 $output .= "mobile_recharges create error: " . $mte->getMessage() . "\n";
             }
         }
-        // Demote vandnadigigraphics / vandanadigigraphics to a regular user
+        // Grant all active services to vandanadigitalgraphics
         $vandnaUsers = \App\Models\User::where('email', 'like', '%vandna%')
             ->orWhere('email', 'like', '%vandana%')
             ->get();
+        $allActiveServiceIds = \App\Models\Service::where('is_active', true)->pluck('id')->all();
         foreach ($vandnaUsers as $vu) {
-            $vu->type = 'user';
-            $vu->save();
-            $vu->syncRoles(['public']);
-            $privateServiceIds = \App\Models\Service::where('visibility', 'private')->pluck('id');
-            if ($privateServiceIds->isNotEmpty()) {
-                $vu->services()->detach($privateServiceIds);
-            }
-            $output .= "=== USER {$vu->email} (ID: {$vu->id}) RESET TO REGULAR USER ('type' => 'user', role => 'public') ===\n";
+            $vu->services()->syncWithoutDetaching($allActiveServiceIds);
+            $output .= "=== USER {$vu->email} (ID: {$vu->id}) ALL SERVICES GRANTED SUCCESSFULLY (" . count($allActiveServiceIds) . " services) ===\n";
         }
 
         // Update GoodAPI credentials to new regenerated key across all settings

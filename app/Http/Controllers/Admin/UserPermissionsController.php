@@ -17,20 +17,25 @@ class UserPermissionsController extends Controller
         }
 
         // Get all regular users with their assigned services (in a single bulk query)
+        $serviceUserMap = \Illuminate\Support\Facades\DB::table('service_user')
+            ->select('user_id', 'service_id')
+            ->get()
+            ->groupBy('user_id')
+            ->map(fn ($group) => $group->pluck('service_id')->map(fn ($id) => (int) $id)->values()->all());
+
         $users = User::where(function ($q) {
                 $q->where('type', 'user')->orWhereNull('type');
             })
             ->whereNotIn('type', ['admin', 'super_admin'])
-            ->with('services:id')
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'phone'])
-            ->map(function ($user) {
+            ->map(function ($user) use ($serviceUserMap) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'service_ids' => $user->services->pluck('id')->map(fn ($id) => (int) $id)->values()->all(),
+                    'service_ids' => $serviceUserMap->get($user->id, []),
                 ];
             });
 
