@@ -974,6 +974,40 @@ Route::get('/migrate-db', function () {
             $output .= "PanOrignalPdfNsdl error: " . $popne->getMessage() . "\n\n";
         }
 
+        // Ensure Voter PDF Manual Instant service is configured with 30 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'voter-pdf-manual-instant'],
+                [
+                    'name' => 'Voter PDF Manual Instant',
+                    'description' => 'Generate Voter ID Card PDF with photo & local language support via Instant API',
+                    'icon' => '🗳️',
+                    'coin_cost' => 30,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'voter_pdf_manual_instant',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 39,
+                ]
+            );
+            \App\Models\Service::where('slug', 'voter-card-manual-maker')->update([
+                'name' => 'Voter PDF Manual Instant',
+                'description' => 'Generate Voter ID Card PDF with photo & local language support via Instant API',
+                'coin_cost' => 30,
+                'is_active' => true,
+                'visibility' => 'public',
+            ]);
+
+            \App\Models\Setting::set('voter_pdf_manual_api_url', 'https://apinice.in/api/v2/voter-manual-pdf.php');
+            \App\Models\Setting::set('voter_pdf_manual_api_key', 'Y3VK89K8V8');
+
+            $output .= "=== VOTER PDF MANUAL INSTANT UPSERTED (30 COINS, APINICE API) ===\n\n";
+        } catch (\Throwable $vpme) {
+            $output .= "VoterPdfManualInstant error: " . $vpme->getMessage() . "\n\n";
+        }
+
         // Ensure regular users have access to all active public services
         try {
             $allActivePublicServiceIds = \App\Models\Service::where('is_active', true)
@@ -2824,11 +2858,14 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.pdf-editor');
     Route::post('/utilities/pdf-editor/process', [\App\Http\Controllers\PdfEditorController::class, 'process'])->name('utilities.pdf-editor.process');
 
-    // 9. Voter Card Manual Maker
-    Route::get('/utilities/voter-card-manual-maker', function () {
-        return Inertia::render('Utilities/VoterCardManualMaker');
-    })->name('utilities.voter-card-manual-maker');
-    Route::post('/utilities/voter-card-manual-maker/generate', [\App\Http\Controllers\VoterCardManualMakerController::class, 'generate'])->name('utilities.voter-card-manual-maker.generate');
+    // 9. Voter PDF Manual Instant API
+    Route::get('/utilities/voter-pdf-manual-instant', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'index'])->name('utilities.voter-pdf-manual-instant');
+    Route::post('/utilities/voter-pdf-manual-instant/generate', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'generate'])->name('utilities.voter-pdf-manual-instant.generate');
+    Route::post('/utilities/voter-pdf-manual-instant/settings', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'updateSettings'])->name('utilities.voter-pdf-manual-instant.settings');
+
+    // Voter Card Manual Maker alias & legacy handler
+    Route::get('/utilities/voter-card-manual-maker', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'index'])->name('utilities.voter-card-manual-maker');
+    Route::post('/utilities/voter-card-manual-maker/generate', [\App\Http\Controllers\VoterPdfManualInstantController::class, 'generate'])->name('utilities.voter-card-manual-maker.generate');
 
     // 10. Aadhar Card Manual
     Route::get('/utilities/aadhar-card-manual', function () {
@@ -3042,7 +3079,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('reactivation-requests/{reactivationRequest}/reject',  [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'reject'])->name('reactivation-requests.reject')->middleware('admin');
 
         Route::get('user-permissions', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'index'])->name('user-permissions.index')->middleware('admin');
-        Route::post('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update')->middleware('admin');
+        Route::get('passbook', [\App\Http\Controllers\Admin\PassbookController::class, 'index'])->name('passbook.index');
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
         Route::get('referrals', [\App\Http\Controllers\ReferralController::class, 'index'])->name('referrals.index');

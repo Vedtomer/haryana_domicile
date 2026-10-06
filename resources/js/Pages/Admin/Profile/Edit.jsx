@@ -187,13 +187,22 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                                 Every coin added to or used from your account is listed here.
                             </p>
                         </div>
-                        <Link
-                            href="/admin/dashboard"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-[17px]">arrow_back</span>
-                            <span>Dashboard</span>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <Link
+                                href="/admin/passbook"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-xs transition-all cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[17px]">history_edu</span>
+                                <span>Full Passbook</span>
+                            </Link>
+                            <Link
+                                href="/admin/dashboard"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-[17px]">arrow_back</span>
+                                <span>Dashboard</span>
+                            </Link>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-3 divide-x divide-gray-100 dark:divide-slate-800 border-b border-gray-100 dark:border-slate-800">
@@ -231,13 +240,20 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-3">
-                                            <p className="text-gray-800 dark:text-slate-200">{txn.description}</p>
-                                            <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${TYPE_STYLES[txn.type] ?? 'bg-gray-100 text-gray-700'}`}>
-                                                {TYPE_LABELS[txn.type] ?? txn.type}
-                                            </span>
-                                            {txn.creator && (
-                                                <span className="text-xs text-gray-400 dark:text-slate-500 ml-2">by {txn.creator.name}</span>
+                                            <p className="text-gray-800 dark:text-slate-200 font-bold">{txn.description}</p>
+                                            {txn.user && (
+                                                <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-0.5">
+                                                    👤 {txn.user.name} {txn.user.phone ? `(${txn.user.phone})` : ''}
+                                                </div>
                                             )}
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${TYPE_STYLES[txn.type] ?? 'bg-gray-100 text-gray-700'}`}>
+                                                    {TYPE_LABELS[txn.type] ?? txn.type}
+                                                </span>
+                                                {txn.creator && (
+                                                    <span className="text-xs text-gray-400 dark:text-slate-500">by {txn.creator.name}</span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className={`px-6 py-3 text-right font-bold whitespace-nowrap ${
                                             txn.amount < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'

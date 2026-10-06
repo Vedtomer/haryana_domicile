@@ -18,14 +18,27 @@ class ProfileController extends Controller
             $user->load('referrer:id,name,phone,email,referral_code');
         }
 
+        $isAdmin = $user->isAdmin();
+        $scope = $isAdmin ? request('scope', 'my') : 'my';
+
+        $ledgerQuery = CoinTransaction::query()->with([
+            'user:id,name,phone,email',
+            'creator:id,name',
+        ]);
+
+        if (!$isAdmin || $scope === 'my') {
+            $ledgerQuery->where('user_id', $user->id);
+        }
+
         return Inertia::render('Admin/Profile/Edit', [
             'user' => $user,
+            'isAdmin' => $isAdmin,
+            'scope' => $scope,
             'referralCode' => $user->getActiveReferralCode(),
             'referralLink' => $user->referral_link,
             'referrer' => $user->referrer,
             // Full coin history so the user can audit every credit and deduction themselves.
-            'ledger' => CoinTransaction::where('user_id', $user->id)
-                ->with('creator:id,name')
+            'ledger' => $ledgerQuery
                 ->latest('id')
                 ->paginate(15)
                 ->withQueryString(),

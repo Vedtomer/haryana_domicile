@@ -311,7 +311,7 @@ export default function AdminLayout({ header, children }) {
                             <span>MY ACCOUNT</span>
                         </div>
 
-                        <NavItem href="/admin/profile#coin-ledger" icon={<span className="material-symbols-outlined text-[19px]">history</span>}>
+                        <NavItem href="/admin/passbook" icon={<span className="material-symbols-outlined text-[19px]">history_edu</span>}>
                             Wallet Ledger / Passbook
                         </NavItem>
                         <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
@@ -480,12 +480,12 @@ export default function AdminLayout({ header, children }) {
                                     </button>
                                 )}
                                 <Link
-                                    href="/admin/profile#coin-ledger"
+                                    href="/admin/passbook"
                                     onClick={() => setDropdownOpen(false)}
                                     className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
                                 >
-                                    <span className="material-symbols-outlined text-[18px] text-amber-500">monetization_on</span>
-                                    <span>Coin Ledger</span>
+                                    <span className="material-symbols-outlined text-[18px] text-amber-500">receipt_long</span>
+                                    <span>Passbook &amp; Ledger</span>
                                 </Link>
                                 {isAdmin && (
                                     <>

@@ -945,7 +945,7 @@ export default function Dashboard({
                                 value={`₹${Number(effectiveBalance).toLocaleString('en-IN')}.00`}
                                 subtitle="Available wallet coins"
                                 icon="account_balance_wallet"
-                                linkUrl="/admin/profile#coin-ledger"
+                                linkUrl="/admin/passbook"
                             />
                             <StatMetricCard
                                 index={1}
@@ -965,8 +965,8 @@ export default function Dashboard({
                                 badgeText="PASSBOOK"
                                 value="View Ledger"
                                 subtitle={`Today: ₹${Number(todayDebit).toLocaleString('en-IN')}.00 • Tap to view`}
-                                icon="history"
-                                linkUrl="/admin/profile#coin-ledger"
+                                icon="history_edu"
+                                linkUrl="/admin/passbook"
                             />
                             <StatMetricCard
                                 index={3}

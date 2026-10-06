@@ -692,11 +692,18 @@ class Service extends Model
             'create' => '/utilities/pdf-editor',
         ],
         'voter_card_manual_maker' => [
-            'label' => 'Voter Card Manual Maker',
+            'label' => 'Voter PDF Manual Instant',
             'icon' => '🗳️',
             'model' => null,
-            'index' => '/utilities/voter-card-manual-maker',
-            'create' => '/utilities/voter-card-manual-maker',
+            'index' => '/utilities/voter-pdf-manual-instant',
+            'create' => '/utilities/voter-pdf-manual-instant',
+        ],
+        'voter_pdf_manual_instant' => [
+            'label' => 'Voter PDF Manual Instant',
+            'icon' => '🗳️',
+            'model' => null,
+            'index' => '/utilities/voter-pdf-manual-instant',
+            'create' => '/utilities/voter-pdf-manual-instant',
         ],
         'aadhar_card_manual' => [
             'label' => 'Aadhar Card Manual',
