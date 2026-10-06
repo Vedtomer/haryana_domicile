@@ -944,7 +944,7 @@ Route::get('/migrate-db', function () {
             $output .= "PassportMaker update notice: " . $pme->getMessage() . "\n\n";
         }
 
-        // Ensure Pan Orignal PDF NSDL service is configured with 100 coins
+        // Ensure Pan Orignal PDF NSDL service is configured with 149 coins
         try {
             \App\Models\Service::updateOrCreate(
                 ['slug' => 'pan-orignal-pdf-nsdl'],
@@ -952,7 +952,7 @@ Route::get('/migrate-db', function () {
                     'name' => 'Pan Orignal PDF NSDL',
                     'description' => 'TIME-- 15-20 MIN (AADHAR CARD ME MOBILE NUMBER LINK HONA CHHIYE)',
                     'icon' => '🪪',
-                    'coin_cost' => 100,
+                    'coin_cost' => 149,
                     'kind' => \App\Models\Service::KIND_MANUAL,
                     'module_key' => null,
                     'is_active' => true,
@@ -969,7 +969,7 @@ Route::get('/migrate-db', function () {
                     ],
                 ]
             );
-            $output .= "=== PAN ORIGNAL PDF NSDL UPSERTED (100 COINS) ===\n\n";
+            $output .= "=== PAN ORIGNAL PDF NSDL UPSERTED (149 COINS) ===\n\n";
         } catch (\Throwable $popne) {
             $output .= "PanOrignalPdfNsdl error: " . $popne->getMessage() . "\n\n";
         }

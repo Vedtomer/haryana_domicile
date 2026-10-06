@@ -665,7 +665,7 @@ class ServiceSeeder extends Seeder
                 'slug' => 'pan-orignal-pdf-nsdl',
                 'description' => 'TIME-- 15-20 MIN (AADHAR CARD ME MOBILE NUMBER LINK HONA CHHIYE)',
                 'icon' => '🪪',
-                'coin_cost' => 100,
+                'coin_cost' => 149,
                 'kind' => Service::KIND_MANUAL,
                 'module_key' => null,
                 'sort_order' => 15,
