@@ -515,7 +515,9 @@ export default function Dashboard({
     siteLogo = '/images/logo.png',
     initialTab = 'overview',
 }) {
-    const { auth, whatsappNumber } = usePage().props;
+    const page = usePage();
+    const { auth, whatsappNumber } = page.props || {};
+    const url = page.url || '';
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -523,6 +525,9 @@ export default function Dashboard({
 
     // Tab state: 'overview' vs 'services'
     const [activeTab, setActiveTab] = useState(() => {
+        if (url.includes('tab=services') || url === '/all-services' || url.startsWith('/all-services?')) {
+            return 'services';
+        }
         try {
             const params = new URLSearchParams(window.location.search);
             const p = params.get('tab');
@@ -532,21 +537,17 @@ export default function Dashboard({
     });
 
     useEffect(() => {
-        try {
-            const params = new URLSearchParams(window.location.search);
-            const p = params.get('tab');
-            if (p === 'services' && activeTab !== 'services') {
-                setActiveTab('services');
-            } else if (p === 'overview' && activeTab !== 'overview') {
-                setActiveTab('overview');
-            }
-        } catch (e) {}
-    }, [window.location.search]);
+        if (url.includes('tab=services') || url === '/all-services' || url.startsWith('/all-services?') || initialTab === 'services') {
+            setActiveTab('services');
+        } else if (url.includes('tab=overview') || initialTab === 'overview') {
+            setActiveTab('overview');
+        }
+    }, [url, initialTab]);
 
     const handleTabSwitch = (t) => {
         setActiveTab(t);
         try {
-            const currentUrl = new URL(window.location);
+            const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.set('tab', t);
             window.history.pushState({}, '', currentUrl);
         } catch (e) {}
@@ -560,6 +561,7 @@ export default function Dashboard({
     // 1. Available services according to permissions
     const availableServices = useMemo(() => {
         return (services || []).filter((s) => {
+            if (!s) return false;
             if (!s.is_active && !isAdmin) return false;
             return true;
         });
@@ -568,8 +570,8 @@ export default function Dashboard({
     // 2. Sort all available services alphabetically by name
     const sortedServices = useMemo(() => {
         return [...availableServices].sort((a, b) => {
-            const nameA = (a.name || '').trim();
-            const nameB = (b.name || '').trim();
+            const nameA = (a?.name || '').trim();
+            const nameB = (b?.name || '').trim();
             return nameA.localeCompare(nameB, undefined, { sensitivity: 'base', numeric: true });
         });
     }, [availableServices]);
@@ -579,10 +581,10 @@ export default function Dashboard({
         if (!searchQuery.trim()) return sortedServices;
         const q = searchQuery.toLowerCase().trim();
         return sortedServices.filter((s) =>
-            (s.name || '').toLowerCase().includes(q) ||
-            (s.description || '').toLowerCase().includes(q) ||
-            (s.slug || '').toLowerCase().includes(q) ||
-            (s.hindi_name || '').toLowerCase().includes(q)
+            (s?.name || '').toLowerCase().includes(q) ||
+            (s?.description || '').toLowerCase().includes(q) ||
+            (s?.slug || '').toLowerCase().includes(q) ||
+            (s?.hindi_name || '').toLowerCase().includes(q)
         );
     }, [sortedServices, searchQuery]);
 
@@ -590,7 +592,7 @@ export default function Dashboard({
     const alphabetGroups = useMemo(() => {
         const groups = {};
         for (const s of filteredServices) {
-            const firstChar = (s.name || '').trim().charAt(0).toUpperCase();
+            const firstChar = (s?.name || '').trim().charAt(0).toUpperCase();
             const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
             if (!groups[letter]) {
                 groups[letter] = [];
@@ -614,7 +616,7 @@ export default function Dashboard({
     const letterCounts = useMemo(() => {
         const counts = {};
         for (const s of availableServices) {
-            const firstChar = (s.name || '').trim().charAt(0).toUpperCase();
+            const firstChar = (s?.name || '').trim().charAt(0).toUpperCase();
             const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
             counts[letter] = (counts[letter] || 0) + 1;
         }

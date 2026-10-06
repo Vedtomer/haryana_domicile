@@ -1215,6 +1215,16 @@ Route::get('/migrate-db', function () {
             @opcache_reset();
         }
 
+        // Append latest storage/logs/laravel.log
+        $logPath = storage_path('logs/laravel.log');
+        if (file_exists($logPath)) {
+            $lines = file($logPath);
+            $lastLines = array_slice($lines, -80);
+            $output .= "\n=== RECENT LARAVEL LOG (LAST 80 LINES) ===\n" . implode("", $lastLines);
+        } else {
+            $output .= "\n=== NO LARAVEL LOG FOUND ===\n";
+        }
+
         return "<div style='font-family:sans-serif;padding:30px;max-width:800px;margin:40px auto;background:#f0fdf4;border:2px solid #22c55e;border-radius:16px;color:#166534;'>"
             . "<h2 style='margin-top:0;'>✓ Database Migrated & Seeded Successfully!</h2>"
             . "<pre style='background:#111;color:#4ade80;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;'>" . htmlspecialchars($output) . "</pre>"
