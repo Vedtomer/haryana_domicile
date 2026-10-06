@@ -30,11 +30,11 @@ const TYPE_CONFIG = {
     },
 };
 
-export default function Index({ transactions, summary, isAdmin, filters }) {
-    const [search, setSearch] = useState(filters.search || '');
-    const [type, setType] = useState(filters.type || 'all');
-    const [date, setDate] = useState(filters.date || 'all');
-    const [scope, setScope] = useState(filters.scope || (isAdmin ? 'all' : 'my'));
+export default function Index({ transactions = { data: [], links: [] }, summary = {}, isAdmin = false, filters = {} }) {
+    const [search, setSearch] = useState(filters?.search || '');
+    const [type, setType] = useState(filters?.type || 'all');
+    const [date, setDate] = useState(filters?.date || 'all');
+    const [scope, setScope] = useState(filters?.scope || (isAdmin ? 'all' : 'my'));
 
     const applyFilter = (newOverrides = {}) => {
         const params = {

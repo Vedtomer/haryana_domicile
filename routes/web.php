@@ -2046,6 +2046,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/admin/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('admin.dashboard.root');
+        Route::get('/passbook', [\App\Http\Controllers\Admin\PassbookController::class, 'index'])->name('passbook.root');
         Route::get('/all-services', [\App\Http\Controllers\DashboardController::class, 'allServices'])->name('services.all');
         Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 

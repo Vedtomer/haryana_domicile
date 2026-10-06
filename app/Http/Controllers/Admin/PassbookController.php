@@ -30,7 +30,7 @@ class PassbookController extends Controller
         $selectedUserId = $request->query('user_id');
 
         $query = CoinTransaction::query()->with([
-            'user:id,name,phone,email,type,role,coins',
+            'user:id,name,phone,email,type,coins',
             'creator:id,name',
         ]);
 
@@ -46,8 +46,10 @@ class PassbookController extends Controller
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('id', $search)
-                    ->orWhere('description', 'like', "%{$search}%")
+                if (is_numeric($search)) {
+                    $q->where('id', (int) $search);
+                }
+                $q->orWhere('description', 'like', "%{$search}%")
                     ->orWhereHas('user', function ($uq) use ($search) {
                         $uq->where('name', 'like', "%{$search}%")
                             ->orWhere('phone', 'like', "%{$search}%")
@@ -69,7 +71,7 @@ class PassbookController extends Controller
         $transactions = $query->latest('id')->paginate(25)->withQueryString();
 
         // Calculate summary metrics
-        if ($isAdmin && $scope === 'all') {
+        if ($isAdmin && $scope === 'all' && empty($selectedUserId)) {
             $summary = [
                 'total_system_coins' => (int) User::sum('coins'),
                 'today_spent' => (int) abs(CoinTransaction::whereDate('created_at', today())->where('amount', '<', 0)->sum('amount')),
