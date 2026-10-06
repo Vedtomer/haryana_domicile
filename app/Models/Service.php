@@ -802,6 +802,46 @@ class Service extends Model
     }
 
     /**
+     * Lock critical API services against accidental deletion.
+     */
+    protected static function booted()
+    {
+        static::deleting(function ($service) {
+            $lockedServices = [
+                'mobile-recharge',
+                'voter-pdf-manual-instant',
+                'voter-card-manual-maker',
+                'aadhar-to-name',
+                'aadhar-to-npci-status',
+                'aadhar-to-mask-pan',
+                'aadhar-to-pan',
+                'mobile-to-pan',
+                'pan-details-server-2',
+                'pan-full-details',
+                'pan-to-aadhar-unmasked',
+                'pan-to-gst',
+                'pan-to-uid',
+                'pan-card-manual-maker',
+                'ration-card-pdf',
+                'ration-to-aadhar-all-state',
+                'ration-to-aadhar-up',
+                'aadhar-to-ration',
+                'courier-slip-maker',
+                'vehicle-to-mobile',
+                'vehicle-details',
+                'rc-info',
+                'challan-find',
+                'voter-advance-info',
+                'mobile-to-info',
+                'aadhar-to-info',
+            ];
+            if (in_array($service->slug, $lockedServices)) {
+                throw new \Exception("Yeh API service permanently locked hai aur isko delete ya remove nahi kiya ja sakta.");
+            }
+        });
+    }
+
+    /**
      * Users this service is visible to, when it's private.
      */
     public function users(): BelongsToMany
