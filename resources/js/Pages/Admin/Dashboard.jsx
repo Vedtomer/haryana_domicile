@@ -651,15 +651,8 @@ export default function Dashboard({
         );
     };
 
-    const clearSelectedCategory = () => {
-        setSelectedCategory(null);
+    const clearSearch = () => {
         setSearchQuery('');
-        try {
-            const url = new URL(window.location);
-            url.searchParams.delete('category');
-            window.history.pushState({}, '', url);
-            window.dispatchEvent(new CustomEvent('categoryChange', { detail: null }));
-        } catch (e) {}
     };
 
     return (

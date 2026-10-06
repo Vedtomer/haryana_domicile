@@ -55,6 +55,7 @@ export default function AdminLayout({ header, children }) {
     }, [auth?.user?.id]);
 
     const { url, props } = usePage();
+    const pendingRequestsCount = props?.pendingRequestsCount ?? 0;
     const isAllServices = url.includes('tab=services') || url === '/all-services' || url.startsWith('/all-services?');
     const isDashboard = (url === '/dashboard' || url.startsWith('/dashboard?')) && !isAllServices;
     const isAdmin = Boolean(
