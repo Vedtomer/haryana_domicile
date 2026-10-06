@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 
 export default function UserPermissions({ users = [], services = [] }) {
@@ -7,6 +7,7 @@ export default function UserPermissions({ users = [], services = [] }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [serviceSearch, setServiceSearch] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    const [savedSuccessMsg, setSavedSuccessMsg] = useState('');
     const initialLoadedRef = useRef(false);
 
     // Sort services alphabetically by name
@@ -90,9 +91,14 @@ export default function UserPermissions({ users = [], services = [] }) {
         e.preventDefault();
         if (!selectedUser) return;
 
+        setSavedSuccessMsg('');
         post(`/admin/user-permissions/${selectedUser.id}`, {
             preserveScroll: true,
             preserveState: true,
+            onSuccess: () => {
+                setSavedSuccessMsg(`Permissions saved successfully for ${selectedUser.name}!`);
+                setTimeout(() => setSavedSuccessMsg(''), 5000);
+            },
         });
     };
 
@@ -111,14 +117,23 @@ export default function UserPermissions({ users = [], services = [] }) {
 
     return (
         <AdminLayout header={
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm">
-                    <span className="material-symbols-outlined text-xl">shield_person</span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800 shadow-sm">
+                        <span className="material-symbols-outlined text-xl">shield_person</span>
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-black tracking-tight text-slate-800 dark:text-white">User Permissions</h1>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">Enable or disable specific services for each user</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-xl font-black tracking-tight text-slate-800">User Permissions</h1>
-                    <p className="text-xs text-gray-500">Enable or disable specific services for each user</p>
-                </div>
+                <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all w-fit cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                    <span>Back to Dashboard</span>
+                </Link>
             </div>
         }>
             <Head title="User Permissions" />
@@ -191,10 +206,10 @@ export default function UserPermissions({ users = [], services = [] }) {
                     ) : (
                         <form onSubmit={submit} className="flex-1 flex flex-col overflow-hidden">
                             {/* Flash Feedback Alert */}
-                            {flash?.success && (
+                            {(flash?.success || savedSuccessMsg) && (
                                 <div className="mx-5 mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-semibold flex items-center gap-2 shadow-xs">
                                     <span className="material-symbols-outlined text-emerald-600 text-xl">check_circle</span>
-                                    <span>{flash.success}</span>
+                                    <span>{savedSuccessMsg || flash?.success}</span>
                                 </div>
                             )}
                             {flash?.error && (

@@ -154,7 +154,14 @@ export default function Index({ users, allUsers = [], filters = {}, counts = {} 
                         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Users</h2>
                         <p className="mt-1 text-sm text-slate-500">Manage all registered user accounts.</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                            <span>Back to Dashboard</span>
+                        </Link>
                         <button
                             type="button"
                             onClick={() => setShowClearAllModal(true)}

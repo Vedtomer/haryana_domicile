@@ -55,7 +55,7 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                 {/* Back to Dashboard bar */}
                 <div className="mb-4 flex items-center justify-between">
                     <Link
-                        href="/admin/dashboard"
+                        href="/dashboard"
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer group"
                     >
                         <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-indigo-400 group-hover:-translate-x-1 transition-transform">arrow_back</span>
@@ -73,7 +73,7 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                             </span>
                         </div>
                         <Link
-                            href="/admin/dashboard"
+                            href="/dashboard"
                             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
                         >
                             <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-cyan-300">dashboard</span>
@@ -196,7 +196,7 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                                 <span>Full Passbook</span>
                             </Link>
                             <Link
-                                href="/admin/dashboard"
+                                href="/dashboard"
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
                             >
                                 <span className="material-symbols-outlined text-[17px]">arrow_back</span>

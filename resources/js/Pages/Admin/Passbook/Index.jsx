@@ -107,35 +107,45 @@ export default function Index({ transactions, summary, isAdmin, filters }) {
                         </div>
                     </div>
 
-                    {/* Scope Switcher for Admin */}
-                    {isAdmin && (
-                        <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
-                            <button
-                                type="button"
-                                onClick={() => handleScopeChange('all')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                                    scope === 'all'
-                                        ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                }`}
-                            >
-                                <span className="material-symbols-outlined text-sm">groups</span>
-                                <span>All Users Passbook</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleScopeChange('my')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                                    scope === 'my'
-                                        ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                }`}
-                            >
-                                <span className="material-symbols-outlined text-sm">person</span>
-                                <span>My Account Only</span>
-                            </button>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-[17px]">arrow_back</span>
+                            <span>Back to Dashboard</span>
+                        </Link>
+
+                        {/* Scope Switcher for Admin */}
+                        {isAdmin && (
+                            <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
+                                <button
+                                    type="button"
+                                    onClick={() => handleScopeChange('all')}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        scope === 'all'
+                                            ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-sm">groups</span>
+                                    <span>All Users Passbook</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleScopeChange('my')}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        scope === 'my'
+                                            ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-sm">person</span>
+                                    <span>My Account Only</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             }
         >

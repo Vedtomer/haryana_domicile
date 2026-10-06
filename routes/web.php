@@ -2045,6 +2045,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('/2fa/reset', [\App\Http\Controllers\TwoFactorController::class, 'resetSetup'])->name('2fa.reset');
 
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/admin/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('admin.dashboard.root');
         Route::get('/all-services', [\App\Http\Controllers\DashboardController::class, 'allServices'])->name('services.all');
         Route::get('/referrals', fn() => redirect('/admin/referrals'))->name('referrals');
 
@@ -3078,7 +3079,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::post('reactivation-requests/{reactivationRequest}/approve', [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'approve'])->name('reactivation-requests.approve')->middleware('admin');
         Route::post('reactivation-requests/{reactivationRequest}/reject',  [\App\Http\Controllers\Admin\ReactivationRequestController::class, 'reject'])->name('reactivation-requests.reject')->middleware('admin');
 
+        Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::get('user-permissions', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'index'])->name('user-permissions.index')->middleware('admin');
+        Route::post('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update')->middleware('admin');
+        Route::put('user-permissions/{user}', [\App\Http\Controllers\Admin\UserPermissionsController::class, 'update'])->name('user-permissions.update.put')->middleware('admin');
         Route::get('passbook', [\App\Http\Controllers\Admin\PassbookController::class, 'index'])->name('passbook.index');
         Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');

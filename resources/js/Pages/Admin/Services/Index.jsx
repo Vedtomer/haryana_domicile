@@ -83,13 +83,22 @@ export default function Index({ services }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Manage Services
-                    </h1>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                        Configure pricing, visibility, and form settings for all portal services
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
+                    <div className="flex flex-col">
+                        <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
+                            Manage Services
+                        </h1>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                            Configure pricing, visibility, and form settings for all portal services
+                        </p>
+                    </div>
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all w-fit cursor-pointer"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                        <span>Back to Dashboard</span>
+                    </Link>
                 </div>
             }
         >

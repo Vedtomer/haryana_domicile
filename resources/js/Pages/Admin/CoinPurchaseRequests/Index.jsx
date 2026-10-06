@@ -206,7 +206,7 @@ export default function Index({ requests, isAdmin, canAction }) {
                 {/* Back to Dashboard bar */}
                 <div className="mb-4 flex items-center justify-between">
                     <Link
-                        href="/admin/dashboard"
+                        href="/dashboard"
                         className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer group"
                     >
                         <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
