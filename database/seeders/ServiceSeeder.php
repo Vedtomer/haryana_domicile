@@ -660,6 +660,27 @@ class ServiceSeeder extends Seeder
                     ['label' => 'Enterprise / Shop Name', 'type' => 'text', 'required' => true],
                 ],
             ],
+            [
+                'name' => 'Pan Orignal PDF NSDL',
+                'slug' => 'pan-orignal-pdf-nsdl',
+                'description' => 'TIME-- 15-20 MIN (AADHAR CARD ME MOBILE NUMBER LINK HONA CHHIYE)',
+                'icon' => '🪪',
+                'coin_cost' => 100,
+                'kind' => Service::KIND_MANUAL,
+                'module_key' => null,
+                'sort_order' => 15,
+                'is_active' => true,
+                'visibility' => Service::VISIBILITY_PUBLIC,
+                'is_premium' => false,
+                'unlock_cost' => 0,
+                'fields' => [
+                    ['label' => 'PAN CARD NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter pan card number'],
+                    ['label' => 'AADHAR NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter aadhar number'],
+                    ['label' => 'DATE OF BIRTH', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter date of birth'],
+                    ['label' => 'AADHAR REGISTER MOBILE NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter aadhar register mobile number'],
+                    ['label' => 'RETRAILER WHATSAPP NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter retrailer whatsapp number'],
+                ],
+            ],
         ];
 
         foreach ($services as $service) {
@@ -769,7 +790,8 @@ class ServiceSeeder extends Seeder
             ->orWhere('module_key', 'pan_pdf')
             ->orWhere(function ($q) {
                 $q->where('name', 'like', '%pan%')
-                  ->where('name', 'like', '%pdf%');
+                  ->where('name', 'like', '%pdf%')
+                  ->where('slug', '!=', 'pan-orignal-pdf-nsdl');
             })
             ->orWhere('module_key', 'tenth_passbook')
             ->forceDelete();

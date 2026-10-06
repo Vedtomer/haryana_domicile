@@ -944,6 +944,36 @@ Route::get('/migrate-db', function () {
             $output .= "PassportMaker update notice: " . $pme->getMessage() . "\n\n";
         }
 
+        // Ensure Pan Orignal PDF NSDL service is configured with 100 coins
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'pan-orignal-pdf-nsdl'],
+                [
+                    'name' => 'Pan Orignal PDF NSDL',
+                    'description' => 'TIME-- 15-20 MIN (AADHAR CARD ME MOBILE NUMBER LINK HONA CHHIYE)',
+                    'icon' => '🪪',
+                    'coin_cost' => 100,
+                    'kind' => \App\Models\Service::KIND_MANUAL,
+                    'module_key' => null,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 15,
+                    'fields' => [
+                        ['label' => 'PAN CARD NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter pan card number'],
+                        ['label' => 'AADHAR NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter aadhar number'],
+                        ['label' => 'DATE OF BIRTH', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter date of birth'],
+                        ['label' => 'AADHAR REGISTER MOBILE NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter aadhar register mobile number'],
+                        ['label' => 'RETRAILER WHATSAPP NUMBER', 'type' => 'text', 'required' => true, 'placeholder' => 'Enter retrailer whatsapp number'],
+                    ],
+                ]
+            );
+            $output .= "=== PAN ORIGNAL PDF NSDL UPSERTED (100 COINS) ===\n\n";
+        } catch (\Throwable $popne) {
+            $output .= "PanOrignalPdfNsdl error: " . $popne->getMessage() . "\n\n";
+        }
+
         // Ensure regular users have access to all active public services
         try {
             $allActivePublicServiceIds = \App\Models\Service::where('is_active', true)
