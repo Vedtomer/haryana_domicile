@@ -25,7 +25,7 @@ class VehicleToMobileController extends Controller
         $vehicleNo = strtoupper(trim(str_replace([' ', '-'], '', $vehicleNo)));
         
         $baseUrl = trim(\App\Models\Setting::get('vehicle_to_mobile_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
-        $apiKey = trim(\App\Models\Setting::get('vehicle_to_mobile_api_key') ?: 'DuXxZxX');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_to_mobile_api_key') ?: 'SamXverma');
 
         if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{v2num}') || str_contains($baseUrl, '{vehicle_number}')) {
             $url = str_replace(
@@ -69,7 +69,7 @@ class VehicleToMobileController extends Controller
                         'user_id' => $user->id,
                         'service_id' => $service ? $service->id : null,
                         'service_name' => $service ? $service->name : 'Vehicle to Mobile Number',
-                        'input_data' => ['Vehicle Registration Number' => strtoupper($vehicleNo)],
+                        'input_data' => ['Vehicle Registration Number' => strtoupper($vehicleNo), 'Mobile' => $mobile],
                         'coins_charged' => $user->isAdmin() || $user->hasRole('super_admin') ? 0 : $coinCost,
                         'status' => \App\Models\ServiceRequest::STATUS_COMPLETED,
                         'completed_at' => now(),
@@ -103,5 +103,33 @@ class VehicleToMobileController extends Controller
                 'message' => 'Error communicating with the external server.'
             ]);
         }
+    }
+
+    public function updateApi(Request $request)
+    {
+        $user = auth()->user();
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+        if (!$isStaff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Only admins can configure API credentials.'
+            ], 403);
+        }
+
+        $request->validate([
+            'api_url' => 'required|url',
+            'api_key' => 'nullable|string',
+        ]);
+
+        \App\Models\Setting::set('vehicle_to_mobile_api_url', trim($request->input('api_url')));
+        
+        if ($request->filled('api_key')) {
+            \App\Models\Setting::set('vehicle_to_mobile_api_key', trim($request->input('api_key')));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Vehicle to Mobile API settings updated successfully.'
+        ]);
     }
 }

@@ -416,7 +416,7 @@ export default function Edit({ settings = {} }) {
                                         <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Vehicle To Mobile Number</span>
                                             {renderUrlInput('vehicle_to_mobile_api_url', 'Gateway Endpoint URL', 'https://api.paanel.shop/api/gateway.php')}
-                                            {renderKeyInput('vehicle_to_mobile_api_key', 'API Key', 'e.g. DuXxZxX')}
+                                            {renderKeyInput('vehicle_to_mobile_api_key', 'API Key', 'e.g. SamXverma')}
                                         </div>
                                         <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Vehicle Full Details (RC Search)</span>

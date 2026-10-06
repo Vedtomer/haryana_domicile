@@ -116,7 +116,9 @@ Route::get('/migrate-db', function () {
         foreach ($goodApiSettingsToUpdate as $stKey) {
             \App\Models\Setting::set($stKey, $newGoodApiKey);
         }
-        $output .= "=== ALL GOODAPI KEYS IN SETTINGS UPDATED TO NEW REGENERATED KEY ===\n\n";
+        \App\Models\Setting::set('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php');
+        \App\Models\Setting::set('vehicle_to_mobile_api_key', 'SamXverma');
+        $output .= "=== ALL GOODAPI & VEHICLE TO MOBILE KEYS IN SETTINGS UPDATED ===\n\n";
 
         try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
@@ -2442,10 +2444,25 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
     Route::get('/utilities/vehicle-to-mobile', function () {
         $service = \App\Models\Service::where('slug', 'vehicle-to-mobile')->first();
-        return Inertia::render('Utilities/VehicleToMobile');
+        $user = auth()->user();
+        if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
+            return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
+        }
+        $coinCost = $service ? (int) $service->coin_cost : 20;
+        $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        return Inertia::render('Utilities/VehicleToMobile', [
+            'service'        => $service,
+            'currentService' => $service,
+            'coinCost'       => $coinCost,
+            'isAdmin'        => (bool) $isStaff,
+            'apiUrl'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php') : null,
+            'apiKey'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_key', 'SamXverma') : null,
+        ]);
     })->name('utilities.vehicle-to-mobile');
 
     Route::post('/utilities/vehicle-to-mobile/search', [\App\Http\Controllers\VehicleToMobileController::class, 'search'])->name('utilities.vehicle-to-mobile.search');
+    Route::post('/utilities/vehicle-to-mobile/update-api', [\App\Http\Controllers\VehicleToMobileController::class, 'updateApi'])->name('utilities.vehicle-to-mobile.update-api');
 
     Route::get('/utilities/vehicle-challan-check', [\App\Http\Controllers\VehicleChallanController::class, 'index'])->name('utilities.vehicle-challan-check');
     Route::post('/utilities/vehicle-challan-check/search', [\App\Http\Controllers\VehicleChallanController::class, 'search'])->name('utilities.vehicle-challan-check.search');

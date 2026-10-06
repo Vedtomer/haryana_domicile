@@ -61,7 +61,7 @@ class ApiSettingController extends Controller
                 'vahan_learning_licence_url'  => Setting::get('vahan_learning_licence_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php'),
                 'vahan_learning_licence_key'  => Setting::get('vahan_learning_licence_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'vehicle_to_mobile_api_url'   => Setting::get('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php'),
-                'vehicle_to_mobile_api_key'   => Setting::get('vehicle_to_mobile_api_key', 'DuXxZxX'),
+                'vehicle_to_mobile_api_key'   => Setting::get('vehicle_to_mobile_api_key', 'SamXverma'),
                 'vehicle_details_api_url'     => Setting::get('vehicle_details_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'vehicle_details_api_key'     => Setting::get('vehicle_details_api_key', 'SamXverma'),
                 'vahan_challan_api_url'       => Setting::get('vahan_challan_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php'),

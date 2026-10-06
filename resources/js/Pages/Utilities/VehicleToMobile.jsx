@@ -4,18 +4,59 @@ import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
 export default function VehicleToMobile() {
-    const { auth } = usePage().props;
+    const {
+        auth,
+        service,
+        currentService,
+        coinCost = 20,
+        isAdmin = false,
+        apiUrl: propApiUrl = '',
+        apiKey: propApiKey = '',
+    } = usePage().props;
+
     const [vehicleNo, setVehicleNo] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
 
+    const displayCoinCost = service?.coin_cost ?? currentService?.coin_cost ?? coinCost ?? 20;
+    const isUserAdmin = auth?.user?.is_admin || auth?.user?.type === 'super_admin' || auth?.user?.type === 'admin' || isAdmin;
+
+    // Admin Quick Settings Modal
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://api.paanel.shop/api/gateway.php');
+    const [adminApiKey, setAdminApiKey] = useState(propApiKey || 'SamXverma');
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [settingMsg, setSettingMsg] = useState(null);
+
     const handleCopy = (text) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleSaveAdminSettings = async (e) => {
+        e.preventDefault();
+        setSavingSettings(true);
+        setSettingMsg(null);
+        try {
+            const resp = await axios.post('/utilities/vehicle-to-mobile/update-api', {
+                api_url: adminApiUrl,
+                api_key: adminApiKey,
+            });
+            if (resp.data.success) {
+                setSettingMsg({ type: 'success', text: resp.data.message || 'API settings saved successfully!' });
+                setTimeout(() => setShowAdminModal(false), 1500);
+            } else {
+                setSettingMsg({ type: 'error', text: resp.data.message || 'Failed to save settings.' });
+            }
+        } catch (err) {
+            setSettingMsg({ type: 'error', text: err.response?.data?.message || 'Error updating API settings.' });
+        } finally {
+            setSavingSettings(false);
+        }
     };
 
     const handleSearch = async (e) => {
@@ -42,7 +83,7 @@ export default function VehicleToMobile() {
             }
         } catch (err) {
             console.error('Error fetching details:', err);
-            setError('Failed to fetch details. Please try again later.');
+            setError(err.response?.data?.message || 'Failed to fetch details. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -51,13 +92,31 @@ export default function VehicleToMobile() {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Vehicle to Mobile Number
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                        Instant lookup of mobile number associated with a vehicle
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-xl font-bold text-gray-800 dark:text-white leading-tight">
+                                Vehicle to Mobile Number
+                            </h1>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                                {displayCoinCost} Coins
+                            </span>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                            Instant lookup of mobile number associated with a vehicle
+                        </p>
+                    </div>
+
+                    {isUserAdmin && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAdminModal(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-xl border border-slate-700 shadow-sm transition"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">tune</span>
+                            API Config (Admin)
+                        </button>
+                    )}
                 </div>
             }
         >
@@ -87,8 +146,8 @@ export default function VehicleToMobile() {
                                 </div>
                                 <input
                                     type="text"
-                                    className="block w-full pl-14 pr-4 py-4 md:py-5 bg-white border-2 border-slate-300 rounded-2xl text-slate-900 font-medium text-lg placeholder-slate-400 focus:ring-0 focus:border-blue-500 transition-all shadow-sm"
-                                    placeholder="Enter Vehicle Number (e.g. HR06AV0611)"
+                                    className="block w-full pl-14 pr-4 py-4 md:py-5 bg-white border-2 border-slate-300 rounded-2xl text-slate-900 font-medium text-lg placeholder-slate-400 focus:ring-0 focus:border-blue-500 transition-all shadow-sm uppercase"
+                                    placeholder="Enter Vehicle Number (e.g. HR06BB2029)"
                                     value={vehicleNo}
                                     onChange={(e) => setVehicleNo(e.target.value.toUpperCase())}
                                 />
@@ -110,7 +169,7 @@ export default function VehicleToMobile() {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined">search</span>
-                                        Find Mobile Number
+                                        Find Mobile Number ({displayCoinCost} Coins)
                                     </>
                                 )}
                             </button>
@@ -190,6 +249,87 @@ export default function VehicleToMobile() {
                     </div>
                 </div>
             </div>
+
+            {/* Admin Quick API Settings Modal */}
+            {showAdminModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+                        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span className="material-symbols-outlined text-amber-500">tune</span>
+                                Vehicle to Mobile API Settings
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowAdminModal(false)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSaveAdminSettings} className="mt-4 space-y-4">
+                            {settingMsg && (
+                                <div className={`p-3 rounded-xl text-xs font-bold ${
+                                    settingMsg.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                                }`}>
+                                    {settingMsg.text}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                                    Gateway Endpoint URL
+                                </label>
+                                <input
+                                    type="url"
+                                    value={adminApiUrl}
+                                    onChange={(e) => setAdminApiUrl(e.target.value)}
+                                    placeholder="https://api.paanel.shop/api/gateway.php"
+                                    className="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                                    required
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Default: https://api.paanel.shop/api/gateway.php
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                                    API Key
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminApiKey}
+                                    onChange={(e) => setAdminApiKey(e.target.value)}
+                                    placeholder="SamXverma"
+                                    className="w-full text-sm px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Active Key: SamXverma
+                                </p>
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAdminModal(false)}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingSettings}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md disabled:opacity-50"
+                                >
+                                    {savingSettings ? 'Saving...' : 'Save API Settings'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
