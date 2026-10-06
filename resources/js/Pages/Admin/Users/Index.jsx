@@ -451,6 +451,15 @@ export default function Index({ users, allUsers = [], filters = {}, counts = {} 
                                                 </svg>
                                             </button>
 
+                                            {/* View User Passbook */}
+                                            <Link
+                                                href={`/admin/passbook?user_id=${user.id}`}
+                                                title={`View ${user.name}'s Service Passbook & Coin History`}
+                                                className="p-1.5 rounded-lg text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                            >
+                                                <span className="material-symbols-outlined text-[17px]">history_edu</span>
+                                            </Link>
+
                                             {/* Add Coins */}
                                             <button
                                                 onClick={() => setAddingCoinsTo(user)}
