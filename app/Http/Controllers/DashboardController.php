@@ -75,6 +75,7 @@ class DashboardController extends Controller
             \App\Models\AirtelPassbook::class,
             \App\Models\BobAffidavit::class,
             \App\Models\AadharUpdate::class,
+            \App\Models\MobileRecharge::class,
         ];
         foreach ($moduleModels as $modelClass) {
             if (class_exists($modelClass)) {
@@ -90,7 +91,7 @@ class DashboardController extends Controller
 
         $services = $rawServices->map(function (Service $service) use ($user, $isAdmin, $reqByServiceId, $reqByServiceName, $printJobCount, $modelCounts) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'bob-affidavit']);
+                || in_array($service->slug, ['mobile-recharge', 'qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'bob-affidavit']);
 
             $count = 0;
             if ($service->module_key === 'qr_to_print') {

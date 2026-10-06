@@ -312,6 +312,9 @@ function getServiceBullets(service) {
     if (nameLower.includes('land') || nameLower.includes('seeding')) {
         return ['Land seeding request', 'Simple online form', 'Track in Reports'];
     }
+    if (nameLower.includes('recharge') || nameLower.includes('mobile')) {
+        return ['Jio, Airtel, Vi, BSNL & DTH', 'Instant Recharge Confirmation', 'Auto Wallet Coins Deduction'];
+    }
     return ['Quick, secure & instant', 'Online Verification', '24x7 Available'];
 }
 

@@ -22,6 +22,13 @@ class Service extends Model
      * coin cost / visibility of these but not their wiring.
      */
     const MODULES = [
+        'mobile_recharge' => [
+            'label' => 'Mobile & DTH Recharge',
+            'icon' => '📱',
+            'model' => MobileRecharge::class,
+            'index' => '/utilities/mobile-recharge',
+            'create' => '/utilities/mobile-recharge',
+        ],
         'qr_to_print' => [
             'label' => 'QR to Print (Smart Counter)',
             'model' => null,
@@ -872,6 +879,10 @@ class Service extends Model
 
         if ($this->slug === 'mobile-no-to-aadhar-number') {
             return '/utilities/mobile-no-to-aadhar-number';
+        }
+
+        if ($this->slug === 'mobile-recharge' || $this->slug === 'mobile-dth-recharge') {
+            return '/utilities/mobile-recharge';
         }
 
         if ($this->slug === 'birth-certificate') {

@@ -62,6 +62,32 @@ Route::get('/migrate-db', function () {
         $output .= "=== TABLES CHECK ===\n";
         $output .= "wallets: " . (\Illuminate\Support\Facades\Schema::hasTable('wallets') ? 'EXISTS' : 'MISSING') . "\n";
         $output .= "payment_orders: " . (\Illuminate\Support\Facades\Schema::hasTable('payment_orders') ? 'EXISTS' : 'MISSING') . "\n";
+        $output .= "mobile_recharges: " . (\Illuminate\Support\Facades\Schema::hasTable('mobile_recharges') ? 'EXISTS' : 'MISSING') . "\n";
+        if (!\Illuminate\Support\Facades\Schema::hasTable('mobile_recharges')) {
+            try {
+                \Illuminate\Support\Facades\Schema::create('mobile_recharges', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                    $table->string('mobile', 25);
+                    $table->string('operator', 10);
+                    $table->string('operator_name', 50);
+                    $table->string('service_type', 20)->default('prepaid');
+                    $table->decimal('amount', 10, 2);
+                    $table->integer('coins_deducted');
+                    $table->string('txn_id', 100)->nullable()->index();
+                    $table->string('provider_status', 50)->nullable();
+                    $table->string('status', 30)->default('pending')->index();
+                    $table->decimal('amount_deducted', 10, 2)->nullable();
+                    $table->decimal('commission', 10, 2)->nullable();
+                    $table->text('api_response')->nullable();
+                    $table->text('failure_reason')->nullable();
+                    $table->timestamps();
+                });
+                $output .= "mobile_recharges table created directly!\n";
+            } catch (\Throwable $mte) {
+                $output .= "mobile_recharges create error: " . $mte->getMessage() . "\n";
+            }
+        }
         // Demote vandnadigigraphics / vandanadigigraphics to a regular user
         $vandnaUsers = \App\Models\User::where('email', 'like', '%vandna%')
             ->orWhere('email', 'like', '%vandana%')
@@ -171,6 +197,35 @@ Route::get('/migrate-db', function () {
             $output .= "=== COURIER & PARCEL SLIP MAKER UPSERTED ===\n\n";
         } catch (\Throwable $cpe) {
             $output .= "CourierSlipMaker error: " . $cpe->getMessage() . "\n\n";
+        }
+
+        // Ensure Mobile & DTH Recharge is in services table
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'mobile-recharge'],
+                [
+                    'name' => 'Mobile & DTH Recharge',
+                    'description' => 'Fast, real-time prepaid & postpaid mobile recharge, DTH top-up for Jio, Airtel, Vi, BSNL, Dish TV, Tata Sky, Videocon with instant receipts.',
+                    'icon' => '📱',
+                    'coin_cost' => 0,
+                    'kind' => 'module',
+                    'module_key' => 'mobile_recharge',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 50,
+                ]
+            );
+            if (!\App\Models\Setting::get('recharge_api_key')) {
+                \App\Models\Setting::set('recharge_api_key', 'Y3VK89K8V8');
+            }
+            if (!\App\Models\Setting::get('recharge_api_url')) {
+                \App\Models\Setting::set('recharge_api_url', 'https://apinice.in/api/v1');
+            }
+            $output .= "=== MOBILE & DTH RECHARGE UPSERTED ===\n\n";
+        } catch (\Throwable $mre) {
+            $output .= "MobileRecharge error: " . $mre->getMessage() . "\n\n";
         }
 
         // Ensure Aadhar To Check Ncpi Status is in services table
@@ -2787,6 +2842,13 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/abha-health-id-make', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'index'])->name('utilities.abha-health-id-make');
     Route::post('/utilities/abha-health-id-make/send-otp', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'sendOtp'])->name('utilities.abha-health-id-make.send-otp');
     Route::post('/utilities/abha-health-id-make/verify-otp', [\App\Http\Controllers\AbhaHealthIdMakeController::class, 'verifyOtp'])->name('utilities.abha-health-id-make.verify-otp');
+
+    // 17. Mobile & DTH Recharge
+    Route::get('/utilities/mobile-recharge', [\App\Http\Controllers\MobileRechargeController::class, 'index'])->name('utilities.mobile-recharge');
+    Route::post('/utilities/mobile-recharge/do-recharge', [\App\Http\Controllers\MobileRechargeController::class, 'recharge'])->name('utilities.mobile-recharge.do-recharge');
+    Route::post('/utilities/mobile-recharge/status', [\App\Http\Controllers\MobileRechargeController::class, 'checkStatus'])->name('utilities.mobile-recharge.status');
+    Route::get('/utilities/mobile-recharge/balance', [\App\Http\Controllers\MobileRechargeController::class, 'checkBalance'])->name('utilities.mobile-recharge.balance');
+    Route::post('/utilities/mobile-recharge/update-settings', [\App\Http\Controllers\MobileRechargeController::class, 'updateSettings'])->name('utilities.mobile-recharge.update-settings');
 
     // Premium Service Unlock
     Route::post('/services/{service}/unlock', function (\App\Models\Service $service) {
