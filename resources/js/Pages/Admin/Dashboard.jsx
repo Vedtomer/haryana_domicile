@@ -810,7 +810,7 @@ export default function Dashboard({
                                             Administration Control Panel
                                         </h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Manage users, coin requests, permissions, API settings, payments &amp; notices
+                                            Manage users, coin requests, permissions, payments, passbook &amp; notices
                                         </p>
                                     </div>
                                 </div>
@@ -881,16 +881,6 @@ export default function Dashboard({
                                     linkUrl="/admin/passbook"
                                 />
                                 <StatMetricCard
-                                    index={5}
-                                    colorTheme="amber"
-                                    title="API SETTINGS"
-                                    badgeText="GATEWAYS"
-                                    value="API Config"
-                                    subtitle="Configure vendor keys & endpoints"
-                                    icon="settings_input_composite"
-                                    linkUrl="/admin/api-settings"
-                                />
-                                <StatMetricCard
                                     index={6}
                                     colorTheme="emerald"
                                     title="PAYMENT SETTINGS"
@@ -919,26 +909,6 @@ export default function Dashboard({
                                     subtitle="Referral settings & tracking"
                                     icon="card_giftcard"
                                     linkUrl="/admin/referrals"
-                                />
-                                <StatMetricCard
-                                    index={9}
-                                    colorTheme="blue"
-                                    title="MOBILE RECHARGE API"
-                                    badgeText="RECHARGE"
-                                    value="Recharge Hub"
-                                    subtitle="apinice.in live balance & keys"
-                                    icon="phone_android"
-                                    linkUrl="/utilities/mobile-recharge"
-                                />
-                                <StatMetricCard
-                                    index={10}
-                                    colorTheme="orange"
-                                    title="LICENSE KEYS"
-                                    badgeText="LICENSES"
-                                    value="Key Manager"
-                                    subtitle="Device binding & activation"
-                                    icon="key"
-                                    linkUrl="/admin/license-keys"
                                 />
                             </div>
                         </div>
