@@ -270,13 +270,13 @@ export default function AdminLayout({ header, children }) {
                 </div>
 
                 {/* Sidebar Navigation */}
-                <div className="flex-1 px-3 py-4 space-y-3 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto custom-scrollbar">
                     {/* Top Action 1: Dashboard Button */}
                     <Link
                         href="/dashboard"
-                        onClick={handleDashboardClick}
+                        onClick={() => setSidebarOpen(false)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
-                            isDashboard && !activeCategory
+                            isDashboard
                                 ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-400/30'
                                 : 'bg-slate-100/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800/80'
                         }`}
@@ -288,6 +288,7 @@ export default function AdminLayout({ header, children }) {
                     {/* Top Action 2: Service Requests / Orders Button */}
                     <Link
                         href="/admin/service-requests"
+                        onClick={() => setSidebarOpen(false)}
                         className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
                             isServiceRequests
                                 ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/25 ring-2 ring-emerald-400/30'
@@ -307,64 +308,71 @@ export default function AdminLayout({ header, children }) {
                         )}
                     </Link>
 
-                    {/* Section Label: SERVICES */}
-                    <div className="flex items-center gap-1.5 px-2 pt-2 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        <span className="text-amber-500 text-xs">★</span>
-                        <span>SERVICES</span>
-                    </div>
+                    {/* Top Action 3: Add Money to Wallet */}
+                    <Link
+                        href="/wallet/add"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xs ${
+                            url.startsWith('/wallet/add')
+                                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-600/25 ring-2 ring-blue-400/30'
+                                : 'bg-slate-100/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800/80'
+                        }`}
+                    >
+                        <span className="material-symbols-outlined text-[20px] text-blue-500">add_card</span>
+                        <span>Add Money to Wallet</span>
+                    </Link>
 
-                    {/* Categorized Services List (Click opens category services on the main screen) */}
-                    <div className="space-y-1.5">
-                        {groupedServices.map((g) => {
-                            const isActive = activeCategory === g.category.id;
+                    {/* Admin Navigation (Admin Only) */}
+                    {isAdmin && (
+                        <div className="pt-2 space-y-1">
+                            <div className="flex items-center gap-1.5 px-3 pt-3 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span className="text-indigo-500 text-xs">⚡</span>
+                                <span>ADMINISTRATION</span>
+                            </div>
 
-                            return (
-                                <button
-                                    key={g.category.id}
-                                    type="button"
-                                    onClick={() => handleCategoryClick(g.category.id)}
-                                    className={`w-full flex items-center justify-between p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer group ${
-                                        isActive
-                                            ? 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:bg-indigo-950/40 border-indigo-400 dark:border-indigo-500 shadow-xs ring-1 ring-indigo-400/30'
-                                            : 'bg-white dark:bg-slate-900/90 border-slate-200/80 dark:border-slate-800/80 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                        <CategoryLogo category={g.category} services={g.services} size="w-8 h-8" />
-                                        <span
-                                            className={`text-xs font-bold truncate transition-colors ${
-                                                isActive
-                                                    ? 'text-indigo-600 dark:text-indigo-400'
-                                                    : 'text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'
-                                            }`}
-                                        >
-                                            {g.category.name}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                                        <span
-                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                                                isActive
-                                                    ? 'bg-indigo-600 text-white'
-                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                                            }`}
-                                        >
-                                            {g.services.length}
-                                        </span>
-                                        <span
-                                            className={`material-symbols-outlined text-[17px] transition-transform ${
-                                                isActive
-                                                    ? 'text-indigo-600 dark:text-indigo-400 translate-x-0.5'
-                                                    : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 group-hover:translate-x-0.5'
-                                            }`}
-                                        >
-                                            arrow_forward
-                                        </span>
-                                    </div>
-                                </button>
-                            );
-                        })}
-                    </div>
+                            <NavItem href="/admin/users" icon={<span className="material-symbols-outlined text-[19px]">group</span>}>
+                                Manage Users
+                            </NavItem>
+                            <NavItem href="/admin/coin-requests" icon={<span className="material-symbols-outlined text-[19px]">monetization_on</span>}>
+                                Coin Requests
+                            </NavItem>
+                            <NavItem href="/admin/services" icon={<span className="material-symbols-outlined text-[19px]">home_repair_service</span>}>
+                                Manage Services
+                            </NavItem>
+                            <NavItem href="/admin/user-permissions" icon={<span className="material-symbols-outlined text-[19px]">admin_panel_settings</span>}>
+                                User Permissions
+                            </NavItem>
+                            <NavItem href="/admin/api-settings" icon={<span className="material-symbols-outlined text-[19px]">settings_input_composite</span>}>
+                                API Settings
+                            </NavItem>
+                            <NavItem href="/admin/payment-settings" icon={<span className="material-symbols-outlined text-[19px]">payments</span>}>
+                                Payment Settings
+                            </NavItem>
+                            <NavItem href="/admin/notices" icon={<span className="material-symbols-outlined text-[19px]">campaign</span>}>
+                                Broadcast Notices
+                            </NavItem>
+                            <NavItem href="/admin/referrals" icon={<span className="material-symbols-outlined text-[19px]">card_giftcard</span>}>
+                                Referrals
+                            </NavItem>
+                        </div>
+                    )}
+
+                    {/* User Profile Navigation (Regular User) */}
+                    {!isAdmin && (
+                        <div className="pt-2 space-y-1">
+                            <div className="flex items-center gap-1.5 px-3 pt-3 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span className="text-indigo-500 text-xs">👤</span>
+                                <span>MY ACCOUNT</span>
+                            </div>
+
+                            <NavItem href="/admin/profile#coin-ledger" icon={<span className="material-symbols-outlined text-[19px]">history</span>}>
+                                Wallet Ledger / Passbook
+                            </NavItem>
+                            <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
+                                My Profile & Settings
+                            </NavItem>
+                        </div>
+                    )}
                 </div>
             </aside>
 

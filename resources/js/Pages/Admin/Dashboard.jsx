@@ -515,45 +515,7 @@ export default function Dashboard({
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-
-    // Selected category state (null = show Category Overview cards)
-    const [selectedCategory, setSelectedCategory] = useState(() => {
-        try {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('category') || null;
-        } catch (e) {
-            return null;
-        }
-    });
-
-    // Listen for category selection from sidebar
-    useEffect(() => {
-        const handleCategoryEvent = (e) => {
-            setSelectedCategory(e.detail);
-            if (e.detail) {
-                setTimeout(() => {
-                    const el = document.getElementById('services');
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }, 100);
-            }
-        };
-        window.addEventListener('categoryChange', handleCategoryEvent);
-        return () => window.removeEventListener('categoryChange', handleCategoryEvent);
-    }, []);
-
-    // Initial scroll if category is in URL
-    useEffect(() => {
-        if (selectedCategory) {
-            setTimeout(() => {
-                const el = document.getElementById('services');
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 250);
-        }
-    }, []);
+    const [selectedLetter, setSelectedLetter] = useState('ALL');
 
     // Balance values
     const effectiveBalance = walletBalance ?? auth?.user?.coins ?? 0;
@@ -568,22 +530,71 @@ export default function Dashboard({
         });
     }, [services, isAdmin]);
 
-    // 2. All categorized groups with at least 1 service
-    const allCategoryGroups = useMemo(() => {
-        return groupServicesByCategory(availableServices);
+    // 2. Sort all available services alphabetically by name
+    const sortedServices = useMemo(() => {
+        return [...availableServices].sort((a, b) => {
+            const nameA = (a.name || '').trim();
+            const nameB = (b.name || '').trim();
+            return nameA.localeCompare(nameB, undefined, { sensitivity: 'base', numeric: true });
+        });
     }, [availableServices]);
 
-    // 3. Current category's group
-    const currentGroup = useMemo(() => {
-        if (!selectedCategory) return null;
-        return allCategoryGroups.find((g) => g.category.id === selectedCategory) || null;
-    }, [allCategoryGroups, selectedCategory]);
+    // 3. Filter by search query
+    const filteredServices = useMemo(() => {
+        if (!searchQuery.trim()) return sortedServices;
+        const q = searchQuery.toLowerCase().trim();
+        return sortedServices.filter((s) =>
+            (s.name || '').toLowerCase().includes(q) ||
+            (s.description || '').toLowerCase().includes(q) ||
+            (s.slug || '').toLowerCase().includes(q) ||
+            (s.hindi_name || '').toLowerCase().includes(q)
+        );
+    }, [sortedServices, searchQuery]);
 
-    // Currently active category object if selected
-    const activeCategoryObj = useMemo(() => {
-        if (!selectedCategory) return null;
-        return SERVICE_CATEGORIES.find((c) => c.id === selectedCategory) || null;
-    }, [selectedCategory]);
+    // 4. Group alphabetically A to Z
+    const alphabetGroups = useMemo(() => {
+        const groups = {};
+        for (const s of filteredServices) {
+            const firstChar = (s.name || '').trim().charAt(0).toUpperCase();
+            const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
+            if (!groups[letter]) {
+                groups[letter] = [];
+            }
+            groups[letter].push(s);
+        }
+
+        const sortedLetters = Object.keys(groups).sort((a, b) => {
+            if (a === '#') return 1;
+            if (b === '#') return -1;
+            return a.localeCompare(b);
+        });
+
+        return sortedLetters.map((letter) => ({
+            letter,
+            services: groups[letter],
+        }));
+    }, [filteredServices]);
+
+    // 5. Count of services per letter across all available services
+    const letterCounts = useMemo(() => {
+        const counts = {};
+        for (const s of availableServices) {
+            const firstChar = (s.name || '').trim().charAt(0).toUpperCase();
+            const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
+            counts[letter] = (counts[letter] || 0) + 1;
+        }
+        return counts;
+    }, [availableServices]);
+
+    // 6. Displayed groups based on selected letter
+    const displayedGroups = useMemo(() => {
+        if (selectedLetter === 'ALL') {
+            return alphabetGroups;
+        }
+        return alphabetGroups.filter((g) => g.letter === selectedLetter);
+    }, [alphabetGroups, selectedLetter]);
+
+    const ALPHABET_LIST = useMemo(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), []);
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -617,35 +628,14 @@ export default function Dashboard({
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-2">
-                    {selectedCategory && activeCategoryObj ? (
-                        <div className="flex items-center gap-2 text-sm sm:text-base font-bold text-slate-800 dark:text-white">
-                            <button
-                                type="button"
-                                onClick={clearSelectedCategory}
-                                className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1 cursor-pointer"
-                            >
-                                <span>Dashboard</span>
-                            </button>
-                            <span className="text-slate-300 dark:text-slate-600">/</span>
-                            <span className="text-indigo-600 dark:text-indigo-400">
-                                {activeCategoryObj.name}
-                            </span>
-                        </div>
-                    ) : (
-                        <h1 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white leading-tight">
-                            Dashboard
-                        </h1>
-                    )}
-                </div>
+                <h1 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white leading-tight">
+                    Dashboard
+                </h1>
             }
         >
-            <Head title={selectedCategory && activeCategoryObj ? activeCategoryObj.name : 'Dashboard'} />
+            <Head title="Dashboard" />
 
-            {!selectedCategory ? (
-                /* DASHBOARD OVERVIEW: No services show! Only stats, balance, and customer care */
-                <>
-                    {/* 1. Small Compact Welcome Banner */}
+            {/* 1. Small Compact Welcome Banner */}
                     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 mb-5 shadow-sm flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
@@ -809,7 +799,194 @@ export default function Dashboard({
                         </div>
                     )}
 
-                    {/* 3. Customer Care Section */}
+                    {/* 3. ALL SERVICES - ALPHABETICAL DIRECTORY (A to Z) */}
+                    <div id="services-directory" className="mb-10 space-y-6">
+                        {/* Directory Header Card with Live Search */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-7 shadow-xs">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 text-white flex items-center justify-center font-black shadow-md shadow-indigo-500/25 shrink-0">
+                                        <span className="material-symbols-outlined text-2xl">sort_by_alpha</span>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                                            <span>All Services / सभी सेवाएँ</span>
+                                        </h2>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                            Alphabetical Order (A to Z) &bull; किसी भी सर्विस को तुरंत खोलने के लिए क्लिक करें
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800">
+                                        {filteredServices.length} {filteredServices.length === 1 ? 'Service' : 'Services'} Available
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Search Box */}
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">
+                                    search
+                                </span>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search services by name (e.g. Aadhaar, PAN, Voter, Vehicle, Ration, Birth, Bill, Courier...)"
+                                    className="w-full pl-12 pr-10 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700/80 rounded-2xl text-sm sm:text-base font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all shadow-inner"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                                        title="Clear search"
+                                    >
+                                        <span className="material-symbols-outlined text-lg">close</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Alphabet Quick Filter Bar (Sticky) */}
+                        <div className="sticky top-2 z-20 backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-2.5 shadow-sm">
+                            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
+                                {/* 'ALL' Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedLetter('ALL')}
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                                        selectedLetter === 'ALL'
+                                            ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/40'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                                >
+                                    <span>ALL</span>
+                                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                                        selectedLetter === 'ALL' ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                    }`}>
+                                        {availableServices.length}
+                                    </span>
+                                </button>
+
+                                {/* A-Z Alphabet Buttons */}
+                                {ALPHABET_LIST.map((letter) => {
+                                    const count = letterCounts[letter] || 0;
+                                    const isSelected = selectedLetter === letter;
+                                    const hasServices = count > 0;
+
+                                    return (
+                                        <button
+                                            key={letter}
+                                            type="button"
+                                            onClick={() => hasServices && setSelectedLetter(letter)}
+                                            disabled={!hasServices}
+                                            title={hasServices ? `${count} services starting with ${letter}` : `No services under ${letter}`}
+                                            className={`px-3 py-2 rounded-xl text-xs font-black transition-all shrink-0 flex items-center justify-center min-w-[36px] ${
+                                                isSelected
+                                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40 scale-105'
+                                                    : hasServices
+                                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 cursor-pointer'
+                                                    : 'bg-slate-100/40 dark:bg-slate-800/30 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'
+                                            }`}
+                                        >
+                                            <span>{letter}</span>
+                                            {hasServices && (
+                                                <span className={`ml-1 text-[9px] font-bold ${
+                                                    isSelected ? 'text-white/90' : 'text-slate-400 dark:text-slate-500'
+                                                }`}>
+                                                    {count}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+
+                                {/* '#' Symbol for numbers/other */}
+                                {(letterCounts['#'] || 0) > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedLetter('#')}
+                                        className={`px-3 py-2 rounded-xl text-xs font-black transition-all shrink-0 flex items-center justify-center min-w-[36px] cursor-pointer ${
+                                            selectedLetter === '#'
+                                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md ring-2 ring-purple-400/40'
+                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-indigo-50'
+                                        }`}
+                                    >
+                                        <span>#</span>
+                                        <span className="ml-1 text-[9px] font-bold text-slate-400">
+                                            {letterCounts['#']}
+                                        </span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Alphabetical Services Content */}
+                        {displayedGroups.length > 0 ? (
+                            <div className="space-y-10">
+                                {displayedGroups.map((group) => (
+                                    <div key={group.letter} id={`letter-${group.letter}`} className="space-y-5 scroll-mt-28">
+                                        {/* Letter Divider Header */}
+                                        <div className="flex items-center gap-3 pb-2 border-b-2 border-indigo-100 dark:border-indigo-950">
+                                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white font-black text-xl flex items-center justify-center shadow-md shadow-indigo-500/20">
+                                                {group.letter}
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                                                    <span>Letter {group.letter}</span>
+                                                    <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
+                                                        {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
+                                                    </span>
+                                                </h3>
+                                            </div>
+                                            <div className="flex-1 h-px bg-gradient-to-r from-slate-200 dark:from-slate-800 to-transparent ml-2" />
+                                        </div>
+
+                                        {/* 3D Card Grid */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
+                                            {group.services.map((service, idx) => (
+                                                <ServiceCard
+                                                    key={service.id}
+                                                    service={service}
+                                                    index={idx}
+                                                    onUnlockClick={setUnlockingService}
+                                                    isAdmin={isAdmin}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            /* Empty State */
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center max-w-md mx-auto">
+                                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-4">
+                                    <span className="material-symbols-outlined text-3xl">search_off</span>
+                                </div>
+                                <h3 className="text-lg font-extrabold text-slate-800 dark:text-white mb-1">
+                                    No services found
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+                                    {searchQuery ? `No service matches '${searchQuery}'.` : `No services available under letter '${selectedLetter}'.`}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setSelectedLetter('ALL');
+                                    }}
+                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-sm"
+                                >
+                                    Show All Services
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 4. Customer Care Section */}
                     <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-8 shadow-2xs">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
@@ -897,69 +1074,6 @@ export default function Dashboard({
                             </a>
                         </div>
                     </div>
-                </>
-            ) : (
-                /* SERVICE VIEW: When a service category is clicked, ONLY that category's services show! */
-                <div id="services" className="mb-10">
-                    {/* Top Row: Back to Dashboard button + Category Name & Badge */}
-                    <div className="flex items-center justify-between gap-3 mb-6">
-                        <button
-                            type="button"
-                            onClick={clearSelectedCategory}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 transition-all cursor-pointer whitespace-nowrap group"
-                        >
-                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
-                                arrow_back
-                            </span>
-                            <span>Back to Dashboard</span>
-                        </button>
-
-                        <div className="flex items-center gap-2.5">
-                            <CategoryLogo category={activeCategoryObj} services={currentGroup?.services || []} size="w-9 h-9" />
-                            <div className="text-right">
-                                <div className="flex items-center gap-2 justify-end flex-wrap">
-                                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                                        {activeCategoryObj?.name}
-                                    </h2>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${activeCategoryObj?.badgeBg}`}>
-                                        {currentGroup?.services?.length || 0} Services
-                                    </span>
-                                </div>
-                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
-                                    {activeCategoryObj?.hindiName}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Services Grid for This Category */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
-                        {(currentGroup?.services || []).map((service, index) => (
-                            <ServiceCard
-                                key={service.id}
-                                service={service}
-                                index={index}
-                                onUnlockClick={setUnlockingService}
-                                isAdmin={isAdmin}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Bottom Back to Dashboard Button */}
-                    <div className="mt-8 text-center">
-                        <button
-                            type="button"
-                            onClick={clearSelectedCategory}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-md transition-all cursor-pointer group"
-                        >
-                            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
-                                arrow_back
-                            </span>
-                            <span>Back to Dashboard</span>
-                        </button>
-                    </div>
-                </div>
-            )}
 
 
 

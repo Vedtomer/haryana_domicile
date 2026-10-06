@@ -56,8 +56,8 @@ export default function RcInfo() {
 
     // Admin Quick Config Modal
     const [showAdminModal, setShowAdminModal] = useState(false);
-    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
-    const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://api.paanel.shop/api/gateway.php');
+    const [adminApiKey, setAdminApiKey] = useState(propApiKey || 'SamXverma');
     const [savingSettings, setSavingSettings] = useState(false);
     const [settingMsg, setSettingMsg] = useState(null);
 

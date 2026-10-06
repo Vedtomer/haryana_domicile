@@ -66,8 +66,8 @@ class ApiSettingController extends Controller
                 'vehicle_details_api_key'     => Setting::get('vehicle_details_api_key', 'SamXverma'),
                 'vahan_challan_api_url'       => Setting::get('vahan_challan_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php'),
                 'vahan_challan_api_key'       => Setting::get('vahan_challan_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
-                'vahan_rc_info_api_url'       => Setting::get('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php'),
-                'vahan_rc_info_api_key'       => Setting::get('vahan_rc_info_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
+                'vahan_rc_info_api_url'       => Setting::get('vahan_rc_info_api_url', 'https://api.paanel.shop/api/gateway.php'),
+                'vahan_rc_info_api_key'       => Setting::get('vahan_rc_info_api_key', 'SamXverma'),
 
                 // Aadhaar Info & Updates
                 'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210'),

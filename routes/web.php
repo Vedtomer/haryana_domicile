@@ -607,11 +607,9 @@ Route::get('/migrate-db', function () {
                     'sort_order' => 60,
                 ]
             );
-            \App\Models\Setting::set('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
-            if (empty(\App\Models\Setting::get('vahan_rc_info_api_key'))) {
-                \App\Models\Setting::set('vahan_rc_info_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
-            }
-            $output .= "=== RC CARD INFO UPSERTED (14 COINS, GOOD-API-POINT) ===\n\n";
+            \App\Models\Setting::set('vahan_rc_info_api_url', 'https://api.paanel.shop/api/gateway.php');
+            \App\Models\Setting::set('vahan_rc_info_api_key', 'SamXverma');
+            $output .= "=== RC CARD INFO UPSERTED (14 COINS, PAANEL-SHOP POLICY GATEWAY) ===\n\n";
         } catch (\Throwable $rce) {
             $output .= "RcInfo error: " . $rce->getMessage() . "\n\n";
         }

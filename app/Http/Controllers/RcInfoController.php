@@ -63,26 +63,27 @@ class RcInfoController extends Controller
 
         $cleanRc = strtoupper(trim(preg_replace('/[^A-Za-z0-9]/', '', $request->input('rc'))));
 
-        $baseUrl = trim(Setting::get('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php'));
+        $baseUrl = trim(Setting::get('vahan_rc_info_api_url', 'https://api.paanel.shop/api/gateway.php'));
         if (empty($baseUrl)) {
-            $baseUrl = 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php';
+            $baseUrl = 'https://api.paanel.shop/api/gateway.php';
         }
 
         // Clean query placeholders if pasted directly
-        if (str_contains($baseUrl, 'apiKey=ENTER_API_KEY') || str_contains($baseUrl, 'rc=ENTER_RC_NUMBER')) {
+        if (str_contains($baseUrl, 'key=ENTER') || str_contains($baseUrl, 'apiKey=ENTER') || str_contains($baseUrl, 'Policy=ENTER') || str_contains($baseUrl, 'rc=ENTER')) {
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('vahan_rc_info_api_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
+        $apiKey = trim(Setting::get('vahan_rc_info_api_key') ?: 'SamXverma');
 
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{rc}') || str_contains($baseUrl, '{vehicle_number}')) {
+        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{rc}') || str_contains($baseUrl, '{vehicle_number}')) {
             $url = str_replace(
-                ['{apiKey}', '{rc}', '{vehicle_number}'],
-                [urlencode($apiKey), urlencode($cleanRc), urlencode($cleanRc)],
+                ['{apiKey}', '{key}', '{Policy}', '{rc}', '{vehicle_number}'],
+                [urlencode($apiKey), urlencode($apiKey), urlencode($cleanRc), urlencode($cleanRc), urlencode($cleanRc)],
                 $baseUrl
             );
+        } elseif (str_contains($baseUrl, 'paanel.shop') || str_contains($baseUrl, 'Policy=')) {
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
+            $url = $baseUrl . $separator . 'key=' . urlencode($apiKey) . '&Policy=' . urlencode($cleanRc);
         } else {
             $separator = str_contains($baseUrl, '?') ? '&' : '?';
             $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&rc=' . urlencode($cleanRc);
@@ -98,9 +99,10 @@ class RcInfoController extends Controller
 
             if (is_array($data)) {
                 $status = $data['status'] ?? ($data['Status'] ?? null);
-                $isSuccess = ($status === 'success' || $status === 'Success' || $status === true || ($data['StatusCode'] ?? null) == 100);
+                $isSuccess = (!empty($data['success']) && ($data['success'] === true || $data['success'] === 'true' || $data['success'] == 1))
+                    || ($status === 'success' || $status === 'Success' || $status === true || ($data['StatusCode'] ?? null) == 100);
 
-                $rcData = $data['data'] ?? null;
+                $rcData = self::normalizeRcData($data, $cleanRc);
 
                 if ($isSuccess && !empty($rcData)) {
                     // Deduct coins only if non-staff
@@ -126,8 +128,8 @@ class RcInfoController extends Controller
                         Log::error('ServiceRequest logging error in RcInfo: ' . $logEx->getMessage());
                     }
 
-                    // Cache in session for PDF generation
-                    session(["rc_info_last_{$cleanRc}" => $data]);
+                    // Cache normalized data in session for PDF generation
+                    session(["rc_info_last_{$cleanRc}" => ['success' => true, 'data' => $rcData]]);
 
                     return response()->json([
                         'success'          => true,
@@ -151,7 +153,7 @@ class RcInfoController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::warning('Good-API-Point RC Info Exception', ['error' => $e->getMessage()]);
+            Log::warning('RC Info Exception', ['error' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
@@ -171,20 +173,23 @@ class RcInfoController extends Controller
 
         // If not in session, try to fetch fresh from API
         if (!$cached) {
-            $baseUrl = trim(Setting::get('vahan_rc_info_api_url', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php'));
+            $baseUrl = trim(Setting::get('vahan_rc_info_api_url', 'https://api.paanel.shop/api/gateway.php'));
             if (empty($baseUrl)) {
-                $baseUrl = 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php';
+                $baseUrl = 'https://api.paanel.shop/api/gateway.php';
             }
-            if (str_contains($baseUrl, 'apiKey=ENTER_API_KEY')) {
+            if (str_contains($baseUrl, 'key=ENTER') || str_contains($baseUrl, 'apiKey=ENTER') || str_contains($baseUrl, 'Policy=ENTER') || str_contains($baseUrl, 'rc=ENTER')) {
                 $baseUrl = explode('?', $baseUrl)[0];
             }
 
-            $apiKey = trim(Setting::get('vahan_rc_info_api_key')
-                ?: (Setting::get('goodapi_api_key')
-                ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
+            $apiKey = trim(Setting::get('vahan_rc_info_api_key') ?: 'SamXverma');
 
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&rc=' . urlencode($rc);
+            if (str_contains($baseUrl, 'paanel.shop') || str_contains($baseUrl, 'Policy=')) {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                $url = $baseUrl . $separator . 'key=' . urlencode($apiKey) . '&Policy=' . urlencode($rc);
+            } else {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&rc=' . urlencode($rc);
+            }
 
             try {
                 $response = Http::connectTimeout(10)->timeout(30)->get($url);
@@ -194,11 +199,16 @@ class RcInfoController extends Controller
             }
         }
 
-        if (empty($cached) || empty($cached['data'])) {
+        if (empty($cached)) {
             return back()->with('error', 'Vehicle details not found for generating PDF. Please search first.');
         }
 
-        $formatted = self::formatForPdf($cached);
+        $normalized = self::normalizeRcData($cached, $rc);
+        if (empty($normalized)) {
+            return back()->with('error', 'Vehicle details not found for generating PDF. Please search first.');
+        }
+
+        $formatted = self::formatForPdf(['data' => $normalized]);
 
         $pdf = Pdf::loadView('pdf.vehicle_details', ['data' => $formatted]);
         $pdf->setPaper('a4', 'portrait');
@@ -206,6 +216,132 @@ class RcInfoController extends Controller
         return response($pdf->output())
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="RC_Card_' . $rc . '.pdf"');
+    }
+
+    public static function normalizeRcData(array $raw, string $cleanRc): ?array
+    {
+        $d = $raw['data'] ?? $raw;
+        if (empty($d)) {
+            return null;
+        }
+
+        // If already normalized or in GoodAPI structure
+        if (isset($d['owner']['owner_name'])) {
+            return $d;
+        }
+
+        // Map from paanel.shop signzy response
+        $signzy = $d['meta_data']['signzy_response']['result'] ?? [];
+        $vehDetails = $d['vehicle_details'] ?? [];
+        $custDetails = $d['customer_details'] ?? [];
+
+        $regNo = $signzy['regNo'] ?? ($d['registration_number'] ?? ($vehDetails['registration_no'] ?? $cleanRc));
+        $ownerName = $signzy['owner'] ?? ($custDetails['full_name'] ?? 'N/A');
+        $fatherName = $signzy['ownerFatherName'] ?? ($d['nominee_details']['name'] ?? 'N/A');
+        $ownerSerial = $signzy['ownerCount'] ?? '1';
+
+        $mfg = $signzy['vehicleManufacturerName'] ?? ($vehDetails['vehicle_type'] ?? 'N/A');
+        $model = $signzy['model'] ?? 'N/A';
+        $vClass = $signzy['class'] ?? ($vehDetails['vehicle_type'] ?? 'N/A');
+        $vCategory = $signzy['vehicleCategory'] ?? (!empty($d['is_two_wheeler']) ? '2WN' : '4WN');
+        $color = $signzy['vehicleColour'] ?? ($vehDetails['vehicle_color'] ?? 'N/A');
+        $bodyType = $signzy['bodyType'] ?? 'N/A';
+
+        $chassis = $signzy['chassis'] ?? ($d['chassis_number'] ?? ($vehDetails['chassis_no'] ?? 'N/A'));
+        $engine = $signzy['engine'] ?? ($d['engine_number'] ?? ($vehDetails['engine_no'] ?? 'N/A'));
+        $fuel = $signzy['type'] ?? 'PETROL';
+        $norms = $signzy['normsType'] ?? 'BHARAT STAGE VI';
+        $cc = $signzy['vehicleCubicCapacity'] ?? null;
+        $cylinders = $signzy['vehicleCylindersNo'] ?? '1';
+        $seats = $signzy['vehicleSeatCapacity'] ?? '2';
+        $unladen = $signzy['unladenWeight'] ?? null;
+        $gross = $signzy['grossVehicleWeight'] ?? null;
+        $wheelbase = $signzy['wheelbase'] ?? null;
+        $status = $signzy['status'] ?? 'ACTIVE';
+        $blacklist = $signzy['blacklistStatus'] ?: 'No Blacklist';
+
+        $insComp = $signzy['vehicleInsuranceCompanyName'] ?? ($d['previous_insurer_code'] ? strtoupper($d['previous_insurer_code']) : 'N/A');
+        $insPolicy = $signzy['vehicleInsurancePolicyNumber'] ?? ($d['previous_policy_number'] ?? 'N/A');
+        $insUpto = $signzy['vehicleInsuranceUpto'] ?? ($d['previous_policy_exp_date'] ?? 'N/A');
+
+        $regDate = $signzy['regDate'] ?? ($vehDetails['registration_date'] ?? 'N/A');
+        $rcExpiry = $signzy['rcExpiryDate'] ?? 'N/A';
+        $taxUpto = $signzy['vehicleTaxUpto'] ?? $rcExpiry;
+        $pucUpto = $signzy['puccUpto'] ?? 'N/A';
+        $pucNo = $signzy['puccNumber'] ?? 'N/A';
+
+        $mfgMonthYear = $signzy['vehicleManufacturingMonthYear'] ?? (!empty($d['manufactured_month']) ? ($d['manufactured_month'] . '/' . $d['manufactured_year']) : 'N/A');
+
+        $rto = $signzy['regAuthority'] ?? 'N/A';
+        $rtoCode = $signzy['rtoCode'] ?? ($d['rb_rto_code'] ?? substr($regNo, 0, 4));
+        $state = explode(',', $rto)[1] ?? (substr($regNo, 0, 2) === 'UP' ? 'UTTAR PRADESH' : (substr($regNo, 0, 2) === 'HR' ? 'HARYANA' : 'INDIA'));
+
+        $commAddr = $custDetails['communication_address']['address_line'] ?? ($custDetails['communication_address']['address'] ?? 'N/A');
+        $presentAddr = $signzy['presentAddress'] ?? $commAddr;
+        $permAddr = $signzy['permanentAddress'] ?? $commAddr;
+
+        return [
+            'registration_number'     => strtoupper(str_replace(['-', ' '], '', $regNo)),
+            'registration_date'       => $regDate,
+            'registration_valid_upto' => $rcExpiry,
+            'owner' => [
+                'owner_name'   => $ownerName,
+                'father_name'  => $fatherName,
+                'owner_serial' => $ownerSerial,
+            ],
+            'vehicle' => [
+                'manufacturer'     => $mfg,
+                'model'            => $model,
+                'variant'          => '',
+                'vehicle_class'    => $vClass,
+                'vehicle_category' => $vCategory,
+                'body_type'        => $bodyType,
+                'color'            => $color,
+            ],
+            'technical_details' => [
+                'chassis_number'       => $chassis,
+                'engine_number'        => $engine,
+                'fuel_type'            => $fuel,
+                'emission_norms'       => $norms,
+                'cubic_capacity'       => $cc,
+                'cylinders'            => $cylinders,
+                'seating_capacity'     => $seats,
+                'unladen_weight'       => $unladen,
+                'gross_vehicle_weight' => $gross,
+                'wheel_base'           => $wheelbase,
+                'vehicle_age'          => null,
+                'rc_status'            => $status,
+                'blacklist_status'     => $blacklist,
+            ],
+            'insurance' => [
+                'company'       => $insComp,
+                'policy_number' => $insPolicy,
+                'valid_upto'    => $insUpto,
+            ],
+            'validity' => [
+                'fitness_upto' => $rcExpiry,
+                'tax_upto'     => $taxUpto,
+                'puc_upto'     => $pucUpto,
+                'puc_number'   => $pucNo,
+            ],
+            'manufacturing' => [
+                'month_year' => $mfgMonthYear,
+                'year'       => $d['manufactured_year'] ?? 'N/A',
+            ],
+            'finance' => [
+                'financer_name' => $signzy['rcFinancer'] ?: 'ON CASH / NONE',
+            ],
+            'registration_authority' => [
+                'rto'      => $rto,
+                'rto_code' => $rtoCode,
+                'state'    => trim($state),
+            ],
+            'address' => [
+                'present_address'   => $presentAddr,
+                'permanent_address' => $permAddr,
+            ],
+            'raw' => $d,
+        ];
     }
 
     public function updateApi(Request $request)
