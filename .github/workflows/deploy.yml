@@ -27,6 +27,7 @@ jobs:
             set -ex
             PHP=/opt/alt/php85/usr/bin/php
             cd "${{ secrets.DEPLOY_PATH }}"
+            rm -f .git/index.lock || true
             git fetch origin main
             git reset --hard origin/main
             mkdir -p build/assets
