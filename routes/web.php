@@ -1013,6 +1013,15 @@ Route::get('/migrate-db', function () {
             $output .= "VoterPdfManualInstant error: " . $vpme->getMessage() . "\n\n";
         }
 
+        // Ensure Mobile to Info uses APINice endpoint and key
+        try {
+            \App\Models\Setting::set('mobile_to_info_api_url', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210');
+            \App\Models\Setting::set('mobile_to_info_api_key', 'Y3VK89K8V8');
+            $output .= "=== MOBILE TO INFO APINICE API CONFIGURED ===\n\n";
+        } catch (\Throwable $mtie) {
+            $output .= "MobileToInfo Setting error: " . $mtie->getMessage() . "\n\n";
+        }
+
         // Ensure regular users have access to all active public services
         try {
             $allActivePublicServiceIds = \App\Models\Service::where('is_active', true)

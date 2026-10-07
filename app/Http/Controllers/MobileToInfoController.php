@@ -28,8 +28,8 @@ class MobileToInfoController extends Controller
             'coinCost' => $coinCost,
             'service' => $service,
             'isAdmin' => (bool) $isStaff,
-            'apiUrl' => $isStaff ? Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210') : null,
-            'apiKey' => $isStaff ? Setting::get('mobile_to_info_api_key', '48hrs') : null,
+            'apiUrl' => $isStaff ? Setting::get('mobile_to_info_api_url', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210') : null,
+            'apiKey' => $isStaff ? Setting::get('mobile_to_info_api_key', 'Y3VK89K8V8') : null,
         ]);
     }
 
@@ -88,10 +88,10 @@ class MobileToInfoController extends Controller
         }
 
         $cleanMobile = preg_replace('/\D/', '', $request->input('mobile'));
-        $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210');
-        $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: '48hrs');
+        $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210');
+        $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: 'Y3VK89K8V8');
 
-        if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}')) {
+        if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{apiKey}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}') || str_contains($rawUrl, '{number}')) {
             $apiUrl = str_replace(
                 ['{key}', '{apiKey}', '{q}', '{mobile}', '{number}'],
                 [urlencode($apiKey), urlencode($apiKey), urlencode($cleanMobile), urlencode($cleanMobile), urlencode($cleanMobile)],
@@ -104,11 +104,22 @@ class MobileToInfoController extends Controller
                 parse_str($parts['query'], $query);
             }
 
-            $query['q'] = $cleanMobile;
-            if (!empty($apiKey)) {
-                $query['key'] = $apiKey;
-            } elseif (!isset($query['key'])) {
-                $query['key'] = '48hrs';
+            // Update API key in query
+            if (isset($query['apiKey'])) {
+                $query['apiKey'] = !empty($apiKey) ? $apiKey : $query['apiKey'];
+            } elseif (isset($query['key'])) {
+                $query['key'] = !empty($apiKey) ? $apiKey : $query['key'];
+            } elseif (!empty($apiKey)) {
+                $query['apiKey'] = $apiKey;
+            }
+
+            // Update mobile in query
+            if (isset($query['mobile'])) {
+                $query['mobile'] = $cleanMobile;
+            } elseif (isset($query['q'])) {
+                $query['q'] = $cleanMobile;
+            } else {
+                $query['mobile'] = $cleanMobile;
             }
 
             $scheme = isset($parts['scheme']) ? $parts['scheme'] . '://' : 'https://';
@@ -119,19 +130,59 @@ class MobileToInfoController extends Controller
         }
 
         try {
-            $response = Http::connectTimeout(8)->timeout(25)->get($apiUrl);
+            $response = Http::connectTimeout(10)->timeout(30)->get($apiUrl);
 
             if ($response->successful()) {
                 $data = $response->json();
 
+                // Check for API-level status codes indicating errors (e.g. apinice {"status":"101", ...})
+                if (isset($data['status']) && $data['status'] != '200' && empty($data['success'])) {
+                    $errMsg = $data['message'] ?? 'Gateway returned an error.';
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errMsg,
+                    ]);
+                }
+
+                if (isset($data['success']) && $data['success'] === false) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.'),
+                    ]);
+                }
+
                 $rawResults = [];
-                if (isset($data['results']) && is_array($data['results'])) {
+                // Support apinice data.fields structure
+                if (isset($data['data']['fields']) && is_array($data['data']['fields'])) {
+                    $fields = $data['data']['fields'];
+                    if (isset($fields[0]) && is_array($fields[0])) {
+                        $rawResults = $fields;
+                    } else {
+                        $rawResults = [$fields];
+                    }
+                } elseif (isset($data['data']) && is_array($data['data'])) {
+                    if (isset($data['data'][0]) && is_array($data['data'][0])) {
+                        $rawResults = $data['data'];
+                    } elseif (isset($data['data']['name']) || isset($data['data']['address']) || isset($data['data']['circle'])) {
+                        $rawResults = [$data['data']];
+                    }
+                } elseif (isset($data['results']) && is_array($data['results'])) {
                     $rawResults = $data['results'];
                 } elseif (is_array($data) && isset($data[0])) {
                     $rawResults = $data;
                 }
 
-                if (!empty($rawResults)) {
+                // Filter out empty records
+                $validRecords = [];
+                foreach ($rawResults as $item) {
+                    if (!is_array($item)) continue;
+                    $hasAnyField = !empty($item['name']) || !empty($item['fname']) || !empty($item['father_name']) || !empty($item['address']) || !empty($item['ADDRESS']) || !empty($item['circle']);
+                    if ($hasAnyField) {
+                        $validRecords[] = $item;
+                    }
+                }
+
+                if (!empty($validRecords)) {
                     // Deduct coins only for regular users
                     if (!$isStaff && $coinCost > 0) {
                         $user->deductCoins($coinCost, CoinTransaction::TYPE_SERVICE_DEDUCTION, "Mobile to Info: {$cleanMobile}");
@@ -139,31 +190,43 @@ class MobileToInfoController extends Controller
 
                     // Format and clean records
                     $cleanedRecords = [];
-                    foreach ($rawResults as $item) {
+                    foreach ($validRecords as $item) {
                         $addressRaw = $item['address'] ?? ($item['ADDRESS'] ?? '');
-                        $addressParts = array_values(array_filter(array_map('trim', explode('!', $addressRaw))));
+                        $addressParts = array_values(array_filter(array_map('trim', explode('!', (string) $addressRaw))));
                         $cleanAddress = !empty($addressParts) ? implode(', ', $addressParts) : 'N/A';
 
                         $altNum = $item['alternate'] ?? ($item['alt'] ?? null);
-                        if ($altNum && (strtoupper(trim($altNum)) === 'NA' || strtoupper(trim($altNum)) === 'NULL')) {
+                        if ($altNum && in_array(strtoupper(trim((string) $altNum)), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
                             $altNum = null;
                         }
 
-                        $aadharNum = $item['aadhar'] ?? null;
-                        if ($aadharNum && (strtoupper(trim($aadharNum)) === 'NA' || strtoupper(trim($aadharNum)) === 'NULL')) {
-                            $aadharNum = null;
+                        // Check Aadhaar / ID number
+                        $aadharNum = $item['aadhar'] ?? ($item['aadhaar'] ?? null);
+                        if (!$aadharNum && !empty($item['id'])) {
+                            $idVal = trim((string) $item['id']);
+                            if (!in_array(strtoupper($idVal), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
+                                $aadharNum = $idVal;
+                            }
                         }
 
                         $emailVal = $item['email'] ?? null;
-                        if ($emailVal && (strtoupper(trim($emailVal)) === 'NA' || strtoupper(trim($emailVal)) === 'NULL')) {
+                        if ($emailVal && in_array(strtoupper(trim((string) $emailVal)), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
                             $emailVal = null;
                         }
 
+                        $fatherVal = !empty($item['father_name']) ? trim((string) $item['father_name']) : (!empty($item['fname']) ? trim((string) $item['fname']) : 'N/A');
+                        $fatherVal = trim($fatherVal, " \t\n\r\0\x0B\"'");
+
+                        $nameVal = !empty($item['name']) ? trim((string) $item['name']) : 'N/A';
+                        $nameVal = trim($nameVal, " \t\n\r\0\x0B\"'");
+
+                        $circleVal = !empty($item['circle']) ? trim((string) $item['circle']) : 'N/A';
+
                         $cleanedRecords[] = [
-                            'mobile' => !empty($item['mobile']) ? trim($item['mobile']) : $cleanMobile,
-                            'name' => !empty($item['name']) ? trim($item['name']) : 'N/A',
-                            'father_name' => !empty($item['father_name']) ? trim($item['father_name']) : ($item['fname'] ?? 'N/A'),
-                            'circle' => !empty($item['circle']) ? trim($item['circle']) : 'N/A',
+                            'mobile' => !empty($item['mobile']) ? trim((string) $item['mobile']) : $cleanMobile,
+                            'name' => $nameVal,
+                            'father_name' => $fatherVal,
+                            'circle' => $circleVal,
                             'address' => $cleanAddress,
                             'alternate' => $altNum,
                             'aadhar' => $aadharNum,
@@ -200,7 +263,7 @@ class MobileToInfoController extends Controller
 
                 return response()->json([
                     'success' => false,
-                    'message' => 'No records found for mobile number ' . $cleanMobile . '.',
+                    'message' => $data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.'),
                 ]);
             }
 

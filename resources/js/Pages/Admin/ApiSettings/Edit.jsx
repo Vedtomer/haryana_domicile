@@ -489,11 +489,11 @@ export default function Edit({ settings = {} }) {
                                         <h4 className="text-xs font-black text-blue-900 dark:text-blue-300 uppercase tracking-wider">
                                             Mobile To Info (10-Digit Mobile to Name, Address & Aadhaar)
                                         </h4>
-                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">Gateway: Custom Cloudflare Worker</span>
+                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">Gateway: APINice</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {renderUrlInput('mobile_to_info_api_url', 'Mobile To Info API URL', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210', 'Full URL with query or template {key} and {mobile}')}
-                                        {renderKeyInput('mobile_to_info_api_key', 'Mobile To Info API Key', '48hrs', 'Default key: 48hrs')}
+                                        {renderUrlInput('mobile_to_info_api_url', 'Mobile To Info API URL', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210', 'Full URL with query or template {apiKey} and {mobile}')}
+                                        {renderKeyInput('mobile_to_info_api_key', 'Mobile To Info API Key', 'Y3VK89K8V8', 'Default key: Y3VK89K8V8')}
                                     </div>
                                 </div>
 

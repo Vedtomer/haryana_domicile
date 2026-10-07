@@ -70,8 +70,8 @@ class ApiSettingController extends Controller
                 'vahan_rc_info_api_key'       => Setting::get('vahan_rc_info_api_key', 'SamXverma'),
 
                 // Aadhaar Info & Updates
-                'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://maikyaladledarlinggggg.watchwere19.workers.dev/?key=48hrs&q=9876543210'),
-                'mobile_to_info_api_key'             => Setting::get('mobile_to_info_api_key', '48hrs'),
+                'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210'),
+                'mobile_to_info_api_key'             => Setting::get('mobile_to_info_api_key', 'Y3VK89K8V8'),
                 'aadhar_to_info_api_url'             => Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'aadhar_to_info_api_key'             => Setting::get('aadhar_to_info_api_key', 'SamXverma'),
                 'aadhar_to_npci_api_url'             => Setting::get('aadhar_to_npci_api_url', 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php'),
