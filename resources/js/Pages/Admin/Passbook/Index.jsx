@@ -90,62 +90,30 @@ export default function Index({ transactions = { data: [], links: [] }, summary 
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl shadow-xs border border-indigo-100 dark:border-indigo-900">
+                <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg shadow-xs border border-indigo-100 dark:border-indigo-900 shrink-0">
                             📖
                         </div>
-                        <div>
-                            <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
-                                {isAllUsersView ? 'Admin Passbook (All Users)' : 'My Wallet Passbook'}
+                        <div className="min-w-0 truncate">
+                            <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight truncate">
+                                {isAdmin ? 'User Service Passbook' : 'My Wallet Passbook'}
                             </h1>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                {isAllUsersView
-                                    ? 'Track which user used which service, mobile numbers, and live coin deductions'
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate hidden sm:block">
+                                {isAdmin
+                                    ? 'Konsa user kya service use kiya with name, mobile & coins'
                                     : 'Detailed record of your wallet coin credits and service deductions'}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <Link
-                            href="/dashboard"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-[17px]">arrow_back</span>
-                            <span>Back to Dashboard</span>
-                        </Link>
-
-                        {/* Scope Switcher for Admin */}
-                        {isAdmin && (
-                            <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
-                                <button
-                                    type="button"
-                                    onClick={() => handleScopeChange('all')}
-                                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                                        scope === 'all'
-                                            ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-sm">groups</span>
-                                    <span>All Users Passbook</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleScopeChange('my')}
-                                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                                        scope === 'my'
-                                            ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-sm">person</span>
-                                    <span>My Account Only</span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all cursor-pointer shrink-0"
+                    >
+                        <span className="material-symbols-outlined text-[17px]">arrow_back</span>
+                        <span>Back to Dashboard</span>
+                    </Link>
                 </div>
             }
         >
