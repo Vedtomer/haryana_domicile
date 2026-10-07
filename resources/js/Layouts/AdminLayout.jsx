@@ -304,27 +304,24 @@ export default function AdminLayout({ header, children }) {
                         </span>
                     </Link>
 
-                    {/* My Account (Wallet Ledger & Profile) */}
-                    <div className="pt-3 space-y-1">
-                        <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            <span className="text-indigo-500 text-xs">{isAdmin ? '👑' : '👤'}</span>
-                            <span>{isAdmin ? 'ADMIN PASSBOOK' : 'MY ACCOUNT'}</span>
-                        </div>
+                    {/* My Account (Wallet Ledger & Profile) - Regular Users Only */}
+                    {!isAdmin && (
+                        <div className="pt-3 space-y-1">
+                            <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span className="text-indigo-500 text-xs">👤</span>
+                                <span>MY ACCOUNT</span>
+                            </div>
 
-                        <NavItem href="/admin/passbook" icon={<span className="material-symbols-outlined text-[19px]">history_edu</span>}>
-                            <span className="flex items-center justify-between w-full">
-                                <span>{isAdmin ? 'User Service Passbook' : 'Wallet Ledger / Passbook'}</span>
-                                {isAdmin && (
-                                    <span className="ml-1 px-1.5 py-0.2 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[9px] font-black uppercase">
-                                        All Users
-                                    </span>
-                                )}
-                            </span>
-                        </NavItem>
-                        <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
-                            My Profile &amp; Settings
-                        </NavItem>
-                    </div>
+                            <NavItem href="/admin/passbook" icon={<span className="material-symbols-outlined text-[19px]">history_edu</span>}>
+                                <span className="flex items-center justify-between w-full">
+                                    <span>Wallet Ledger / Passbook</span>
+                                </span>
+                            </NavItem>
+                            <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
+                                My Profile &amp; Settings
+                            </NavItem>
+                        </div>
+                    )}
                 </div>
             </aside>
 
@@ -486,14 +483,16 @@ export default function AdminLayout({ header, children }) {
                                         <span>Switch Account</span>
                                     </button>
                                 )}
-                                <Link
-                                    href="/admin/passbook"
-                                    onClick={() => setDropdownOpen(false)}
-                                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-[18px] text-amber-500">receipt_long</span>
-                                    <span>Passbook &amp; Ledger</span>
-                                </Link>
+                                {!isAdmin && (
+                                    <Link
+                                        href="/admin/passbook"
+                                        onClick={() => setDropdownOpen(false)}
+                                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px] text-amber-500">receipt_long</span>
+                                        <span>Passbook &amp; Ledger</span>
+                                    </Link>
+                                )}
                                 {isAdmin && (
                                     <>
                                         <div className="border-t border-slate-100 dark:border-slate-800 my-1" />

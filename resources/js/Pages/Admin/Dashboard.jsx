@@ -810,7 +810,7 @@ export default function Dashboard({
                                             Administration Control Panel
                                         </h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Manage users, coin requests, permissions, payments, passbook &amp; notices
+                                            Manage users, coin requests, permissions, payments &amp; notices
                                         </p>
                                     </div>
                                 </div>
@@ -872,16 +872,6 @@ export default function Dashboard({
                                 />
                                 <StatMetricCard
                                     index={5}
-                                    colorTheme="purple"
-                                    title="USER PASSBOOK"
-                                    badgeText="USER HISTORY"
-                                    value="All Users Passbook"
-                                    subtitle="Konsa user kya service use kiya with name & coins"
-                                    icon="history_edu"
-                                    linkUrl="/admin/passbook"
-                                />
-                                <StatMetricCard
-                                    index={6}
                                     colorTheme="emerald"
                                     title="PAYMENT SETTINGS"
                                     badgeText="UPI / QR"
@@ -891,7 +881,7 @@ export default function Dashboard({
                                     linkUrl="/admin/payment-settings"
                                 />
                                 <StatMetricCard
-                                    index={7}
+                                    index={6}
                                     colorTheme="purple"
                                     title="BROADCAST NOTICE"
                                     badgeText="NOTICES"
@@ -901,7 +891,7 @@ export default function Dashboard({
                                     linkUrl="/admin/notices"
                                 />
                                 <StatMetricCard
-                                    index={8}
+                                    index={7}
                                     colorTheme="indigo"
                                     title="REFER & EARN"
                                     badgeText="AFFILIATE"
