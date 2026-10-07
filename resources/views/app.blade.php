@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
         <meta name="theme-color" content="#ffffff">
+        <meta name="google-site-verification" content="Zxs-a1knaNGxKY1LKqvpNlvG_Xgk9kAYMuP0zGStEdU" />
         <link rel="manifest" href="/manifest.json">
         <link rel="apple-touch-icon" href="/logo.png">
         

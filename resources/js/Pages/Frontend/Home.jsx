@@ -220,6 +220,7 @@ export default function Home({ services = [] }) {
                 <Head>
                     <title>CertifyIndia - Digital Citizen Services Portal</title>
                     <meta name="description" content="All-in-one portal for digital citizen services: PAN Card, Aadhaar, Driving Licence, RC, Certificates & Print." />
+                    <meta name="google-site-verification" content="Zxs-a1knaNGxKY1LKqvpNlvG_Xgk9kAYMuP0zGStEdU" />
                 </Head>
 
                 {/* Hero Section */}

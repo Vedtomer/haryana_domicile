@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="Zxs-a1knaNGxKY1LKqvpNlvG_Xgk9kAYMuP0zGStEdU" />
 
         <title>{{ config('app.name', 'CSP Jaankari') }}</title>
 
