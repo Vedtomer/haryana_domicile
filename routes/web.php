@@ -70,6 +70,7 @@ Route::get('/migrate-db', function () {
             }
         } catch (\Throwable $te) {
             $output .= "Error fetching CoinTransactions: " . $te->getMessage() . "\n";
+        }
         $output .= "\n=== GOOD API 26 SERVICES DIAGNOSTIC SUITE ===\n";
         $goodApiToken = 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22';
         $testEndpoints = [
