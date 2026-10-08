@@ -41,48 +41,15 @@ class AadharToPanController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php';
         }
 
-        $apiKey = trim(Setting::get('aadhar_to_pan_api_key') ?: 
-            Setting::get('aadhar_to_mask_pan_api_key', 
-            Setting::get('goodapi_api_key', 
-            Setting::get('aadhar_to_name_api_key', 
-            Setting::get('aadhar_to_npci_api_key', 
-            Setting::get('nexus_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'))))));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
-            ]);
-        }
-
-        // Replace placeholders if present
-        if (str_contains($baseUrl, 'ENTER_KAY') || str_contains($baseUrl, 'ENTER_KEY') || str_contains($baseUrl, 'ENTER_API_KEY') || str_contains($baseUrl, '{apiKey}')) {
-            $baseUrl = str_replace(
-                ['ENTER_KAY', 'ENTER_KEY', 'ENTER_API_KEY', '{apiKey}'],
-                urlencode($apiKey),
-                $baseUrl
-            );
-        }
-        if (str_contains($baseUrl, 'ENTER_AADHAR') || str_contains($baseUrl, 'ENTER_AADHAR_NUMBER') || str_contains($baseUrl, 'ENTER_UID') || str_contains($baseUrl, '{uidNumber}') || str_contains($baseUrl, '{uid}') || str_contains($baseUrl, '{aadhar}')) {
-            $baseUrl = str_replace(
-                ['ENTER_AADHAR', 'ENTER_AADHAR_NUMBER', 'ENTER_UID', '{uidNumber}', '{uid}', '{aadhar}'],
-                urlencode($cleanAadhar),
-                $baseUrl
-            );
-        }
-
-        if (!str_contains($baseUrl, 'apiKey=')) {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&uidNumber=" . urlencode($cleanAadhar);
-        } else if (!str_contains($baseUrl, 'uidNumber=') && !str_contains($baseUrl, 'uid=')) {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "uidNumber=" . urlencode($cleanAadhar);
-        } else {
-            $url = $baseUrl;
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('aadhar_to_pan_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'uidNumber' => $cleanAadhar,
+            'uid'       => $cleanAadhar,
+            'aadhar'    => $cleanAadhar,
+        ], $apiKey);
 
         try {
-            $response = Http::connectTimeout(10)->timeout(45)->get($url);
+            $response = \App\Services\GoodApiService::client(45, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

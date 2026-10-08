@@ -88,26 +88,15 @@ class AadharToIdIntelligenceController extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('id_intelligence_api_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{aadhaar}') || str_contains($baseUrl, '{uid}')) {
-            $url = str_replace(
-                ['{apiKey}', '{aadhaar}', '{uid}'],
-                [urlencode($apiKey), urlencode($cleanAadhaar), urlencode($cleanAadhaar)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&aadhaar=' . urlencode($cleanAadhaar);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('id_intelligence_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'aadhaar' => $cleanAadhaar,
+            'uid'     => $cleanAadhaar,
+            'aadhar'  => $cleanAadhaar,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, application/pdf, */*',
-            ])->connectTimeout(15)->timeout(60)->get($url);
+            $response = \App\Services\GoodApiService::client(60, $apiKey)->get($url);
 
             $data = $response->json();
 

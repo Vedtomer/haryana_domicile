@@ -22,18 +22,15 @@ class PanDetailsController extends Controller
         }
 
         $pan = strtoupper(trim($request->input('pan')));
-        $baseUrl = trim(\App\Models\Setting::get('nexus_pan_details_url') ?: 'https://nexus-dashboard.space/api/v1/pan_card_api/pan_server2.php');
-        $apiKey = trim(\App\Models\Setting::get('nexus_api_key') ?: config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'));
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{pan}')) {
-            $url = str_replace(['{apiKey}', '{pan}'], [urlencode($apiKey), urlencode($pan)], $baseUrl);
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&pan=" . urlencode($pan);
+        $baseUrl = trim(\App\Models\Setting::get('pan_details_server2_api_url') ?: \App\Models\Setting::get('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php'));
+        if (empty($baseUrl) || str_contains($baseUrl, 'nexus-dashboard.space')) {
+            $baseUrl = 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php';
         }
+        $apiKey = \App\Services\GoodApiService::getApiKey(\App\Models\Setting::get('pan_details_server2_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, ['pan' => $pan, 'pan_no' => $pan], $apiKey);
 
         try {
-            $response = Http::connectTimeout(5)->timeout(20)->get($url);
+            $response = \App\Services\GoodApiService::client(35, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

@@ -71,48 +71,6 @@ Route::get('/migrate-db', function () {
         } catch (\Throwable $te) {
             $output .= "Error fetching CoinTransactions: " . $te->getMessage() . "\n";
         }
-        $output .= "\n=== GOOD API 26 SERVICES DIAGNOSTIC SUITE ===\n";
-        $goodApiToken = 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22';
-        $testEndpoints = [
-            'aadhar_to_name' => 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php?uid=123456789012',
-            'aadhar_to_mask_pan' => 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php?uid=123456789012',
-            'aadhar_to_pan' => 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php?uidNumber=123456789012&uid=123456789012',
-            'aadhar_to_npci' => 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php?uid=123456789012',
-            'aadhar_to_ration' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/uid_to_ration_no.php?uid=123456789012',
-            'pan_details_server2' => 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php?pan=ABCDE1234F',
-            'pan_full_details' => 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php?pan=ABCDE1234F&pan_no=ABCDE1234F',
-            'pan_to_uid' => 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_uid_s1.php?pan=ABCDE1234F',
-            'pan_to_gst' => 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_gst.php?pan=ABCDE1234F',
-            'pan_to_mask_uid' => 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_mask_uid.php?pan=ABCDE1234F&pan_no=ABCDE1234F',
-            'mobile_to_pan' => 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php?mobile=9876543210&mobile_number=9876543210&first_name=TEST&last_name=USER',
-            'vahan_rc_pdf' => 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php?vechil_no=DL01AB1234&vehicle_number=DL01AB1234',
-            'vahan_rc_pdf2' => 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf2.php?rcno=DL01AB1234',
-            'vahan_learning_licence' => 'https://good-api-point.com/apis_partner/v1/vahan_service_api/learning_license_pdf.php?applNum=12345678',
-            'vahan_challan' => 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php?vehicle_number=DL01AB1234',
-            'ration_card_pdf' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_card_pdf.php?ration_no=123456789012',
-            'ration_to_aadhar_all_state' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_all.php?ration_no=123456789012&statecode=09',
-            'ration_to_aadhar_up' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_up.php?ration_no=123456789012',
-            'ration_advance_details' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/up_ration_details.php?ration_no=123456789012',
-            'ration_sleep_photo' => 'https://good-api-point.com/apis_partner/v1/ration_card_api/bihar_ration_slip.php?ration=123456789012&type=R',
-            'id_intelligence' => 'https://good-api-point.com/apis_partner/v1/telecom_api/id_intelligence.php?aadhaar=123456789012&uid=123456789012',
-            'farmer_pdf_server2' => 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_pdf_server2.php?aadhaar=123456789012&uid=123456789012&state=UP',
-            'farmer_card_pdf' => 'https://good-api-point.com/apis_partner/v1/farmer_card_api/farmer_card_pdf.php?uid=123456789012&state=UP&type=A',
-            'voter_mobile_update' => 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php?epic=ABC1234567&mobile=9876543210',
-            'voter_advance' => 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php?epic=ABC1234567',
-            'voter_name_find' => 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php?epic=ABC1234567',
-        ];
-
-        foreach ($testEndpoints as $epKey => $epUrl) {
-            $sep = str_contains($epUrl, '?') ? '&' : '?';
-            $finalUrl = "{$epUrl}{$sep}apiKey={$liveKey}&token={$goodApiToken}";
-            $cmd = "curl -sSL -m 5 -H 'X-API-KEY: {$liveKey}' -H 'Token-ID: {$goodApiToken}' " . escapeshellarg($finalUrl) . " 2>&1";
-            $res = trim((string) @shell_exec($cmd));
-            if (strlen($res) > 120) {
-                $res = substr($res, 0, 117) . '...';
-            }
-            $output .= "[{$epKey}]: " . ($res ?: 'EMPTY_RESPONSE') . "\n";
-        }
-        $output .= "\n";
         $output .= "Git Log Before: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n";
 
         // Pull latest from GitHub directly

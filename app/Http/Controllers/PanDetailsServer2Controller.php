@@ -63,31 +63,14 @@ class PanDetailsServer2Controller extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php';
         }
 
-        $apiKey = trim(Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
-            ]);
-        }
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{pan}')) {
-            $url = str_replace(
-                ['{apiKey}', '{pan}'],
-                [urlencode($apiKey), urlencode($pan)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&pan=" . urlencode($pan);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('pan_details_server2_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'pan'    => $pan,
+            'pan_no' => $pan,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, text/plain, */*',
-            ])->connectTimeout(10)->timeout(35)->get($url);
+            $response = \App\Services\GoodApiService::client(40, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

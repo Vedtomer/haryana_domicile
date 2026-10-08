@@ -83,26 +83,14 @@ class VoterNameFindController extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('voter_name_find_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{epic}') || str_contains($baseUrl, '{voter_no}')) {
-            $url = str_replace(
-                ['{apiKey}', '{epic}', '{voter_no}'],
-                [urlencode($apiKey), urlencode($cleanEpic), urlencode($cleanEpic)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&epic=' . urlencode($cleanEpic);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('voter_name_find_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'epic'     => $cleanEpic,
+            'voter_no' => $cleanEpic,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, */*',
-            ])->connectTimeout(15)->timeout(40)->get($url);
+            $response = \App\Services\GoodApiService::client(40, $apiKey)->get($url);
 
             $data = $response->json();
 

@@ -88,24 +88,18 @@ class RationSleepPhotoController extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('ration_sleep_photo_api_key')
-            ?: (Setting::get('aadhar_to_ration_api_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')));
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('ration_sleep_photo_api_key'));
 
         $queryParams = [
-            'apiKey' => $apiKey,
-            'ration' => $cleanRationNo,
-            'type'   => $type,
+            'ration'    => $cleanRationNo,
+            'ration_no' => $cleanRationNo,
+            'type'      => $type,
         ];
 
-        $url = $baseUrl . (str_contains($baseUrl, '?') ? '&' : '?') . http_build_query($queryParams);
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, $queryParams, $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, application/pdf, image/*, */*',
-            ])->connectTimeout(15)->timeout(60)->get($url);
+            $response = \App\Services\GoodApiService::client(60, $apiKey)->get($url);
 
             $contentType = $response->header('Content-Type') ?? '';
 

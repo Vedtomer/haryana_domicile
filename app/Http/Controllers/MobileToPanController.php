@@ -68,31 +68,16 @@ class MobileToPanController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php';
         }
 
-        $apiKey = trim(Setting::get('mobile_to_pan_api_key', Setting::get('goodapi_api_key', Setting::get('nexus_mobile_to_pan_key', Setting::get('nexus_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')))));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
-            ]);
-        }
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{mobile}') || str_contains($baseUrl, '{first_name}')) {
-            $url = str_replace(
-                ['{apiKey}', '{mobile}', '{mobile_number}', '{first_name}', '{last_name}'],
-                [urlencode($apiKey), urlencode($mobile), urlencode($mobile), urlencode($firstName), urlencode($lastName)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&mobile_number=" . urlencode($mobile) . "&first_name=" . urlencode($firstName) . "&last_name=" . urlencode($lastName);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('mobile_to_pan_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'mobile_number' => $mobile,
+            'mobile'        => $mobile,
+            'first_name'    => $firstName,
+            'last_name'     => $lastName,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, text/plain, */*',
-            ])->connectTimeout(10)->timeout(35)->get($url);
+            $response = \App\Services\GoodApiService::client(40, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

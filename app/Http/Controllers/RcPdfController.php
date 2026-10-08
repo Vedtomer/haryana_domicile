@@ -84,26 +84,15 @@ class RcPdfController extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('vahan_rc_pdf_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{vechil_no}') || str_contains($baseUrl, '{vehicle_number}')) {
-            $url = str_replace(
-                ['{apiKey}', '{vechil_no}', '{vehicle_number}', '{vehicle_no}', '{reg_no}'],
-                [urlencode($apiKey), urlencode($vechilNo), urlencode($vechilNo), urlencode($vechilNo), urlencode($vechilNo)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&vechil_no=' . urlencode($vechilNo);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('vahan_rc_pdf_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'vechil_no'       => $vechilNo,
+            'vehicle_number'  => $vechilNo,
+            'rc_number'       => $vechilNo,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, application/pdf, */*',
-            ])->connectTimeout(10)->timeout(45)->get($url);
+            $response = \App\Services\GoodApiService::client(50, $apiKey)->get($url);
 
             $contentType = $response->header('Content-Type') ?? '';
 

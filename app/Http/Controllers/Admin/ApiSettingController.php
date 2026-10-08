@@ -22,19 +22,21 @@ class ApiSettingController extends Controller
                 'idcard_store_api_key'  => Setting::get('idcard_store_api_key', config('services.idcard_store.api_key', '71ebc340-7c80-4c8f-9613-250094ba27c3')),
                 'idcard_store_base_url' => Setting::get('idcard_store_base_url', config('services.idcard_store.base_url', 'https://api.idcard.store')),
 
-                // Nexus API & KYC Services
-                'nexus_api_key'                => Setting::get('nexus_api_key', config('services.nexus.api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')),
+                // Good APIs Partner & KYC Services
+                'goodapi_api_key'              => Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'),
+                'goodapi_token_id'             => Setting::get('goodapi_token_id', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22'),
+                'nexus_api_key'                => Setting::get('nexus_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'nexus_aadhar_to_name_url'     => Setting::get('aadhar_to_name_api_url', Setting::get('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')),
                 'aadhar_to_name_api_url'       => Setting::get('aadhar_to_name_api_url', Setting::get('nexus_aadhar_to_name_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')),
-                'aadhar_to_name_api_key'       => Setting::get('aadhar_to_name_api_key', Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'))),
+                'aadhar_to_name_api_key'       => Setting::get('aadhar_to_name_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'aadhar_to_mask_pan_api_url'   => Setting::get('aadhar_to_mask_pan_api_url', Setting::get('nexus_aadhar_to_mask_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php')),
-                'aadhar_to_mask_pan_api_key'   => Setting::get('aadhar_to_mask_pan_api_key', Setting::get('aadhar_to_name_api_key', Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')))),
+                'aadhar_to_mask_pan_api_key'   => Setting::get('aadhar_to_mask_pan_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'nexus_aadhar_to_pan_url'      => Setting::get('aadhar_to_pan_api_url', Setting::get('nexus_aadhar_to_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php')),
                 'aadhar_to_pan_api_url'        => Setting::get('aadhar_to_pan_api_url', Setting::get('nexus_aadhar_to_pan_url', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php')),
-                'aadhar_to_pan_api_key'        => Setting::get('aadhar_to_pan_api_key', Setting::get('aadhar_to_mask_pan_api_key', Setting::get('aadhar_to_name_api_key', Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'))))),
+                'aadhar_to_pan_api_key'        => Setting::get('aadhar_to_pan_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'nexus_mobile_to_pan_url'      => Setting::get('mobile_to_pan_api_url', Setting::get('nexus_mobile_to_pan_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php')),
                 'mobile_to_pan_api_url'        => Setting::get('mobile_to_pan_api_url', Setting::get('nexus_mobile_to_pan_url', 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php')),
-                'nexus_mobile_to_pan_key'      => Setting::get('mobile_to_pan_api_key', Setting::get('nexus_mobile_to_pan_key', '')),
+                'nexus_mobile_to_pan_key'      => Setting::get('mobile_to_pan_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'nexus_pan_details_url'        => Setting::get('pan_details_server2_api_url', Setting::get('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')),
                 'pan_details_server2_api_url'  => Setting::get('pan_details_server2_api_url', Setting::get('nexus_pan_details_url', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')),
                 'pan_details_server2_api_key'  => Setting::get('pan_details_server2_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
@@ -75,7 +77,7 @@ class ApiSettingController extends Controller
                 'aadhar_to_info_api_url'             => Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'aadhar_to_info_api_key'             => Setting::get('aadhar_to_info_api_key', 'SamXverma'),
                 'aadhar_to_npci_api_url'             => Setting::get('aadhar_to_npci_api_url', 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php'),
-                'aadhar_to_npci_api_key'             => Setting::get('aadhar_to_npci_api_key', Setting::get('nexus_api_key', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386')),
+                'aadhar_to_npci_api_key'             => Setting::get('aadhar_to_npci_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'aadhar_to_ration_api_url'           => Setting::get('aadhar_to_ration_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/uid_to_ration_no.php'),
                 'aadhar_to_ration_api_key'           => Setting::get('aadhar_to_ration_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
                 'ration_card_pdf_api_url'            => Setting::get('ration_card_pdf_api_url', 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_card_pdf.php'),
@@ -157,6 +159,10 @@ class ApiSettingController extends Controller
         }
 
         $fields = [
+            // Good APIs Partner
+            'goodapi_api_key',
+            'goodapi_token_id',
+
             // IDCard.Store
             'idcard_store_api_key',
             'idcard_store_base_url',
@@ -298,6 +304,13 @@ class ApiSettingController extends Controller
                 $val = trim((string) $request->input($field, ''));
                 Setting::set($field, $val);
             }
+        }
+
+        // Keep goodapi_api_key and nexus_api_key in sync if one was updated
+        if ($request->filled('goodapi_api_key')) {
+            Setting::set('nexus_api_key', trim((string) $request->input('goodapi_api_key')));
+        } elseif ($request->filled('nexus_api_key') && !$request->filled('goodapi_api_key')) {
+            Setting::set('goodapi_api_key', trim((string) $request->input('nexus_api_key')));
         }
 
         return back()->with('success', '✅ Saari API Settings successfully update ho gayi hain.');

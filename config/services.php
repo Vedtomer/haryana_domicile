@@ -41,8 +41,14 @@ return [
     ],
 
     'nexus' => [
-        'api_key' => env('NEXUS_API_KEY', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'),
-        'api_key_vahan' => env('NEXUS_API_KEY_VAHAN', '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386'),
+        'api_key' => env('NEXUS_API_KEY', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'),
+        'api_key_vahan' => env('NEXUS_API_KEY_VAHAN', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'),
+    ],
+
+    'goodapi' => [
+        'api_key' => env('GOODAPI_API_KEY', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'),
+        'token_id' => env('GOODAPI_TOKEN_ID', 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22'),
+        'base_url' => 'https://good-api-point.com/apis_partner/v1/',
     ],
 
     'idcard_store' => [

@@ -7,6 +7,10 @@ export default function Edit({ settings = {} }) {
     const [showKeys, setShowKeys] = useState({});
 
     const { data, setData, put, processing } = useForm({
+        // Good APIs Partner Gateway
+        goodapi_api_key: settings.goodapi_api_key || '',
+        goodapi_token_id: settings.goodapi_token_id || '',
+
         // IDCard.Store (PVC & Astrology)
         idcard_store_api_key: settings.idcard_store_api_key || '',
         idcard_store_base_url: settings.idcard_store_base_url || '',
@@ -146,7 +150,7 @@ export default function Edit({ settings = {} }) {
 
     const categories = [
         { id: 'all', label: 'All Services', icon: 'apps' },
-        { id: 'nexus', label: 'Nexus KYC & PAN', icon: 'fingerprint' },
+        { id: 'nexus', label: 'Good APIs Partner', icon: 'hub' },
         { id: 'vahan', label: 'Vahan, RC & DL', icon: 'directions_car' },
         { id: 'aadhaar', label: 'Aadhaar & Info', icon: 'contact_mail' },
         { id: 'idcard', label: 'IDCard.Store (PVC)', icon: 'badge' },
@@ -275,20 +279,20 @@ export default function Edit({ settings = {} }) {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
 
-                    {/* 1. NEXUS KYC & PAN SERVICES */}
+                    {/* 1. GOOD APIS PARTNER & KYC SERVICES */}
                     {isVisible('nexus') && (
                         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
                             <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xl border border-purple-200 dark:border-purple-900/50">
-                                        <span className="material-symbols-outlined">fingerprint</span>
+                                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl border border-indigo-200 dark:border-indigo-900/50">
+                                        <span className="material-symbols-outlined">hub</span>
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white">
-                                                Nexus KYC & PAN Services API
+                                                Good APIs Partner & KYC Services Gateway
                                             </h3>
-                                            {data.nexus_api_key ? (
+                                            {(data.goodapi_api_key || data.nexus_api_key) ? (
                                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                                     ✓ ACTIVE
                                                 </span>
@@ -299,33 +303,48 @@ export default function Edit({ settings = {} }) {
                                             )}
                                         </div>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                            Aadhaar se Name, Mask PAN, Unmasked PAN, Mobile to PAN, PAN Details Instant, Full Details, PAN to Aadhaar, PAN to UID Advance
+                                            partner.good-apis.com / good-api-point.com — Aadhaar, PAN, Vahan RC, DL, Ration Card, Farmer, Voter Services
                                         </p>
                                     </div>
                                 </div>
                                 <a
-                                    href="https://nexus-dashboard.space"
+                                    href="https://partner.good-apis.com/dashboard/api-keys"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-xs text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-semibold"
+                                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold"
                                 >
-                                    <span>nexus-dashboard.space</span>
+                                    <span>partner.good-apis.com</span>
                                     <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                                 </a>
                             </div>
 
                             <div className="space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/30">
+                                    {renderKeyInput(
+                                        'goodapi_api_key',
+                                        'Good APIs Master API Key',
+                                        'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1',
+                                        'Header X-API-KEY aur query param apiKey ke roop me automatically inject hota hai.'
+                                    )}
+                                    {renderKeyInput(
+                                        'goodapi_token_id',
+                                        'Good APIs Master TOKEN ID',
+                                        'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22',
+                                        'Header Token-ID aur query param token ke roop me automatically inject hota hai.'
+                                    )}
+                                </div>
+
                                 {renderKeyInput(
                                     'nexus_api_key',
-                                    'Master Nexus API Key (Default for All Nexus Services)',
-                                    'e.g. 38cc07892c07c566e3ce1a3289c589e284954d7c0e593386',
-                                    'Yeh key niche diye gaye sabhi Nexus endpoints ke liye master key ke roop me use hoti hai.'
+                                    'Fallback / Legacy Master API Key',
+                                    'e.g. ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1',
+                                    'Agar specific key na mili ho toh yeh key fallback ke roop me use hoti hai.'
                                 )}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                    {renderUrlInput('nexus_aadhar_to_name_url', '1. Aadhar To Name Endpoint URL', 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_name.php')}
-                                    {renderUrlInput('nexus_aadhar_to_mask_pan_url', '2. Aadhar To Mask PAN Endpoint URL', 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhar_to_mask_pan.php')}
-                                    {renderUrlInput('nexus_aadhar_to_pan_url', '3. Aadhar To Unmasked PAN Endpoint URL', 'https://nexus-dashboard.space/api/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php')}
+                                    {renderUrlInput('nexus_aadhar_to_name_url', '1. Aadhar To Name Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php')}
+                                    {renderUrlInput('nexus_aadhar_to_mask_pan_url', '2. Aadhar To Mask PAN Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_mask_pan.php')}
+                                    {renderUrlInput('nexus_aadhar_to_pan_url', '3. Aadhar To Unmasked PAN Endpoint URL', 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhaar_to_unmasked_pan.php')}
                                     {renderUrlInput('nexus_pan_details_url', '4. PAN Details (Server 2) URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_server2.php')}
                                     {renderUrlInput('nexus_pan_full_details_url', '5. PAN Full Details URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php')}
                                     {renderUrlInput('nexus_pan_to_aadhar_url', '6. PAN To Aadhaar Unmasked URL (Good-API-Point)', 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php')}

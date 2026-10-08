@@ -82,27 +82,14 @@ class VoterMobileUpdateController extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('voter_mobile_update_key', ''));
-        if (empty($apiKey) || $apiKey === '38cc07892c07c566e3ce1a3289c589e284954d7c0e593386') {
-            $apiKey = trim(Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
-        }
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{epic}') || str_contains($baseUrl, '{mobile}')) {
-            $url = str_replace(
-                ['{apiKey}', '{epic}', '{mobile}'],
-                [urlencode($apiKey), urlencode($epic), urlencode($mobile)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . 'apiKey=' . urlencode($apiKey) . '&epic=' . urlencode($epic) . '&mobile=' . urlencode($mobile);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('voter_mobile_update_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'epic'   => $epic,
+            'mobile' => $mobile,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, */*',
-            ])->connectTimeout(15)->timeout(60)->get($url);
+            $response = \App\Services\GoodApiService::client(60, $apiKey)->get($url);
 
             $data = $response->json();
 

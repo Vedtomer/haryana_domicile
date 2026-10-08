@@ -65,31 +65,16 @@ class RationToAadharAllStateController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/ration_card_api/ration_to_uid_all.php';
         }
 
-        $apiKey = trim(Setting::get('ration_to_aadhar_all_state_api_key', Setting::get('aadhar_to_ration_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'))));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
-            ]);
-        }
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{ration_no}') || str_contains($baseUrl, '{statecode}')) {
-            $url = str_replace(
-                ['{apiKey}', '{ration_no}', '{statecode}'],
-                [urlencode($apiKey), urlencode($cleanRationNo), urlencode($stateCode)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&ration_no=" . urlencode($cleanRationNo) . "&statecode=" . urlencode($stateCode);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('ration_to_aadhar_all_state_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'ration_no'     => $cleanRationNo,
+            'rc_no'         => $cleanRationNo,
+            'ration_number' => $cleanRationNo,
+            'statecode'     => $stateCode,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, text/plain, */*',
-            ])->connectTimeout(10)->timeout(40)->get($url);
+            $response = \App\Services\GoodApiService::client(45, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();

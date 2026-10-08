@@ -88,29 +88,15 @@ class AadharToNpciController extends Controller
 
         $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
         $baseUrl = trim(Setting::get('aadhar_to_npci_api_url') ?: 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php');
-        $apiKey = trim(Setting::get('aadhar_to_npci_api_key') ?: Setting::get('aadhar_to_mask_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.',
-            ]);
-        }
-
-        // Build endpoint URL
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{uid}') || str_contains($baseUrl, '{aadhar}')) {
-            $apiUrl = str_replace(
-                ['{apiKey}', '{uid}', '{aadhar}'],
-                [urlencode($apiKey), urlencode($cleanAadhar), urlencode($cleanAadhar)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $apiUrl = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($cleanAadhar);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('aadhar_to_npci_api_key'));
+        $apiUrl = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'uid'           => $cleanAadhar,
+            'aadhar'        => $cleanAadhar,
+            'aadhar_number' => $cleanAadhar,
+        ], $apiKey);
 
         try {
-            $response = Http::connectTimeout(8)->timeout(25)->get($apiUrl);
+            $response = \App\Services\GoodApiService::client(35, $apiKey)->get($apiUrl);
 
             if ($response->successful()) {
                 $data = $response->json();

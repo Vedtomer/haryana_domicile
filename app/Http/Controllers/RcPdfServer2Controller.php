@@ -86,13 +86,12 @@ class RcPdfServer2Controller extends Controller
             $baseUrl = explode('?', $baseUrl)[0];
         }
 
-        $apiKey = trim(Setting::get('vahan_rc_pdf2_key')
-            ?: (Setting::get('goodapi_api_key')
-            ?: 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1'));
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('vahan_rc_pdf2_key'));
 
         $queryParams = [
-            'apiKey' => $apiKey,
-            'rcno'   => $rcNo,
+            'rcno'           => $rcNo,
+            'rc_number'      => $rcNo,
+            'vehicle_number' => $rcNo,
         ];
         if (!empty($chipType)) {
             $queryParams['chiptype'] = $chipType;
@@ -101,13 +100,10 @@ class RcPdfServer2Controller extends Controller
             $queryParams['cardtype'] = $cardType;
         }
 
-        $url = $baseUrl . (str_contains($baseUrl, '?') ? '&' : '?') . http_build_query($queryParams);
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, $queryParams, $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, application/pdf, */*',
-            ])->connectTimeout(15)->timeout(60)->get($url);
+            $response = \App\Services\GoodApiService::client(60, $apiKey)->get($url);
 
             $contentType = $response->header('Content-Type') ?? '';
 

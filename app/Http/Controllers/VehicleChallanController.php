@@ -68,31 +68,15 @@ class VehicleChallanController extends Controller
             $baseUrl = 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php';
         }
 
-        $apiKey = trim(Setting::get('vahan_challan_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')));
-
-        if (empty($apiKey)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'API Key is not configured. Please enter your API key in Admin API Settings.'
-            ]);
-        }
-
-        if (str_contains($baseUrl, '{apiKey}') || str_contains($baseUrl, '{vehicle_number}') || str_contains($baseUrl, '{vehicle_no}')) {
-            $url = str_replace(
-                ['{apiKey}', '{vehicle_number}', '{vehicle_no}'],
-                [urlencode($apiKey), urlencode($cleanVehicleNo), urlencode($cleanVehicleNo)],
-                $baseUrl
-            );
-        } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "apiKey=" . urlencode($apiKey) . "&vehicle_number=" . urlencode($cleanVehicleNo);
-        }
+        $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('vahan_challan_api_key'));
+        $url = \App\Services\GoodApiService::buildUrl($baseUrl, [
+            'vehicle_number' => $cleanVehicleNo,
+            'vechil_no'      => $cleanVehicleNo,
+            'rc_number'      => $cleanVehicleNo,
+        ], $apiKey);
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept'     => 'application/json, text/plain, */*',
-            ])->connectTimeout(10)->timeout(35)->get($url);
+            $response = \App\Services\GoodApiService::client(40, $apiKey)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();
