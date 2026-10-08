@@ -49,7 +49,10 @@ Route::get('/migrate-db', function () {
         $output .= "Public Path: " . public_path() . "\n";
         $output .= "Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'none') . "\n";
         $output .= "Server Outbound IP: " . trim((string) @file_get_contents('https://api.ipify.org')) . "\n";
-        $output .= "Current Good API Key: " . (\App\Models\Setting::get('aadhar_to_mask_pan_api_key') ?: 'NOT SET') . "\n";
+        $liveKey = \App\Models\Setting::get('aadhar_to_mask_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
+        $output .= "Current Good API Key: " . ($liveKey ?: 'NOT SET') . "\n";
+        $testGoodRes = @shell_exec("curl -sSL -m 10 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php?apiKey={$liveKey}&uid=123456789012' 2>&1");
+        $output .= "Live Good API Test Response: " . trim((string)$testGoodRes) . "\n";
         $output .= "Git Log Before: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n";
 
         // Pull latest from GitHub directly
