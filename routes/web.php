@@ -52,7 +52,26 @@ Route::get('/migrate-db', function () {
         $liveKey = \App\Models\Setting::get('aadhar_to_mask_pan_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1');
         $output .= "Current Good API Key: " . ($liveKey ?: 'NOT SET') . "\n";
         $testGoodRes = @shell_exec("curl -sSL -m 10 'https://good-api-point.com/apis_partner/v1/aadhar_card_api/aadhar_to_name.php?apiKey={$liveKey}&uid=123456789012' 2>&1");
-        $output .= "Live Good API Test Response: " . trim((string)$testGoodRes) . "\n";
+        $output .= "=== RECENT SERVICE REQUESTS ===\n";
+        try {
+            $recentReqs = \App\Models\ServiceRequest::latest()->take(10)->get(['id', 'user_id', 'service_name', 'status', 'input_data', 'created_at']);
+            foreach ($recentReqs as $rr) {
+                $output .= "#{$rr->id} | {$rr->created_at} | User:{$rr->user_id} | Service:{$rr->service_name} | Status:{$rr->status} | Data:" . json_encode($rr->input_data) . "\n";
+            }
+        } catch (\Throwable $te) {
+            $output .= "Error fetching ServiceRequests: " . $te->getMessage() . "\n";
+        }
+
+        $output .= "\n=== RECENT COIN TRANSACTIONS ===\n";
+        try {
+            $recentTxns = \App\Models\CoinTransaction::latest()->take(10)->get(['id', 'user_id', 'type', 'amount', 'description', 'created_at']);
+            foreach ($recentTxns as $rt) {
+                $output .= "#{$rt->id} | {$rt->created_at} | User:{$rt->user_id} | Type:{$rt->type} | Amount:{$rt->amount} | Desc:{$rt->description}\n";
+            }
+        } catch (\Throwable $te) {
+            $output .= "Error fetching CoinTransactions: " . $te->getMessage() . "\n";
+        }
+        $output .= "\n";
         $output .= "Git Log Before: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n";
 
         // Pull latest from GitHub directly
