@@ -118,13 +118,22 @@ export default function Index({ services }) {
                             Set coin pricing, active status, and custom form fields for each service.
                         </p>
                     </div>
-                    <Link
-                        href="/admin/services/create"
-                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                    >
-                        <span className="material-symbols-outlined text-lg">add_circle</span>
-                        + Add Service
-                    </Link>
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                        <Link
+                            href="/admin/api-settings"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">tune</span>
+                            API Key Settings
+                        </Link>
+                        <Link
+                            href="/admin/services/create"
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">add_circle</span>
+                            + Add Service
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Quick Summary Badges */}

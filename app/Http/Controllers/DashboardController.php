@@ -258,6 +258,7 @@ class DashboardController extends Controller
         }
 
         return [
+            ['label' => 'API Key Settings', 'value' => 'Gateway Keys',         'tone' => 'dark-purple', 'url' => '/admin/api-settings',                   'icon' => 'tune'],
             ['label' => 'Manage Users',     'value' => $userCount,                'tone' => 'dark-blue',   'url' => '/admin/users',                           'icon' => 'group'],
             ['label' => 'Manage Services',  'value' => $servicesCount,            'tone' => 'dark-blue',   'url' => '/admin/services',                        'icon' => 'home_repair_service'],
             ['label' => 'User Permissions', 'value' => 'Assign Services',         'tone' => 'dark-purple', 'url' => '/admin/user-permissions',                'icon' => 'admin_panel_settings'],

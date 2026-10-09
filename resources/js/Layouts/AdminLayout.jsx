@@ -304,6 +304,59 @@ export default function AdminLayout({ header, children }) {
                         </span>
                     </Link>
 
+                    {/* Admin Navigation Options */}
+                    {isAdmin && (
+                        <div className="pt-3 space-y-1">
+                            <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span className="text-purple-500 text-xs">⚡</span>
+                                <span>ADMIN CONTROLS</span>
+                            </div>
+
+                            <NavItem href="/admin/api-settings" icon={<span className="material-symbols-outlined text-[19px] text-purple-600 dark:text-purple-400">tune</span>}>
+                                <span className="flex items-center justify-between w-full">
+                                    <span>API Key Settings</span>
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300">
+                                        LIVE
+                                    </span>
+                                </span>
+                            </NavItem>
+                            <NavItem href="/admin/service-requests" icon={<span className="material-symbols-outlined text-[19px] text-emerald-500">assignment</span>}>
+                                <span className="flex items-center justify-between w-full">
+                                    <span>Service Requests</span>
+                                    {pendingRequestsCount > 0 && (
+                                        <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-400 text-amber-950">
+                                            {pendingRequestsCount}
+                                        </span>
+                                    )}
+                                </span>
+                            </NavItem>
+                            <NavItem href="/admin/services" icon={<span className="material-symbols-outlined text-[19px] text-blue-500">home_repair_service</span>}>
+                                Manage Services
+                            </NavItem>
+                            <NavItem href="/admin/users" icon={<span className="material-symbols-outlined text-[19px] text-indigo-500">group</span>}>
+                                Manage Users
+                            </NavItem>
+                            <NavItem href="/admin/coin-requests" icon={<span className="material-symbols-outlined text-[19px] text-amber-500">monetization_on</span>}>
+                                Coin Requests
+                            </NavItem>
+                            <NavItem href="/admin/user-permissions" icon={<span className="material-symbols-outlined text-[19px] text-teal-500">admin_panel_settings</span>}>
+                                User Permissions
+                            </NavItem>
+                            <NavItem href="/admin/payment-settings" icon={<span className="material-symbols-outlined text-[19px] text-emerald-500">payments</span>}>
+                                Payment / QR Settings
+                            </NavItem>
+                            <NavItem href="/admin/notices" icon={<span className="material-symbols-outlined text-[19px] text-rose-500">campaign</span>}>
+                                Broadcast Notices
+                            </NavItem>
+                            <NavItem href="/admin/referrals" icon={<span className="material-symbols-outlined text-[19px] text-pink-500">card_giftcard</span>}>
+                                Refer &amp; Earn
+                            </NavItem>
+                            <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px] text-slate-500">person</span>}>
+                                My Profile &amp; Settings
+                            </NavItem>
+                        </div>
+                    )}
+
                     {/* My Account (Wallet Ledger & Profile) - Regular Users Only */}
                     {!isAdmin && (
                         <div className="pt-3 space-y-1">
@@ -497,6 +550,14 @@ export default function AdminLayout({ header, children }) {
                                     <>
                                         <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
                                         <Link
+                                            href="/admin/api-settings"
+                                            onClick={() => setDropdownOpen(false)}
+                                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px] text-purple-600 dark:text-purple-400">tune</span>
+                                            <span>API Key Settings</span>
+                                        </Link>
+                                        <Link
                                             href="/admin/payment-settings"
                                             onClick={() => setDropdownOpen(false)}
                                             className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
@@ -516,6 +577,17 @@ export default function AdminLayout({ header, children }) {
                                 )}
                             </div>
                         </div>
+
+                        {/* API Settings Button for Admin */}
+                        {isAdmin && (
+                            <Link
+                                href="/admin/api-settings"
+                                className="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white flex items-center justify-center shadow-md shadow-purple-600/30 transition-all cursor-pointer"
+                                title="API Key Settings (APIs बदलें)"
+                            >
+                                <span className="material-symbols-outlined text-[20px]">tune</span>
+                            </Link>
+                        )}
 
                         {/* Blue Quick Settings Gear Button */}
                         <Link
