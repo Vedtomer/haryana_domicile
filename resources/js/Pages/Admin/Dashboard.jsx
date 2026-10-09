@@ -665,42 +665,42 @@ export default function Dashboard({
         >
             <Head title="Dashboard" />
 
-            {/* Top View Mode Switcher: Dashboard Hub vs All Services */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
-                <button
-                    type="button"
-                    onClick={() => handleTabSwitch('overview')}
-                    className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
-                        activeTab === 'overview'
-                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-400/30'
-                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                >
-                    <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
-                    <span>Dashboard Overview</span>
-                </button>
+            {/* Top View Mode Switcher: Dashboard Hub vs All Services (REGULAR USERS ONLY) */}
+            {!isAdmin && (
+                <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
+                    <button
+                        type="button"
+                        onClick={() => handleTabSwitch('overview')}
+                        className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
+                            activeTab === 'overview'
+                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-400/30'
+                                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
+                        <span>Dashboard Overview</span>
+                    </button>
 
-                <button
-                    type="button"
-                    onClick={() => handleTabSwitch('services')}
-                    className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
-                        activeTab === 'services'
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25 ring-2 ring-blue-400/30'
-                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                >
-                    <span className="material-symbols-outlined text-[20px]">apps</span>
-                    <span>All Services ({availableServices.length})</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                        activeTab === 'services'
-                            ? 'bg-white/20 text-white'
-                            : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-                    }`}>
-                        A-Z
-                    </span>
-                </button>
+                    <button
+                        type="button"
+                        onClick={() => handleTabSwitch('services')}
+                        className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shadow-xs ${
+                            activeTab === 'services'
+                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25 ring-2 ring-blue-400/30'
+                                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">apps</span>
+                        <span>All Services ({availableServices.length})</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                            activeTab === 'services'
+                                ? 'bg-white/20 text-white'
+                                : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+                        }`}>
+                            A-Z
+                        </span>
+                    </button>
 
-                {!isAdmin && (
                     <Link
                         href="/wallet/add"
                         className="ml-auto hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 transition-all cursor-pointer shadow-xs whitespace-nowrap"
@@ -708,34 +708,36 @@ export default function Dashboard({
                         <span className="material-symbols-outlined text-[18px]">add_card</span>
                         <span>Add Money (₹{Number(effectiveBalance).toLocaleString('en-IN')})</span>
                     </Link>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* TAB 1: OVERVIEW TAB (Promotions, Add Money Box, Admin Hub, Stats) */}
             {activeTab === 'overview' && (
                 <div className="space-y-6">
-                    {/* 1. Small Compact Welcome Banner */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
-                                <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
-                            </div>
-                            <div className="min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
-                                        Welcome, {auth?.user?.name || 'Retailer'}
-                                    </h2>
-                                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                                        {siteName.toUpperCase()}
-                                    </span>
+                    {/* 1. Small Compact Welcome Banner (REGULAR USERS ONLY) */}
+                    {!isAdmin && (
+                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#3730a3] text-white px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+                                    <span className="material-symbols-outlined text-cyan-300 text-[18px] sm:text-[20px]">waving_hand</span>
                                 </div>
-                                <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
-                                    Fast services, clear wallet records and instant processing.
-                                </p>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <h2 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+                                            Welcome, {auth?.user?.name || 'Retailer'}
+                                        </h2>
+                                        <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                            {siteName.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <p className="text-blue-100/75 text-[11px] sm:text-xs font-medium truncate mt-0.5">
+                                        Fast services, clear wallet records and instant processing.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* 2. DEDICATED ADD MONEY TO WALLET BOX (REGULAR USERS ONLY) */}
                     {!isAdmin && (
@@ -974,32 +976,34 @@ export default function Dashboard({
                         </div>
                     )}
 
-                    {/* 5. BIG BANNER TO ACCESS ALL SERVICES */}
-                    <div
-                        onClick={() => handleTabSwitch('services')}
-                        className="p-5 sm:p-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white text-3xl group-hover:scale-110 transition-transform">
-                                📱
-                            </div>
-                            <div>
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider mb-1">
-                                    <span>{availableServices.length} Services Ready</span>
+                    {/* 5. BIG BANNER TO ACCESS ALL SERVICES (REGULAR USERS ONLY) */}
+                    {!isAdmin && (
+                        <div
+                            onClick={() => handleTabSwitch('services')}
+                            className="p-5 sm:p-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white text-3xl group-hover:scale-110 transition-transform">
+                                    📱
                                 </div>
-                                <h3 className="text-lg sm:text-xl font-black">
-                                    सभी सेवाएँ देखें (All Services A to Z Directory)
-                                </h3>
-                                <p className="text-xs sm:text-sm text-blue-100">
-                                    Aadhaar, PAN, Voter, Vehicle, Ration, Mobile Recharge, Passbook, Bijli Bill &amp; more
-                                </p>
+                                <div>
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider mb-1">
+                                        <span>{availableServices.length} Services Ready</span>
+                                    </div>
+                                    <h3 className="text-lg sm:text-xl font-black">
+                                        सभी सेवाएँ देखें (All Services A to Z Directory)
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-blue-100">
+                                        Aadhaar, PAN, Voter, Vehicle, Ration, Mobile Recharge, Passbook, Bijli Bill &amp; more
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 font-black text-sm bg-white text-slate-900 px-4 py-2.5 rounded-xl shadow-sm self-start sm:self-auto group-hover:translate-x-1 transition-transform">
+                                <span>Open Services Catalog</span>
+                                <span className="material-symbols-outlined text-lg">arrow_forward</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 font-black text-sm bg-white text-slate-900 px-4 py-2.5 rounded-xl shadow-sm self-start sm:self-auto group-hover:translate-x-1 transition-transform">
-                            <span>Open Services Catalog</span>
-                            <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                        </div>
-                    </div>
+                    )}
                 </div>
             )}
 
