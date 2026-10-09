@@ -357,7 +357,7 @@ export default function AdminLayout({ header, children }) {
                         </div>
                     )}
 
-                    {/* My Account (Wallet Ledger & Profile) - Regular Users Only */}
+                    {/* My Account (Profile) - Regular Users Only */}
                     {!isAdmin && (
                         <div className="pt-3 space-y-1">
                             <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -365,11 +365,6 @@ export default function AdminLayout({ header, children }) {
                                 <span>MY ACCOUNT</span>
                             </div>
 
-                            <NavItem href="/admin/passbook" icon={<span className="material-symbols-outlined text-[19px]">history_edu</span>}>
-                                <span className="flex items-center justify-between w-full">
-                                    <span>Wallet Ledger / Passbook</span>
-                                </span>
-                            </NavItem>
                             <NavItem href="/admin/profile" icon={<span className="material-symbols-outlined text-[19px]">person</span>}>
                                 My Profile &amp; Settings
                             </NavItem>
