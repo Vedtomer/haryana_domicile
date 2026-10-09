@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
+import { getStoredTheme, applyTheme } from '../../../theme';
 
 export default function Edit({ settings = {} }) {
     const [activeCategory, setActiveCategory] = useState('all');
     const [showKeys, setShowKeys] = useState({});
+    const [currentTheme, setCurrentTheme] = useState('light');
+
+    useEffect(() => {
+        setCurrentTheme(getStoredTheme());
+        const handleThemeChanged = (e) => {
+            if (e.detail?.theme) {
+                setCurrentTheme(e.detail.theme);
+            }
+        };
+        window.addEventListener('theme-changed', handleThemeChanged);
+        return () => window.removeEventListener('theme-changed', handleThemeChanged);
+    }, []);
 
     const { data, setData, put, processing } = useForm({
         // Good APIs Partner Gateway
@@ -167,7 +180,7 @@ export default function Edit({ settings = {} }) {
     // Helper for rendering masked key inputs
     const renderKeyInput = (field, label, placeholder, helperText = null) => (
         <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                 {label}
             </label>
             <div className="relative">
@@ -176,12 +189,12 @@ export default function Edit({ settings = {} }) {
                     value={data[field]}
                     onChange={e => setData(field, e.target.value)}
                     placeholder={placeholder}
-                    className="w-full font-mono text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 pr-10 transition-all"
+                    className="w-full font-mono text-sm px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 pr-10 transition-all font-semibold shadow-2xs"
                 />
                 <button
                     type="button"
                     onClick={() => toggleShowKey(field)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer"
                 >
                     <span className="material-symbols-outlined text-[18px]">
                         {showKeys[field] ? 'visibility_off' : 'visibility'}
@@ -189,7 +202,7 @@ export default function Edit({ settings = {} }) {
                 </button>
             </div>
             {helperText && (
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{helperText}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{helperText}</p>
             )}
         </div>
     );
@@ -197,7 +210,7 @@ export default function Edit({ settings = {} }) {
     // Helper for rendering URL inputs
     const renderUrlInput = (field, label, placeholder, helperText = null) => (
         <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
                 {label}
             </label>
             <input
@@ -205,10 +218,10 @@ export default function Edit({ settings = {} }) {
                 value={data[field]}
                 onChange={e => setData(field, e.target.value)}
                 placeholder={placeholder}
-                className="w-full font-mono text-xs px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full font-mono text-xs px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-medium shadow-2xs"
             />
             {helperText && (
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{helperText}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{helperText}</p>
             )}
         </div>
     );
@@ -242,7 +255,19 @@ export default function Edit({ settings = {} }) {
                                 Portal me chalne wali har ek service ki API key aur endpoint URL ko yahan se badla ja sakta hai. Agar koi field khali chhodte hain toh system safe default working endpoint use karega.
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                            <button
+                                type="button"
+                                onClick={() => applyTheme(currentTheme === 'dark' ? 'light' : 'dark')}
+                                className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm rounded-2xl border border-white/20 backdrop-blur-md transition-all cursor-pointer flex items-center gap-2 shadow-sm"
+                                title={currentTheme === 'dark' ? 'Switch to White (Light) Theme' : 'Switch to Dark Theme'}
+                            >
+                                <span className="material-symbols-outlined text-amber-300 text-lg">
+                                    {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
+                                </span>
+                                <span>{currentTheme === 'dark' ? 'White Theme (Light)' : 'Dark Theme'}</span>
+                            </button>
+
                             <button
                                 type="button"
                                 onClick={handleSubmit}
@@ -268,7 +293,7 @@ export default function Edit({ settings = {} }) {
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
                                 activeCategory === cat.id
                                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                             }`}
                         >
                             <span className="material-symbols-outlined text-[18px]">{cat.icon}</span>
@@ -432,12 +457,12 @@ export default function Edit({ settings = {} }) {
                                         3. Vehicle Mobile Number & Registration Details Lookups
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Vehicle To Mobile Number</span>
                                             {renderUrlInput('vehicle_to_mobile_api_url', 'Gateway Endpoint URL', 'https://api.paanel.shop/api/gateway.php')}
                                             {renderKeyInput('vehicle_to_mobile_api_key', 'API Key', 'e.g. SamXverma')}
                                         </div>
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Vehicle Full Details (RC Search)</span>
                                             {renderUrlInput('vehicle_details_api_url', 'Gateway Endpoint URL', 'https://api.paanel.shop/api/gateway.php')}
                                             {renderKeyInput('vehicle_details_api_key', 'API Key', 'e.g. SamXverma')}
@@ -451,11 +476,11 @@ export default function Edit({ settings = {} }) {
                                         4. Vehicle Challan Check (Good-API-Point)
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Vehicle Challan API URL</span>
                                             {renderUrlInput('vahan_challan_api_url', 'Endpoint URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php')}
                                         </div>
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Challan Dedicated API Key</span>
                                             {renderKeyInput('vahan_challan_api_key', 'API Key (Optional override)', 'Khali chhodne par Master Good-API Key use hogi')}
                                         </div>
@@ -468,11 +493,11 @@ export default function Edit({ settings = {} }) {
                                         5. RC Card Info (Good-API-Point)
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">RC Card Info API URL</span>
                                             {renderUrlInput('vahan_rc_info_api_url', 'Endpoint URL', 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php')}
                                         </div>
-                                        <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                        <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">RC Info Dedicated API Key</span>
                                             {renderKeyInput('vahan_rc_info_api_key', 'API Key (Optional override)', 'Khali chhodne par Master Good-API Key use hogi')}
                                         </div>
@@ -822,22 +847,22 @@ export default function Edit({ settings = {} }) {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">1. S.I.R Voter Card List API</span>
                                     {renderKeyInput('voter_api_key', 'Voter API Key', 'Enter Voter API Key...')}
                                     {renderUrlInput('voter_sir_voter_list_url', 'SIR Voter List URL', 'https://...')}
                                 </div>
-                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">2. Voter Mobile Link / Update Instant (Good-API-Point)</span>
                                     {renderUrlInput('voter_mobile_update_url', 'Voter Mobile Update URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_mobile_link.php')}
                                     {renderKeyInput('voter_mobile_update_key', 'Dedicated Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                 </div>
-                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">3. Voter Advanse Info (Good-API-Point)</span>
                                     {renderUrlInput('voter_advance_api_url', 'Voter Advance Endpoint URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_advance.php')}
                                     {renderKeyInput('voter_advance_api_key', 'Voter Advance API Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
                                 </div>
-                                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <div className="space-y-3 p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">4. Voter Name Find (Good-API-Point)</span>
                                     {renderUrlInput('voter_name_find_url', 'Voter Name Find URL', 'https://good-api-point.com/apis_partner/v1/voter_card_api/voter_to_name.php')}
                                     {renderKeyInput('voter_name_find_key', 'Voter Name Find Key (Optional override)', 'Khali chhodne par Master Good-API-Point Key use hogi')}
@@ -1020,7 +1045,7 @@ export default function Edit({ settings = {} }) {
                                             value={data.whatsapp_gateway_url}
                                             onChange={e => setData('whatsapp_gateway_url', e.target.value)}
                                             placeholder="e.g. https://api.ultramsg.com/instance123/messages/chat or https://api.gateway.com/send?phone={phone}&text={text}&key={key}"
-                                            className="w-full text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-mono"
+                                            className="w-full text-sm px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-mono font-medium shadow-2xs"
                                         />
                                         <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                                             Placeholders supported: <code>{'{phone}'}</code>, <code>{'{text}'}</code>, <code>{'{key}'}</code>
@@ -1081,7 +1106,7 @@ export default function Edit({ settings = {} }) {
                                             value={data.callmebot_phone}
                                             onChange={e => setData('callmebot_phone', e.target.value)}
                                             placeholder="e.g. +91XXXXXXXXXX or +380630323112"
-                                            className="w-full text-sm px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-800 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                            className="w-full text-sm px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-medium shadow-2xs"
                                         />
                                         <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Country code ke sath (e.g. +919876543210)</p>
                                     </div>

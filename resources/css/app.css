@@ -254,53 +254,42 @@
    crisp, bold, dark, and 100% readable across all services and pages!
    ========================================================================== */
 
-/* 1. All text inputs, textareas, and selects: Crisp dark black text by default */
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
-textarea,
-select {
+/* 1. Light mode text inputs, textareas, and selects: Crisp dark black text */
+html:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+html:not(.dark) textarea,
+html:not(.dark) select,
+body:not(.dark) input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+body:not(.dark) textarea,
+body:not(.dark) select {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
     caret-color: #0f172a !important;
     font-weight: 600 !important;
 }
 
-/* 2. On ANY white, slate-50, or light card/input (even in dark mode or .dark!) */
-.bg-white input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-white textarea,
-.bg-white select,
-.bg-slate-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-slate-50 textarea,
-.bg-slate-50 select,
-.bg-slate-100 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-slate-100 textarea,
-.bg-slate-100 select,
-.bg-gray-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-gray-50 textarea,
-.bg-gray-50 select,
-.bg-gray-100 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-.bg-gray-100 textarea,
-.bg-gray-100 select,
+/* 2. On ANY white, slate-50, or light card/input in light mode */
+html:not(.dark) .bg-white input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-white textarea,
+html:not(.dark) .bg-white select,
+html:not(.dark) .bg-slate-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-slate-50 textarea,
+html:not(.dark) .bg-slate-50 select,
+html:not(.dark) .bg-slate-100 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-slate-100 textarea,
+html:not(.dark) .bg-slate-100 select,
+html:not(.dark) .bg-gray-50 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-gray-50 textarea,
+html:not(.dark) .bg-gray-50 select,
+html:not(.dark) .bg-gray-100 input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .bg-gray-100 textarea,
+html:not(.dark) .bg-gray-100 select,
 .MuiPaper-root input,
 .MuiPaper-root textarea,
 .MuiPaper-root select,
 .MuiOutlinedInput-root input,
 .MuiOutlinedInput-root textarea,
 .MuiInputBase-input,
-.MuiSelect-select,
-html.dark .bg-white input,
-html.dark .bg-slate-50 input,
-html.dark .bg-slate-100 input,
-html.dark .bg-gray-50 input,
-html.dark .MuiPaper-root input,
-html.dark .MuiOutlinedInput-root input,
-html.dark .MuiSelect-select,
-.dark .bg-white input,
-.dark .bg-slate-50 input,
-.dark .bg-slate-100 input,
-.dark .bg-gray-50 input,
-.dark .MuiPaper-root input,
-.dark .MuiOutlinedInput-root input,
-.dark .MuiSelect-select {
+.MuiSelect-select {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
     caret-color: #0f172a !important;
@@ -355,35 +344,45 @@ select option {
     font-weight: 600 !important;
 }
 
-/* 5. Placeholders: High-contrast Slate-500, never washed out */
-input::placeholder,
-textarea::placeholder {
+/* 5. Placeholders: High-contrast in light mode, clean light in dark mode */
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
     color: #64748b !important;
     -webkit-text-fill-color: #64748b !important;
     opacity: 0.85 !important;
     font-weight: normal;
 }
 
-/* 6. Dark mode inputs: ONLY when an input has an EXPLICIT dark background AND is NOT on a light card */
-html.dark input.dark\:bg-slate-800:not(.bg-white):not(.bg-slate-50),
-html.dark input.dark\:bg-slate-900:not(.bg-white):not(.bg-slate-50),
-html.dark textarea.dark\:bg-slate-800:not(.bg-white):not(.bg-slate-50),
-html.dark textarea.dark\:bg-slate-900:not(.bg-white):not(.bg-slate-50),
-.dark input.dark\:bg-slate-800:not(.bg-white):not(.bg-slate-50),
-.dark input.dark\:bg-slate-900:not(.bg-white):not(.bg-slate-50),
-.dark input.bg-slate-800:not(.bg-white):not(.bg-slate-50),
-.dark input.bg-slate-900:not(.bg-white):not(.bg-slate-50) {
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 0.9 !important;
+    font-weight: normal;
+}
+
+/* 6. Dark mode inputs: ALL dark mode inputs have crisp, bright white text */
+html.dark input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+html.dark textarea,
+.dark input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+.dark textarea {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
     caret-color: #38bdf8 !important;
 }
 
-html.dark input.dark\:bg-slate-800::placeholder,
-html.dark textarea.dark\:bg-slate-800::placeholder,
-.dark input.dark\:bg-slate-800::placeholder {
-    color: #94a3b8 !important;
-    -webkit-text-fill-color: #94a3b8 !important;
-    opacity: 0.85 !important;
+/* Dark mode inputs with explicit dark backgrounds */
+html.dark input.dark\:bg-slate-800,
+html.dark input.dark\:bg-slate-900,
+html.dark input.dark\:bg-slate-950,
+.dark input.dark\:bg-slate-800,
+.dark input.dark\:bg-slate-900,
+.dark input.dark\:bg-slate-950 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #38bdf8 !important;
 }
 
 /* 7. Browser autofill fix: always dark text on light background */
