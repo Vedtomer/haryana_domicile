@@ -700,13 +700,15 @@ export default function Dashboard({
                     </span>
                 </button>
 
-                <Link
-                    href="/wallet/add"
-                    className="ml-auto hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 transition-all cursor-pointer shadow-xs whitespace-nowrap"
-                >
-                    <span className="material-symbols-outlined text-[18px]">add_card</span>
-                    <span>Add Money (₹{Number(effectiveBalance).toLocaleString('en-IN')})</span>
-                </Link>
+                {!isAdmin && (
+                    <Link
+                        href="/wallet/add"
+                        className="ml-auto hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">add_card</span>
+                        <span>Add Money (₹{Number(effectiveBalance).toLocaleString('en-IN')})</span>
+                    </Link>
+                )}
             </div>
 
             {/* TAB 1: OVERVIEW TAB (Promotions, Add Money Box, Admin Hub, Stats) */}
@@ -735,67 +737,69 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    {/* 2. DEDICATED ADD MONEY TO WALLET BOX */}
-                    <div className="bg-gradient-to-br from-[#1e1b4b] via-[#1e3a8a] to-[#0f172a] text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-indigo-500/30">
-                        <div className="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute -bottom-20 -left-20 w-56 h-56 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+                    {/* 2. DEDICATED ADD MONEY TO WALLET BOX (REGULAR USERS ONLY) */}
+                    {!isAdmin && (
+                        <div className="bg-gradient-to-br from-[#1e1b4b] via-[#1e3a8a] to-[#0f172a] text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-indigo-500/30">
+                            <div className="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+                            <div className="absolute -bottom-20 -left-20 w-56 h-56 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
 
-                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div className="space-y-2 max-w-xl">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/25 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
-                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                    <span>Instant Wallet Top-Up • 1 Coin = ₹1</span>
-                                </div>
-                                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                                    वॉलेट में पैसे / कॉइन जोड़ें (Add Money)
-                                </h3>
-                                <p className="text-blue-100/80 text-xs sm:text-sm">
-                                    UPI QR कोड स्कैन करें या ऑनलाइन पेमेंट गेटवे से तुरंत कॉइन प्राप्त करें। बैलेंस 1 सेकंड में स्वतः आपके वॉलेट में अपडेट हो जाएगा।
-                                </p>
-                                <div className="flex items-center gap-3 pt-1 text-[11px] text-cyan-300 font-semibold flex-wrap">
-                                    <span className="flex items-center gap-1">✓ ऑटोमैटिक कॉइन क्रेडिट</span>
-                                    <span className="flex items-center gap-1">✓ 100% सुरक्षित भुगतान</span>
-                                    <span className="flex items-center gap-1">✓ GPay, PhonePe, Paytm, BHIM UPI</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 lg:min-w-[400px] justify-between shadow-inner">
-                                <div>
-                                    <div className="text-[11px] uppercase tracking-wider text-blue-200 font-bold">
-                                        Available Wallet Balance
+                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                                <div className="space-y-2 max-w-xl">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/25 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
+                                        <span className="material-symbols-outlined text-sm">bolt</span>
+                                        <span>Instant Wallet Top-Up • 1 Coin = ₹1</span>
                                     </div>
-                                    <div className="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-1.5 mt-0.5">
-                                        <span>🪙</span>
-                                        <span>{Number(effectiveBalance).toLocaleString('en-IN')} Coins</span>
-                                    </div>
-                                    <div className="text-[11px] text-blue-200/70">
-                                        ₹{Number(effectiveBalance).toLocaleString('en-IN')}.00 Live Funds
+                                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                                        वॉलेट में पैसे / कॉइन जोड़ें (Add Money)
+                                    </h3>
+                                    <p className="text-blue-100/80 text-xs sm:text-sm">
+                                        UPI QR कोड स्कैन करें या ऑनलाइन पेमेंट गेटवे से तुरंत कॉइन प्राप्त करें। बैलेंस 1 सेकंड में स्वतः आपके वॉलेट में अपडेट हो जाएगा।
+                                    </p>
+                                    <div className="flex items-center gap-3 pt-1 text-[11px] text-cyan-300 font-semibold flex-wrap">
+                                        <span className="flex items-center gap-1">✓ ऑटोमैटिक कॉइन क्रेडिट</span>
+                                        <span className="flex items-center gap-1">✓ 100% सुरक्षित भुगतान</span>
+                                        <span className="flex items-center gap-1">✓ GPay, PhonePe, Paytm, BHIM UPI</span>
                                     </div>
                                 </div>
 
-                                <div className="w-full sm:w-auto flex flex-col gap-2">
-                                    <Link
-                                        href="/wallet/add"
-                                        className="w-full sm:w-auto px-5 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] text-center"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">add_card</span>
-                                        <span>Add Money Now</span>
-                                    </Link>
-                                    <div className="flex items-center gap-1.5 justify-center">
-                                        {[50, 100, 200, 500].map((quick) => (
-                                            <Link
-                                                key={quick}
-                                                href={`/wallet/add?amount=${quick}`}
-                                                className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[10px] font-bold transition-colors"
-                                            >
-                                                +₹{quick}
-                                            </Link>
-                                        ))}
+                                <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 lg:min-w-[400px] justify-between shadow-inner">
+                                    <div>
+                                        <div className="text-[11px] uppercase tracking-wider text-blue-200 font-bold">
+                                            Available Wallet Balance
+                                        </div>
+                                        <div className="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-1.5 mt-0.5">
+                                            <span>🪙</span>
+                                            <span>{Number(effectiveBalance).toLocaleString('en-IN')} Coins</span>
+                                        </div>
+                                        <div className="text-[11px] text-blue-200/70">
+                                            ₹{Number(effectiveBalance).toLocaleString('en-IN')}.00 Live Funds
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full sm:w-auto flex flex-col gap-2">
+                                        <Link
+                                            href="/wallet/add"
+                                            className="w-full sm:w-auto px-5 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] text-center"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">add_card</span>
+                                            <span>Add Money Now</span>
+                                        </Link>
+                                        <div className="flex items-center gap-1.5 justify-center">
+                                            {[50, 100, 200, 500].map((quick) => (
+                                                <Link
+                                                    key={quick}
+                                                    href={`/wallet/add?amount=${quick}`}
+                                                    className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[10px] font-bold transition-colors"
+                                                >
+                                                    +₹{quick}
+                                                </Link>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* 3. ADMINISTRATION CONTROL PANEL (FOR ADMIN) */}
                     {isAdmin && (
