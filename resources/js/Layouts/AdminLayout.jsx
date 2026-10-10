@@ -331,6 +331,9 @@ export default function AdminLayout({ header, children }) {
                             <NavItem href="/admin/payment-settings" icon={<span className="material-symbols-outlined text-[19px] text-emerald-500">payments</span>}>
                                 Payment / QR Settings
                             </NavItem>
+                            <NavItem href="/admin/api-settings" icon={<span className="material-symbols-outlined text-[19px] text-cyan-500">vpn_key</span>}>
+                                API Key Settings
+                            </NavItem>
                             <NavItem href="/admin/referrals" icon={<span className="material-symbols-outlined text-[19px] text-pink-500">card_giftcard</span>}>
                                 Refer &amp; Earn
                             </NavItem>

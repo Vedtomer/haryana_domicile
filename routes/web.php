@@ -2714,50 +2714,57 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         }
 
         $cleanRegNo = strtoupper(trim(str_replace([' ', '-'], '', $regNo)));
-        $baseUrl = trim(\App\Models\Setting::get('vehicle_details_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
-        $apiKey = trim(\App\Models\Setting::get('vehicle_details_api_key') ?: 'SamXverma');
+        $baseUrl = trim(\App\Models\Setting::get('vehicle_details_api_url') ?: 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_details_api_key'));
 
-        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{reg_no}')) {
-            $url = str_replace(
-                ['{key}', '{Policy}', '{reg_no}', '{vehicle_number}'],
-                [urlencode($apiKey), urlencode($cleanRegNo), urlencode($cleanRegNo), urlencode($cleanRegNo)],
-                $baseUrl
-            );
+        if (str_contains($baseUrl, 'good-api-point.com') || str_contains($baseUrl, 'rc_info_api.php')) {
+            $activeKey = \App\Services\GoodApiService::getApiKey($apiKey);
+            $url = \App\Services\GoodApiService::buildUrl($baseUrl, ['rc' => $cleanRegNo], $activeKey);
+            $response = \App\Services\GoodApiService::client(30, $activeKey)->get($url);
         } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&Policy=" . urlencode($cleanRegNo);
+            $apiKey = $apiKey ?: 'SamXverma';
+            if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{reg_no}')) {
+                $url = str_replace(
+                    ['{key}', '{Policy}', '{reg_no}', '{vehicle_number}'],
+                    [urlencode($apiKey), urlencode($cleanRegNo), urlencode($cleanRegNo), urlencode($cleanRegNo)],
+                    $baseUrl
+                );
+            } else {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&Policy=" . urlencode($cleanRegNo);
+            }
+            $response = \Illuminate\Support\Facades\Http::connectTimeout(10)->timeout(30)->get($url);
         }
-        $response = \Illuminate\Support\Facades\Http::connectTimeout(10)->timeout(30)->get($url);
 
         if ($response->successful()) {
             $json = $response->json();
-            $rawData = $json['data'] ?? [];
+            $rawData = $json['data'] ?? $json;
             $data = $rawData['meta_data']['signzy_response']['result'] ?? $rawData;
 
-            $regFound = $data['regNo'] ?? $data['vehicleNumber'] ?? $rawData['registration_number'] ?? $rawData['vehicle_details']['registration_no'] ?? null;
+            $regFound = $data['rc_number'] ?? $data['regNo'] ?? $data['vehicleNumber'] ?? $rawData['registration_number'] ?? $rawData['vehicle_details']['registration_no'] ?? null;
 
             if ($regFound) {
-                $data['regNo'] = $data['regNo'] ?? $regFound;
-                $data['vehicleClass'] = $data['vehicleClass'] ?? ($data['class'] ?? ($rawData['vehicle_details']['vehicle_category_description'] ?? 'Motor Car(LMV)'));
-                $data['owner'] = !empty($data['owner']) ? $data['owner'] : ($rawData['customer_details']['full_name'] ?? 'N/A');
-                $data['ownerFatherName'] = !empty($data['ownerFatherName']) ? $data['ownerFatherName'] : ($rawData['customer_details']['father_name'] ?? 'N/A');
-                $data['chassis'] = !empty($data['chassis']) ? $data['chassis'] : ($rawData['chassis_number'] ?? ($rawData['vehicle_details']['chassis_no'] ?? 'N/A'));
-                $data['engine'] = !empty($data['engine']) ? $data['engine'] : ($rawData['engine_number'] ?? ($rawData['vehicle_details']['engine_no'] ?? 'N/A'));
-                $data['presentAddress'] = !empty($data['presentAddress']) ? $data['presentAddress'] : ($rawData['customer_details']['communication_address']['address_line'] ?? 'N/A');
-                $data['vehicleInsurancePolicyNumber'] = !empty($data['vehicleInsurancePolicyNumber']) ? $data['vehicleInsurancePolicyNumber'] : ($rawData['previous_policy_number'] ?? 'N/A');
-                $data['vehicleInsuranceUpto'] = !empty($data['vehicleInsuranceUpto']) ? $data['vehicleInsuranceUpto'] : ($rawData['previous_policy_exp_date'] ?? 'N/A');
-                $data['vehicleInsuranceCompanyName'] = !empty($data['vehicleInsuranceCompanyName']) ? $data['vehicleInsuranceCompanyName'] : ($rawData['previous_insurer_code'] ?? 'N/A');
-                $data['vehicleColour'] = !empty($data['vehicleColour']) ? $data['vehicleColour'] : ($rawData['vehicle_details']['vehicle_color'] ?? 'N/A');
-                $data['regDate'] = !empty($data['regDate']) ? $data['regDate'] : ($rawData['vehicle_details']['registration_date'] ?? 'N/A');
-                $data['model'] = !empty($data['model']) ? $data['model'] : ($rawData['vehicle_details']['model'] ?? 'N/A');
-                $data['vehicleManufacturerName'] = !empty($data['vehicleManufacturerName']) ? $data['vehicleManufacturerName'] : ($rawData['vehicle_details']['manufacturer'] ?? 'N/A');
-                $data['type'] = !empty($data['type']) ? $data['type'] : ($rawData['vehicle_details']['fuel_type'] ?? 'N/A');
-                $data['rcExpiryDate'] = !empty($data['rcExpiryDate']) ? $data['rcExpiryDate'] : ($rawData['vehicle_details']['fitness_upto'] ?? ($rawData['vehicle_details']['rc_expiry_date'] ?? 'N/A'));
-                $data['vehicleTaxUpto'] = !empty($data['vehicleTaxUpto']) ? $data['vehicleTaxUpto'] : ($rawData['vehicle_details']['tax_upto'] ?? 'N/A');
-                $data['puccUpto'] = !empty($data['puccUpto']) ? $data['puccUpto'] : 'N/A';
-                $data['puccNumber'] = !empty($data['puccNumber']) ? $data['puccNumber'] : 'N/A';
-                $data['rcFinancer'] = !empty($data['rcFinancer']) ? $data['rcFinancer'] : ($rawData['vehicle_details']['financier'] ?? 'NONE');
-                $data['regAuthority'] = !empty($data['regAuthority']) ? $data['regAuthority'] : ($rawData['vehicle_details']['rto_name'] ?? 'N/A');
+                $data['regNo'] = $data['regNo'] ?? ($data['rc_number'] ?? $regFound);
+                $data['vehicleClass'] = $data['vehicleClass'] ?? ($data['vehicle_class'] ?? ($data['class'] ?? ($rawData['vehicle_details']['vehicle_category_description'] ?? 'Motor Car(LMV)')));
+                $data['owner'] = !empty($data['owner']) ? $data['owner'] : ($data['owner_name'] ?? ($rawData['customer_details']['full_name'] ?? 'N/A'));
+                $data['ownerFatherName'] = !empty($data['ownerFatherName']) ? $data['ownerFatherName'] : ($data['father_name'] ?? ($rawData['customer_details']['father_name'] ?? 'N/A'));
+                $data['chassis'] = !empty($data['chassis']) ? $data['chassis'] : ($data['chassis_number'] ?? ($rawData['chassis_number'] ?? ($rawData['vehicle_details']['chassis_no'] ?? 'N/A')));
+                $data['engine'] = !empty($data['engine']) ? $data['engine'] : ($data['engine_number'] ?? ($rawData['engine_number'] ?? ($rawData['vehicle_details']['engine_no'] ?? 'N/A')));
+                $data['presentAddress'] = !empty($data['presentAddress']) ? $data['presentAddress'] : ($data['present_address'] ?? ($rawData['customer_details']['communication_address']['address_line'] ?? 'N/A'));
+                $data['vehicleInsurancePolicyNumber'] = !empty($data['vehicleInsurancePolicyNumber']) ? $data['vehicleInsurancePolicyNumber'] : ($data['insurance_policy'] ?? ($data['insurance_policy_number'] ?? ($rawData['previous_policy_number'] ?? 'N/A')));
+                $data['vehicleInsuranceUpto'] = !empty($data['vehicleInsuranceUpto']) ? $data['vehicleInsuranceUpto'] : ($data['insurance_upto'] ?? ($rawData['previous_policy_exp_date'] ?? 'N/A'));
+                $data['vehicleInsuranceCompanyName'] = !empty($data['vehicleInsuranceCompanyName']) ? $data['vehicleInsuranceCompanyName'] : ($data['insurance_company'] ?? ($rawData['previous_insurer_code'] ?? 'N/A'));
+                $data['vehicleColour'] = !empty($data['vehicleColour']) ? $data['vehicleColour'] : ($data['color'] ?? ($rawData['vehicle_details']['vehicle_color'] ?? 'N/A'));
+                $data['regDate'] = !empty($data['regDate']) ? $data['regDate'] : ($data['registration_date'] ?? ($rawData['vehicle_details']['registration_date'] ?? 'N/A'));
+                $data['model'] = !empty($data['model']) ? $data['model'] : ($data['maker_model'] ?? ($rawData['vehicle_details']['model'] ?? 'N/A'));
+                $data['vehicleManufacturerName'] = !empty($data['vehicleManufacturerName']) ? $data['vehicleManufacturerName'] : ($data['maker_description'] ?? ($data['manufacturer'] ?? ($rawData['vehicle_details']['manufacturer'] ?? 'N/A')));
+                $data['type'] = !empty($data['type']) ? $data['type'] : ($data['fuel_type'] ?? ($rawData['vehicle_details']['fuel_type'] ?? 'N/A'));
+                $data['rcExpiryDate'] = !empty($data['rcExpiryDate']) ? $data['rcExpiryDate'] : ($data['fitness_upto'] ?? ($data['rc_expiry_date'] ?? ($rawData['vehicle_details']['fitness_upto'] ?? ($rawData['vehicle_details']['rc_expiry_date'] ?? 'N/A'))));
+                $data['vehicleTaxUpto'] = !empty($data['vehicleTaxUpto']) ? $data['vehicleTaxUpto'] : ($data['tax_upto'] ?? ($rawData['vehicle_details']['tax_upto'] ?? 'N/A'));
+                $data['puccUpto'] = !empty($data['puccUpto']) ? $data['puccUpto'] : ($data['pucc_upto'] ?? 'N/A');
+                $data['puccNumber'] = !empty($data['puccNumber']) ? $data['puccNumber'] : ($data['pucc_number'] ?? 'N/A');
+                $data['rcFinancer'] = !empty($data['rcFinancer']) ? $data['rcFinancer'] : ($data['financer'] ?? ($rawData['vehicle_details']['financier'] ?? 'NONE'));
+                $data['regAuthority'] = !empty($data['regAuthority']) ? $data['regAuthority'] : ($data['registered_rto'] ?? ($data['rto_name'] ?? ($rawData['vehicle_details']['rto_name'] ?? 'N/A')));
                 $data['normsType'] = !empty($data['normsType']) ? $data['normsType'] : 'N/A';
                 $data['bodyType'] = !empty($data['bodyType']) ? $data['bodyType'] : 'N/A';
                 $data['ownerCount'] = !empty($data['ownerCount']) ? $data['ownerCount'] : '1';
@@ -3156,6 +3163,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::get('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'edit'])->name('payment-settings.edit')->middleware('admin');
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update')->middleware('admin');
         Route::post('payment-settings/test-paycorex', [\App\Http\Controllers\PaycorexPaymentController::class, 'testConnection'])->name('payment-settings.test-paycorex')->middleware('admin');
+
+        // API Settings — admin only
+        Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit')->middleware('admin');
+        Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update')->middleware('admin');
 
         // Haryana Domicile PDF Coordinates — admin only
         Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit')->middleware('admin');
