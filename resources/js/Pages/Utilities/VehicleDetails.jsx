@@ -88,7 +88,7 @@ export default function VehicleDetails() {
                                     <input
                                         type="text"
                                         id="regNo"
-                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors"
+                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold text-slate-900 dark:text-white uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-colors"
                                         placeholder="e.g. HR06BJ8412"
                                         value={regNo}
                                         onChange={(e) => setRegNo(e.target.value.toUpperCase())}

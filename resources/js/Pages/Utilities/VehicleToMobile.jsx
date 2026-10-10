@@ -146,7 +146,7 @@ export default function VehicleToMobile() {
                                 </div>
                                 <input
                                     type="text"
-                                    className="block w-full pl-14 pr-4 py-4 md:py-5 bg-white border-2 border-slate-300 rounded-2xl text-slate-900 font-medium text-lg placeholder-slate-400 focus:ring-0 focus:border-blue-500 transition-all shadow-sm uppercase"
+                                    className="block w-full pl-14 pr-4 py-4 md:py-5 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white font-medium text-lg placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 transition-all shadow-sm uppercase"
                                     placeholder="Enter Vehicle Number (e.g. HR06BB2029)"
                                     value={vehicleNo}
                                     onChange={(e) => setVehicleNo(e.target.value.toUpperCase())}

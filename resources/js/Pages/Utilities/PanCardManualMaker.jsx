@@ -191,7 +191,7 @@ export default function PanCardManualMaker() {
                                         onChange={handleChange}
                                         required
                                         placeholder="e.g. RAHUL SHARMA"
-                                        className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-cyan-500"
+                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                                     />
                                 </div>
 
@@ -206,7 +206,7 @@ export default function PanCardManualMaker() {
                                         onChange={handleChange}
                                         required
                                         placeholder="e.g. RAMESH SHARMA"
-                                        className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-cyan-500"
+                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                                     />
                                 </div>
 
@@ -221,7 +221,7 @@ export default function PanCardManualMaker() {
                                         onChange={handleChange}
                                         required
                                         placeholder="DD/MM/YYYY"
-                                        className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-cyan-500"
+                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                                     />
                                 </div>
 

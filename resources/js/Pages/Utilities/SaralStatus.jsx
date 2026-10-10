@@ -87,7 +87,7 @@ export default function SaralStatus() {
                                         <input
                                             type="text"
                                             id="saralId"
-                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
+                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold text-slate-900 dark:text-white placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-colors tracking-wide"
                                             placeholder="e.g. CIDR/2023/12345"
                                             value={saralId}
                                             onChange={(e) => setSaralId(e.target.value.toUpperCase())}
@@ -97,15 +97,15 @@ export default function SaralStatus() {
                                 </div>
 
                                 <div className="hidden md:flex items-center justify-center absolute inset-0 pointer-events-none">
-                                    <span className="bg-white px-3 py-1 rounded-full border border-slate-200 text-slate-400 font-bold text-xs uppercase shadow-sm">AND</span>
+                                    <span className="bg-white dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-400 font-bold text-xs uppercase shadow-sm">AND</span>
                                 </div>
                                 
                                 <div className="flex md:hidden items-center justify-center my-[-10px]">
-                                    <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-400 font-bold text-xs uppercase">AND</span>
+                                    <span className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full text-slate-400 font-bold text-xs uppercase">AND</span>
                                 </div>
 
                                 <div>
-                                    <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                                    <label htmlFor="mobileNo" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
                                         Mobile / Family ID <span className="text-xs font-normal text-slate-500">(Required for Download)</span>
                                     </label>
                                     <div className="relative">
@@ -115,7 +115,7 @@ export default function SaralStatus() {
                                         <input
                                             type="text"
                                             id="mobileNo"
-                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white transition-colors tracking-wide"
+                                            className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold text-slate-900 dark:text-white placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:ring-0 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-colors tracking-wide"
                                             placeholder="e.g. 9876543210"
                                             value={mobileNo}
                                             maxLength={12}

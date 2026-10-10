@@ -128,7 +128,7 @@ export default function AadharMobileUpdate() {
                                         onChange={(e) => setName(e.target.value.toUpperCase())}
                                         placeholder="e.g. SURENDER KUMAR"
                                         required
-                                        className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-900 text-sm"
+                                        className="w-full px-4 py-3 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 text-sm"
                                     />
                                 </div>
 
@@ -162,7 +162,7 @@ export default function AadharMobileUpdate() {
                                             placeholder="9876543210"
                                             maxLength={10}
                                             required
-                                            className="w-full pl-14 pr-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-mono font-black text-base text-slate-900"
+                                            className="w-full pl-14 pr-4 py-3 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-mono font-black text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400"
                                         />
                                     </div>
                                 </div>
