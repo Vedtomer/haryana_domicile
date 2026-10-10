@@ -70,18 +70,18 @@ export default function ServiceWorkListBar({ service, onOpenDrawer }) {
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-2 flex-shrink-0 self-stretch sm:self-auto">
-                    {/* Admin Only: API Key & URL Settings Button */}
+                    {/* Admin Only: API Key Button */}
                     {isAdmin && (
                         <button
                             type="button"
                             onClick={() => setShowApiModal(true)}
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 rounded-xl text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer"
-                            title="इस सर्विस की API Key और URL बदलें (केवल एडमिन)"
+                            title="इस सर्विस की API Key बदलें (केवल एडमिन)"
                         >
                             <span className="material-symbols-outlined text-[17px] text-amber-600 dark:text-amber-400">
-                                tune
+                                key
                             </span>
-                            <span>API Settings</span>
+                            <span>API Key</span>
                         </button>
                     )}
 

@@ -420,18 +420,18 @@ export default function AdminLayout({ header, children }) {
                             </button>
                         )}
 
-                        {/* Admin-only Service API Settings quick button in header */}
+                        {/* Admin-only Service API Key quick button in header */}
                         {currentServiceInfo && isAdmin && (
                             <button
                                 type="button"
                                 onClick={() => setApiConfigModalOpen(true)}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-xs font-black shadow-2xs transition-all cursor-pointer"
-                                title="इस सर्विस की API Key और URL बदलें (केवल एडमिन)"
+                                title="इस सर्विस की API Key बदलें (केवल एडमिन)"
                             >
                                 <span className="material-symbols-outlined text-[17px] text-amber-600 dark:text-amber-400">
-                                    tune
+                                    key
                                 </span>
-                                <span className="hidden sm:inline">API Settings</span>
+                                <span className="hidden sm:inline">API Key</span>
                             </button>
                         )}
                         {/* Real-time Clock */}

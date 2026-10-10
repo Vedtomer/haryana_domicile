@@ -901,10 +901,21 @@ class ServiceApiConfigController extends Controller
 
         // Fetch current values from settings table
         $values = [];
+        $primaryKeyField = null;
         foreach ($config['fields'] as $field) {
             $default = $field['default'] ?? '';
             $values[$field['key']] = Setting::get($field['key'], $default);
+
+            if (!$primaryKeyField && ($field['type'] === 'password' || str_contains($field['key'], 'key'))) {
+                $primaryKeyField = $field;
+            }
         }
+
+        if (!$primaryKeyField && !empty($config['fields'])) {
+            $primaryKeyField = $config['fields'][0];
+        }
+
+        $currentApiKey = $primaryKeyField ? ($values[$primaryKeyField['key']] ?? '') : '';
 
         return response()->json([
             'success' => true,
@@ -912,6 +923,11 @@ class ServiceApiConfigController extends Controller
             'name' => $config['name'],
             'provider' => $config['provider'] ?? 'API Provider',
             'help' => $config['help'] ?? null,
+            'api_key' => $currentApiKey,
+            'api_key_field' => $primaryKeyField ? $primaryKeyField['key'] : 'api_key',
+            'api_key_label' => $primaryKeyField['label'] ?? 'API Key',
+            'api_key_placeholder' => $primaryKeyField['placeholder'] ?? 'अपनी API Key यहाँ दर्ज करें...',
+            'api_key_default' => $primaryKeyField['default'] ?? '',
             'fields' => $config['fields'],
             'values' => $values,
         ]);
@@ -937,10 +953,67 @@ class ServiceApiConfigController extends Controller
                 $slug = $svc->slug ?: $svc->module_key;
             }
         }
-        $settings = $request->input('settings', []);
 
+        $config = $this->resolveConfigForSlug((string) $slug);
+
+        // Find primary API Key field
+        $primaryKeyField = null;
+        if ($config && !empty($config['fields'])) {
+            foreach ($config['fields'] as $field) {
+                if ($field['type'] === 'password' || str_contains($field['key'], 'key')) {
+                    $primaryKeyField = $field;
+                    break;
+                }
+            }
+            if (!$primaryKeyField) {
+                $primaryKeyField = $config['fields'][0];
+            }
+        }
+
+        // 1. Direct single 'api_key' input support
+        $singleApiKey = $request->input('api_key');
+        if ($singleApiKey !== null) {
+            $cleanKeyVal = trim((string) $singleApiKey);
+
+            if ($primaryKeyField) {
+                Setting::set($primaryKeyField['key'], $cleanKeyVal);
+            }
+
+            // Automatically ensure all default URLs are populated so the API starts working instantly
+            if ($config && !empty($config['fields'])) {
+                foreach ($config['fields'] as $field) {
+                    if (str_contains($field['key'], 'url') && !empty($field['default'])) {
+                        $currentUrl = trim((string) Setting::get($field['key'], ''));
+                        if (empty($currentUrl)) {
+                            Setting::set($field['key'], $field['default']);
+                        }
+                    }
+                }
+            }
+
+            // PVC / IDCard Store automatic base url wiring
+            $cleanSlug = strtolower(trim((string) $slug));
+            if (str_contains($cleanSlug, 'pvc') || str_contains($cleanSlug, 'card-maker') || str_contains($cleanSlug, 'driving-licence') || $cleanSlug === 'kundli') {
+                Setting::set('idcard_store_api_key', $cleanKeyVal);
+                Setting::set('idcard_store_base_url', 'https://api.idcard.store');
+            }
+
+            // NPCI automatic endpoint wiring
+            if ($cleanSlug === 'aadhar-to-npci-status') {
+                Setting::set('aadhar_to_npci_api_key', $cleanKeyVal);
+                Setting::set('aadhar_to_npci_api_url', 'https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php');
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'API Key सफलतापूर्वक सेव हो गई! यह सर्विस अब एक्टिव है।',
+            ]);
+        }
+
+        // 2. Multi-field settings dictionary support
+        $settings = $request->input('settings', []);
         if (empty($settings) || !is_array($settings)) {
-            return response()->json(['success' => false, 'message' => 'No settings provided to save.'], 400);
+            return response()->json(['success' => false, 'message' => 'No settings or API key provided to save.'], 400);
         }
 
         foreach ($settings as $key => $val) {
