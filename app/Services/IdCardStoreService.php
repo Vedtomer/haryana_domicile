@@ -50,6 +50,22 @@ class IdCardStoreService
             'coin_cost' => 20,
             'description' => 'Generate PVC Card from NSDL e-PAN PDF',
         ],
+        'pan_uti' => [
+            'name' => 'PAN Card (UTIITSL)',
+            'endpoint' => '/card/make_pancard_uti',
+            'accepts_password' => true,
+            'icon' => 'credit_card',
+            'coin_cost' => 20,
+            'description' => 'Generate PVC Card from UTIITSL e-PAN PDF',
+        ],
+        'pan_incometax' => [
+            'name' => 'PAN Card (Instant e-Filing)',
+            'endpoint' => '/card/make_pancard_incometax',
+            'accepts_password' => true,
+            'icon' => 'credit_card',
+            'coin_cost' => 20,
+            'description' => 'Generate PVC Card from Income Tax Instant e-PAN PDF',
+        ],
         'eshram' => [
             'name' => 'e-Shram Card',
             'endpoint' => '/card/make_eshram',
@@ -99,7 +115,7 @@ class IdCardStoreService
     public function __construct()
     {
         $this->baseUrl = rtrim(\App\Models\Setting::get('idcard_store_base_url') ?: config('services.idcard_store.base_url', 'https://api.idcard.store'), '/');
-        $this->apiKey  = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '71ebc340-7c80-4c8f-9613-250094ba27c3'));
+        $this->apiKey  = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '4657123a-ccb9-4fb0-b3ed-5e1e24c0e5d5'));
         $this->cdnUrl  = rtrim(config('services.idcard_store.cdn_url', 'https://idmaker.mfcdn.in/'), '/');
     }
 

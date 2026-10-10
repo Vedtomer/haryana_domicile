@@ -19,7 +19,7 @@ class ApiSettingController extends Controller
         return Inertia::render('Admin/ApiSettings/Edit', [
             'settings' => [
                 // IDCard.Store (PVC & Astrology)
-                'idcard_store_api_key'  => Setting::get('idcard_store_api_key', config('services.idcard_store.api_key', '71ebc340-7c80-4c8f-9613-250094ba27c3')),
+                'idcard_store_api_key'  => Setting::get('idcard_store_api_key', config('services.idcard_store.api_key', '4657123a-ccb9-4fb0-b3ed-5e1e24c0e5d5')),
                 'idcard_store_base_url' => Setting::get('idcard_store_base_url', config('services.idcard_store.base_url', 'https://api.idcard.store')),
 
                 // Good APIs Partner & KYC Services

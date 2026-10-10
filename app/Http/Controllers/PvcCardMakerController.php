@@ -17,6 +17,8 @@ class PvcCardMakerController extends Controller
         'ayushman'         => 'ayushman-pvc',
         'voter_epic'       => 'voter-pvc-card',
         'pan_nsdl'         => 'pan-nsdl-pvc',
+        'pan_uti'          => 'pan-uti-pvc',
+        'pan_incometax'    => 'pan-instant-pvc',
         'eshram'           => 'eshram-pvc-card',
         'driving_licence'  => 'make-driving-licence-card',
         'healthid'         => 'healthid-pvc',
@@ -59,7 +61,7 @@ class PvcCardMakerController extends Controller
             ];
         }
 
-        $activeKey = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '71ebc340-7c80-4c8f-9613-250094ba27c3'));
+        $activeKey = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '4657123a-ccb9-4fb0-b3ed-5e1e24c0e5d5'));
 
         return Inertia::render('Utilities/PvcCardMaker', [
             'cards'         => $cardsData,
