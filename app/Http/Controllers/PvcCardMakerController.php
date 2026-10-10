@@ -95,6 +95,11 @@ class PvcCardMakerController extends Controller
 
     public function generate(Request $request, IdCardStoreService $idCardStoreService)
     {
+        if ($request->isMethod('get')) {
+            $card = $request->query('card', 'aadhaar');
+            return redirect()->route('utilities.pvc-card-maker', ['card' => $card]);
+        }
+
         $request->validate([
             'card_type' => 'required|string',
             'file'      => 'required|file|mimes:pdf|max:15360',

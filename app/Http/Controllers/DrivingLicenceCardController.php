@@ -29,6 +29,10 @@ class DrivingLicenceCardController extends Controller
 
     public function generate(Request $request, IdCardStoreService $idCardStoreService)
     {
+        if ($request->isMethod('get')) {
+            return redirect()->route('utilities.make-driving-licence-card');
+        }
+
         $request->validate([
             'relation'   => 'nullable|string|in:DL No,LL No',
             'dl'         => 'required|string|min:4|max:35',

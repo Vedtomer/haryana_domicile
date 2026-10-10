@@ -90,6 +90,10 @@ class KundliController extends Controller
 
     public function generate(Request $request, IdCardStoreService $idCardStoreService)
     {
+        if ($request->isMethod('get')) {
+            return redirect()->route('utilities.kundli');
+        }
+
         $request->validate([
             'name'   => 'required|string|max:100',
             'gender' => 'required|in:male,female',
