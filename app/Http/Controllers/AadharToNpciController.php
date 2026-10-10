@@ -87,23 +87,31 @@ class AadharToNpciController extends Controller
         }
 
         $cleanAadhar = preg_replace('/\D/', '', $request->input('aadhar'));
-        $baseUrl = trim(Setting::get('aadhar_to_npci_api_url') ?: 'https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php');
-        if (str_contains($baseUrl, 'aadhar_to_npci.php')) {
-            $baseUrl = str_replace('aadhar_to_npci.php', 'npci_api.php', $baseUrl);
-        }
-
+        $baseUrl = 'https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php';
         $apiKey = \App\Services\GoodApiService::getApiKey(Setting::get('aadhar_to_npci_api_key'));
-        $apiUrl = \App\Services\GoodApiService::buildUrl($baseUrl, [
-            'uid'           => $cleanAadhar,
-            'aadhar'        => $cleanAadhar,
-            'aadhar_number' => $cleanAadhar,
-        ], $apiKey);
+        $apiUrl = "{$baseUrl}?apiKey=" . urlencode($apiKey) . "&uid=" . urlencode($cleanAadhar);
 
         try {
-            $response = \App\Services\GoodApiService::client(35, $apiKey)->get($apiUrl);
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+                ->timeout(35)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept'     => 'application/json, text/plain, */*',
+                    'X-API-KEY'  => $apiKey,
+                    'api-key'    => $apiKey,
+                ])
+                ->get($apiUrl);
 
             if ($response->successful()) {
                 $data = $response->json();
+
+                // Check for invalid API key or explicit failure code from provider
+                if (isset($data['StatusCode']) && (int) $data['StatusCode'] === 101) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $data['message'] ?? 'Invalid API Key on NPCI server.',
+                    ]);
+                }
 
                 $isSuccess = (isset($data['Status']) && strtolower($data['Status']) === 'success') ||
                              (isset($data['status']) && strtolower($data['status']) === 'success') ||
