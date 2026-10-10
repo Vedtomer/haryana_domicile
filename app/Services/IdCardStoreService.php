@@ -114,25 +114,11 @@ class IdCardStoreService
 
     public function __construct()
     {
-        $dbUrl = \App\Models\Setting::get('idcard_store_base_url');
-        $rawUrl = !empty($dbUrl) ? trim($dbUrl) : config('services.idcard_store.base_url', 'https://api.idcard.store');
-        $rawUrl = trim($rawUrl ?: 'https://api.idcard.store');
-
-        // Always enforce https://
-        if (str_starts_with(strtolower($rawUrl), 'http://')) {
-            $rawUrl = 'https://' . substr($rawUrl, 7);
-        } elseif (!str_starts_with(strtolower($rawUrl), 'https://')) {
-            $rawUrl = 'https://' . $rawUrl;
-        }
-
-        // Always ensure api.idcard.store domain
-        if (str_contains(strtolower($rawUrl), 'idcard.store') && !str_contains(strtolower($rawUrl), 'api.idcard.store')) {
-            $rawUrl = str_replace('idcard.store', 'api.idcard.store', $rawUrl);
-        }
-
-        $this->baseUrl = rtrim($rawUrl, '/');
+        // Strictly lock API Base URL to official endpoint.
+        // Ignore any database or environment paths that may append erroneous paths or cause 404/405 errors.
+        $this->baseUrl = 'https://api.idcard.store';
         $this->apiKey  = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '4657123a-ccb9-4fb0-b3ed-5e1e24c0e5d5'));
-        $this->cdnUrl  = rtrim(config('services.idcard_store.cdn_url', 'https://idmaker.mfcdn.in/'), '/');
+        $this->cdnUrl  = 'https://idmaker.mfcdn.in';
     }
 
     /**
@@ -189,10 +175,12 @@ class IdCardStoreService
                 $safeFileName .= '.pdf';
             }
 
+            $fileContents = file_get_contents($file->getRealPath());
+
             $multipart = [
                 [
                     'name'     => 'file',
-                    'contents' => fopen($file->getRealPath(), 'r'),
+                    'contents' => $fileContents,
                     'filename' => $safeFileName,
                     'headers'  => ['Content-Type' => 'application/pdf'],
                 ],
@@ -288,6 +276,13 @@ class IdCardStoreService
                 return [
                     'success' => false,
                     'message' => $errorMsg ?: 'Malformed file or invalid password. Please verify the uploaded PDF.'
+                ];
+            }
+
+            if ($status === 404) {
+                return [
+                    'success' => false,
+                    'message' => 'API Endpoint Not Found (404): Service URL invalid hai ya server response nahi de raha. Kripya document check karein.'
                 ];
             }
 

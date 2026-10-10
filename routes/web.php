@@ -2656,6 +2656,7 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     // IDCard Store Smart PVC Card Maker
     Route::get('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'index'])->name('utilities.pvc-card-maker');
     Route::match(['get', 'post'], '/utilities/pvc-card-maker/generate', [\App\Http\Controllers\PvcCardMakerController::class, 'generate'])->name('utilities.pvc-card-maker.generate');
+    Route::post('/utilities/pvc-card-maker', [\App\Http\Controllers\PvcCardMakerController::class, 'generate']);
     Route::post('/utilities/pvc-card-maker/save-api-key', [\App\Http\Controllers\PvcCardMakerController::class, 'saveApiKey'])->name('utilities.pvc-card-maker.save-api-key');
     Route::get('/utilities/download-card-asset', [\App\Http\Controllers\PvcCardMakerController::class, 'downloadAsset'])->name('utilities.download-card-asset');
 
