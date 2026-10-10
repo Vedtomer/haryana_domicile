@@ -50,12 +50,7 @@ export default function PanFullDetails() {
 
     const displayCoinCost = service?.coin_cost ?? currentService?.coin_cost ?? coinCost ?? 29;
 
-    // Admin API Settings State
-    const [showAdminModal, setShowAdminModal] = useState(false);
-    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php');
-    const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
-    const [savingSettings, setSavingSettings] = useState(false);
-    const [settingMsg, setSettingMsg] = useState(null);
+
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -129,28 +124,7 @@ Source: Good-API-Point PAN Full Details`;
         window.print();
     };
 
-    const handleSaveAdminSettings = async (e) => {
-        e.preventDefault();
-        setSavingSettings(true);
-        setSettingMsg(null);
 
-        try {
-            const res = await axios.post('/utilities/pan-full-details/update-api', {
-                api_url: adminApiUrl,
-                api_key: adminApiKey,
-            });
-            if (res.data.success) {
-                setSettingMsg({ type: 'success', text: res.data.message });
-                setTimeout(() => setShowAdminModal(false), 1200);
-            } else {
-                setSettingMsg({ type: 'error', text: res.data.message || 'Failed to save settings.' });
-            }
-        } catch (err) {
-            setSettingMsg({ type: 'error', text: 'Error saving settings.' });
-        } finally {
-            setSavingSettings(false);
-        }
-    };
 
     return (
         <AdminLayout
@@ -419,85 +393,6 @@ Source: Good-API-Point PAN Full Details`;
                 )}
             </div>
 
-            {/* Admin API Settings Modal */}
-            {showAdminModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-                        <div className="p-5 bg-gradient-to-r from-indigo-700 via-violet-700 to-purple-700 text-white flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                                <span className="material-symbols-outlined text-2xl">tune</span>
-                                <h3 className="font-black text-lg">PAN Full Details API Settings</h3>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setShowAdminModal(false)}
-                                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10"
-                            >
-                                <span className="material-symbols-outlined text-xl">close</span>
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSaveAdminSettings} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                    API Endpoint URL
-                                </label>
-                                <input
-                                    type="text"
-                                    value={adminApiUrl}
-                                    onChange={(e) => setAdminApiUrl(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white"
-                                    placeholder="https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php"
-                                    required
-                                />
-                                <p className="text-[11px] text-slate-400 mt-1">
-                                    Default: https://good-api-point.com/apis_partner/v1/pan_card_api/pan_full_details.php
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                    API Key (Good-API-Point)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={adminApiKey}
-                                    onChange={(e) => setAdminApiKey(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white"
-                                    placeholder="Enter Good-API-Point API Key"
-                                />
-                            </div>
-
-                            {settingMsg && (
-                                <div className={`p-3 rounded-xl text-xs font-bold ${
-                                    settingMsg.type === 'success'
-                                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                        : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-950/40 dark:text-red-300'
-                                }`}>
-                                    {settingMsg.text}
-                                </div>
-                            )}
-
-                            <div className="flex justify-end gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAdminModal(false)}
-                                    className="px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={savingSettings}
-                                    className="px-5 py-2 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
-                                >
-                                    {savingSettings ? 'Saving...' : 'Save Settings'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </AdminLayout>
     );
 }

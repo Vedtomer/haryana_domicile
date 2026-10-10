@@ -2371,11 +2371,25 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         }
         return Inertia::render('Utilities/PanDetails');
     })->name('utilities.pan-details-instant');
+    Route::get('/utilities/pan-details', fn() => redirect()->route('utilities.pan-details-instant'));
 
     Route::post('/utilities/pan-details-instant/search', [\App\Http\Controllers\PanDetailsController::class, 'search'])->name('utilities.pan-details-instant.search');
+    Route::post('/utilities/pan-details/search', [\App\Http\Controllers\PanDetailsController::class, 'search']);
 
     Route::get('/utilities/pan-full-details', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-details');
+    Route::get('/utilities/pan-full-detail', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-detail');
+    Route::get('/utilities/pan-full', [\App\Http\Controllers\PanFullDetailsController::class, 'index']);
+    Route::get('/utilities/pan-details-full', [\App\Http\Controllers\PanFullDetailsController::class, 'index']);
+    Route::get('/utilities/pan-full-details-server', [\App\Http\Controllers\PanFullDetailsController::class, 'index']);
+    Route::get('/pan-full-details', fn() => redirect()->route('utilities.pan-full-details'));
+    Route::get('/pan-full-details-instant', fn() => redirect()->route('utilities.pan-full-details'));
+
     Route::post('/utilities/pan-full-details/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search'])->name('utilities.pan-full-details.search');
+    Route::post('/utilities/pan-full-detail/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
+    Route::post('/utilities/pan-full/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
+    Route::post('/utilities/pan-details-full/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
+    Route::post('/utilities/pan-full-details-server/search', [\App\Http\Controllers\PanFullDetailsController::class, 'search']);
+
     Route::post('/utilities/pan-full-details/update-api', [\App\Http\Controllers\PanFullDetailsController::class, 'updateApi'])->name('utilities.pan-full-details.update-api');
 
     Route::get('/utilities/pan-full-details-instant', [\App\Http\Controllers\PanFullDetailsController::class, 'index'])->name('utilities.pan-full-details-instant');

@@ -15,9 +15,13 @@ class PanFullDetailsController extends Controller
 {
     public function index(Request $request)
     {
-        $service = Service::where('slug', 'pan-full-details')
-            ->orWhere('slug', 'pan-full-details-instant')
-            ->first();
+        $service = Service::whereIn('slug', [
+            'pan-full-details',
+            'pan-full-details-instant',
+            'pan-full-detail',
+            'pan-full',
+            'pan-details-full',
+        ])->first();
         $user = auth()->user();
 
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
@@ -45,9 +49,13 @@ class PanFullDetailsController extends Controller
             'pan.regex'    => 'Invalid PAN format. Example: ABCDE1234F',
         ]);
 
-        $service = Service::where('slug', 'pan-full-details')
-            ->orWhere('slug', 'pan-full-details-instant')
-            ->first();
+        $service = Service::whereIn('slug', [
+            'pan-full-details',
+            'pan-full-details-instant',
+            'pan-full-detail',
+            'pan-full',
+            'pan-details-full',
+        ])->first();
         $user = auth()->user();
 
         $coinCost = $service ? (int) $service->coin_cost : 29;

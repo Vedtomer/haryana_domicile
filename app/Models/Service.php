@@ -344,11 +344,26 @@ class Service extends Model
             'index' => '/admin/airtel-passbook',
             'create' => '/admin/airtel-passbook/create',
         ],
+        'pan_full_details' => [
+            'label' => 'PAN Full Details',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-full-details',
+            'create' => '/utilities/pan-full-details',
+        ],
         'pan_full_details_instant' => [
             'label' => 'PAN Full Details Instant',
+            'icon' => '💳',
             'model' => null,
-            'index' => '/utilities/pan-full-details-instant',
-            'create' => '/utilities/pan-full-details-instant',
+            'index' => '/utilities/pan-full-details',
+            'create' => '/utilities/pan-full-details',
+        ],
+        'pan_full_detail' => [
+            'label' => 'PAN Full Details',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-full-details',
+            'create' => '/utilities/pan-full-details',
         ],
         'pan_to_aadhar_unmasked' => [
             'label' => 'PAN To Aadhaar Unmasked Instant',
@@ -934,6 +949,17 @@ class Service extends Model
         }
 
         if (in_array($this->slug, [
+            'pan-full-details',
+            'pan-full-details-instant',
+            'pan-full-detail',
+            'pan-full-details-server',
+            'pan-details-full',
+            'pan-full',
+        ])) {
+            return '/utilities/pan-full-details';
+        }
+
+        if (in_array($this->slug, [
             'pan-details-server-2',
             'pan-details-server2',
             'pan-to-details-server-2',
@@ -942,6 +968,10 @@ class Service extends Model
             'pan-card-to-pan-details',
         ])) {
             return '/utilities/pan-details-server-2';
+        }
+
+        if ($this->slug === 'pan-details-instant' || $this->slug === 'pan-details') {
+            return '/utilities/pan-details-instant';
         }
 
         if ($this->slug === 'aadhar-to-farmer-all-state-pdf' || $this->slug === 'farmer-card-pdf') {
