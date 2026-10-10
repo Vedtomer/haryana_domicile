@@ -3132,14 +3132,6 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         Route::put('payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('payment-settings.update')->middleware('admin');
         Route::post('payment-settings/test-paycorex', [\App\Http\Controllers\PaycorexPaymentController::class, 'testConnection'])->name('payment-settings.test-paycorex')->middleware('admin');
 
-        // API Settings — admin only
-        Route::get('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'edit'])->name('api-settings.edit')->middleware('admin');
-        Route::put('api-settings', [\App\Http\Controllers\Admin\ApiSettingController::class, 'update'])->name('api-settings.update')->middleware('admin');
-
-        // Broadcast Notices / Announcements
-        Route::resource('notices', \App\Http\Controllers\Admin\BroadcastNoticeController::class)->except(['create', 'show', 'edit'])->middleware('admin');
-        Route::patch('notices/{notice}/toggle-status', [\App\Http\Controllers\Admin\BroadcastNoticeController::class, 'toggleStatus'])->name('notices.toggle-status')->middleware('admin');
-
         // Haryana Domicile PDF Coordinates — admin only
         Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit')->middleware('admin');
         Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save')->middleware('admin');

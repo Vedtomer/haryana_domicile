@@ -194,20 +194,6 @@ Source: Good-API-Point PAN To Aadhaar`;
                             <span>{displayCoinCost} Coins / Search</span>
                         </span>
 
-                        {(isAdmin || auth?.user?.is_admin || auth?.user?.type === 'super_admin' || auth?.user?.type === 'admin') && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowAdminModal(true);
-                                    setSettingMsg(null);
-                                }}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600 shadow-xs transition-colors"
-                                title="Admin API Settings"
-                            >
-                                <span className="material-symbols-outlined text-[15px]">settings</span>
-                                <span className="hidden sm:inline">API Config</span>
-                            </button>
-                        )}
                     </div>
                 </div>
             }

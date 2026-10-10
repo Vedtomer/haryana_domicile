@@ -11,7 +11,6 @@ import TopDisclaimerTicker from '../Components/TopDisclaimerTicker';
 import ReferralFloatingButton from '../Components/ReferralFloatingButton';
 import ThemeToggle from '../Components/ThemeToggle';
 import UserLocationTracker from '../Components/UserLocationTracker';
-import BroadcastNoticeBanner from '../Components/BroadcastNoticeBanner';
 import DailyBonusModal from '../Components/DailyBonusModal';
 import { groupServicesByCategory } from '../Utils/serviceCategories';
 import CategoryLogo from '../Components/CategoryLogo';
@@ -75,11 +74,9 @@ export default function AdminLayout({ header, children }) {
             '/admin/user-permissions',
             '/admin/coin-requests',
             '/admin/profile',
-            '/admin/notices',
             '/admin/referrals',
             '/admin/payment-settings',
             '/admin/pdf-coordinates',
-            '/admin/api-settings',
             '/admin/notifications',
             '/admin/reactivation-requests',
             '/admin/license-keys',
@@ -312,14 +309,6 @@ export default function AdminLayout({ header, children }) {
                                 <span>ADMIN CONTROLS</span>
                             </div>
 
-                            <NavItem href="/admin/api-settings" icon={<span className="material-symbols-outlined text-[19px] text-purple-600 dark:text-purple-400">tune</span>}>
-                                <span className="flex items-center justify-between w-full">
-                                    <span>API Key Settings</span>
-                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300">
-                                        LIVE
-                                    </span>
-                                </span>
-                            </NavItem>
                             <NavItem href="/admin/service-requests" icon={<span className="material-symbols-outlined text-[19px] text-emerald-500">assignment</span>}>
                                 <span className="flex items-center justify-between w-full">
                                     <span>Service Requests</span>
@@ -344,9 +333,6 @@ export default function AdminLayout({ header, children }) {
                             </NavItem>
                             <NavItem href="/admin/payment-settings" icon={<span className="material-symbols-outlined text-[19px] text-emerald-500">payments</span>}>
                                 Payment / QR Settings
-                            </NavItem>
-                            <NavItem href="/admin/notices" icon={<span className="material-symbols-outlined text-[19px] text-rose-500">campaign</span>}>
-                                Broadcast Notices
                             </NavItem>
                             <NavItem href="/admin/referrals" icon={<span className="material-symbols-outlined text-[19px] text-pink-500">card_giftcard</span>}>
                                 Refer &amp; Earn
@@ -545,14 +531,6 @@ export default function AdminLayout({ header, children }) {
                                     <>
                                         <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
                                         <Link
-                                            href="/admin/api-settings"
-                                            onClick={() => setDropdownOpen(false)}
-                                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined text-[18px] text-purple-600 dark:text-purple-400">tune</span>
-                                            <span>API Key Settings</span>
-                                        </Link>
-                                        <Link
                                             href="/admin/payment-settings"
                                             onClick={() => setDropdownOpen(false)}
                                             className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
@@ -572,17 +550,6 @@ export default function AdminLayout({ header, children }) {
                                 )}
                             </div>
                         </div>
-
-                        {/* API Settings Button for Admin */}
-                        {isAdmin && (
-                            <Link
-                                href="/admin/api-settings"
-                                className="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white flex items-center justify-center shadow-md shadow-purple-600/30 transition-all cursor-pointer"
-                                title="API Key Settings (APIs बदलें)"
-                            >
-                                <span className="material-symbols-outlined text-[20px]">tune</span>
-                            </Link>
-                        )}
 
                         {/* Blue Quick Settings Gear Button */}
                         <Link
@@ -608,10 +575,6 @@ export default function AdminLayout({ header, children }) {
 
                 {/* Main Body */}
                 <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
-                    <div className="max-w-7xl mx-auto">
-                        <BroadcastNoticeBanner />
-                    </div>
-
                     {/* Service Work History Top Option Bar */}
                     {currentServiceInfo && (
                         <div className="max-w-6xl mx-auto">

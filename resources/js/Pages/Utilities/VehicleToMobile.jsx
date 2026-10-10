@@ -107,16 +107,6 @@ export default function VehicleToMobile() {
                         </p>
                     </div>
 
-                    {isUserAdmin && (
-                        <button
-                            type="button"
-                            onClick={() => setShowAdminModal(true)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-xl border border-slate-700 shadow-sm transition"
-                        >
-                            <span className="material-symbols-outlined text-[16px]">tune</span>
-                            API Config (Admin)
-                        </button>
-                    )}
                 </div>
             }
         >

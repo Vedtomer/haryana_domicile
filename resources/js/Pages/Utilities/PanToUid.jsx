@@ -128,16 +128,6 @@ export default function PanToUid() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => setShowAdminModal(true)}
-                                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-[17px] text-indigo-500">tune</span>
-                                <span>API Config</span>
-                            </button>
-                        )}
                         <Link
                             href="/dashboard"
                             className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5"

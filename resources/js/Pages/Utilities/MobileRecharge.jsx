@@ -288,14 +288,6 @@ export default function MobileRecharge({
                                         </div>
                                     </div>
                                 </div>
-
-                                <button
-                                    onClick={() => setShowAdminSettings(true)}
-                                    className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
-                                >
-                                    <span className="material-symbols-outlined text-sm">settings</span>
-                                    <span>API Config</span>
-                                </button>
                             </>
                         )}
                     </div>

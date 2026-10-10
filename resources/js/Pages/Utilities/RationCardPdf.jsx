@@ -152,16 +152,6 @@ export default function RationCardPdf() {
                             <span>{displayCoinCost} Coins / Download</span>
                         </span>
 
-                        {isAdmin && (
-                            <button
-                                onClick={() => setShowAdminModal(true)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 transition shadow-xs"
-                                title="Admin API Settings"
-                            >
-                                <span className="material-symbols-outlined text-sm">settings</span>
-                                <span className="hidden sm:inline">API Config</span>
-                            </button>
-                        )}
                     </div>
                 </div>
             }

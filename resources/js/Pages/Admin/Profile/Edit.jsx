@@ -72,24 +72,13 @@ export default function Edit({ user, ledger, ledgerSummary }) {
                                 {user.type.replace('_', ' ')}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                            {(user.type === 'admin' || user.type === 'super_admin') && (
-                                <Link
-                                    href="/admin/api-settings"
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">tune</span>
-                                    <span>API Key Settings</span>
-                                </Link>
-                            )}
-                            <Link
-                                href="/dashboard"
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-cyan-300">dashboard</span>
-                                <span>Dashboard</span>
-                            </Link>
-                        </div>
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-[18px] text-indigo-600 dark:text-cyan-300">dashboard</span>
+                            <span>Dashboard</span>
+                        </Link>
                     </div>
 
                     <form onSubmit={submit} className="p-6 sm:p-8 space-y-6">

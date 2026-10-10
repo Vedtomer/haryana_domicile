@@ -505,7 +505,6 @@ export default function Dashboard({
     pendingRequests = 0,
     totalRequests = 0,
     servicesCount,
-    noticesCount = 0,
     referralsCount = 0,
     apiBalance = 487.00,
     userRole = 'RETAILER',
@@ -816,22 +815,13 @@ export default function Dashboard({
                                             Administration Control Panel
                                         </h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Manage users, coin requests, permissions, payments, API keys &amp; notices
+                                            Manage users, coin requests, permissions &amp; payments
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Link
-                                        href="/admin/api-settings"
-                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-purple-600/25 hover:shadow-purple-600/40 transition-all cursor-pointer"
-                                    >
-                                        <span className="material-symbols-outlined text-[17px]">tune</span>
-                                        <span>Change API Keys</span>
-                                    </Link>
-                                    <span className="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                        Admin Hub
-                                    </span>
-                                </div>
+                                <span className="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    Admin Hub
+                                </span>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
@@ -894,19 +884,9 @@ export default function Dashboard({
                                     subtitle="Manage QR codes & PayCorex gateway"
                                     icon="payments"
                                     linkUrl="/admin/payment-settings"
-                                />
+                                 />
                                 <StatMetricCard
                                     index={6}
-                                    colorTheme="purple"
-                                    title="BROADCAST NOTICE"
-                                    badgeText="NOTICES"
-                                    value={`${noticesCount || 0} Notices`}
-                                    subtitle="Publish alerts & marquee notices"
-                                    icon="campaign"
-                                    linkUrl="/admin/notices"
-                                />
-                                <StatMetricCard
-                                    index={7}
                                     colorTheme="indigo"
                                     title="REFER & EARN"
                                     badgeText="AFFILIATE"
@@ -914,16 +894,6 @@ export default function Dashboard({
                                     subtitle="Referral settings & tracking"
                                     icon="card_giftcard"
                                     linkUrl="/admin/referrals"
-                                />
-                                <StatMetricCard
-                                    index={8}
-                                    colorTheme="purple"
-                                    title="API KEY SETTINGS"
-                                    badgeText="MASTER API"
-                                    value="Change API Keys"
-                                    subtitle="Good APIs, Nexus & Gateways"
-                                    icon="tune"
-                                    linkUrl="/admin/api-settings"
                                 />
                             </div>
                         </div>

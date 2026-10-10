@@ -128,19 +128,6 @@ class HandleInertiaRequests extends Middleware
                 )
                 : [],
 
-            // Active broadcast notices — cached for 60 seconds
-            'activeBroadcastNotices' => fn () => \Illuminate\Support\Facades\Cache::remember(
-                'active_broadcast_notices',
-                60,
-                function () {
-                    try {
-                        return \App\Models\BroadcastNotice::active()->latest()->take(5)->get();
-                    } catch (\Throwable $e) {
-                        return [];
-                    }
-                }
-            ),
-
             // Notification bell data
             'notifications' => fn () => $user ? [
                 'unread' => $user->unreadNotifications()->count(),

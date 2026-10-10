@@ -172,16 +172,6 @@ export default function AadharToInfo({
                             <span>🪙</span>
                             <span>{coinCost} Coins Per Lookup</span>
                         </span>
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => setShowAdminModal(true)}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-all shadow-sm cursor-pointer"
-                            >
-                                <span className="material-symbols-outlined text-base text-blue-500">tune</span>
-                                API Config (Admin)
-                            </button>
-                        )}
                     </div>
                 </div>
             }

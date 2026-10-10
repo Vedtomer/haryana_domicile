@@ -241,16 +241,6 @@ export default function FarmerPdfServer2() {
                             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                             Back to Dashboard
                         </Link>
-                        {isUserAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => setShowAdminModal(true)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm"
-                            >
-                                <span className="material-symbols-outlined text-[16px]">settings</span>
-                                API Settings
-                            </button>
-                        )}
                     </div>
 
                     {/* Main Header Card */}
