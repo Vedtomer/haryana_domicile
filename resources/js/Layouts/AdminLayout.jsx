@@ -282,7 +282,7 @@ export default function AdminLayout({ header, children }) {
                         <span>Dashboard</span>
                     </Link>
 
-                    {/* 2. All Services Option (A-Z) */}
+                    {/* 2. All Services Option */}
                     <Link
                         href="/dashboard?tab=services"
                         onClick={() => setSidebarOpen(false)}
@@ -296,9 +296,6 @@ export default function AdminLayout({ header, children }) {
                             <span className="material-symbols-outlined text-[20px] text-blue-500">apps</span>
                             <span className="truncate">All Services</span>
                         </div>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                            A-Z
-                        </span>
                     </Link>
 
                     {/* Admin Navigation Options */}

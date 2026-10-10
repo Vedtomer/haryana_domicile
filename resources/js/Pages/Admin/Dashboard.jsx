@@ -520,7 +520,6 @@ export default function Dashboard({
     const [unlockingService, setUnlockingService] = useState(null);
     const [isUnlocking, setIsUnlocking] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedLetter, setSelectedLetter] = useState('ALL');
 
     // Tab state: 'overview' vs 'services'
     const [activeTab, setActiveTab] = useState(() => {
@@ -586,51 +585,6 @@ export default function Dashboard({
             (s?.hindi_name || '').toLowerCase().includes(q)
         );
     }, [sortedServices, searchQuery]);
-
-    // 4. Group alphabetically A to Z
-    const alphabetGroups = useMemo(() => {
-        const groups = {};
-        for (const s of filteredServices) {
-            const firstChar = (s?.name || '').trim().charAt(0).toUpperCase();
-            const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
-            if (!groups[letter]) {
-                groups[letter] = [];
-            }
-            groups[letter].push(s);
-        }
-
-        const sortedLetters = Object.keys(groups).sort((a, b) => {
-            if (a === '#') return 1;
-            if (b === '#') return -1;
-            return a.localeCompare(b);
-        });
-
-        return sortedLetters.map((letter) => ({
-            letter,
-            services: groups[letter],
-        }));
-    }, [filteredServices]);
-
-    // 5. Count of services per letter across all available services
-    const letterCounts = useMemo(() => {
-        const counts = {};
-        for (const s of availableServices) {
-            const firstChar = (s?.name || '').trim().charAt(0).toUpperCase();
-            const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
-            counts[letter] = (counts[letter] || 0) + 1;
-        }
-        return counts;
-    }, [availableServices]);
-
-    // 6. Displayed groups based on selected letter
-    const displayedGroups = useMemo(() => {
-        if (selectedLetter === 'ALL') {
-            return alphabetGroups;
-        }
-        return alphabetGroups.filter((g) => g.letter === selectedLetter);
-    }, [alphabetGroups, selectedLetter]);
-
-    const ALPHABET_LIST = useMemo(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), []);
 
     const handleUnlock = () => {
         if (!unlockingService) return;
@@ -985,14 +939,14 @@ export default function Dashboard({
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 text-white flex items-center justify-center font-black shadow-md shadow-indigo-500/25 shrink-0">
-                                        <span className="material-symbols-outlined text-2xl">sort_by_alpha</span>
+                                        <span className="material-symbols-outlined text-2xl">apps</span>
                                     </div>
                                     <div>
                                         <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                                             <span>All Services / सभी सेवाएँ</span>
                                         </h2>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                            Alphabetical Order (A to Z) &bull; किसी भी सर्विस को तुरंत खोलने के लिए क्लिक करें
+                                            किसी भी सर्विस को तुरंत खोलने के लिए क्लिक करें
                                         </p>
                                     </div>
                                 </div>
@@ -1029,114 +983,17 @@ export default function Dashboard({
                             </div>
                         </div>
 
-                        {/* Alphabet Quick Filter Bar (Sticky) */}
-                        <div className="sticky top-2 z-20 backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-2.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
-                                {/* 'ALL' Button */}
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedLetter('ALL')}
-                                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                                        selectedLetter === 'ALL'
-                                            ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/40'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                    }`}
-                                >
-                                    <span>ALL</span>
-                                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                                        selectedLetter === 'ALL' ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                                    }`}>
-                                        {availableServices.length}
-                                    </span>
-                                </button>
-
-                                {/* A-Z Alphabet Buttons */}
-                                {ALPHABET_LIST.map((letter) => {
-                                    const count = letterCounts[letter] || 0;
-                                    const isSelected = selectedLetter === letter;
-                                    const hasServices = count > 0;
-
-                                    return (
-                                        <button
-                                            key={letter}
-                                            type="button"
-                                            onClick={() => hasServices && setSelectedLetter(letter)}
-                                            disabled={!hasServices}
-                                            title={hasServices ? `${count} services starting with ${letter}` : `No services under ${letter}`}
-                                            className={`px-3 py-2 rounded-xl text-xs font-black transition-all shrink-0 flex items-center justify-center min-w-[36px] ${
-                                                isSelected
-                                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40 scale-105'
-                                                    : hasServices
-                                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 cursor-pointer'
-                                                    : 'bg-slate-100/40 dark:bg-slate-800/30 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'
-                                            }`}
-                                        >
-                                            <span>{letter}</span>
-                                            {hasServices && (
-                                                <span className={`ml-1 text-[9px] font-bold ${
-                                                    isSelected ? 'text-white/90' : 'text-slate-400 dark:text-slate-500'
-                                                }`}>
-                                                    {count}
-                                                </span>
-                                            )}
-                                        </button>
-                                    );
-                                })}
-
-                                {/* '#' Symbol for numbers/other */}
-                                {(letterCounts['#'] || 0) > 0 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedLetter('#')}
-                                        className={`px-3 py-2 rounded-xl text-xs font-black transition-all shrink-0 flex items-center justify-center min-w-[36px] cursor-pointer ${
-                                            selectedLetter === '#'
-                                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md ring-2 ring-purple-400/40'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-indigo-50'
-                                        }`}
-                                    >
-                                        <span>#</span>
-                                        <span className="ml-1 text-[9px] font-bold text-slate-400">
-                                            {letterCounts['#']}
-                                        </span>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Alphabetical Services Content */}
-                        {displayedGroups.length > 0 ? (
-                            <div className="space-y-10">
-                                {displayedGroups.map((group) => (
-                                    <div key={group.letter} id={`letter-${group.letter}`} className="space-y-5 scroll-mt-28">
-                                        {/* Letter Divider Header */}
-                                        <div className="flex items-center gap-3 pb-2 border-b-2 border-indigo-100 dark:border-indigo-950">
-                                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white font-black text-xl flex items-center justify-center shadow-md shadow-indigo-500/20">
-                                                {group.letter}
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                                    <span>Letter {group.letter}</span>
-                                                    <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
-                                                        {group.services.length} {group.services.length === 1 ? 'Service' : 'Services'}
-                                                    </span>
-                                                </h3>
-                                            </div>
-                                            <div className="flex-1 h-px bg-gradient-to-r from-slate-200 dark:from-slate-800 to-transparent ml-2" />
-                                        </div>
-
-                                        {/* 3D Card Grid */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
-                                            {group.services.map((service, idx) => (
-                                                <ServiceCard
-                                                    key={service.id}
-                                                    service={service}
-                                                    index={idx}
-                                                    onUnlockClick={setUnlockingService}
-                                                    isAdmin={isAdmin}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                        {/* Services Grid */}
+                        {filteredServices.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4.5 sm:gap-5">
+                                {filteredServices.map((service, idx) => (
+                                    <ServiceCard
+                                        key={service.id}
+                                        service={service}
+                                        index={idx}
+                                        onUnlockClick={setUnlockingService}
+                                        isAdmin={isAdmin}
+                                    />
                                 ))}
                             </div>
                         ) : (
@@ -1149,18 +1006,17 @@ export default function Dashboard({
                                     No services found
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
-                                    {searchQuery ? `No service matches '${searchQuery}'.` : `No services available under letter '${selectedLetter}'.`}
+                                    {searchQuery ? `No service matches '${searchQuery}'.` : 'No services available.'}
                                 </p>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setSelectedLetter('ALL');
-                                    }}
-                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-sm"
-                                >
-                                    Show All Services
-                                </button>
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchQuery('')}
+                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-sm"
+                                    >
+                                        Show All Services
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
