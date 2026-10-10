@@ -114,7 +114,23 @@ class IdCardStoreService
 
     public function __construct()
     {
-        $this->baseUrl = rtrim(\App\Models\Setting::get('idcard_store_base_url') ?: config('services.idcard_store.base_url', 'https://api.idcard.store'), '/');
+        $dbUrl = \App\Models\Setting::get('idcard_store_base_url');
+        $rawUrl = !empty($dbUrl) ? trim($dbUrl) : config('services.idcard_store.base_url', 'https://api.idcard.store');
+        $rawUrl = trim($rawUrl ?: 'https://api.idcard.store');
+
+        // Always enforce https://
+        if (str_starts_with(strtolower($rawUrl), 'http://')) {
+            $rawUrl = 'https://' . substr($rawUrl, 7);
+        } elseif (!str_starts_with(strtolower($rawUrl), 'https://')) {
+            $rawUrl = 'https://' . $rawUrl;
+        }
+
+        // Always ensure api.idcard.store domain
+        if (str_contains(strtolower($rawUrl), 'idcard.store') && !str_contains(strtolower($rawUrl), 'api.idcard.store')) {
+            $rawUrl = str_replace('idcard.store', 'api.idcard.store', $rawUrl);
+        }
+
+        $this->baseUrl = rtrim($rawUrl, '/');
         $this->apiKey  = trim(\App\Models\Setting::get('idcard_store_api_key') ?: (config('services.idcard_store.api_key') ?: '4657123a-ccb9-4fb0-b3ed-5e1e24c0e5d5'));
         $this->cdnUrl  = rtrim(config('services.idcard_store.cdn_url', 'https://idmaker.mfcdn.in/'), '/');
     }
@@ -147,25 +163,25 @@ class IdCardStoreService
         }
 
         $config = self::ENDPOINTS[$cardKey];
-        $url = $this->baseUrl . $config['endpoint'];
+        $endpoint = '/' . ltrim($config['endpoint'], '/');
+        $url = rtrim($this->baseUrl, '/') . $endpoint;
 
         $postFields = [];
         if (!empty($extraParams['password'])) {
-            $postFields['password'] = $extraParams['password'];
+            $postFields['password'] = (string) $extraParams['password'];
         }
         if ($cardKey === 'aadhaar') {
             $isPhone = !empty($extraParams['phone']) && in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);
             $postFields['phone'] = $isPhone ? 'true' : 'false';
             $postFields['new_design'] = !empty($extraParams['new_design']) ? 'true' : 'false';
         } elseif ($cardKey === 'driving_licence') {
-            $postFields['relation'] = $extraParams['relation'] ?? 'DL No';
+            $postFields['relation'] = (string) ($extraParams['relation'] ?? 'DL No');
         } elseif (isset($extraParams['phone'])) {
             $isPhone = in_array(strtolower((string)$extraParams['phone']), ['true', 'yes', '1'], true);
             $postFields['phone'] = $isPhone ? 'true' : 'false';
         }
 
         try {
-            $fileContent = file_get_contents($file->getRealPath());
             $rawName = $file->getClientOriginalName() ?: 'document.pdf';
             // Sanitize filename to prevent multipart encoding issues with non-ASCII / space characters
             $safeFileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $rawName) ?: 'document.pdf';
@@ -173,20 +189,34 @@ class IdCardStoreService
                 $safeFileName .= '.pdf';
             }
 
-            $response = Http::timeout(60)
-                ->connectTimeout(10)
+            $multipart = [
+                [
+                    'name'     => 'file',
+                    'contents' => fopen($file->getRealPath(), 'r'),
+                    'filename' => $safeFileName,
+                    'headers'  => ['Content-Type' => 'application/pdf'],
+                ],
+            ];
+
+            foreach ($postFields as $name => $contents) {
+                $multipart[] = [
+                    'name'     => (string) $name,
+                    'contents' => (string) $contents,
+                ];
+            }
+
+            $response = Http::timeout(90)
+                ->connectTimeout(15)
                 ->withOptions([
-                    'allow_redirects' => [
-                        'strict' => true,
-                        'protocols' => ['https', 'http'],
-                    ],
+                    'allow_redirects' => false,
                 ])
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
+                    'Accept'        => 'application/json',
                 ])
-                ->attach('file', $fileContent, $safeFileName, ['Content-Type' => 'application/pdf'])
-                ->post($url, $postFields);
+                ->asMultipart()
+                ->post($url, $multipart);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -232,6 +262,12 @@ class IdCardStoreService
                 } else {
                     $errorMsg = "Uploaded PDF sahi format mein nahi hai ya is card type se match nahi karta. Kripya original {$config['name']} digital PDF upload karein.";
                 }
+            } elseif (is_string($errorMsg) && (str_contains(strtolower($errorMsg), 'signature not found') || str_contains(strtolower($errorMsg), 'file doesnt contain any signatures'))) {
+                $errorMsg = "Uploaded PDF mein digital signature nahi mila. Kripya official UIDAI portal (myaadhaar.uidai.gov.in) se download ki gayi original e-Aadhaar PDF upload karein (scanned copy, photo ya print-to-PDF support nahi karti).";
+            } elseif (is_string($errorMsg) && str_contains(strtolower($errorMsg), 'unable to find the qr code')) {
+                $errorMsg = "PDF mein QR code nahi mila. Kripya original digital PDF upload karein.";
+            } elseif (is_string($errorMsg) && str_contains(strtolower($errorMsg), 'password')) {
+                $errorMsg = "PDF password galat hai ya missing hai. Kripya sahi PDF password enter karein.";
             }
 
             if ($status === 401) {
@@ -258,7 +294,7 @@ class IdCardStoreService
             if ($status === 405) {
                 return [
                     'success' => false,
-                    'message' => 'API Method Not Allowed (405): Server expected POST multipart with file upload. Please verify the uploaded document.'
+                    'message' => 'API Method Not Allowed (405): Server expected POST multipart request. Please verify document and try again.'
                 ];
             }
 
@@ -311,14 +347,12 @@ class IdCardStoreService
             $response = Http::timeout(60)
                 ->connectTimeout(10)
                 ->withOptions([
-                    'allow_redirects' => [
-                        'strict' => true,
-                        'protocols' => ['https', 'http'],
-                    ],
+                    'allow_redirects' => false,
                 ])
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
+                    'Accept'        => 'application/json',
                 ])
                 ->asMultipart()
                 ->post($url, [
@@ -442,8 +476,13 @@ class IdCardStoreService
 
             $response = Http::timeout(60)
                 ->connectTimeout(10)
+                ->withOptions([
+                    'allow_redirects' => false,
+                ])
                 ->withHeaders([
-                    'Authorization' => $this->apiKey,
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'User-Agent'    => 'CSPJaankari/1.0',
+                    'Accept'        => 'application/json',
                 ])
                 ->asMultipart()
                 ->post($url, collect($postFields)->map(fn($v, $k) => ['name' => $k, 'contents' => $v])->values()->all());
