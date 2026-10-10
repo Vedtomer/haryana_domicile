@@ -2350,7 +2350,17 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/bihar-ration-card-maker/deduct-coins', [\App\Http\Controllers\BiharRationCardMakerController::class, 'deductCoins'])->name('utilities.bihar-ration-card-maker.deduct-coins');
 
     Route::get('/utilities/pan-details-server-2', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-details-server-2');
+    Route::get('/utilities/pan-details-server2', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-details-server2');
+    Route::get('/utilities/pan-to-details-server-2', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-to-details-server-2');
+    Route::get('/utilities/pan-to-details-server2', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-to-details-server2');
+    Route::get('/utilities/pan-card-to-pan-details', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'index'])->name('utilities.pan-card-to-pan-details');
+
     Route::post('/utilities/pan-details-server-2/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search'])->name('utilities.pan-details-server-2.search');
+    Route::post('/utilities/pan-details-server2/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search']);
+    Route::post('/utilities/pan-to-details-server-2/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search']);
+    Route::post('/utilities/pan-to-details-server2/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search']);
+    Route::post('/utilities/pan-card-to-pan-details/search', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'search']);
+
     Route::post('/utilities/pan-details-server-2/update-api', [\App\Http\Controllers\PanDetailsServer2Controller::class, 'updateApi'])->name('utilities.pan-details-server-2.update-api');
 
     Route::get('/utilities/pan-details-instant', function () {

@@ -512,6 +512,27 @@ class Service extends Model
             'index' => '/utilities/farmer-pdf-server-2',
             'create' => '/utilities/farmer-pdf-server-2',
         ],
+        'pan_details_server_2' => [
+            'label' => 'Pan Details Server 2',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-details-server-2',
+            'create' => '/utilities/pan-details-server-2',
+        ],
+        'pan_details_server2' => [
+            'label' => 'Pan Details Server 2',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-details-server-2',
+            'create' => '/utilities/pan-details-server-2',
+        ],
+        'pan_to_details_server_2' => [
+            'label' => 'Pan Details Server 2',
+            'icon' => '💳',
+            'model' => null,
+            'index' => '/utilities/pan-details-server-2',
+            'create' => '/utilities/pan-details-server-2',
+        ],
         'aadhar_to_farmer_all_state_pdf' => [
             'label' => 'Aadhar To Farmer All State Pdf',
             'model' => null,
@@ -910,6 +931,17 @@ class Service extends Model
     {
         if ($this->module_key && isset(self::MODULES[$this->module_key])) {
             return self::MODULES[$this->module_key]['index'];
+        }
+
+        if (in_array($this->slug, [
+            'pan-details-server-2',
+            'pan-details-server2',
+            'pan-to-details-server-2',
+            'pan-to-details-server2',
+            'pan-details-server',
+            'pan-card-to-pan-details',
+        ])) {
+            return '/utilities/pan-details-server-2';
         }
 
         if ($this->slug === 'aadhar-to-farmer-all-state-pdf' || $this->slug === 'farmer-card-pdf') {
