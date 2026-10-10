@@ -3136,6 +3136,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         // Haryana Domicile PDF Coordinates — admin only
         Route::get('pdf-coordinates', [PdfCoordinateController::class, 'edit'])->name('pdf-coordinates.edit')->middleware('admin');
         Route::post('pdf-coordinates', [PdfCoordinateController::class, 'save'])->name('pdf-coordinates.save')->middleware('admin');
+
+        // Per-Service API Configuration — admin only
+        Route::get('service-api-config', [\App\Http\Controllers\Admin\ServiceApiConfigController::class, 'getServiceConfig'])->name('service-api-config.get')->middleware('admin');
+        Route::post('service-api-config', [\App\Http\Controllers\Admin\ServiceApiConfigController::class, 'saveServiceConfig'])->name('service-api-config.save')->middleware('admin');
     });
 });
 
