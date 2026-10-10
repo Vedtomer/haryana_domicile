@@ -175,6 +175,12 @@ class IdCardStoreService
 
             $response = Http::timeout(60)
                 ->connectTimeout(10)
+                ->withOptions([
+                    'allow_redirects' => [
+                        'strict' => true,
+                        'protocols' => ['https', 'http'],
+                    ],
+                ])
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
@@ -249,6 +255,13 @@ class IdCardStoreService
                 ];
             }
 
+            if ($status === 405) {
+                return [
+                    'success' => false,
+                    'message' => 'API Method Not Allowed (405): Server expected POST multipart with file upload. Please verify the uploaded document.'
+                ];
+            }
+
             return [
                 'success' => false,
                 'message' => $errorMsg ?: "API error ($status): Failed to generate card."
@@ -297,6 +310,12 @@ class IdCardStoreService
         try {
             $response = Http::timeout(60)
                 ->connectTimeout(10)
+                ->withOptions([
+                    'allow_redirects' => [
+                        'strict' => true,
+                        'protocols' => ['https', 'http'],
+                    ],
+                ])
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'User-Agent'    => 'CSPJaankari/1.0',
