@@ -307,11 +307,50 @@ class ApiSettingController extends Controller
             }
         }
 
-        // Keep goodapi_api_key and nexus_api_key in sync if one was updated
+        // Keep goodapi_api_key and nexus_api_key in sync and propagate to all services
+        $newGoodApiKey = null;
         if ($request->filled('goodapi_api_key')) {
-            Setting::set('nexus_api_key', trim((string) $request->input('goodapi_api_key')));
-        } elseif ($request->filled('nexus_api_key') && !$request->filled('goodapi_api_key')) {
-            Setting::set('goodapi_api_key', trim((string) $request->input('nexus_api_key')));
+            $newGoodApiKey = trim((string) $request->input('goodapi_api_key'));
+            Setting::set('goodapi_api_key', $newGoodApiKey);
+            Setting::set('nexus_api_key', $newGoodApiKey);
+        } elseif ($request->filled('nexus_api_key')) {
+            $newGoodApiKey = trim((string) $request->input('nexus_api_key'));
+            Setting::set('goodapi_api_key', $newGoodApiKey);
+            Setting::set('nexus_api_key', $newGoodApiKey);
+        }
+
+        if ($newGoodApiKey) {
+            $partnerServiceKeys = [
+                'aadhar_to_mask_pan_api_key',
+                'aadhar_to_pan_api_key',
+                'aadhar_to_name_api_key',
+                'aadhar_to_npci_api_key',
+                'aadhar_to_ration_api_key',
+                'pan_details_server2_api_key',
+                'pan_full_details_api_key',
+                'pan_to_uid_api_key',
+                'pan_to_gst_api_key',
+                'pan_to_mask_uid_api_key',
+                'vahan_rc_pdf_key',
+                'vahan_rc_pdf2_key',
+                'vahan_learning_licence_key',
+                'vahan_challan_api_key',
+                'vahan_rc_info_api_key',
+                'ration_card_pdf_api_key',
+                'ration_to_aadhar_all_state_api_key',
+                'ration_to_aadhar_up_api_key',
+                'ration_advance_details_api_key',
+                'ration_sleep_photo_api_key',
+                'id_intelligence_api_key',
+                'farmer_pdf_server2_key',
+                'farmer_card_pdf_key',
+                'voter_mobile_update_key',
+                'voter_advance_api_key',
+                'voter_name_find_key',
+            ];
+            foreach ($partnerServiceKeys as $sk) {
+                Setting::set($sk, $newGoodApiKey);
+            }
         }
 
         return back()->with('success', '✅ Saari API Settings successfully update ho gayi hain.');

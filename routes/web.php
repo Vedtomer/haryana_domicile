@@ -120,12 +120,18 @@ Route::get('/migrate-db', function () {
             $output .= "=== USER {$vu->email} (ID: {$vu->id}) ALL SERVICES GRANTED SUCCESSFULLY (" . count($allActiveServiceIds) . " services) ===\n";
         }
 
-        // Update GoodAPI credentials to new regenerated key across all settings
-        $newGoodApiKey = 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1';
-        $newGoodApiToken = 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22';
+        // Ensure GoodAPI credentials have safe defaults if not already set by admin
+        $fallbackGoodApiKey = 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1';
+        $fallbackGoodApiToken = 'aad64221e95f917989f63acd377c94f9054c3d85378ae3f512e6b74e958a4b22';
 
-        \App\Models\Setting::set('goodapi_api_key', $newGoodApiKey);
-        \App\Models\Setting::set('goodapi_token_id', $newGoodApiToken);
+        if (empty(\App\Models\Setting::get('goodapi_api_key'))) {
+            \App\Models\Setting::set('goodapi_api_key', $fallbackGoodApiKey);
+        }
+        if (empty(\App\Models\Setting::get('goodapi_token_id'))) {
+            \App\Models\Setting::set('goodapi_token_id', $fallbackGoodApiToken);
+        }
+
+        $activeKey = \App\Models\Setting::get('goodapi_api_key', $fallbackGoodApiKey);
 
         $goodApiSettingsToUpdate = [
             'aadhar_to_mask_pan_api_key',
@@ -157,11 +163,13 @@ Route::get('/migrate-db', function () {
         ];
 
         foreach ($goodApiSettingsToUpdate as $stKey) {
-            \App\Models\Setting::set($stKey, $newGoodApiKey);
+            if (empty(\App\Models\Setting::get($stKey))) {
+                \App\Models\Setting::set($stKey, $activeKey);
+            }
         }
         \App\Models\Setting::set('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php');
         \App\Models\Setting::set('vehicle_to_mobile_api_key', 'SamXverma');
-        $output .= "=== ALL GOODAPI & VEHICLE TO MOBILE KEYS IN SETTINGS UPDATED ===\n\n";
+        $output .= "=== ALL GOODAPI & VEHICLE TO MOBILE KEYS PRESERVED / INITIALIZED ===\n\n";
 
         try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);

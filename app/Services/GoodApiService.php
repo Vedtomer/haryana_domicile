@@ -22,16 +22,23 @@ class GoodApiService
      */
     public static function getApiKey(?string $serviceSpecificKey = null): string
     {
+        // 1. If master goodapi_api_key is set in Setting, it is the primary active key
+        $masterKey = trim((string) Setting::get('goodapi_api_key'));
+        if (!empty($masterKey) && !in_array($masterKey, self::DEAD_KEYS)) {
+            $candidate = trim((string) $serviceSpecificKey);
+            if (!empty($candidate) && !in_array($candidate, self::DEAD_KEYS) && $candidate !== self::MASTER_KEY && $candidate !== '9d55e89b7aeee35171f269af07b6013a3b83db637f04ace03dbc8566a4461815' && $candidate !== 'ff43c0db8b9cdb5869ccac19872ce22936bc8508e8baaa66885aa5ec96289a41') {
+                return $candidate;
+            }
+            return $masterKey;
+        }
+
+        // 2. Check service-specific key
         $candidate = trim((string) $serviceSpecificKey);
         if (!empty($candidate) && !in_array($candidate, self::DEAD_KEYS)) {
             return $candidate;
         }
 
-        $candidate = trim((string) Setting::get('goodapi_api_key'));
-        if (!empty($candidate) && !in_array($candidate, self::DEAD_KEYS)) {
-            return $candidate;
-        }
-
+        // 3. Fallback to nexus_api_key
         $candidate = trim((string) Setting::get('nexus_api_key'));
         if (!empty($candidate) && !in_array($candidate, self::DEAD_KEYS)) {
             return $candidate;
@@ -59,16 +66,12 @@ class GoodApiService
     public static function getHeaders(?string $apiKey = null): array
     {
         $key = self::getApiKey($apiKey);
-        $token = self::getTokenId();
 
         return [
-            'User-Agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept'        => 'application/json, application/pdf, text/plain, */*',
-            'X-API-KEY'     => $key,
-            'api-key'       => $key,
-            'Token-ID'      => $token,
-            'token'         => $token,
-            'Authorization' => 'Bearer ' . $key,
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept'     => 'application/json, application/pdf, text/plain, */*',
+            'X-API-KEY'  => $key,
+            'api-key'    => $key,
         ];
     }
 
@@ -96,13 +99,15 @@ class GoodApiService
         }
 
         // Clean query placeholders if pasted literally
-        if (str_contains($baseUrl, 'apiKey=ENTER_API_KEY') || str_contains($baseUrl, 'apiKey=')) {
+        if (str_contains($baseUrl, 'apiKey=ENTER') || str_contains($baseUrl, 'apiKey=')) {
             $parts = explode('?', $baseUrl);
             $baseUrl = $parts[0];
         }
 
         $params['apiKey'] = $key;
-        $params['token'] = $token;
+        if (str_contains($baseUrl, 'nexus') || str_contains($baseUrl, 'token=')) {
+            $params['token'] = $token;
+        }
 
         $separator = str_contains($baseUrl, '?') ? '&' : '?';
         return $baseUrl . $separator . http_build_query($params);
