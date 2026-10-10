@@ -14,7 +14,7 @@ export default function AadharToNpciStatus() {
 
     // Admin Quick Settings State
     const [showAdminModal, setShowAdminModal] = useState(false);
-    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php');
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php');
     const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
     const [savingSettings, setSavingSettings] = useState(false);
     const [settingMsg, setSettingMsg] = useState(null);
@@ -453,7 +453,7 @@ export default function AadharToNpciStatus() {
                                     type="text"
                                     value={adminApiUrl}
                                     onChange={(e) => setAdminApiUrl(e.target.value)}
-                                    placeholder="https://good-api-point.com/apis_partner/v1/bank_info_api/aadhar_to_npci.php"
+                                    placeholder="https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php"
                                     className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:border-blue-500 outline-none text-slate-900 dark:text-white"
                                     required
                                 />
