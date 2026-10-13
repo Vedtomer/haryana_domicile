@@ -166,7 +166,7 @@ export const SERVICE_CATEGORIES = [
     },
     {
         id: 'mobile_info',
-        name: 'Mobile to Info',
+        name: 'Mobile Number to Info',
         hindiName: 'मोबाइल टू इन्फो सेवाएं',
         shortName: 'Mobile Info',
         description: 'Instant mobile number lookup, caller info, operator & SIM details',
@@ -321,9 +321,12 @@ export function getServiceCategory(service) {
     // 2. Mobile to Info (User requested: "mobile to info alg kro")
     if (
         slug === 'mobile-to-info' ||
+        slug === 'mobile-number-to-info' ||
         moduleKey === 'mobile_to_info' ||
         text.includes('mobile-to-info') ||
         text.includes('mobile to info') ||
+        text.includes('mobile-number-to-info') ||
+        text.includes('mobile number to info') ||
         (text.includes('mobile') && text.includes('info') && !text.includes('vehicle') && !text.includes('voter') && !text.includes('aadhar') && !text.includes('family'))
     ) {
         return SERVICE_CATEGORIES.find(c => c.id === 'mobile_info');

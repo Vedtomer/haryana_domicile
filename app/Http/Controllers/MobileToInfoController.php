@@ -15,21 +15,27 @@ class MobileToInfoController extends Controller
 {
     public function index()
     {
-        $service = Service::where('slug', 'mobile-to-info')->first();
+        $service = Service::where('slug', 'mobile-to-info')
+            ->orWhere('slug', 'mobile-number-to-info')
+            ->orWhere('module_key', 'mobile_to_info')
+            ->first();
         $user = auth()->user();
         if ($service && $service->is_premium && !$user->isAdmin() && !$user->hasRole('super_admin') && !$service->users()->where('user_id', $user->id)->exists()) {
             return redirect('/dashboard')->with('error', 'Please unlock this premium service first.');
         }
-        $coinCost = $service ? $service->coin_cost : 149;
+        $coinCost = $service ? $service->coin_cost : 99;
 
         $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
+
+        $defaultApiUrl = 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=';
+        $defaultApiKey = '1week';
 
         return Inertia::render('Utilities/MobileToInfo', [
             'coinCost' => $coinCost,
             'service' => $service,
             'isAdmin' => (bool) $isStaff,
-            'apiUrl' => $isStaff ? Setting::get('mobile_to_info_api_url', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210') : null,
-            'apiKey' => $isStaff ? Setting::get('mobile_to_info_api_key', 'Y3VK89K8V8') : null,
+            'apiUrl' => $isStaff ? Setting::get('mobile_to_info_api_url', $defaultApiUrl) : null,
+            'apiKey' => $isStaff ? Setting::get('mobile_to_info_api_key', $defaultApiKey) : null,
         ]);
     }
 
@@ -74,10 +80,13 @@ class MobileToInfoController extends Controller
             'mobile.regex' => 'Mobile number must be exactly 10 numerical digits.',
         ]);
 
-        $service = Service::where('slug', 'mobile-to-info')->first();
+        $service = Service::where('slug', 'mobile-to-info')
+            ->orWhere('slug', 'mobile-number-to-info')
+            ->orWhere('module_key', 'mobile_to_info')
+            ->first();
         $user = auth()->user();
 
-        $coinCost = $service ? (int) $service->coin_cost : 149;
+        $coinCost = $service ? (int) $service->coin_cost : 99;
         $isStaff = $user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']);
 
         if (!$isStaff && $user->coins < $coinCost) {
@@ -88,13 +97,26 @@ class MobileToInfoController extends Controller
         }
 
         $cleanMobile = preg_replace('/\D/', '', $request->input('mobile'));
-        $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210');
-        $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: 'Y3VK89K8V8');
+        $defaultApiUrl = 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=';
+        $defaultApiKey = '1week';
+
+        $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: $defaultApiUrl);
+        $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: $defaultApiKey);
+
+        // Auto-migrate legacy APINice URL to the new OSINT API Hub
+        if (str_contains($rawUrl, 'apinice.in')) {
+            $rawUrl = $defaultApiUrl;
+            $apiKey = $defaultApiKey;
+            Setting::set('mobile_to_info_api_url', $rawUrl);
+            Setting::set('mobile_to_info_api_key', $apiKey);
+        }
+
+        $mobileWithPrefix = (strlen($cleanMobile) === 10) ? ('91' . $cleanMobile) : $cleanMobile;
 
         if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{apiKey}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}') || str_contains($rawUrl, '{number}')) {
             $apiUrl = str_replace(
                 ['{key}', '{apiKey}', '{q}', '{mobile}', '{number}'],
-                [urlencode($apiKey), urlencode($apiKey), urlencode($cleanMobile), urlencode($cleanMobile), urlencode($cleanMobile)],
+                [urlencode($apiKey), urlencode($apiKey), urlencode($mobileWithPrefix), urlencode($cleanMobile), urlencode($cleanMobile)],
                 $rawUrl
             );
         } else {
@@ -110,14 +132,20 @@ class MobileToInfoController extends Controller
             } elseif (isset($query['key'])) {
                 $query['key'] = !empty($apiKey) ? $apiKey : $query['key'];
             } elseif (!empty($apiKey)) {
-                $query['apiKey'] = $apiKey;
+                if (str_contains($rawUrl, 'osint-apis-hub')) {
+                    $query['key'] = $apiKey;
+                } else {
+                    $query['apiKey'] = $apiKey;
+                }
             }
 
             // Update mobile in query
-            if (isset($query['mobile'])) {
+            if (isset($query['q'])) {
+                $query['q'] = $mobileWithPrefix;
+            } elseif (isset($query['mobile'])) {
                 $query['mobile'] = $cleanMobile;
-            } elseif (isset($query['q'])) {
-                $query['q'] = $cleanMobile;
+            } elseif (str_contains($rawUrl, 'osint-apis-hub')) {
+                $query['q'] = $mobileWithPrefix;
             } else {
                 $query['mobile'] = $cleanMobile;
             }
@@ -130,14 +158,23 @@ class MobileToInfoController extends Controller
         }
 
         try {
-            $response = Http::connectTimeout(10)->timeout(30)->get($apiUrl);
+            $response = Http::connectTimeout(10)->timeout(35)->get($apiUrl);
 
             if ($response->successful()) {
                 $data = $response->json();
 
+                // Check for explicit error responses or false status
+                if (isset($data['status']) && ($data['status'] === false || $data['status'] === 'false' || $data['status'] === 0)) {
+                    $errMsg = $data['error'] ?? ($data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.'));
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errMsg,
+                    ]);
+                }
+
                 // Check for API-level status codes indicating errors (e.g. apinice {"status":"101", ...})
-                if (isset($data['status']) && $data['status'] != '200' && empty($data['success'])) {
-                    $errMsg = $data['message'] ?? 'Gateway returned an error.';
+                if (isset($data['status']) && is_numeric($data['status']) && (int) $data['status'] !== 200 && empty($data['success'])) {
+                    $errMsg = $data['error'] ?? ($data['message'] ?? 'Gateway returned an error.');
                     return response()->json([
                         'success' => false,
                         'message' => $errMsg,
@@ -147,23 +184,23 @@ class MobileToInfoController extends Controller
                 if (isset($data['success']) && $data['success'] === false) {
                     return response()->json([
                         'success' => false,
-                        'message' => $data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.'),
+                        'message' => $data['error'] ?? ($data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.')),
                     ]);
                 }
 
                 $rawResults = [];
-                // Support apinice data.fields structure
-                if (isset($data['data']['fields']) && is_array($data['data']['fields'])) {
-                    $fields = $data['data']['fields'];
-                    if (isset($fields[0]) && is_array($fields[0])) {
-                        $rawResults = $fields;
-                    } else {
-                        $rawResults = [$fields];
-                    }
-                } elseif (isset($data['data']) && is_array($data['data'])) {
-                    if (isset($data['data'][0]) && is_array($data['data'][0])) {
+                // Support OSINT num-info data.main_records and data.alternative_records
+                if (isset($data['data']) && is_array($data['data'])) {
+                    if (isset($data['data']['main_records']) || isset($data['data']['alternative_records'])) {
+                        $main = is_array($data['data']['main_records'] ?? null) ? $data['data']['main_records'] : [];
+                        $alt = is_array($data['data']['alternative_records'] ?? null) ? $data['data']['alternative_records'] : [];
+                        $rawResults = array_merge($main, $alt);
+                    } elseif (isset($data['data']['fields']) && is_array($data['data']['fields'])) {
+                        $fields = $data['data']['fields'];
+                        $rawResults = (isset($fields[0]) && is_array($fields[0])) ? $fields : [$fields];
+                    } elseif (isset($data['data'][0]) && is_array($data['data'][0])) {
                         $rawResults = $data['data'];
-                    } elseif (isset($data['data']['name']) || isset($data['data']['address']) || isset($data['data']['circle'])) {
+                    } elseif (isset($data['data']['name']) || isset($data['data']['full_name']) || isset($data['data']['address'])) {
                         $rawResults = [$data['data']];
                     }
                 } elseif (isset($data['results']) && is_array($data['results'])) {
@@ -176,7 +213,13 @@ class MobileToInfoController extends Controller
                 $validRecords = [];
                 foreach ($rawResults as $item) {
                     if (!is_array($item)) continue;
-                    $hasAnyField = !empty($item['name']) || !empty($item['fname']) || !empty($item['father_name']) || !empty($item['address']) || !empty($item['ADDRESS']) || !empty($item['circle']);
+                    $hasAnyField = !empty($item['name']) || !empty($item['full_name']) || !empty($item['fname'])
+                        || !empty($item['father_name']) || !empty($item['the_name_of_the_father'])
+                        || !empty($item['address']) || !empty($item['ADDRESS'])
+                        || !empty($item['circle']) || !empty($item['region'])
+                        || !empty($item['document_number']) || !empty($item['passport_number'])
+                        || !empty($item['aadhar']) || !empty($item['aadhaar'])
+                        || !empty($item['phone']) || !empty($item['mobile']);
                     if ($hasAnyField) {
                         $validRecords[] = $item;
                     }
@@ -193,15 +236,17 @@ class MobileToInfoController extends Controller
                     foreach ($validRecords as $item) {
                         $addressRaw = $item['address'] ?? ($item['ADDRESS'] ?? '');
                         $addressParts = array_values(array_filter(array_map('trim', explode('!', (string) $addressRaw))));
-                        $cleanAddress = !empty($addressParts) ? implode(', ', $addressParts) : 'N/A';
+                        $cleanAddress = !empty($addressParts) ? implode(', ', $addressParts) : (!empty($addressRaw) ? trim((string) $addressRaw) : 'N/A');
 
                         $altNum = $item['alternate'] ?? ($item['alt'] ?? null);
                         if ($altNum && in_array(strtoupper(trim((string) $altNum)), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
                             $altNum = null;
                         }
 
-                        // Check Aadhaar / ID number
-                        $aadharNum = $item['aadhar'] ?? ($item['aadhaar'] ?? null);
+                        // Check Aadhaar / Document / Passport number
+                        $aadharNum = !empty($item['document_number']) ? trim((string) $item['document_number'])
+                            : (!empty($item['passport_number']) ? trim((string) $item['passport_number'])
+                            : ($item['aadhar'] ?? ($item['aadhaar'] ?? null)));
                         if (!$aadharNum && !empty($item['id'])) {
                             $idVal = trim((string) $item['id']);
                             if (!in_array(strtoupper($idVal), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
@@ -214,16 +259,32 @@ class MobileToInfoController extends Controller
                             $emailVal = null;
                         }
 
-                        $fatherVal = !empty($item['father_name']) ? trim((string) $item['father_name']) : (!empty($item['fname']) ? trim((string) $item['fname']) : 'N/A');
+                        $fatherVal = !empty($item['the_name_of_the_father']) ? trim((string) $item['the_name_of_the_father'])
+                            : (!empty($item['father_name']) ? trim((string) $item['father_name'])
+                            : (!empty($item['fname']) ? trim((string) $item['fname']) : 'N/A'));
                         $fatherVal = trim($fatherVal, " \t\n\r\0\x0B\"'");
 
-                        $nameVal = !empty($item['name']) ? trim((string) $item['name']) : 'N/A';
+                        $nameVal = !empty($item['full_name']) ? trim((string) $item['full_name'])
+                            : (!empty($item['name']) ? trim((string) $item['name']) : 'N/A');
                         $nameVal = trim($nameVal, " \t\n\r\0\x0B\"'");
 
-                        $circleVal = !empty($item['circle']) ? trim((string) $item['circle']) : 'N/A';
+                        $circleVal = !empty($item['region']) ? trim((string) $item['region'])
+                            : (!empty($item['circle']) ? trim((string) $item['circle']) : 'N/A');
+
+                        // Clean phone number (strip leading 91 if 12 digits so 10-digit is displayed)
+                        $phoneRaw = !empty($item['phone']) ? trim((string) $item['phone'])
+                            : (!empty($item['mobile']) ? trim((string) $item['mobile']) : $cleanMobile);
+                        $phoneDigits = preg_replace('/\D/', '', $phoneRaw);
+                        if (strlen($phoneDigits) === 12 && str_starts_with($phoneDigits, '91')) {
+                            $phoneDisplay = substr($phoneDigits, 2);
+                        } elseif (strlen($phoneDigits) === 10) {
+                            $phoneDisplay = $phoneDigits;
+                        } else {
+                            $phoneDisplay = !empty($phoneDigits) ? $phoneDigits : $cleanMobile;
+                        }
 
                         $cleanedRecords[] = [
-                            'mobile' => !empty($item['mobile']) ? trim((string) $item['mobile']) : $cleanMobile,
+                            'mobile' => $phoneDisplay,
                             'name' => $nameVal,
                             'father_name' => $fatherVal,
                             'circle' => $circleVal,
@@ -239,7 +300,7 @@ class MobileToInfoController extends Controller
                         ServiceRequest::create([
                             'user_id' => $user->id,
                             'service_id' => $service ? $service->id : null,
-                            'service_name' => $service ? $service->name : 'Mobile to Info',
+                            'service_name' => $service ? $service->name : 'Mobile Number to Info',
                             'input_data' => [
                                 'Mobile Number' => $cleanMobile,
                                 'Found Records' => count($cleanedRecords),
@@ -263,13 +324,15 @@ class MobileToInfoController extends Controller
 
                 return response()->json([
                     'success' => false,
-                    'message' => $data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.'),
+                    'message' => $data['error'] ?? ($data['message'] ?? ('No records found for mobile number ' . $cleanMobile . '.')),
                 ]);
             }
 
             $errMsg = 'Gateway returned status code: ' . $response->status();
             $errBody = $response->json();
-            if (isset($errBody['message'])) {
+            if (isset($errBody['error'])) {
+                $errMsg = $errBody['error'];
+            } elseif (isset($errBody['message'])) {
                 $errMsg = $errBody['message'];
             }
 

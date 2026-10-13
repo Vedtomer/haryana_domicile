@@ -37,6 +37,10 @@ export default function Edit({ settings }) {
         // 10. Mobile To Pan No. Instant
         mobile_to_pan_api_url: settings.mobile_to_pan_api_url || 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php',
 
+        // Mobile Number to Info (OSINT)
+        mobile_to_info_api_url: settings.mobile_to_info_api_url || 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=',
+        mobile_to_info_api_key: settings.mobile_to_info_api_key || '1week',
+
         // 11. PAN To Aadhaar Unmasked Instant
         pan_to_aadhar_api_url: settings.pan_to_aadhar_api_url || 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php',
 
@@ -348,6 +352,28 @@ export default function Edit({ settings }) {
                                         type="text"
                                         value={data.id_intelligence_api_url}
                                         onChange={(e) => setData('id_intelligence_api_url', e.target.value)}
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                        Mobile Number to Info (OSINT) Endpoint URL
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.mobile_to_info_api_url}
+                                        onChange={(e) => setData('mobile_to_info_api_url', e.target.value)}
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                        Mobile Number to Info API Key
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.mobile_to_info_api_key}
+                                        onChange={(e) => setData('mobile_to_info_api_key', e.target.value)}
                                         className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500"
                                     />
                                 </div>

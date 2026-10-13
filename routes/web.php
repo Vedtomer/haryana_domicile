@@ -16,7 +16,7 @@ Route::get('/', function () {
         ->get()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'bob-affidavit']);
+                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'mobile-number-to-info', 'bob-affidavit']);
 
             return [
                 'id' => $service->id,
@@ -1042,11 +1042,22 @@ Route::get('/migrate-db', function () {
             $output .= "VoterPdfManualInstant error: " . $vpme->getMessage() . "\n\n";
         }
 
-        // Ensure Mobile to Info uses APINice endpoint and key
+        // Ensure Mobile to Info uses OSINT API endpoint, key 1week, coin cost 99, and name 'Mobile Number to Info'
         try {
-            \App\Models\Setting::set('mobile_to_info_api_url', 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210');
-            \App\Models\Setting::set('mobile_to_info_api_key', 'Y3VK89K8V8');
-            $output .= "=== MOBILE TO INFO APINICE API CONFIGURED ===\n\n";
+            \App\Models\Setting::set('mobile_to_info_api_url', 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=');
+            \App\Models\Setting::set('mobile_to_info_api_key', '1week');
+
+            \App\Models\Service::where('slug', 'mobile-to-info')
+                ->orWhere('slug', 'mobile-number-to-info')
+                ->orWhere('module_key', 'mobile_to_info')
+                ->update([
+                    'name' => 'Mobile Number to Info',
+                    'coin_cost' => 99,
+                    'is_active' => true,
+                    'visibility' => 'public',
+                ]);
+
+            $output .= "=== MOBILE NUMBER TO INFO OSINT API CONFIGURED (99 COINS) ===\n\n";
         } catch (\Throwable $mtie) {
             $output .= "MobileToInfo Setting error: " . $mtie->getMessage() . "\n\n";
         }
@@ -2458,6 +2469,10 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::get('/utilities/mobile-to-info', [\App\Http\Controllers\MobileToInfoController::class, 'index'])->name('utilities.mobile-to-info');
     Route::post('/utilities/mobile-to-info/search', [\App\Http\Controllers\MobileToInfoController::class, 'search'])->name('utilities.mobile-to-info.search');
     Route::post('/utilities/mobile-to-info/update-api', [\App\Http\Controllers\MobileToInfoController::class, 'updateApi'])->name('utilities.mobile-to-info.update-api');
+
+    Route::get('/utilities/mobile-number-to-info', [\App\Http\Controllers\MobileToInfoController::class, 'index'])->name('utilities.mobile-number-to-info');
+    Route::post('/utilities/mobile-number-to-info/search', [\App\Http\Controllers\MobileToInfoController::class, 'search']);
+    Route::post('/utilities/mobile-number-to-info/update-api', [\App\Http\Controllers\MobileToInfoController::class, 'updateApi']);
 
     Route::get('/utilities/rc-pdf-owner-book-print', [\App\Http\Controllers\RcPdfController::class, 'index'])->name('utilities.rc-pdf-owner-book-print');
     Route::post('/utilities/rc-pdf-owner-book-print/search', [\App\Http\Controllers\RcPdfController::class, 'search'])->name('utilities.rc-pdf-owner-book-print.search');

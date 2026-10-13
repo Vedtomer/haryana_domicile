@@ -3,7 +3,7 @@ import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import axios from 'axios';
 
-export default function MobileToInfo({ coinCost = 149, service, isAdmin = false, apiUrl: initialApiUrl, apiKey: initialApiKey }) {
+export default function MobileToInfo({ coinCost = 99, service, isAdmin = false, apiUrl: initialApiUrl, apiKey: initialApiKey }) {
     const { auth } = usePage().props;
     const [mobile, setMobile] = useState('');
     const [loading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ export default function MobileToInfo({ coinCost = 149, service, isAdmin = false,
                     <div>
                         <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
                             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">contact_phone</span>
-                            Mobile to Info
+                            Mobile Number to Info
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5 font-medium">
                             Lookup subscriber name, father name, address, telecom circle &amp; linked details from mobile number
@@ -97,7 +97,7 @@ export default function MobileToInfo({ coinCost = 149, service, isAdmin = false,
                 </div>
             }
         >
-            <Head title="Mobile to Info - Subscriber & Address Lookup" />
+            <Head title="Mobile Number to Info - Subscriber & Address Lookup" />
 
             <div className="max-w-5xl mx-auto mt-6 px-4 sm:px-6 lg:px-8 pb-20">
 

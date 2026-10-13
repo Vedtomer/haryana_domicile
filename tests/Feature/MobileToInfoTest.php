@@ -23,10 +23,10 @@ class MobileToInfoTest extends TestCase
         Service::firstOrCreate(
             ['slug' => 'mobile-to-info'],
             [
-                'name' => 'Mobile to Info',
+                'name' => 'Mobile Number to Info',
                 'kind' => 'module',
                 'module_key' => 'mobile_to_info',
-                'coin_cost' => 149,
+                'coin_cost' => 99,
                 'is_active' => true,
                 'is_premium' => false,
                 'icon' => 'contact_phone',
@@ -43,6 +43,9 @@ class MobileToInfoTest extends TestCase
     public function test_user_without_assigned_service_is_blocked_by_middleware(): void
     {
         $user = User::factory()->create(['type' => 'user', 'is_active' => true]);
+        $service = Service::where('slug', 'mobile-to-info')->first();
+        $service->update(['is_premium' => true]);
+        $user->services()->detach($service->id);
 
         $response = $this->actingAs($user)->get('/utilities/mobile-to-info');
         $response->assertStatus(302);
@@ -53,7 +56,7 @@ class MobileToInfoTest extends TestCase
     {
         $user = User::factory()->create(['type' => 'user', 'is_active' => true]);
         $service = Service::where('slug', 'mobile-to-info')->first();
-        $user->services()->attach($service->id);
+        $user->services()->syncWithoutDetaching([$service->id]);
 
         $response = $this->actingAs($user)->get('/utilities/mobile-to-info');
         $response->assertStatus(200);
@@ -63,7 +66,7 @@ class MobileToInfoTest extends TestCase
     {
         $user = User::factory()->create(['coins' => 200, 'type' => 'user', 'is_active' => true]);
         $service = Service::where('slug', 'mobile-to-info')->first();
-        $user->services()->attach($service->id);
+        $user->services()->syncWithoutDetaching([$service->id]);
 
         $response = $this->actingAs($user)
             ->postJson('/utilities/mobile-to-info/search', [
@@ -78,7 +81,7 @@ class MobileToInfoTest extends TestCase
     {
         $user = User::factory()->create(['coins' => 50, 'type' => 'user', 'is_active' => true]);
         $service = Service::where('slug', 'mobile-to-info')->first();
-        $user->services()->attach($service->id);
+        $user->services()->syncWithoutDetaching([$service->id]);
 
         $response = $this->actingAs($user)
             ->postJson('/utilities/mobile-to-info/search', [
@@ -88,35 +91,36 @@ class MobileToInfoTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'success' => false,
-            'message' => 'Insufficient coin balance. This service requires 149 coins. Please recharge your wallet.',
+            'message' => 'Insufficient coin balance. This service requires 99 coins. Please recharge your wallet.',
         ]);
     }
 
-    public function test_successful_search_deducts_149_coins_and_creates_records(): void
+    public function test_successful_search_deducts_99_coins_and_creates_records(): void
     {
         Http::fake([
-            'https://maikyaladledarlinggggg.watchwere19.workers.dev/*' => Http::response([
-                'success' => true,
-                'number' => '9876543210',
-                'total' => 1,
-                'results' => [
-                    [
-                        'mobile' => '9876543210',
-                        'name' => 'JOHN DOE',
-                        'father_name' => 'RICHARD DOE',
-                        'address' => '!Flat 101!Main Street!New Delhi',
-                        'circle' => 'AIRTEL DELHI',
-                        'alternate' => '9123456780',
-                        'aadhar' => '123456789012',
-                        'email' => 'john@example.com',
-                    ]
+            'https://osint-apis-hub.onrender.com/*' => Http::response([
+                'status' => true,
+                'record_count' => 1,
+                'query' => '919876543210',
+                'data' => [
+                    'alternative_records' => [
+                        [
+                            'phone' => '919876543210',
+                            'full_name' => 'ANURAG RANJAN',
+                            'the_name_of_the_father' => 'AKHILESH KUMAR RAY',
+                            'address' => 'Khajauli, Vaishali, Bihar',
+                            'region' => 'BIHAR VODAFONE',
+                            'document_number' => '986964698753',
+                        ]
+                    ],
+                    'main_records' => [],
                 ],
             ], 200),
         ]);
 
         $user = User::factory()->create(['coins' => 200, 'type' => 'user', 'is_active' => true]);
         $service = Service::where('slug', 'mobile-to-info')->first();
-        $user->services()->attach($service->id);
+        $user->services()->syncWithoutDetaching([$service->id]);
 
         $response = $this->actingAs($user)
             ->postJson('/utilities/mobile-to-info/search', [
@@ -127,15 +131,24 @@ class MobileToInfoTest extends TestCase
         $response->assertJson([
             'success' => true,
             'total' => 1,
-            'remaining_coins' => 51,
+            'remaining_coins' => 101,
+            'records' => [
+                [
+                    'name' => 'ANURAG RANJAN',
+                    'father_name' => 'AKHILESH KUMAR RAY',
+                    'aadhar' => '986964698753',
+                    'circle' => 'BIHAR VODAFONE',
+                    'mobile' => '9876543210',
+                ]
+            ],
         ]);
 
         $user->refresh();
-        $this->assertEquals(51, $user->coins); // 200 - 149 = 51
+        $this->assertEquals(101, $user->coins); // 200 - 99 = 101
 
         $this->assertDatabaseHas('coin_transactions', [
             'user_id' => $user->id,
-            'amount' => -149,
+            'amount' => -99,
             'type' => CoinTransaction::TYPE_SERVICE_DEDUCTION,
         ]);
 
@@ -148,15 +161,17 @@ class MobileToInfoTest extends TestCase
     public function test_admin_is_not_charged_coins(): void
     {
         Http::fake([
-            'https://maikyaladledarlinggggg.watchwere19.workers.dev/*' => Http::response([
-                'success' => true,
-                'number' => '9876543210',
-                'total' => 1,
-                'results' => [
-                    [
-                        'mobile' => '9876543210',
-                        'name' => 'ADMIN USER TEST',
-                    ]
+            'https://osint-apis-hub.onrender.com/*' => Http::response([
+                'status' => true,
+                'record_count' => 1,
+                'data' => [
+                    'alternative_records' => [
+                        [
+                            'phone' => '919876543210',
+                            'full_name' => 'ADMIN USER TEST',
+                        ]
+                    ],
+                    'main_records' => [],
                 ],
             ], 200),
         ]);

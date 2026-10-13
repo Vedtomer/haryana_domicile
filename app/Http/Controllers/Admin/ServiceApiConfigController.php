@@ -414,20 +414,38 @@ class ServiceApiConfigController extends Controller
 
         // Mobile to Info
         'mobile-to-info' => [
-            'name' => 'Mobile to Info',
-            'provider' => 'ApiNice Gateway',
+            'name' => 'Mobile Number to Info',
+            'provider' => 'OSINT Hub Gateway',
             'fields' => [
                 [
                     'key' => 'mobile_to_info_api_url',
                     'label' => 'Mobile to Info URL',
                     'type' => 'text',
-                    'default' => 'https://apinice.in/api/v1/mobile_number_info?apiKey=Y3VK89K8V8&mobile=9876543210',
+                    'default' => 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=',
                 ],
                 [
                     'key' => 'mobile_to_info_api_key',
                     'label' => 'API Key',
                     'type' => 'password',
-                    'default' => 'Y3VK89K8V8',
+                    'default' => '1week',
+                ],
+            ],
+        ],
+        'mobile-number-to-info' => [
+            'name' => 'Mobile Number to Info',
+            'provider' => 'OSINT Hub Gateway',
+            'fields' => [
+                [
+                    'key' => 'mobile_to_info_api_url',
+                    'label' => 'Mobile to Info URL',
+                    'type' => 'text',
+                    'default' => 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=',
+                ],
+                [
+                    'key' => 'mobile_to_info_api_key',
+                    'label' => 'API Key',
+                    'type' => 'password',
+                    'default' => '1week',
                 ],
             ],
         ],
