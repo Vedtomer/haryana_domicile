@@ -44,6 +44,13 @@ return new class extends Migration
 
         Setting::set('mobile_to_info_api_url', 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=');
         Setting::set('mobile_to_info_api_key', '1week');
+
+        $targetService = Service::where('slug', 'mobile-to-info')->first();
+        if ($targetService) {
+            foreach (\App\Models\User::all() as $u) {
+                $u->services()->syncWithoutDetaching([$targetService->id]);
+            }
+        }
     }
 
     /**

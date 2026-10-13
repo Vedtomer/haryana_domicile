@@ -312,7 +312,10 @@ function getServiceBullets(service) {
     if (nameLower.includes('land') || nameLower.includes('seeding')) {
         return ['Land seeding request', 'Simple online form', 'Track in Reports'];
     }
-    if (nameLower.includes('recharge') || nameLower.includes('mobile')) {
+    if (nameLower.includes('mobile to info') || nameLower.includes('mobile number to info') || nameLower.includes('number to info')) {
+        return ['Telecom Subscriber KYC', 'Aadhaar & Circle Details', 'Instant OSINT Lookup'];
+    }
+    if (nameLower.includes('recharge') || nameLower.includes('dth')) {
         return ['Jio, Airtel, Vi, BSNL & DTH', 'Instant Recharge Confirmation', 'Auto Wallet Coins Deduction'];
     }
     return ['Quick, secure & instant', 'Online Verification', '24x7 Available'];

@@ -1047,17 +1047,50 @@ Route::get('/migrate-db', function () {
             \App\Models\Setting::set('mobile_to_info_api_url', 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=');
             \App\Models\Setting::set('mobile_to_info_api_key', '1week');
 
-            \App\Models\Service::where('slug', 'mobile-to-info')
+            $mtiService = \App\Models\Service::where('slug', 'mobile-to-info')
                 ->orWhere('slug', 'mobile-number-to-info')
                 ->orWhere('module_key', 'mobile_to_info')
-                ->update([
+                ->first();
+
+            if ($mtiService) {
+                $mtiService->update([
                     'name' => 'Mobile Number to Info',
+                    'slug' => 'mobile-to-info',
                     'coin_cost' => 99,
                     'is_active' => true,
                     'visibility' => 'public',
+                    'kind' => 'module',
+                    'module_key' => 'mobile_to_info',
+                    'description' => 'Lookup subscriber name, father name, address, telecom circle and details from Mobile Number.',
+                    'icon' => 'contact_phone',
                 ]);
+            } else {
+                $mtiService = \App\Models\Service::create([
+                    'name' => 'Mobile Number to Info',
+                    'slug' => 'mobile-to-info',
+                    'description' => 'Lookup subscriber name, father name, address, telecom circle and details from Mobile Number.',
+                    'icon' => 'contact_phone',
+                    'coin_cost' => 99,
+                    'kind' => 'module',
+                    'module_key' => 'mobile_to_info',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 17,
+                ]);
+            }
 
-            $output .= "=== MOBILE NUMBER TO INFO OSINT API CONFIGURED (99 COINS) ===\n\n";
+            // Sync to all users immediately so it shows in All Services for everyone
+            $allUsersCount = 0;
+            foreach (\App\Models\User::all() as $eachUser) {
+                $eachUser->services()->syncWithoutDetaching([$mtiService->id]);
+                $allUsersCount++;
+            }
+
+            \Illuminate\Support\Facades\Cache::flush();
+
+            $output .= "=== MOBILE NUMBER TO INFO OSINT API CONFIGURED (99 COINS, ID: {$mtiService->id}, ASSIGNED TO {$allUsersCount} USERS) ===\n\n";
         } catch (\Throwable $mtie) {
             $output .= "MobileToInfo Setting error: " . $mtie->getMessage() . "\n\n";
         }

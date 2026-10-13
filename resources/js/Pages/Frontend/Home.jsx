@@ -5,6 +5,7 @@ import FrontendLayout from '../../Layouts/FrontendLayout';
 const CATEGORIES = [
     { id: 'all', label: 'All Services', icon: '📋' },
     { id: 'new', label: 'New Services', icon: '🔥' },
+    { id: 'mobile', label: 'Mobile to Info', icon: '📱' },
     { id: 'pan', label: 'PAN Card', icon: '💳' },
     { id: 'aadhaar', label: 'Aadhaar', icon: '🆔' },
     { id: 'dl', label: 'DL (Licence)', icon: '🚗' },
@@ -19,6 +20,9 @@ const matchesCategory = (service, catId) => {
 
     const text = `${service.name || ''} ${service.slug || ''} ${service.description || ''} ${service.kind || ''}`.toLowerCase();
 
+    if (catId === 'mobile') {
+        return text.includes('mobile') || text.includes('telecom') || text.includes('recharge') || text.includes('sim');
+    }
     if (catId === 'pan') {
         return text.includes('pan');
     }
@@ -157,6 +161,9 @@ function getServiceBullets(service) {
         return service.bullets.slice(0, 3);
     }
     const nameLower = (service.name || '').toLowerCase();
+    if (nameLower.includes('mobile to info') || nameLower.includes('mobile number to info') || nameLower.includes('number to info')) {
+        return ['Telecom Subscriber KYC', 'Aadhaar & Circle Details', 'Instant OSINT Lookup'];
+    }
     if (nameLower.includes('pan')) {
         return ['Instant Result Online', 'Aadhaar / UID Based', '24x7 Fast Processing'];
     }
