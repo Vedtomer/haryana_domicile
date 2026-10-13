@@ -75,7 +75,8 @@ Route::get('/migrate-db', function () {
 
         // Pull latest from GitHub directly
         @unlink(base_path('.git/index.lock'));
-        $gitPullOutput = @shell_exec('rm -f .git/index.lock 2>&1; git fetch origin main 2>&1 && git reset --hard origin/main 2>&1');
+        @unlink(base_path('.git/refs/remotes/origin/main.lock'));
+        $gitPullOutput = @shell_exec('rm -f .git/index.lock .git/refs/remotes/origin/main.lock 2>&1; git fetch origin main --prune 2>&1; (git reset --hard FETCH_HEAD 2>&1 || git reset --hard origin/main 2>&1)');
         $output .= "Git Reset Output: " . trim((string) $gitPullOutput) . "\n";
         $output .= "Git Log After: " . trim((string) @shell_exec('git log -1 --oneline 2>&1')) . "\n\n";
 
@@ -1017,9 +1018,12 @@ Route::get('/migrate-db', function () {
                     'sort_order' => 39,
                 ]
             );
-            \App\Models\Service::updateOrCreate(
-                ['slug' => 'voter-card-manual-maker'],
-                [
+            $vcmService = \App\Models\Service::withTrashed()->where('slug', 'voter-card-manual-maker')->first();
+            if ($vcmService) {
+                if ($vcmService->trashed()) {
+                    $vcmService->restore();
+                }
+                $vcmService->update([
                     'name' => 'Voter Card Manual Maker',
                     'description' => 'Generate and print authentic Election Commission Voter ID PVC Card with front and back.',
                     'icon' => 'how_to_vote',
@@ -1031,8 +1035,23 @@ Route::get('/migrate-db', function () {
                     'is_premium' => false,
                     'unlock_cost' => 0,
                     'sort_order' => 38,
-                ]
-            );
+                ]);
+            } else {
+                \App\Models\Service::create([
+                    'name' => 'Voter Card Manual Maker',
+                    'slug' => 'voter-card-manual-maker',
+                    'description' => 'Generate and print authentic Election Commission Voter ID PVC Card with front and back.',
+                    'icon' => 'how_to_vote',
+                    'coin_cost' => 20,
+                    'kind' => \App\Models\Service::KIND_MODULE,
+                    'module_key' => 'voter_card_manual_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 38,
+                ]);
+            }
 
             \App\Models\Setting::set('voter_pdf_manual_api_url', 'https://apinice.in/api/v2/voter-manual-pdf.php');
             \App\Models\Setting::set('voter_pdf_manual_api_key', 'Y3VK89K8V8');
