@@ -1,5 +1,6 @@
 import React from 'react';
 import { TextField, Box, Typography, Divider, MenuItem } from '@mui/material';
+import { formatTitleCase } from '../utils/autoCapitalize';
 
 export const InputField = ({
     label,
@@ -25,6 +26,27 @@ export const InputField = ({
         slotProps?.inputLabel?.shrink
     );
 
+    const handleChange = (e) => {
+        if (!onChange) return;
+        if ((type === 'text' || !type || multiline) && e?.target) {
+            const original = e.target.value;
+            if (typeof original === 'string') {
+                const lowerName = (name || '').toLowerCase();
+                const isNumericOrIgnored = ['mobile', 'phone', 'whatsapp', 'aadhar', 'pincode', 'pin', 'otp', 'amount', 'age'].some(k => lowerName.includes(k));
+                if (!isNumericOrIgnored) {
+                    const isUpper = (props.className || '').includes('uppercase') || ['pan', 'epic', 'rc', 'dl', 'ifsc'].some(k => lowerName.includes(k));
+                    const formatted = isUpper ? original.toUpperCase() : formatTitleCase(original);
+                    if (formatted !== original) {
+                        try {
+                            e.target.value = formatted;
+                        } catch (_) {}
+                    }
+                }
+            }
+        }
+        onChange(e);
+    };
+
     return (
         <TextField
             fullWidth
@@ -33,7 +55,7 @@ export const InputField = ({
             name={name}
             type={type}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             error={!!error}
             helperText={error}
             multiline={multiline}

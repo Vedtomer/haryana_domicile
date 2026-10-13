@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '../../../Layouts/AdminLayout';
+import { formatTitleCase } from '../../../utils/autoCapitalize';
 
 export default function Create({ service, userCoins }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -15,6 +16,7 @@ export default function Create({ service, userCoins }) {
     const cannotAfford = service.coin_cost > 0 && userCoins < service.coin_cost;
 
     const formatValueForField = (label, val) => {
+        if (!val || typeof val !== 'string') return val;
         const l = label.toLowerCase();
         if (l.includes('aadha')) {
             return val.replace(/\D/g, '').slice(0, 12);
@@ -22,10 +24,10 @@ export default function Create({ service, userCoins }) {
         if (l.includes('mobile') || l.includes('phone') || l.includes('whatsapp')) {
             return val.replace(/\D/g, '').slice(0, 10);
         }
-        if (l.includes('pan')) {
-            return val.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+        if (l.includes('pan') || l.includes('rc') || l.includes('epic') || l.includes('dl') || l.includes('ifsc') || l.includes('voter')) {
+            return val.toUpperCase();
         }
-        return val;
+        return formatTitleCase(val);
     };
 
     return (
