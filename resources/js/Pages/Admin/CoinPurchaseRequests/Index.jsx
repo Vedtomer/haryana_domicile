@@ -221,24 +221,24 @@ export default function Index({ requests, isAdmin, canAction }) {
                 </div>
 
                 {/* Tab Group */}
-                <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-2xl w-fit">
+                <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl overflow-x-auto max-w-full no-scrollbar flex-nowrap">
                     {TABS.map(tab => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                            className={`relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex-shrink-0 whitespace-nowrap cursor-pointer ${
                                 activeTab === tab.key
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                         >
                             <span>{tab.icon}</span>
                             <span>{tab.label}</span>
                             {counts[tab.key] > 0 && (
-                                <span className={`ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${
-                                    tab.key === 'pending'  ? 'bg-amber-100 text-amber-700' :
-                                    tab.key === 'approved' ? 'bg-green-100 text-green-700' :
-                                    'bg-red-100 text-red-700'
+                                <span className={`ml-1 inline-flex items-center justify-center px-1.5 py-0.5 min-w-[20px] rounded-full text-[11px] font-bold ${
+                                    tab.key === 'pending'  ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' :
+                                    tab.key === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300' :
+                                    'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300'
                                 }`}>
                                     {counts[tab.key]}
                                 </span>
@@ -247,125 +247,241 @@ export default function Index({ requests, isAdmin, canAction }) {
                     ))}
                 </div>
 
-                {/* Table Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-                    <table className="min-w-full divide-y divide-slate-100">
-                        <thead>
-                            <tr className="bg-slate-50">
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">PNR / UTR</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Coins &amp; Amount</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Screenshot</th>
-                                <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
-                                {isAdmin && activeTab === 'pending' && canAction && (
-                                    <th className="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                                )}
-                                {isAdmin && activeTab === 'rejected' && (
-                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Reason</th>
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filtered.length === 0 ? (
-                                <EmptyState tab={activeTab} />
-                            ) : (
-                                filtered.map((req) => {
-                                    const cfg = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
-                                    return (
-                                        <tr key={req.id} className="hover:bg-slate-50/60 transition-colors">
-                                            {/* User */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                                        {(req.user?.name || req.user?.email || req.user?.phone || '?')[0].toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-slate-800">{req.user?.name || <span className="italic text-slate-400">No Name</span>}</p>
-                                                        <p className="text-xs text-slate-400">{req.user?.email || req.user?.phone || ''}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
+                {/* Mobile Card List (Visible on Phone Screens < md) */}
+                <div className="space-y-3.5 md:hidden">
+                    {filtered.length === 0 ? (
+                        <EmptyState tab={activeTab} />
+                    ) : (
+                        filtered.map((req) => {
+                            const cfg = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
+                            return (
+                                <div
+                                    key={req.id}
+                                    className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm space-y-3"
+                                >
+                                    {/* Header: User avatar + name + status badge */}
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-xs">
+                                                {(req.user?.name || req.user?.email || req.user?.phone || '?')[0].toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                                                    {req.user?.name || <span className="italic text-slate-400">No Name</span>}
+                                                </p>
+                                                <p className="text-xs text-slate-400 truncate">
+                                                    {req.user?.email || req.user?.phone || '—'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${cfg.bg} ${cfg.color} border ${cfg.border} flex-shrink-0`}>
+                                            {cfg.label}
+                                        </span>
+                                    </div>
 
-                                            {/* PNR / UTR */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {req.utr_number ? (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-black bg-blue-50 text-blue-700 border border-blue-200 select-all tracking-wider">
-                                                        {req.utr_number}
-                                                    </span>
-                                                ) : req.order_id ? (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200 select-all">
-                                                        {req.order_id}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-xs text-slate-400 italic">No PNR</span>
-                                                )}
-                                            </td>
-
-                                            {/* Coins & Amount */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex flex-col">
-                                                    <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                        {req.coins_requested} Coins
-                                                    </span>
-                                                    <span className="text-xs font-bold text-slate-500">₹{req.package_amount}</span>
-                                                </div>
-                                            </td>
-
-                                            {/* Screenshot */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {req.payment_screenshot ? (
-                                                    <button
-                                                        onClick={() => setPreviewUrl(`/storage/${req.payment_screenshot}`)}
-                                                        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                                        View
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-xs text-slate-400 italic">No file</span>
-                                                )}
-                                            </td>
-
-                                            {/* Date */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-400">
+                                    {/* Coins, Amount & Date */}
+                                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl text-xs border border-slate-100 dark:border-slate-800">
+                                        <div>
+                                            <span className="text-[10px] text-slate-400 uppercase font-bold block">Coins &amp; Amount</span>
+                                            <span className="font-black text-amber-600 dark:text-amber-400 text-sm">
+                                                🪙 {req.coins_requested} Coins
+                                            </span>
+                                            <span className="text-slate-600 dark:text-slate-300 font-bold ml-1">
+                                                (₹{req.package_amount})
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] text-slate-400 uppercase font-bold block">Request Date</span>
+                                            <span className="text-slate-700 dark:text-slate-300 font-semibold text-xs">
                                                 {new Date(req.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                            </td>
+                                            </span>
+                                        </div>
+                                    </div>
 
-                                            {/* Pending Actions */}
-                                            {isAdmin && activeTab === 'pending' && canAction && (
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button
-                                                            onClick={() => handleApprove(req)}
-                                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg shadow-sm hover:shadow transition-all"
-                                                        >
-                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-                                                            Approve
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setRejectingRequest(req)}
-                                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-lg shadow-sm hover:shadow transition-all"
-                                                        >
-                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                            Reject
-                                                        </button>
+                                    {/* UTR / PNR Number & Screenshot View */}
+                                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                                        <div className="min-w-0 flex-1">
+                                            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">PNR / UTR</span>
+                                            {req.utr_number ? (
+                                                <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-black bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 select-all tracking-wider truncate max-w-full">
+                                                    {req.utr_number}
+                                                </span>
+                                            ) : req.order_id ? (
+                                                <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 select-all truncate max-w-full">
+                                                    {req.order_id}
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs text-slate-400 italic">No PNR</span>
+                                            )}
+                                        </div>
+
+                                        {req.payment_screenshot && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setPreviewUrl(`/storage/${req.payment_screenshot}`)}
+                                                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-xl hover:bg-blue-100 transition-colors flex-shrink-0 cursor-pointer"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                <span>Receipt</span>
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Rejected Reason */}
+                                    {isAdmin && activeTab === 'rejected' && req.admin_notes && (
+                                        <div className="p-2.5 bg-red-50 dark:bg-red-950/40 rounded-xl text-xs text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900">
+                                            <span className="font-bold">Reason:</span> {req.admin_notes}
+                                        </div>
+                                    )}
+
+                                    {/* Pending Action Buttons on Mobile */}
+                                    {isAdmin && activeTab === 'pending' && canAction && (
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleApprove(req)}
+                                                className="w-full py-2.5 px-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                                                <span>Approve</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setRejectingRequest(req)}
+                                                className="w-full py-2.5 px-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                <span>Reject</span>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* Table Card (Visible on Desktop / Tablet >= md) */}
+                <div className="hidden md:block bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
+                            <thead>
+                                <tr className="bg-slate-50 dark:bg-slate-800/80">
+                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">User</th>
+                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">PNR / UTR</th>
+                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Coins &amp; Amount</th>
+                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Screenshot</th>
+                                    <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
+                                    {isAdmin && activeTab === 'pending' && canAction && (
+                                        <th className="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
+                                    )}
+                                    {isAdmin && activeTab === 'rejected' && (
+                                        <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reason</th>
+                                    )}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                {filtered.length === 0 ? (
+                                    <EmptyState tab={activeTab} />
+                                ) : (
+                                    filtered.map((req) => {
+                                        const cfg = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
+                                        return (
+                                            <tr key={req.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                                                {/* User */}
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                                            {(req.user?.name || req.user?.email || req.user?.phone || '?')[0].toUpperCase()}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-semibold text-slate-800 dark:text-white">{req.user?.name || <span className="italic text-slate-400">No Name</span>}</p>
+                                                            <p className="text-xs text-slate-400">{req.user?.email || req.user?.phone || ''}</p>
+                                                        </div>
                                                     </div>
                                                 </td>
-                                            )}
 
-                                            {/* Rejected Reason */}
-                                            {isAdmin && activeTab === 'rejected' && (
-                                                <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">
-                                                    {req.admin_notes || <span className="italic text-slate-300">—</span>}
+                                                {/* PNR / UTR */}
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    {req.utr_number ? (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-black bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 select-all tracking-wider">
+                                                            {req.utr_number}
+                                                        </span>
+                                                    ) : req.order_id ? (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 select-all">
+                                                            {req.order_id}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 italic">No PNR</span>
+                                                    )}
                                                 </td>
-                                            )}
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
+
+                                                {/* Coins & Amount */}
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex flex-col">
+                                                        <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600 dark:text-amber-400">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                            {req.coins_requested} Coins
+                                                        </span>
+                                                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">₹{req.package_amount}</span>
+                                                    </div>
+                                                </td>
+
+                                                {/* Screenshot */}
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    {req.payment_screenshot ? (
+                                                        <button
+                                                            onClick={() => setPreviewUrl(`/storage/${req.payment_screenshot}`)}
+                                                            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                            View
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 italic">No file</span>
+                                                    )}
+                                                </td>
+
+                                                {/* Date */}
+                                                <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-400">
+                                                    {new Date(req.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </td>
+
+                                                {/* Pending Actions */}
+                                                {isAdmin && activeTab === 'pending' && canAction && (
+                                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button
+                                                                onClick={() => handleApprove(req)}
+                                                                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg shadow-sm hover:shadow transition-all cursor-pointer"
+                                                            >
+                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                                                                Approve
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setRejectingRequest(req)}
+                                                                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-lg shadow-sm hover:shadow transition-all cursor-pointer"
+                                                            >
+                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                                Reject
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                )}
+
+                                                {/* Rejected Reason */}
+                                                {isAdmin && activeTab === 'rejected' && (
+                                                    <td className="px-6 py-4 text-xs text-slate-500 dark:text-slate-400 max-w-xs truncate">
+                                                        {req.admin_notes || <span className="italic text-slate-300 dark:text-slate-600">—</span>}
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Pagination */}

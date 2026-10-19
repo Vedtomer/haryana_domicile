@@ -548,24 +548,34 @@ export default function AdminLayout({ header, children }) {
                                         </Link>
                                     </>
                                 )}
+                                <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                                    <span>Logout</span>
+                                </Link>
                             </div>
                         </div>
 
-                        {/* Blue Quick Settings Gear Button */}
+                        {/* Blue Quick Settings Gear Button (Desktop / Tablet) */}
                         <Link
                             href="/admin/profile"
-                            className="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md shadow-blue-600/30 transition-all cursor-pointer"
+                            className="hidden sm:flex w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white items-center justify-center shadow-md shadow-blue-600/30 transition-all cursor-pointer"
                             title="Settings & Profile"
                         >
                             <span className="material-symbols-outlined text-[20px]">settings</span>
                         </Link>
 
-                        {/* Quick Logout Button */}
+                        {/* Quick Logout Button (Desktop / Tablet) */}
                         <Link
                             href="/logout"
                             method="post"
                             as="button"
-                            className="w-9 h-9 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md shadow-red-600/30 transition-all cursor-pointer"
+                            className="hidden sm:flex w-9 h-9 rounded-xl bg-red-600 hover:bg-red-700 text-white items-center justify-center shadow-md shadow-red-600/30 transition-all cursor-pointer"
                             title="Logout"
                         >
                             <span className="material-symbols-outlined text-[20px]">logout</span>
@@ -574,7 +584,7 @@ export default function AdminLayout({ header, children }) {
                 </header>
 
                 {/* Main Body */}
-                <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+                <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200 pb-28 sm:pb-8">
                     {/* Service Work History Top Option Bar */}
                     {currentServiceInfo && (
                         <div className="max-w-6xl mx-auto">
