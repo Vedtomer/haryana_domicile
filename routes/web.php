@@ -1063,10 +1063,10 @@ Route::get('/migrate-db', function () {
             $output .= "VoterPdfManualInstant error: " . $vpme->getMessage() . "\n\n";
         }
 
-        // Ensure Mobile to Info uses OSINT API endpoint, key 1week, coin cost 99, and name 'Mobile Number to Info'
+        // Ensure Mobile to Info uses Infoking API endpoint, coin cost 99, and name 'Mobile Number to Info'
         try {
-            \App\Models\Setting::set('mobile_to_info_api_url', 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=');
-            \App\Models\Setting::set('mobile_to_info_api_key', '1week');
+            \App\Models\Setting::set('mobile_to_info_api_url', 'https://infoking.online/Number_infoapi.php');
+            \App\Models\Setting::set('mobile_to_info_api_key', '');
 
             $mtiService = \App\Models\Service::where('slug', 'mobile-to-info')
                 ->orWhere('slug', 'mobile-number-to-info')

@@ -37,9 +37,9 @@ export default function Edit({ settings }) {
         // 10. Mobile To Pan No. Instant
         mobile_to_pan_api_url: settings.mobile_to_pan_api_url || 'https://good-api-point.com/apis_partner/v1/telecom_api/mobile_to_pan.php',
 
-        // Mobile Number to Info (OSINT)
-        mobile_to_info_api_url: settings.mobile_to_info_api_url || 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=',
-        mobile_to_info_api_key: settings.mobile_to_info_api_key || '1week',
+        // Mobile Number to Info (Infoking)
+        mobile_to_info_api_url: settings.mobile_to_info_api_url || 'https://infoking.online/Number_infoapi.php',
+        mobile_to_info_api_key: settings.mobile_to_info_api_key || '',
 
         // 11. PAN To Aadhaar Unmasked Instant
         pan_to_aadhar_api_url: settings.pan_to_aadhar_api_url || 'https://good-api-point.com/apis_partner/v1/pan_card_api/pan_to_aadhar.php',

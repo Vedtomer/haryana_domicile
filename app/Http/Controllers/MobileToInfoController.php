@@ -27,8 +27,8 @@ class MobileToInfoController extends Controller
 
         $isStaff = $user && ($user->isAdmin() || $user->hasRole('admin') || $user->hasRole('super_admin') || in_array($user->type, ['admin', 'super_admin']));
 
-        $defaultApiUrl = 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=';
-        $defaultApiKey = '1week';
+        $defaultApiUrl = 'https://infoking.online/Number_infoapi.php';
+        $defaultApiKey = '';
 
         return Inertia::render('Utilities/MobileToInfo', [
             'coinCost' => $coinCost,
@@ -97,14 +97,14 @@ class MobileToInfoController extends Controller
         }
 
         $cleanMobile = preg_replace('/\D/', '', $request->input('mobile'));
-        $defaultApiUrl = 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q=';
-        $defaultApiKey = '1week';
+        $defaultApiUrl = 'https://infoking.online/Number_infoapi.php';
+        $defaultApiKey = '';
 
         $rawUrl = trim(Setting::get('mobile_to_info_api_url') ?: $defaultApiUrl);
         $apiKey = trim(Setting::get('mobile_to_info_api_key') ?: $defaultApiKey);
 
-        // Auto-migrate legacy APINice URL to the new OSINT API Hub
-        if (str_contains($rawUrl, 'apinice.in')) {
+        // Auto-migrate legacy URLs to Infoking
+        if (str_contains($rawUrl, 'osint-apis-hub') || str_contains($rawUrl, 'apinice.in')) {
             $rawUrl = $defaultApiUrl;
             $apiKey = $defaultApiKey;
             Setting::set('mobile_to_info_api_url', $rawUrl);
@@ -113,52 +113,29 @@ class MobileToInfoController extends Controller
 
         $mobileWithPrefix = (strlen($cleanMobile) === 10) ? ('91' . $cleanMobile) : $cleanMobile;
 
-        if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{apiKey}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}') || str_contains($rawUrl, '{number}')) {
+        if (str_contains($rawUrl, '{key}') || str_contains($rawUrl, '{apiKey}') || str_contains($rawUrl, '{q}') || str_contains($rawUrl, '{mobile}') || str_contains($rawUrl, '{number}') || str_contains($rawUrl, '{num}')) {
             $apiUrl = str_replace(
-                ['{key}', '{apiKey}', '{q}', '{mobile}', '{number}'],
-                [urlencode($apiKey), urlencode($apiKey), urlencode($mobileWithPrefix), urlencode($cleanMobile), urlencode($cleanMobile)],
+                ['{num}', '{key}', '{apiKey}', '{q}', '{mobile}', '{number}'],
+                [urlencode($cleanMobile), urlencode($apiKey), urlencode($apiKey), urlencode($mobileWithPrefix), urlencode($cleanMobile), urlencode($cleanMobile)],
                 $rawUrl
             );
         } else {
-            $parts = parse_url($rawUrl);
-            $query = [];
-            if (!empty($parts['query'])) {
-                parse_str($parts['query'], $query);
-            }
-
-            // Update API key in query
-            if (isset($query['apiKey'])) {
-                $query['apiKey'] = !empty($apiKey) ? $apiKey : $query['apiKey'];
-            } elseif (isset($query['key'])) {
-                $query['key'] = !empty($apiKey) ? $apiKey : $query['key'];
-            } elseif (!empty($apiKey)) {
-                if (str_contains($rawUrl, 'osint-apis-hub')) {
-                    $query['key'] = $apiKey;
-                } else {
-                    $query['apiKey'] = $apiKey;
-                }
-            }
-
-            // Update mobile in query
-            if (isset($query['q'])) {
-                $query['q'] = $mobileWithPrefix;
-            } elseif (isset($query['mobile'])) {
-                $query['mobile'] = $cleanMobile;
-            } elseif (str_contains($rawUrl, 'osint-apis-hub')) {
-                $query['q'] = $mobileWithPrefix;
+            if (preg_match('/([?&]num=)[^&]*/', $rawUrl)) {
+                $apiUrl = preg_replace('/([?&]num=)[^&]*/', '$1' . urlencode($cleanMobile), $rawUrl);
+            } elseif (preg_match('/([?&]number=)[^&]*/', $rawUrl)) {
+                $apiUrl = preg_replace('/([?&]number=)[^&]*/', '$1' . urlencode($cleanMobile), $rawUrl);
+            } elseif (preg_match('/([?&]mobile=)[^&]*/', $rawUrl)) {
+                $apiUrl = preg_replace('/([?&]mobile=)[^&]*/', '$1' . urlencode($cleanMobile), $rawUrl);
+            } elseif (preg_match('/([?&]q=)[^&]*/', $rawUrl)) {
+                $apiUrl = preg_replace('/([?&]q=)[^&]*/', '$1' . urlencode($cleanMobile), $rawUrl);
             } else {
-                $query['mobile'] = $cleanMobile;
+                $separator = str_contains($rawUrl, '?') ? '&' : '?';
+                $apiUrl = $rawUrl . $separator . "num=" . urlencode($cleanMobile);
             }
-
-            $scheme = isset($parts['scheme']) ? $parts['scheme'] . '://' : 'https://';
-            $host = $parts['host'] ?? '';
-            $port = isset($parts['port']) ? ':' . $parts['port'] : '';
-            $path = $parts['path'] ?? '';
-            $apiUrl = $scheme . $host . $port . $path . '?' . http_build_query($query);
         }
 
         try {
-            $response = Http::connectTimeout(10)->timeout(35)->get($apiUrl);
+            $response = Http::withoutVerifying()->connectTimeout(10)->timeout(35)->get($apiUrl);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -205,8 +182,18 @@ class MobileToInfoController extends Controller
                     }
                 } elseif (isset($data['results']) && is_array($data['results'])) {
                     $rawResults = $data['results'];
-                } elseif (is_array($data) && isset($data[0])) {
-                    $rawResults = $data;
+                } elseif (is_array($data)) {
+                    // Support Infoking top-level array/object: {"0": {...}, "1": {...}, "Devloper": "...", "Tg": "..."}
+                    foreach ($data as $k => $v) {
+                        if (is_array($v) && (!empty($v['NAME']) || !empty($v['name']) || !empty($v['ADDRESS']) || !empty($v['address']) || !empty($v['CIRCLE']) || !empty($v['circle']))) {
+                            $rawResults[] = $v;
+                        } elseif (is_numeric($k) && is_array($v)) {
+                            $rawResults[] = $v;
+                        }
+                    }
+                    if (empty($rawResults) && isset($data[0]) && is_array($data[0])) {
+                        $rawResults = $data;
+                    }
                 }
 
                 // Filter out empty records
@@ -214,12 +201,13 @@ class MobileToInfoController extends Controller
                 foreach ($rawResults as $item) {
                     if (!is_array($item)) continue;
                     $hasAnyField = !empty($item['name']) || !empty($item['full_name']) || !empty($item['fname'])
+                        || !empty($item['NAME']) || !empty($item['FNAME'])
                         || !empty($item['father_name']) || !empty($item['the_name_of_the_father'])
                         || !empty($item['address']) || !empty($item['ADDRESS'])
-                        || !empty($item['circle']) || !empty($item['region'])
+                        || !empty($item['circle']) || !empty($item['CIRCLE']) || !empty($item['region'])
                         || !empty($item['document_number']) || !empty($item['passport_number'])
-                        || !empty($item['aadhar']) || !empty($item['aadhaar'])
-                        || !empty($item['phone']) || !empty($item['mobile']);
+                        || !empty($item['aadhar']) || !empty($item['aadhaar']) || !empty($item['AADHAAR'])
+                        || !empty($item['phone']) || !empty($item['mobile']) || !empty($item['NUMBER']) || !empty($item['number']);
                     if ($hasAnyField) {
                         $validRecords[] = $item;
                     }
@@ -237,43 +225,58 @@ class MobileToInfoController extends Controller
                         $addressRaw = $item['address'] ?? ($item['ADDRESS'] ?? '');
                         $addressParts = array_values(array_filter(array_map('trim', explode('!', (string) $addressRaw))));
                         $cleanAddress = !empty($addressParts) ? implode(', ', $addressParts) : (!empty($addressRaw) ? trim((string) $addressRaw) : 'N/A');
+                        $cleanAddress = preg_replace('/[,\s]+,[,\s]*/', ', ', $cleanAddress);
+                        $cleanAddress = trim($cleanAddress, ", \t\n\r\0\x0B");
+                        if ($cleanAddress === '') {
+                            $cleanAddress = 'N/A';
+                        }
 
-                        $altNum = $item['alternate'] ?? ($item['alt'] ?? null);
-                        if ($altNum && in_array(strtoupper(trim((string) $altNum)), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
+                        $altNum = trim((string) ($item['alternate'] ?? ($item['alt'] ?? ($item['ALT'] ?? ''))));
+                        if (in_array(strtoupper($altNum), ['NA', 'NULL', 'NONE', '0', 'N/A', ''])) {
                             $altNum = null;
                         }
 
                         // Check Aadhaar / Document / Passport number
                         $aadharNum = !empty($item['document_number']) ? trim((string) $item['document_number'])
                             : (!empty($item['passport_number']) ? trim((string) $item['passport_number'])
-                            : ($item['aadhar'] ?? ($item['aadhaar'] ?? null)));
+                            : (!empty($item['aadhar']) ? trim((string) $item['aadhar'])
+                            : (!empty($item['aadhaar']) ? trim((string) $item['aadhaar'])
+                            : (!empty($item['AADHAAR']) ? trim((string) $item['AADHAAR']) : ''))));
+                        if (in_array(strtoupper((string) $aadharNum), ['NA', 'NULL', 'NONE', '0', 'N/A', ''])) {
+                            $aadharNum = null;
+                        }
                         if (!$aadharNum && !empty($item['id'])) {
                             $idVal = trim((string) $item['id']);
-                            if (!in_array(strtoupper($idVal), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
+                            if (!in_array(strtoupper($idVal), ['NA', 'NULL', 'NONE', '0', 'N/A', ''])) {
                                 $aadharNum = $idVal;
                             }
                         }
 
-                        $emailVal = $item['email'] ?? null;
-                        if ($emailVal && in_array(strtoupper(trim((string) $emailVal)), ['NA', 'NULL', 'NONE', '0', 'N/A'])) {
+                        $emailVal = trim((string) ($item['email'] ?? ($item['EMAIL'] ?? '')));
+                        if (in_array(strtoupper($emailVal), ['NA', 'NULL', 'NONE', '0', 'N/A', ''])) {
                             $emailVal = null;
                         }
 
                         $fatherVal = !empty($item['the_name_of_the_father']) ? trim((string) $item['the_name_of_the_father'])
                             : (!empty($item['father_name']) ? trim((string) $item['father_name'])
-                            : (!empty($item['fname']) ? trim((string) $item['fname']) : 'N/A'));
+                            : (!empty($item['fname']) ? trim((string) $item['fname'])
+                            : (!empty($item['FNAME']) ? trim((string) $item['FNAME']) : 'N/A')));
                         $fatherVal = trim($fatherVal, " \t\n\r\0\x0B\"'");
 
                         $nameVal = !empty($item['full_name']) ? trim((string) $item['full_name'])
-                            : (!empty($item['name']) ? trim((string) $item['name']) : 'N/A');
+                            : (!empty($item['name']) ? trim((string) $item['name'])
+                            : (!empty($item['NAME']) ? trim((string) $item['NAME']) : 'N/A'));
                         $nameVal = trim($nameVal, " \t\n\r\0\x0B\"'");
 
                         $circleVal = !empty($item['region']) ? trim((string) $item['region'])
-                            : (!empty($item['circle']) ? trim((string) $item['circle']) : 'N/A');
+                            : (!empty($item['circle']) ? trim((string) $item['circle'])
+                            : (!empty($item['CIRCLE']) ? trim((string) $item['CIRCLE']) : 'N/A'));
 
                         // Clean phone number (strip leading 91 if 12 digits so 10-digit is displayed)
                         $phoneRaw = !empty($item['phone']) ? trim((string) $item['phone'])
-                            : (!empty($item['mobile']) ? trim((string) $item['mobile']) : $cleanMobile);
+                            : (!empty($item['mobile']) ? trim((string) $item['mobile'])
+                            : (!empty($item['NUMBER']) ? trim((string) $item['NUMBER'])
+                            : (!empty($item['number']) ? trim((string) $item['number']) : $cleanMobile)));
                         $phoneDigits = preg_replace('/\D/', '', $phoneRaw);
                         if (strlen($phoneDigits) === 12 && str_starts_with($phoneDigits, '91')) {
                             $phoneDisplay = substr($phoneDigits, 2);

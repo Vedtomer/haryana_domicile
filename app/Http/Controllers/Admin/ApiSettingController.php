@@ -73,8 +73,8 @@ class ApiSettingController extends Controller
                 'vahan_rc_info_api_key'       => Setting::get('vahan_rc_info_api_key', Setting::get('goodapi_api_key', 'ebee2f1362ef867dc06dee82f9bbef5d1780d7ba9218fe28f6f3217c386a52e1')),
 
                 // Aadhaar Info & Updates
-                'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://osint-apis-hub.onrender.com/api/num-info?key=1week&q='),
-                'mobile_to_info_api_key'             => Setting::get('mobile_to_info_api_key', '1week'),
+                'mobile_to_info_api_url'             => Setting::get('mobile_to_info_api_url', 'https://infoking.online/Number_infoapi.php'),
+                'mobile_to_info_api_key'             => Setting::get('mobile_to_info_api_key', ''),
                 'aadhar_to_info_api_url'             => Setting::get('aadhar_to_info_api_url', 'https://api.paanel.shop/api/gateway.php'),
                 'aadhar_to_info_api_key'             => Setting::get('aadhar_to_info_api_key', 'SamXverma'),
                 'aadhar_to_npci_api_url'             => Setting::get('aadhar_to_npci_api_url', 'https://good-api-point.com/apis_partner/v1/bank_info_api/npci_api.php'),
