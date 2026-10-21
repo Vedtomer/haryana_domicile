@@ -25,8 +25,8 @@ export default function VehicleToMobile() {
 
     // Admin Quick Settings Modal
     const [showAdminModal, setShowAdminModal] = useState(false);
-    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://api.paanel.shop/api/gateway.php');
-    const [adminApiKey, setAdminApiKey] = useState(propApiKey || 'SamXverma');
+    const [adminApiUrl, setAdminApiUrl] = useState(propApiUrl || 'https://infoking.online/Apinumbercar.php');
+    const [adminApiKey, setAdminApiKey] = useState(propApiKey || '');
     const [savingSettings, setSavingSettings] = useState(false);
     const [settingMsg, setSettingMsg] = useState(null);
 

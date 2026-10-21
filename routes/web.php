@@ -168,8 +168,8 @@ Route::get('/migrate-db', function () {
                 \App\Models\Setting::set($stKey, $activeKey);
             }
         }
-        \App\Models\Setting::set('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php');
-        \App\Models\Setting::set('vehicle_to_mobile_api_key', 'SamXverma');
+        \App\Models\Setting::set('vehicle_to_mobile_api_url', 'https://infoking.online/Apinumbercar.php');
+        \App\Models\Setting::set('vehicle_to_mobile_api_key', '');
         $output .= "=== ALL GOODAPI & VEHICLE TO MOBILE KEYS PRESERVED / INITIALIZED ===\n\n";
 
         try {
@@ -2719,9 +2719,8 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
             'service'        => $service,
             'currentService' => $service,
             'coinCost'       => $coinCost,
-            'isAdmin'        => (bool) $isStaff,
-            'apiUrl'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_url', 'https://api.paanel.shop/api/gateway.php') : null,
-            'apiKey'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_key', 'SamXverma') : null,
+            'apiUrl'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_url', 'https://infoking.online/Apinumbercar.php') : null,
+            'apiKey'         => $isStaff ? \App\Models\Setting::get('vehicle_to_mobile_api_key', '') : null,
         ]);
     })->name('utilities.vehicle-to-mobile');
 

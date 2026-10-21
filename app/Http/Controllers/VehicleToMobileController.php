@@ -24,41 +24,55 @@ class VehicleToMobileController extends Controller
         $vehicleNo = $request->input('vehicle_number');
         $vehicleNo = strtoupper(trim(str_replace([' ', '-'], '', $vehicleNo)));
         
-        $baseUrl = trim(\App\Models\Setting::get('vehicle_to_mobile_api_url') ?: 'https://api.paanel.shop/api/gateway.php');
-        $apiKey = trim(\App\Models\Setting::get('vehicle_to_mobile_api_key') ?: 'SamXverma');
+        $baseUrl = trim(\App\Models\Setting::get('vehicle_to_mobile_api_url') ?: 'https://infoking.online/Apinumbercar.php');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_to_mobile_api_key') ?: '');
 
-        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{v2num}') || str_contains($baseUrl, '{vehicle_number}')) {
+        if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{v2num}') || str_contains($baseUrl, '{vehicle_number}') || str_contains($baseUrl, '{number}') || str_contains($baseUrl, '{reg_no}')) {
             $url = str_replace(
-                ['{key}', '{v2num}', '{vehicle_number}', '{reg_no}'],
-                [urlencode($apiKey), urlencode($vehicleNo), urlencode($vehicleNo), urlencode($vehicleNo)],
+                ['{number}', '{key}', '{v2num}', '{vehicle_number}', '{reg_no}'],
+                [urlencode($vehicleNo), urlencode($apiKey), urlencode($vehicleNo), urlencode($vehicleNo), urlencode($vehicleNo)],
                 $baseUrl
             );
         } else {
-            $separator = str_contains($baseUrl, '?') ? '&' : '?';
-            $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&v2num=" . urlencode($vehicleNo);
+            if (preg_match('/([?&]number=)[^&]*/', $baseUrl)) {
+                $url = preg_replace('/([?&]number=)[^&]*/', '$1' . urlencode($vehicleNo), $baseUrl);
+            } elseif (preg_match('/([?&]v2num=)[^&]*/', $baseUrl)) {
+                $url = preg_replace('/([?&]v2num=)[^&]*/', '$1' . urlencode($vehicleNo), $baseUrl);
+            } else {
+                $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                if (str_contains($baseUrl, 'Apinumbercar') || str_contains($baseUrl, 'infoking') || str_contains($baseUrl, 'number=')) {
+                    $url = $baseUrl . $separator . "number=" . urlencode($vehicleNo);
+                } else {
+                    $url = $baseUrl . $separator . ($apiKey ? "key=" . urlencode($apiKey) . "&" : "") . "v2num=" . urlencode($vehicleNo);
+                }
+            }
         }
 
         try {
-            $response = Http::connectTimeout(10)->timeout(30)->get($url);
+            $response = Http::withoutVerifying()->connectTimeout(10)->timeout(30)->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();
                 
-                // The API can return data inside 'data' object or top-level
-                $resData = (isset($data['data']) && is_array($data['data'])) ? $data['data'] : $data;
+                // Response can be nested inside data.data (infoking), data, or top-level
+                $nestedData = (isset($data['data']['data']) && is_array($data['data']['data']))
+                    ? $data['data']['data']
+                    : ((isset($data['data']) && is_array($data['data'])) ? $data['data'] : $data);
 
                 $isSuccess = false;
                 if (!empty($data['success']) && ($data['success'] === true || $data['success'] === 'true' || $data['success'] == 1)) {
                     $isSuccess = true;
-                } elseif (!empty($resData['success']) && ($resData['success'] === true || $resData['success'] === 'true' || $resData['success'] == 1)) {
-                    $isSuccess = true;
-                } elseif (!empty($resData['mobile'])) {
+                } elseif (!empty($nestedData['success']) && ($nestedData['success'] === true || $nestedData['success'] === 'true' || $nestedData['success'] == 1)) {
                     $isSuccess = true;
                 }
 
-                $mobile = $resData['mobile'] ?? $data['mobile'] ?? null;
-                $chassis = $resData['chassis_last5'] ?? $data['chassis_last5'] ?? $resData['chassis'] ?? $data['chassis'] ?? null;
-                $regNo = $resData['reg_no'] ?? $data['reg_no'] ?? $resData['regNo'] ?? $vehicleNo;
+                $mobile = $nestedData['mobile'] ?? $data['data']['mobile'] ?? $data['mobile'] ?? null;
+                $chassis = $nestedData['chassis_last5'] ?? $data['data']['chassis_last5'] ?? $nestedData['chassis'] ?? $data['chassis'] ?? null;
+                $regNo = $nestedData['reg_no'] ?? $data['data']['reg_no'] ?? $data['vehicle_number'] ?? $vehicleNo;
+
+                if (!empty($mobile)) {
+                    $isSuccess = true;
+                }
 
                 if ($isSuccess && !empty($mobile)) {
                     if (!$user->isAdmin() && !$user->hasRole('super_admin') && $coinCost > 0) {
@@ -84,7 +98,10 @@ class VehicleToMobileController extends Controller
                     ]);
                 }
 
-                $failMsg = $data['message'] ?? $resData['message'] ?? 'Details not found for this Vehicle Number.';
+                $failMsg = $data['provider_response']['message'] 
+                    ?? $data['message'] 
+                    ?? $nestedData['message'] 
+                    ?? 'Details not found for this Vehicle Number.';
                 return response()->json([
                     'success' => false,
                     'message' => $failMsg
