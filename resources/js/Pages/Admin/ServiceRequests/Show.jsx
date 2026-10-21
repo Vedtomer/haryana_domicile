@@ -13,10 +13,12 @@ const renderServiceIcon = (icon) => {
 };
 
 export default function Show({ request, isAdmin, statuses }) {
-    const { data, setData, patch, processing } = useForm({
+    const { data, setData, post, processing } = useForm({
         status: request.status,
         admin_response: request.admin_response ?? '',
         estimated_time: request.estimated_time ?? '',
+        attachment: null,
+        _method: 'PATCH',
     });
 
     const [recipientPhone, setRecipientPhone] = useState(() => extractPhoneNumber(request, request.user));
@@ -60,14 +62,21 @@ export default function Show({ request, isAdmin, statuses }) {
                         <h2 className="font-bold text-gray-800 mb-3">Submitted Details</h2>
                         <dl className="divide-y divide-gray-100">
                             {Object.entries(request.input_data ?? {}).map(([key, value]) => (
-                                <div key={key} className="py-2 flex flex-wrap gap-2 justify-between items-center">
+                                <div key={key} className="py-2.5 flex flex-wrap gap-2 justify-between items-start">
                                     <dt className="text-sm font-semibold text-gray-600">{key}</dt>
                                     <dd className="text-sm text-gray-800">
                                         {value && typeof value === 'object' && value.type === 'file' ? (
-                                            <a href={`/storage/${value.path}`} target="_blank" rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 font-semibold rounded-lg hover:bg-blue-100">
-                                                📎 {value.name}
-                                            </a>
+                                            <div className="flex flex-col items-start gap-1.5">
+                                                <a href={`/storage/${value.path}`} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 text-xs">
+                                                    📎 {value.name || 'View / Download'}
+                                                </a>
+                                                {value.path && /\.(jpg|jpeg|png|webp)$/i.test(value.path) && (
+                                                    <a href={`/storage/${value.path}`} target="_blank" rel="noopener noreferrer" className="block mt-1">
+                                                        <img src={`/storage/${value.path}`} alt={key} className="h-32 w-auto max-w-[240px] object-contain rounded-lg border border-slate-200 shadow-xs hover:opacity-90 bg-slate-50 p-1" />
+                                                    </a>
+                                                )}
+                                            </div>
                                         ) : (
                                             value || '—'
                                         )}
@@ -79,6 +88,27 @@ export default function Show({ request, isAdmin, statuses }) {
                             )}
                         </dl>
                     </div>
+
+                    {request.attachment && (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-3xl text-emerald-600">task_alt</span>
+                                <div>
+                                    <h3 className="font-bold text-emerald-900 text-sm">Approved / Generated Certificate Ready</h3>
+                                    <p className="text-xs text-emerald-700">Admin dwara approved certificate / document upload kiya gaya hai.</p>
+                                </div>
+                            </div>
+                            <a
+                                href={`/storage/${request.attachment}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1.5"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">download</span>
+                                Download Certificate
+                            </a>
+                        </div>
+                    )}
 
                     {(request.admin_response || request.estimated_time) && (
                         <div className="bg-white rounded-xl border border-gray-200 p-5">
@@ -96,7 +126,10 @@ export default function Show({ request, isAdmin, statuses }) {
 
                     {isAdmin && (
                         <form
-                            onSubmit={(e) => { e.preventDefault(); patch(`/admin/service-requests/${request.id}`); }}
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(`/admin/service-requests/${request.id}`, { forceFormData: true });
+                            }}
                             className="bg-white rounded-xl border border-gray-200 p-5 space-y-4"
                         >
                             <h2 className="font-bold text-gray-800">Update Status</h2>
@@ -127,6 +160,23 @@ export default function Show({ request, isAdmin, statuses }) {
                                 <textarea className={input} rows={3} value={data.admin_response}
                                     onChange={(e) => setData('admin_response', e.target.value)}
                                     placeholder="This message is sent to the user as a notification." />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    Upload Completed Certificate / PDF (Optional)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                    onChange={(e) => setData('attachment', e.target.files[0])}
+                                    className="text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                                />
+                                {request.attachment && (
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        Current file: <a href={`/storage/${request.attachment}`} target="_blank" className="text-blue-600 underline font-semibold">View Uploaded</a>
+                                    </p>
+                                )}
                             </div>
 
                             <button type="submit" disabled={processing}

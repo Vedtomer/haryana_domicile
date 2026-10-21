@@ -2973,19 +2973,18 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     Route::post('/utilities/ppp-to-number/search', [\App\Http\Controllers\PppToNumberController::class, 'search'])->name('utilities.ppp-to-number.search');
     Route::post('/utilities/ppp-to-number/update-api', [\App\Http\Controllers\PppToNumberController::class, 'updateApi'])->name('utilities.ppp-to-number.update-api');
 
-    // 5. Vehicle PUC (Without OTP - Instant)
-    Route::get('/utilities/vehicle-puc-without-otp', function () {
-        return Inertia::render('Utilities/VehiclePucWithoutOtp');
-    })->name('utilities.vehicle-puc-without-otp');
-    Route::post('/utilities/vehicle-puc-without-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-without-otp.search');
+    // 5. Vehicle PUC (Without OTP - Manual Request)
+    Route::get('/utilities/vehicle-puc-without-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'index'])->name('utilities.vehicle-puc-without-otp');
+    Route::post('/utilities/vehicle-puc-without-otp/submit', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'submit'])->name('utilities.vehicle-puc-without-otp.submit');
+    Route::post('/utilities/vehicle-puc-without-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'submit'])->name('utilities.vehicle-puc-without-otp.search');
 
     // 6. Vehicle PUC (Without OTP alias & redirect)
     Route::get('/utilities/vehicle-puc-with-otp', function () {
         return redirect()->route('utilities.vehicle-puc-without-otp');
     })->name('utilities.vehicle-puc-with-otp');
-    Route::post('/utilities/vehicle-puc-with-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.search');
-    Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.send-otp');
-    Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'search'])->name('utilities.vehicle-puc-with-otp.verify-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/search', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'submit'])->name('utilities.vehicle-puc-with-otp.search');
+    Route::post('/utilities/vehicle-puc-with-otp/send-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'submit'])->name('utilities.vehicle-puc-with-otp.send-otp');
+    Route::post('/utilities/vehicle-puc-with-otp/verify-otp', [\App\Http\Controllers\VehiclePucWithoutOtpController::class, 'submit'])->name('utilities.vehicle-puc-with-otp.verify-otp');
 
     // PUC PDF Download
     Route::match(['get', 'post'], '/utilities/vehicle-puc/download-pdf', [\App\Http\Controllers\VehiclePucPdfController::class, 'downloadPdf'])->name('utilities.vehicle-puc.download-pdf');

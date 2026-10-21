@@ -214,10 +214,18 @@ class ServiceRequestController extends Controller
             'status' => ['required', Rule::in(array_keys(ServiceRequest::STATUSES))],
             'admin_response' => 'nullable|string|max:2000',
             'estimated_time' => 'nullable|string|max:100',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:15360',
         ]);
 
+        $hasNewAttachment = $request->hasFile('attachment');
+        $attachmentPath = $serviceRequest->attachment;
+        if ($hasNewAttachment) {
+            $attachmentPath = $request->file('attachment')->store('service_attachments', 'public');
+        }
+
         // Re-submitting the form without changing anything must not re-notify the user.
-        $unchanged = $serviceRequest->status === $data['status']
+        $unchanged = !$hasNewAttachment
+            && $serviceRequest->status === $data['status']
             && ($data['admin_response'] ?? '') === (string) $serviceRequest->admin_response
             && ($data['estimated_time'] ?? '') === (string) $serviceRequest->estimated_time;
 
@@ -228,13 +236,14 @@ class ServiceRequestController extends Controller
 
         $refunded = false;
 
-        DB::transaction(function () use ($serviceRequest, $data, &$refunded) {
+        DB::transaction(function () use ($serviceRequest, $data, $attachmentPath, &$refunded) {
             $isClosing = in_array($data['status'], [ServiceRequest::STATUS_COMPLETED, ServiceRequest::STATUS_REJECTED]);
 
             $serviceRequest->update([
                 'status' => $data['status'],
                 'admin_response' => $data['admin_response'] ?? $serviceRequest->admin_response,
                 'estimated_time' => $data['estimated_time'] ?? $serviceRequest->estimated_time,
+                'attachment' => $attachmentPath,
                 'completed_by' => $isClosing ? auth()->id() : $serviceRequest->completed_by,
                 'completed_at' => $isClosing ? now() : $serviceRequest->completed_at,
             ]);
