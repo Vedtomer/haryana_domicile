@@ -170,7 +170,9 @@ Route::get('/migrate-db', function () {
         }
         \App\Models\Setting::set('vehicle_to_mobile_api_url', 'https://infoking.online/Apinumbercar.php');
         \App\Models\Setting::set('vehicle_to_mobile_api_key', '');
-        $output .= "=== ALL GOODAPI & VEHICLE TO MOBILE KEYS PRESERVED / INITIALIZED ===\n\n";
+        \App\Models\Setting::set('vehicle_details_api_url', 'https://infoking.online/fullinfo.php');
+        \App\Models\Setting::set('vehicle_details_api_key', '');
+        $output .= "=== ALL GOODAPI & VEHICLE KEYS PRESERVED / INITIALIZED ===\n\n";
 
         try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'TenthPassbookSeeder', '--force' => true]);
@@ -2780,40 +2782,117 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
         $user = auth()->user();
         
         $regNo = $request->query('reg_no');
-        if (!$regNo) return back()->with('error', 'Vehicle Registration Number is required');
+        if (!$regNo) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Vehicle Registration Number is required'], 422);
+            }
+            return back()->with('error', 'Vehicle Registration Number is required');
+        }
 
         $coinCost = $service ? $service->coin_cost : 20; // Default to 20 if service not found
         if ($user->coins < $coinCost && !$user->isAdmin() && !$user->hasRole('super_admin')) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => "Insufficient coins. This service requires {$coinCost} coins."], 403);
+            }
             return back()->with('error', "Insufficient coins. This service requires {$coinCost} coins.");
         }
 
         $cleanRegNo = strtoupper(trim(str_replace([' ', '-'], '', $regNo)));
-        $baseUrl = trim(\App\Models\Setting::get('vehicle_details_api_url') ?: 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php');
-        $apiKey = trim(\App\Models\Setting::get('vehicle_details_api_key'));
+        $baseUrl = trim(\App\Models\Setting::get('vehicle_details_api_url') ?: 'https://infoking.online/fullinfo.php');
+        $apiKey = trim(\App\Models\Setting::get('vehicle_details_api_key') ?: '');
 
         if (str_contains($baseUrl, 'good-api-point.com') || str_contains($baseUrl, 'rc_info_api.php')) {
             $activeKey = \App\Services\GoodApiService::getApiKey($apiKey);
             $url = \App\Services\GoodApiService::buildUrl($baseUrl, ['rc' => $cleanRegNo], $activeKey);
             $response = \App\Services\GoodApiService::client(30, $activeKey)->get($url);
         } else {
-            $apiKey = $apiKey ?: 'SamXverma';
-            if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{reg_no}')) {
+            if (str_contains($baseUrl, '{key}') || str_contains($baseUrl, '{Policy}') || str_contains($baseUrl, '{reg_no}') || str_contains($baseUrl, '{vehicle_number}') || str_contains($baseUrl, '{number}')) {
                 $url = str_replace(
-                    ['{key}', '{Policy}', '{reg_no}', '{vehicle_number}'],
-                    [urlencode($apiKey), urlencode($cleanRegNo), urlencode($cleanRegNo), urlencode($cleanRegNo)],
+                    ['{number}', '{key}', '{Policy}', '{reg_no}', '{vehicle_number}'],
+                    [urlencode($cleanRegNo), urlencode($apiKey), urlencode($cleanRegNo), urlencode($cleanRegNo), urlencode($cleanRegNo)],
                     $baseUrl
                 );
             } else {
-                $separator = str_contains($baseUrl, '?') ? '&' : '?';
-                $url = $baseUrl . $separator . "key=" . urlencode($apiKey) . "&Policy=" . urlencode($cleanRegNo);
+                if (preg_match('/([?&]number=)[^&]*/', $baseUrl)) {
+                    $url = preg_replace('/([?&]number=)[^&]*/', '$1' . urlencode($cleanRegNo), $baseUrl);
+                } elseif (preg_match('/([?&]Policy=)[^&]*/', $baseUrl)) {
+                    $url = preg_replace('/([?&]Policy=)[^&]*/', '$1' . urlencode($cleanRegNo), $baseUrl);
+                } elseif (preg_match('/([?&]rc=)[^&]*/', $baseUrl)) {
+                    $url = preg_replace('/([?&]rc=)[^&]*/', '$1' . urlencode($cleanRegNo), $baseUrl);
+                } else {
+                    $separator = str_contains($baseUrl, '?') ? '&' : '?';
+                    if (str_contains($baseUrl, 'infoking') || str_contains($baseUrl, 'fullinfo')) {
+                        $url = $baseUrl . $separator . "number=" . urlencode($cleanRegNo);
+                    } else {
+                        $url = $baseUrl . $separator . ($apiKey ? "key=" . urlencode($apiKey) . "&" : "") . "Policy=" . urlencode($cleanRegNo);
+                    }
+                }
             }
-            $response = \Illuminate\Support\Facades\Http::connectTimeout(10)->timeout(30)->get($url);
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->connectTimeout(10)->timeout(30)->get($url);
         }
 
         if ($response->successful()) {
             $json = $response->json();
-            $rawData = $json['data'] ?? $json;
-            $data = $rawData['meta_data']['signzy_response']['result'] ?? $rawData;
+
+            // Check for infoking response structure:
+            // {"regNo": "WB50G2786", "response": { ... }}
+            if (isset($json['response']) && is_array($json['response']) && !empty($json['response'])) {
+                $res = $json['response'];
+                $rawData = $res;
+                $data = [];
+                $data['regNo'] = $res['regNo'] ?? ($json['regNo'] ?? $cleanRegNo);
+                $data['vehicleClass'] = $res['vehicleClass'] ?? ($res['vehicleType'] ?? 'Motor Car(LMV)');
+                $data['owner'] = !empty($res['owner']) ? $res['owner'] : (!empty($res['ownerName']) ? $res['ownerName'] : (!empty($res['owner_name']) ? $res['owner_name'] : (!empty($res['customerName']) ? $res['customerName'] : 'REGISTERED OWNER')));
+                $data['ownerFatherName'] = !empty($res['ownerFatherName']) ? $res['ownerFatherName'] : (!empty($res['fatherName']) ? $res['fatherName'] : (!empty($res['father_name']) ? $res['father_name'] : 'N/A'));
+                $data['chassis'] = $res['chassis'] ?? ($res['chassisNo'] ?? ($res['chassis_number'] ?? 'N/A'));
+                $data['engine'] = $res['engine'] ?? ($res['engineNo'] ?? ($res['engine_number'] ?? 'N/A'));
+                $data['presentAddress'] = $res['presentAddress'] ?? ($res['permAddress'] ?? 'N/A');
+                $data['vehicleInsurancePolicyNumber'] = $res['insurancePolicyNumber'] ?? ($res['insurance_policy'] ?? ($res['insurance_policy_number'] ?? 'N/A'));
+                $data['vehicleInsuranceUpto'] = $res['insuranceUpto'] ?? ($res['insurance_upto'] ?? 'N/A');
+                $data['vehicleInsuranceCompanyName'] = $res['insuranceCompanyName'] ?? ($res['insuranceCompanyCode'] ?? ($res['insurance_company'] ?? 'N/A'));
+                $data['vehicleColour'] = $res['color'] ?? ($res['vehicleColour'] ?? ($res['colour'] ?? 'N/A'));
+                $data['regDate'] = $res['regDate'] ?? ($res['registrationDate'] ?? 'N/A');
+
+                $vehicleModel = trim(($res['vehicle'] ?? '') . (!empty($res['variant']) ? ' ' . $res['variant'] : ''));
+                $data['model'] = !empty($vehicleModel) ? $vehicleModel : ($res['model'] ?? 'N/A');
+                $data['vehicleManufacturerName'] = $res['manufacturer'] ?? ($res['maker'] ?? 'N/A');
+                $data['type'] = $res['fuelType'] ?? ($res['type'] ?? 'PETROL');
+
+                $rcExpiry = $res['rcExpiryDate'] ?? ($res['rc_expiry_date'] ?? ($res['fitnessUpto'] ?? ($res['fitness_upto'] ?? null)));
+                if (!$rcExpiry && !empty($data['regDate']) && $data['regDate'] !== 'N/A') {
+                    try {
+                        $rcExpiry = \Carbon\Carbon::parse($data['regDate'])->addYears(15)->format('d/m/Y');
+                    } catch (\Throwable $e) {}
+                }
+                $data['rcExpiryDate'] = $rcExpiry ?: 'N/A';
+
+                $data['vehicleTaxUpto'] = $res['taxUpto'] ?? ($res['tax_upto'] ?? 'L.T. (Life Time)');
+                $data['puccUpto'] = $res['puccValidUpto'] ?? ($res['puccUpto'] ?? 'N/A');
+                $data['puccNumber'] = $res['puccNumber'] ?? 'N/A';
+                $data['rcFinancer'] = $res['financer'] ?? ($res['rcFinancer'] ?? 'NONE');
+
+                if (!empty($res['rtoData']['combindID'])) {
+                    $parts = explode('~', $res['rtoData']['combindID']);
+                    $data['regAuthority'] = count($parts) >= 2 ? ($parts[1] . ', ' . ($parts[2] ?? '')) : $res['rtoData']['combindID'];
+                } else {
+                    $data['regAuthority'] = $res['rtoCode'] ?? ($res['registered_rto'] ?? 'N/A');
+                }
+
+                $data['normsType'] = $res['normsType'] ?? ($res['emissionNorms'] ?? 'BHARAT STAGE VI');
+                $data['bodyType'] = (!empty($res['vehicleType']) && strtolower($res['vehicleType']) === 'twowheeler') ? 'SOLO WITH PILLION' : ($res['bodyType'] ?? 'SALOON');
+                $data['ownerCount'] = $res['ownerCount'] ?? '1';
+                $data['status'] = (!empty($res['status']) && $res['status'] == '100') ? 'ACTIVE' : ($res['status'] ?? 'ACTIVE');
+                $data['vehicleCubicCapacity'] = isset($res['cubicCapacity']) && is_numeric($res['cubicCapacity']) ? round($res['cubicCapacity']) : ($res['cubicCapacity'] ?? 'N/A');
+                $data['grossVehicleWeight'] = $res['grossVehicleWeight'] ?? 'N/A';
+                $data['unladenWeight'] = $res['unladenWeight'] ?? 'N/A';
+                $data['vehicleSeatCapacity'] = $res['seatCapacity'] ?? ($res['seatingCapacity'] ?? '2');
+                $data['wheelbase'] = $res['wheelbase'] ?? 'N/A';
+                $data['mfgMonthYear'] = $res['manufacturerMonthYear'] ?? ($res['manufacturerYear'] ?? null);
+                $data['ownership'] = !empty($res['isCommercial']) ? 'COMMERCIAL' : 'INDIVIDUAL';
+            } else {
+                $rawData = $json['data'] ?? $json;
+                $data = $rawData['meta_data']['signzy_response']['result'] ?? $rawData;
+            }
 
             $regFound = $data['rc_number'] ?? $data['regNo'] ?? $data['vehicleNumber'] ?? $rawData['registration_number'] ?? $rawData['vehicle_details']['registration_no'] ?? null;
 
@@ -2880,11 +2959,11 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
 
                 // Non-Transport (NT) or Transport (T)
                 $vClassUpper = strtoupper($data['vehicleClass'] ?? '');
-                $isT = (str_contains($vClassUpper, 'GOODS') || str_contains($vClassUpper, 'COMMERCIAL') || str_contains($vClassUpper, 'TAXI') || str_contains($vClassUpper, 'TRANSPORT') || str_contains($vClassUpper, 'BUS') || str_contains($vClassUpper, 'TRUCK'));
+                $isT = (!empty($rawData['isCommercial']) || str_contains($vClassUpper, 'GOODS') || str_contains($vClassUpper, 'COMMERCIAL') || str_contains($vClassUpper, 'TAXI') || str_contains($vClassUpper, 'TRANSPORT') || str_contains($vClassUpper, 'BUS') || str_contains($vClassUpper, 'TRUCK'));
                 $data['isTransport'] = $isT ? 'T' : 'NT';
 
                 // Month-Year of Mfg
-                $mfg = $rawData['manufacturing_date'] ?? ($rawData['vehicle_details']['mfg_date'] ?? null);
+                $mfg = $data['mfgMonthYear'] ?? ($rawData['manufacturing_date'] ?? ($rawData['vehicle_details']['mfg_date'] ?? null));
                 if (!$mfg && !empty($data['regDate']) && $data['regDate'] !== 'N/A') {
                     try {
                         $mfg = \Carbon\Carbon::parse($data['regDate'])->format('m-Y');
@@ -2893,9 +2972,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
                     }
                 }
                 $data['mfgMonthYear'] = $mfg ?: '01-2021';
-                $data['cylinders'] = $rawData['vehicle_details']['no_of_cylinders'] ?? (isset($data['vehicleCubicCapacity']) && intval($data['vehicleCubicCapacity']) > 0 && intval($data['vehicleCubicCapacity']) < 1000 ? '3' : '4');
-                $data['horsePower'] = $rawData['vehicle_details']['horse_power'] ?? ($rawData['vehicle_details']['hp'] ?? 'N/A');
-                $data['ownership'] = !empty($rawData['ownership_type']) ? strtoupper($rawData['ownership_type']) : 'INDIVIDUAL';
+                $data['cylinders'] = $data['cylinders'] ?? ($rawData['vehicle_details']['no_of_cylinders'] ?? ((isset($rawData['vehicleType']) && strtolower($rawData['vehicleType']) === 'twowheeler') ? '1' : ((isset($data['vehicleCubicCapacity']) && intval($data['vehicleCubicCapacity']) > 0 && intval($data['vehicleCubicCapacity']) < 1000) ? '3' : '4')));
+                $data['horsePower'] = $data['horsePower'] ?? ($rawData['vehicle_details']['horse_power'] ?? ($rawData['vehicle_details']['hp'] ?? 'N/A'));
+                $data['ownership'] = !empty($data['ownership']) ? $data['ownership'] : (!empty($rawData['ownership_type']) ? strtoupper($rawData['ownership_type']) : 'INDIVIDUAL');
 
                 // Load Emblem SVG Base64
                 $emblemPath = public_path('images/emblem.svg');
@@ -2941,6 +3020,9 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
             }
         }
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => 'Vehicle details not found. Please check the Registration Number.'], 404);
+        }
         return back()->with('error', 'Vehicle details not found. Please check the Registration Number.');
     })->name('utilities.vehicle-details.download');
 

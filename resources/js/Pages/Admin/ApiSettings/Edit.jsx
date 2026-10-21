@@ -65,7 +65,7 @@ export default function Edit({ settings }) {
         vahan_rc_pdf_url: settings.vahan_rc_pdf_url || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf.php',
         vahan_rc_pdf2_url: settings.vahan_rc_pdf2_url || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/vechil_rc_pdf2.php',
         vahan_challan_api_url: settings.vahan_challan_api_url || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/challan_find.php',
-        vehicle_details_api_url: settings.vehicle_details_api_url || 'https://good-api-point.com/apis_partner/v1/vahan_service_api/rc_info_api.php',
+        vehicle_details_api_url: settings.vehicle_details_api_url || 'https://infoking.online/fullinfo.php',
 
         // 17. Saral Portal
         saral_status_url: settings.saral_status_url || 'https://edisha.gov.in/eForms/Status',

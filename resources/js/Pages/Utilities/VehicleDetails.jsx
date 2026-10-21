@@ -35,7 +35,12 @@ export default function VehicleDetails() {
                 document.body.removeChild(a);
                 setTimeout(() => window.URL.revokeObjectURL(blobUrl), 3000);
             } else {
-                setError('Vehicle details not found. Please check the Registration Number or your coin balance.');
+                let errorMsg = 'Vehicle details not found. Please check the Registration Number or your coin balance.';
+                try {
+                    const errJson = await response.json();
+                    if (errJson && errJson.message) errorMsg = errJson.message;
+                } catch (_) {}
+                setError(errorMsg);
             }
         } catch (err) {
             console.error('Download error:', err);

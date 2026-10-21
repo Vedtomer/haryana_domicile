@@ -297,19 +297,19 @@ class ServiceApiConfigController extends Controller
         // Vehicle Details
         'vehicle-details' => [
             'name' => 'Vehicle Details',
-            'provider' => 'Paanel Shop',
+            'provider' => 'InfoKing',
             'fields' => [
                 [
                     'key' => 'vehicle_details_api_url',
                     'label' => 'Vehicle Details URL',
                     'type' => 'text',
-                    'default' => 'https://api.paanel.shop/api/gateway.php',
+                    'default' => 'https://infoking.online/fullinfo.php',
                 ],
                 [
                     'key' => 'vehicle_details_api_key',
-                    'label' => 'API Key',
+                    'label' => 'API Key (Optional)',
                     'type' => 'password',
-                    'default' => 'SamXverma',
+                    'default' => '',
                 ],
             ],
         ],
