@@ -172,7 +172,7 @@ Route::get('/migrate-db', function () {
         \App\Models\Setting::set('vehicle_to_mobile_api_key', '');
         \App\Models\Setting::set('vehicle_details_api_url', 'https://infoking.online/fullinfo.php');
         \App\Models\Setting::set('vehicle_details_api_key', '');
-        \App\Models\Setting::set('site_maintenance_popup', '1');
+        \App\Models\Setting::set('site_maintenance_popup', '0');
         $output .= "=== ALL GOODAPI & VEHICLE KEYS PRESERVED / INITIALIZED ===\n\n";
 
         try {

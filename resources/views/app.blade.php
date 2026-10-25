@@ -60,7 +60,7 @@
         @inertia
 
         @php
-            $isMaintenanceActive = \App\Models\Setting::get('site_maintenance_popup', '1') === '1';
+            $isMaintenanceActive = \App\Models\Setting::get('site_maintenance_popup', '0') === '1';
             $isSuperOrAdmin = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->hasRole('super_admin'));
             $isLoginPage = request()->is('login*') || request()->is('admin/login*');
         @endphp
