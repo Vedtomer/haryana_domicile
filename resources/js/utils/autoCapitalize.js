@@ -3,9 +3,10 @@
  * 
  * Automatically formats input text as the user types:
  * - Standard text fields (Names, Father/Husband names, Addresses, Villages, Tehsils, Districts, Descriptions, etc.):
- *   Title Case (First letter of each word is BIG/Capitalized, rest lowercase, whether CapsLock is ON or OFF).
+ *   - When Caps Lock is OFF: Title Case (First letter of each word is BIG, rest lowercase).
+ *   - When Caps Lock is ON: UPPERCASE (All letters capital, respecting Caps Lock).
  * - Identifier fields (PAN, Voter EPIC, Vehicle RC, Driving Licence, IFSC, or elements with "uppercase" class):
- *   UPPERCASE (All letters capital).
+ *   UPPERCASE (All letters capital always).
  * - Excludes: Password, Email, Numeric/Tel/Aadhaar fields, Date, File, and Web URLs.
  */
 
@@ -28,15 +29,42 @@ try {
 }
 
 /**
+ * Global CapsLock State Tracker
+ */
+let isCapsLockOn = false;
+
+export function isCapsLockActive() {
+    return isCapsLockOn;
+}
+
+export function setCapsLockState(state) {
+    isCapsLockOn = Boolean(state);
+}
+
+export function updateModifierState(e) {
+    if (e && typeof e.getModifierState === 'function') {
+        try {
+            isCapsLockOn = Boolean(e.getModifierState('CapsLock'));
+        } catch (_) {}
+    }
+}
+
+/**
  * Converts English words to Title Case (first letter capitalized, following letters lowercase).
+ * If Caps Lock is ON, returns UPPERCASE.
  * Non-English characters, digits, and punctuation are preserved.
  */
-export function formatTitleCase(str) {
+export function formatTitleCase(str, forceTitleCase = false) {
     if (!str || typeof str !== 'string') return str;
 
     // Do not transform emails or web URLs
     if (str.includes('@') || str.startsWith('http://') || str.startsWith('https://') || str.startsWith('www.')) {
         return str;
+    }
+
+    // When CapsLock is ON and TitleCase is not explicitly forced, keep uppercase
+    if (!forceTitleCase && isCapsLockOn) {
+        return str.toUpperCase();
     }
 
     return str.replace(/([a-zA-Z])([a-zA-Z]*)/g, (_match, first, rest) => {
@@ -161,7 +189,7 @@ export function applyAutoCapitalize(target) {
     if (!originalValue || typeof originalValue !== 'string') return;
 
     let formattedValue;
-    if (isUppercaseField(target)) {
+    if (isUppercaseField(target) || isCapsLockOn) {
         formattedValue = originalValue.toUpperCase();
     } else {
         formattedValue = formatTitleCase(originalValue);
@@ -181,7 +209,34 @@ export function initAutoCapitalize() {
     if (typeof window === 'undefined' || isInitialized) return;
     isInitialized = true;
 
+    // Track CapsLock state from keyboard and pointer events
+    window.addEventListener('keydown', updateModifierState, true);
+    window.addEventListener('keyup', updateModifierState, true);
+    window.addEventListener('click', updateModifierState, true);
+    window.addEventListener('focusin', updateModifierState, true);
+
     const handleEvent = (e) => {
+        updateModifierState(e);
+
+        // Virtual / Mobile keyboard heuristics:
+        if (e && e.data && typeof e.data === 'string' && e.data.length === 1) {
+            if (/[a-z]/.test(e.data)) {
+                // Typing lowercase letter definitely means CapsLock is OFF
+                isCapsLockOn = false;
+            } else if (/[A-Z]/.test(e.data)) {
+                // If uppercase typed after another alphabet in the same word, user wants uppercase / CapsLock ON
+                const target = e.target;
+                if (target && typeof target.selectionStart === 'number') {
+                    const pos = target.selectionStart;
+                    const val = target.value || '';
+                    const prevChar = val.slice(Math.max(0, pos - 2), pos - 1);
+                    if (/[a-zA-Z]/.test(prevChar)) {
+                        isCapsLockOn = true;
+                    }
+                }
+            }
+        }
+
         const target = e.target;
         if (!target) return;
         applyAutoCapitalize(target);
