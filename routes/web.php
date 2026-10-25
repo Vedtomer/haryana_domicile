@@ -16,7 +16,7 @@ Route::get('/', function () {
         ->get()
         ->map(function (\App\Models\Service $service) {
             $isNew = ($service->created_at && $service->created_at->gt(now()->subDays(30)))
-                || in_array($service->slug, ['qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'mobile-number-to-info', 'bob-affidavit']);
+                || in_array($service->slug, ['video-invitation-maker', 'qr-to-print', 'make-driving-licence-card', 'passport-maker', 'passport-apply', 'kundli-generator', 'mobile-to-info', 'mobile-number-to-info', 'bob-affidavit']);
 
             return [
                 'id' => $service->id,
@@ -226,6 +226,29 @@ Route::get('/migrate-db', function () {
             $output .= "=== COURIER & PARCEL SLIP MAKER UPSERTED ===\n\n";
         } catch (\Throwable $cpe) {
             $output .= "CourierSlipMaker error: " . $cpe->getMessage() . "\n\n";
+        }
+
+        // Ensure Digital Video Invitation Maker is in services table (399 coins, auto-approved)
+        try {
+            \App\Models\Service::updateOrCreate(
+                ['slug' => 'video-invitation-maker'],
+                [
+                    'name' => 'Digital Video Invitation Maker',
+                    'description' => 'Create HD animated Video Invitations for Wedding, Baby Birth, Ring Ceremony & Birthday. Auto-Approved Instant Download.',
+                    'icon' => '🎬',
+                    'coin_cost' => 399,
+                    'kind' => 'module',
+                    'module_key' => 'video_invitation_maker',
+                    'is_active' => true,
+                    'visibility' => 'public',
+                    'is_premium' => false,
+                    'unlock_cost' => 0,
+                    'sort_order' => 12,
+                ]
+            );
+            $output .= "=== DIGITAL VIDEO INVITATION MAKER UPSERTED (399 COINS, AUTO-APPROVED) ===\n\n";
+        } catch (\Throwable $ve) {
+            $output .= "VideoInvitationMaker error: " . $ve->getMessage() . "\n\n";
         }
 
         // Ensure Mobile & DTH Recharge is in services table
@@ -3112,6 +3135,12 @@ Route::post('/reactivate', [\App\Http\Controllers\ReactivationController::class,
     })->name('utilities.courier-slip-maker');
     Route::post('/utilities/courier-slip-maker/generate', [\App\Http\Controllers\CourierSlipMakerController::class, 'generate'])->name('utilities.courier-slip-maker.generate');
     Route::get('/utilities/courier-slip-maker/pincode/{pincode}', [\App\Http\Controllers\CourierSlipMakerController::class, 'lookupPincode'])->name('utilities.courier-slip-maker.pincode');
+
+    // 10.3 Digital Video Invitation Maker (399 Coins, Auto-Approved)
+    Route::get('/utilities/video-invitation-maker', [\App\Http\Controllers\VideoInvitationMakerController::class, 'index'])->name('utilities.video-invitation-maker');
+    Route::post('/utilities/video-invitation-maker/generate', [\App\Http\Controllers\VideoInvitationMakerController::class, 'generate'])->name('utilities.video-invitation-maker.generate');
+    Route::get('/utilities/video-invite-maker', fn() => redirect()->route('utilities.video-invitation-maker'));
+    Route::get('/utilities/wedding-invitation-video', fn() => redirect()->route('utilities.video-invitation-maker'));
 
     // 11. Voter Card Manual For Address Change
     Route::get('/utilities/voter-card-manual-address-change', function () {

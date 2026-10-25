@@ -318,6 +318,9 @@ function getServiceBullets(service) {
     if (nameLower.includes('recharge') || nameLower.includes('dth')) {
         return ['Jio, Airtel, Vi, BSNL & DTH', 'Instant Recharge Confirmation', 'Auto Wallet Coins Deduction'];
     }
+    if (nameLower.includes('video') || nameLower.includes('invitation')) {
+        return ['Wedding, Baby & Birthday Video', 'HD Reel & WhatsApp Format', 'Instant Auto-Approved Download'];
+    }
     return ['Quick, secure & instant', 'Online Verification', '24x7 Available'];
 }
 

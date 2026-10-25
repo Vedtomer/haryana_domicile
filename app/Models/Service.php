@@ -804,6 +804,13 @@ class Service extends Model
             'index' => '/utilities/aadhar-to-npci-status',
             'create' => '/utilities/aadhar-to-npci-status',
         ],
+        'video_invitation_maker' => [
+            'label' => 'Digital Video Invitation Maker',
+            'icon' => '🎬',
+            'model' => null,
+            'index' => '/utilities/video-invitation-maker',
+            'create' => '/utilities/video-invitation-maker',
+        ],
     ];
 
     protected $fillable = [
@@ -996,6 +1003,16 @@ class Service extends Model
 
         if ($this->slug === 'birth-certificate') {
             return '/admin/birth-records';
+        }
+
+        if (in_array($this->slug, [
+            'video-invitation-maker',
+            'digital-video-invitation-maker',
+            'wedding-invitation-video',
+            'video-invite-maker',
+            'invitation-video-maker',
+        ])) {
+            return '/utilities/video-invitation-maker';
         }
 
         if ($this->isModule()) {
